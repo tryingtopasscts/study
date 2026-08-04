@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CTS Part V Quiz — Servicing AV Solutions</title>
+<style>
+:root{
+  --bg:#0f1117; --bg2:#13161e; --surface:#1a1e2a; --border:#252c3f; --border2:#2e3650;
+  --accent:#5b9cf6; --accent2:#93bbfc; --accent-dim:#1a2f54;
+  --amber:#f5a623; --teal:#2dd4bf; --red:#f87171; --red-dim:#2a0f0f;
+  --purple:#a78bfa; --green:#34d399; --green-dim:#0a2a1e;
+  --text:#dde3f0; --text2:#8e9abf; --text3:#4e5a7a;
+  --mono:'IBM Plex Mono',monospace; --serif:'Fraunces',serif; --sans:'DM Sans',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:18px;line-height:1.6}
+main{max-width:820px;margin:0 auto;padding:2.5rem 1.4rem 5rem}
+header{margin-bottom:1.8rem}
+.kicker{font-family:var(--mono);font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:.5rem}
+h1{font-family:var(--serif);font-weight:700;font-size:2rem;line-height:1.2}
+.lede{color:var(--text2);font-size:.98rem;margin-top:.5rem}
+
+.panel{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:1.3rem 1.4rem;margin-bottom:1.4rem}
+.panel h3{font-family:var(--mono);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent2);margin-bottom:.8rem}
+.chip-row{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:1rem}
+.chip{font-family:var(--sans);font-size:.82rem;font-weight:500;background:var(--surface);border:1px solid var(--border2);
+  color:var(--text2);border-radius:99px;padding:.4rem .95rem;cursor:pointer;transition:all .15s}
+.chip:hover{border-color:var(--accent)}
+.chip.on{background:var(--accent-dim);border-color:var(--accent);color:var(--accent2)}
+.mode-row{display:flex;gap:.6rem;flex-wrap:wrap}
+.btn{font-family:var(--sans);font-weight:500;font-size:.9rem;background:var(--surface);color:var(--text);
+  border:1px solid var(--border2);border-radius:10px;padding:.6rem 1.15rem;cursor:pointer;transition:all .15s}
+.btn:hover{background:var(--accent-dim);border-color:var(--accent)}
+.btn.primary{background:var(--accent-dim);border-color:var(--accent);color:var(--accent2);font-weight:700}
+.btn.small{font-size:.8rem;padding:.4rem .8rem}
+.meta{font-family:var(--mono);font-size:.78rem;color:var(--text3)}
+
+/* quiz */
+.progress{height:6px;background:var(--surface);border-radius:99px;overflow:hidden;margin:1rem 0 1.4rem}
+.progress>div{height:100%;background:var(--accent);width:0;transition:width .3s}
+.q-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:1.4rem 1.5rem}
+.q-meta{font-family:var(--mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:.7rem;display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+.q-text{font-weight:500;font-size:1.05rem;margin-bottom:1rem}
+.opt{display:block;width:100%;text-align:left;background:var(--bg2);border:1px solid var(--border2);color:var(--text);
+  border-radius:10px;padding:.7rem .95rem;margin-bottom:.55rem;cursor:pointer;font-family:var(--sans);font-size:.92rem;transition:all .15s}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt.correct{background:var(--green-dim);border-color:var(--green);color:#fff}
+.opt.wrong{background:var(--red-dim);border-color:var(--red);color:#fff}
+.opt:disabled{cursor:default}
+.expl{display:none;font-size:.88rem;color:var(--text2);border-top:1px dashed var(--border2);padding-top:.8rem;margin-top:.6rem;line-height:1.6}
+.expl.show{display:block}
+.expl b{color:var(--teal)}
+.q-nav{display:flex;justify-content:space-between;align-items:center;margin-top:1.1rem;gap:.6rem;flex-wrap:wrap}
+
+/* results */
+.score-big{font-family:var(--serif);font-size:2.6rem;font-weight:700;color:var(--accent2)}
+.score-sub{color:var(--text2);margin-bottom:1.2rem}
+table{width:100%;border-collapse:collapse;font-size:.88rem;margin-top:.6rem}
+th{font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--accent2);
+  text-align:left;padding:.55rem .6rem;border-bottom:1px solid var(--border2)}
+td{padding:.55rem .6rem;border-bottom:1px solid var(--border);color:var(--text)}
+tr:last-child td{border-bottom:none}
+.bar{height:8px;background:var(--surface);border-radius:99px;overflow:hidden;min-width:110px}
+.bar>div{height:100%;background:var(--green)}
+.bar.low>div{background:var(--red)}
+.bar.mid>div{background:var(--amber)}
+
+/* flashcard mode */
+.flashcard{perspective:1200px;height:280px;cursor:pointer}
+.fc-inner{position:relative;width:100%;height:100%;transition:transform .5s;transform-style:preserve-3d}
+.flashcard.flipped .fc-inner{transform:rotateY(180deg)}
+.fc-face{position:absolute;inset:0;backface-visibility:hidden;border-radius:16px;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;padding:1.6rem 2rem;text-align:center}
+.fc-front{background:var(--surface);border:1px solid var(--border2)}
+.fc-back{background:var(--accent-dim);border:1px solid var(--accent);transform:rotateY(180deg)}
+.fc-label{font-family:var(--mono);font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text3);position:absolute;top:1rem;left:1.2rem}
+.fc-back .fc-label{color:var(--accent2)}
+.fc-text{font-size:1rem;line-height:1.55}
+.fc-back .fc-text{color:#fff;font-size:.92rem}
+.fc-chip{font-family:var(--mono);font-size:.66rem;color:var(--text3);position:absolute;bottom:1rem;right:1.2rem}
+.hidden{display:none}
+footer{text-align:center;color:var(--text3);font-family:var(--mono);font-size:.72rem;padding-top:2.5rem}
+@media (max-width:600px){ h1{font-size:1.6rem} .flashcard{height:330px} }
+</style>
+</head>
+<body>
+<main>
+<header>
+  <div class="kicker">CTS Exam Prep · Part III</div>
+  <h1>Servicing AV Solutions — Practice Quiz</h1>
+  <p class="lede">40 original practice questions covering Chapters 20–22. Filter by chapter, shuffle, switch to flashcard mode, and review your per-chapter breakdown at the end.</p>
+</header>
+
+<div class="panel" id="setupPanel">
+  <h3>Chapters</h3>
+  <div class="chip-row" id="chipRow">
+    <button class="chip on" data-ch="all">All chapters</button>
+    <button class="chip" data-ch="20">Ch 20 · Operations</button>
+    <button class="chip" data-ch="21">Ch 21 · Maintenance</button>
+    <button class="chip" data-ch="22">Ch 22 · Troubleshooting</button>
+  </div>
+  <h3>Mode</h3>
+  <div class="mode-row">
+    <button class="btn primary" id="startQuiz">▶ Start Quiz</button>
+    <button class="btn" id="startCards">⚡ Flashcard Mode</button>
+    <button class="btn" id="shuffleToggle">🔀 Shuffle: On</button>
+    <span class="meta" id="poolCount" style="align-self:center"></span>
+  </div>
+  <div class="mode-row" style="margin-top:.8rem">
+    <span class="meta" id="historySummary"></span>
+    <button class="btn small" id="clearHistBtn">🗑 Clear Saved Results</button>
+  </div>
+</div>
+
+<div id="quizArea" class="hidden">
+  <div class="progress"><div id="progBar"></div></div>
+  <div class="q-card">
+    <div class="q-meta"><span id="qNum"></span><span id="qChap"></span></div>
+    <div class="q-text" id="qText"></div>
+    <div id="qOpts"></div>
+    <div class="expl" id="qExpl"></div>
+    <div class="q-nav">
+      <button class="btn small" id="quitBtn">✕ End & score</button>
+      <span class="meta" id="runScore"></span>
+      <button class="btn primary" id="nextBtn" disabled>Next →</button>
+    </div>
+  </div>
+</div>
+
+<div id="cardArea" class="hidden">
+  <div class="flashcard" id="fCard">
+    <div class="fc-inner">
+      <div class="fc-face fc-front"><span class="fc-label">Question</span><div class="fc-text" id="fFront"></div><span class="fc-chip" id="fChipF"></span></div>
+      <div class="fc-face fc-back"><span class="fc-label">Answer</span><div class="fc-text" id="fBack"></div><span class="fc-chip" id="fChipB"></span></div>
+    </div>
+  </div>
+  <div class="q-nav" style="margin-top:1rem">
+    <button class="btn small" id="cardsQuit">✕ Back to setup</button>
+    <span class="meta" id="fCount"></span>
+    <div><button class="btn small" id="fPrev">← Prev</button> <button class="btn small primary" id="fNext">Next →</button></div>
+  </div>
+</div>
+
+<div id="resultArea" class="hidden">
+  <div class="panel">
+    <h3>Results</h3>
+    <div class="score-big" id="scoreBig"></div>
+    <div class="score-sub" id="scoreSub"></div>
+    <table id="breakTable">
+      <thead><tr><th>Chapter</th><th>Score</th><th style="width:35%">Accuracy</th></tr></thead>
+      <tbody id="breakBody"></tbody>
+    </table>
+    <div class="mode-row" style="margin-top:1.2rem">
+      <button class="btn primary" id="retryBtn">↻ Retake</button>
+      <button class="btn" id="backBtn">⚙ Change chapters</button>
+    </div>
+    <div class="mode-row" style="margin-top:.6rem">
+      <button class="btn" id="copyBtn">📋 Copy Results</button>
+      <button class="btn" id="copyHistBtn">📋 Copy Full History</button>
+      <span class="meta" id="histMeta"></span>
+    </div>
+  </div>
+</div>
+
+<footer>CTS Part V · 40 original practice questions · Chapters 20–22</footer>
+</main>
+<script id="app">
+
+const CH_NAMES={20:"Maintaining AV Operations",21:"Conducting Maintenance Activities",22:"Troubleshooting & Repairing"};
+const BANK=[
+/* ---------- Chapter 20 ---------- */
+{ch:20,q:"The healthiest way to characterize an AV company's relationship with its suppliers and vendors is:",
+ opts:["Whichever vendor has the lowest price this quarter wins","A long-term partnership that helps serve clients and sustain the business","A single exclusive supplier for all goods","Whatever vendors the client specifies"],ans:1,
+ ex:"Vendors and suppliers should become long-term partners in meeting client needs — built through face-to-face contact, documented transactions, and professional problem-solving."},
+{ch:20,q:"When a special-order spare part needs to be expedited, the manager should:",
+ opts:["Send repeated e-mails to the general inbox","Communicate with the correct person — possibly a higher-level manager at the supplier","Switch suppliers immediately","Ask the client to intervene"],ans:1,
+ ex:"Match each issue to the right contact; escalating to a higher-level manager can prompt action on urgent needs."},
+{ch:20,q:"Managing stock for an AV integrator primarily means:",
+ opts:["Keeping total stock value under a fixed cap","Tracking what's on hand, checking supplies in/out, and reordering at low points","Reserving warehouse floor space","Only counting inventory annually"],ans:1,
+ ex:"Track warehouse inventory, check items in and out as used, reorder when stock runs low, and work with suppliers on replacements."},
+{ch:20,q:"What makes rental & staging inventory harder to manage than typical warehouse stock?",
+ opts:["It's more expensive","It ships AND returns, so you track current location plus the next destination","It requires refrigeration","It can't be bar-coded"],ans:1,
+ ex:"Rental gear comes back, so you must know where each item is now and where it's needed next — and check future events against supply."},
+{ch:20,q:"Why attach a unique bar code or RFID tag to each equipment case?",
+ opts:["To display the rental price","So an inventory system can check the item in and out of warehouse and venue","To identify the equipment brand","To mark which room it belongs in"],ans:1,
+ ex:"The identifier links the item to a database and is logged in/out, giving real-time location control."},
+{ch:20,q:"A best practice when tagging ten identical LCD screens is to:",
+ opts:["Tag only the cases","Give each screen a unique ID and mark both the device and its case with the same number","Use one shared tag for all ten","Tag only the most expensive one"],ans:1,
+ ex:"Serial number plus a unique ID stenciled on device AND case makes identical items identifiable and accurately shipped/repacked."},
+{ch:20,q:"Scan sheets are best used for:",
+ opts:["Heavy rack equipment","Items easily verified visually but slow to handle — cables, accessories, kits","Projectors only","Fragile displays"],ans:1,
+ ex:"A list of items with their codes saves handling time for cables, accessories, and miscellaneous kits."},
+{ch:20,q:"Once equipment leaves the warehouse, responsibility for its security lies with:",
+ opts:["The client, always","The AV company, always","Whoever has taken control of the equipment","The venue's insurance"],ans:2,
+ ex:"Responsibility follows control — whoever currently controls the gear is responsible for securing it."},
+{ch:20,q:"Etching company identification into equipment primarily serves to:",
+ opts:["Increase resale value","Deter theft by making stolen gear hard to resell","Satisfy insurance requirements","Speed up inventory scans"],ans:1,
+ ex:"Markings make resale difficult and can prompt buyers to alert the company or police — though they can lower resale value of used gear you sell."},
+{ch:20,q:"The key security concern when renting equipment out is:",
+ opts:["Whether the renter can operate it","Properly identifying the person taking possession of it","Whether the renter hires guards","How the renter transports it"],ans:1,
+ ex:"Verify the person is a legitimate customer: ID copies, a pickup photo (with prior agreement), card/billing checks, venue confirmation, references."},
+{ch:20,q:"Remote-monitoring services for client AV systems are designed to:",
+ opts:["Replace the control system","Track usage, flag component failures, and detect tampering — with automatic alerts","Provide CCTV security coverage","Reduce network bandwidth"],ans:1,
+ ex:"They verify operation without site visits — tracking lamp hours, alarming on removal/modification, and alerting via SMS, e-mail, or in-room signals."},
+{ch:20,q:"The recommended approach to keeping AV staff professionally current is:",
+ opts:["Annual trade-show attendance only","Certification renewal only","A range of sources: certifications, courses, publications, vendor presentations, and trade shows","College coursework only"],ans:2,
+ ex:"Breadth wins: use multiple channels rather than any single source of industry knowledge."},
+
+/* ---------- Chapter 21 ---------- */
+{ch:21,q:"Which agreement covers ONLY the equipment itself, repaired by an authorized service center?",
+ opts:["System warranty","Manufacturer's warranty","Service agreement","Field warranty"],ans:1,
+ ex:"Manufacturer's warranties cover the equipment via authorized centers; parts and labor may run for different periods."},
+{ch:21,q:"What is typically NOT covered by a manufacturer's warranty?",
+ opts:["Replacement parts","Repair labor at the service center","Removal/reinstallation of installed gear and shipping to the service center","Firmware defects"],ans:2,
+ ex:"Getting installed equipment out, back in, and shipped is typically the owner's cost unless an integrator's service agreement extends coverage."},
+{ch:21,q:"A system warranty covering installation materials and workmanship typically runs:",
+ opts:["30 days","6 to 12 months","3 years","The life of the system"],ans:1,
+ ex:"Best practice (usually contract-required) is 6–12 months after installation, defined in the original scope/spec/quote."},
+{ch:21,q:"A brand-new device fails three weeks after installation. The repair falls under the:",
+ opts:["System warranty","Service agreement","Manufacturer's warranty","Client's insurance"],ans:2,
+ ex:"Early failures of new equipment are the manufacturer's responsibility under its warranty."},
+{ch:21,q:"Ongoing preventive maintenance after the system warranty expires is provided under a:",
+ opts:["Manufacturer's warranty","System warranty","Service agreement","Purchase order"],ans:2,
+ ex:"Service agreements cover scheduled PM visits, response-time commitments, help-desk support, and possibly extended warranties."},
+{ch:21,q:"A mission-critical client site would most likely contract for what response terms?",
+ opts:["Best-effort response","24/7 response","Next-week scheduling","Annual visits only"],ans:1,
+ ex:"Typical tiers: 1-hour phone response in business hours, same-day emergency, next-business-day routine — and 24/7 for mission-critical sites."},
+{ch:21,q:"The owner modifies system settings without written permission from the AV provider. This may:",
+ opts:["Improve the warranty terms","Void the existing warranty or service contract","Transfer the warranty to the owner","Have no contractual effect"],ans:1,
+ ex:"Owner/end-user modifications without written permission can void the warranty or service contract."},
+{ch:21,q:"Software and firmware updates should be installed:",
+ opts:["The moment they're released","Only when they improve performance, security, reliability, or add required functionality","Never on client systems","Only during emergencies"],ans:1,
+ ex:"Updates can trigger chains of unexpected effects in associated equipment — install only when they genuinely improve the system."},
+{ch:21,q:"A client calls: 'the boardroom display is dead.' The technician's FIRST move is to:",
+ opts:["Drive to the site immediately","Ask detailed questions about the symptoms before traveling","Order a replacement display","Contact the manufacturer"],ans:1,
+ ex:"Gather as much symptom information as possible first — it enables pre-trip troubleshooting and proper preparation."},
+{ch:21,q:"Which is an example of preventive maintenance?",
+ opts:["Replacing static-plagued cabling","Upgrading a display's resolution","Replacing a projector lamp before its rated hours expire","Reprogramming the control system"],ans:2,
+ ex:"PM addresses limited-life components before failure — scheduled lamp and filter replacement is the classic case."},
+{ch:21,q:"During a PM visit, users report feedback at lower levels than before. A likely cause the technician should check:",
+ opts:["A failed amplifier","User-misadjusted equalizer settings","Wrong projector lamp","A network outage"],ans:1,
+ ex:"Users misadjusting equipment (like EQ settings) can degrade performance — recalibration is a core PM task."},
+{ch:21,q:"Why should system downtime be recorded in every service record?",
+ opts:["For tax purposes","Minimal downtime demonstrates the service call was well planned and executed","To penalize the technician","It's required by manufacturers"],ans:1,
+ ex:"Downtime records show planning quality — and complete records let any technician grasp the system's history quickly."},
+
+/* ---------- Chapter 22 ---------- */
+{ch:22,q:"The first step in troubleshooting an AV system failure is to:",
+ opts:["Determine possible failure points","Clearly identify the failure symptoms","Review the signal-flow diagram","List operational components"],ans:1,
+ ex:"Identify and understand the symptoms first; everything else follows from knowing exactly how the system is misbehaving."},
+{ch:22,q:"An intermittent problem is difficult to troubleshoot because:",
+ opts:["It affects multiple components","It can't be reliably reproduced","It always involves the network","It only occurs at night"],ans:1,
+ ex:"You either observe until it recurs or have the client call the moment it happens — and ask careful bracketing questions."},
+{ch:22,q:"Why should user error be considered during troubleshooting?",
+ opts:["It shouldn't — users aren't part of the system","Users may have changed settings or misoperated the system, causing the apparent failure","User error is legally significant","Users always cause failures"],ans:1,
+ ex:"Apparent 'failures' are sometimes misoperation or changed settings — distinguish abnormal performance from user error."},
+{ch:22,q:"Usually the most efficient way to localize a fault in a complex system is to:",
+ opts:["Test each component in signal order","Test backward from the output","Divide the system in half, find the failing half, and repeat","Replace components until it works"],ans:2,
+ ex:"Divide and conquer isolates the fault in a handful of halvings — minimal guessing, maximal information per test."},
+{ch:22,q:"The signal-flow troubleshooting strategy involves:",
+ opts:["Following the signal path from one end until the fault appears","Testing only the sources","Testing only the destinations","Randomly checking mid-path devices"],ans:0,
+ ex:"Follow the path — source to destination or destination to source — until you find the failing cable, device, connection, or termination."},
+{ch:22,q:"Swapping a suspect microphone with a known-good one that also produces no sound tells you:",
+ opts:["The mixer has failed","The original microphone is probably not the cause — but most of the system is still unverified","The loudspeaker has failed","The cable is definitely bad"],ans:1,
+ ex:"Swapping rules out only the swapped part; the rest of the chain remains unknown until further division."},
+{ch:22,q:"A cardinal rule while troubleshooting is to:",
+ opts:["Change several settings at once to save time","Change one thing at a time and test after each change","Skip documentation until the fix works","Start by replacing the most expensive component"],ans:1,
+ ex:"One change at a time, test after each — plus signal generators for reference and analyzers for measurement, documenting throughout."},
+{ch:22,q:"The most likely source of an AV system failure is:",
+ opts:["Amplifier failure","Projector failure","Cable or connector failure","Source device failure"],ans:2,
+ ex:"Cables and connectors fail substantially more often than components — bring spares to every service call."},
+{ch:22,q:"A laptop shows an image on its own screen but not through the projector. A battery-related cause could be:",
+ opts:["The battery is interfering with HDMI","Some laptops won't drive both displays on battery power — plug into mains","The projector needs batteries","Battery saver dims the projector lamp"],ans:1,
+ ex:"Some laptops disable dual display on battery; plug in, then toggle the display output and check screensaver/standby settings."},
+{ch:22,q:"Which is NOT a feedback-control best practice?",
+ opts:["Choosing the narrowest practical mic pattern","Keeping the mic close to the sound source","Adding compression to the microphone chain","Muting unused microphone channels"],ans:2,
+ ex:"Compression doesn't fix feedback. Control it with mic pattern/placement, speaker placement, low gain, and muting unused channels."},
+{ch:22,q:"A conference room's far-end participants hear their own voices back. The design-level cure is:",
+ opts:["Bigger loudspeakers","Echo cancellation and clean-feed (mix-minus) capability in the conferencing design","Higher microphone gain","A subwoofer"],ans:1,
+ ex:"Conferencing echo is best solved by designing in echo cancellation and clean feeds; placement and level changes help in the moment."},
+{ch:22,q:"A touch panel appears dead but is undamaged. Before calling for service, first:",
+ opts:["Replace the panel","Touch the screen — it may simply be in screensaver/power-save mode","Rewire the control bus","Reload the firmware"],ans:1,
+ ex:"Touchscreen power-save looks like a lockup; a touch wakes it. (A cracked screen, though, is a safety hazard — don't touch it bare-handed.)"},
+{ch:22,q:"The #1 cause of wireless microphone failure is:",
+ opts:["Antenna damage","Dead batteries","Wrong connector","Diaphragm wear"],ans:1,
+ ex:"Replace the batteries first, always. Then verify matching frequencies, interference, range, gain settings, and antenna placement."},
+{ch:22,q:"Driving a −10 dBV input from a +4 dBu output without a pad produces:",
+ opts:["No signal at all","Overload distortion from the level mismatch","Feedback","Improved headroom"],ans:1,
+ ex:"The mismatched signal level overloads the input — insert a pad to attenuate, or match levels properly."},
+{ch:22,q:"A constant high-frequency hiss ('waterfall' sound) in a live audio system typically indicates:",
+ opts:["Poor gain structure","A blown tweeter","Insufficient compression","RF interference"],ans:0,
+ ex:"Inputs set too low with later stages over-gained to compensate — raise input gains to the highest level short of clipping."},
+{ch:22,q:"Which utility maps the network path between two devices?",
+ opts:["ping","traceroute / tracert","arp","ipconfig"],ans:1,
+ ex:"traceroute (tracert on Windows) shows the path; ping tests connectivity, ifconfig/ipconfig diagnoses IP config, arp maps IP↔MAC."}
+];
+
+/* ---------- App state ---------- */
+let selected=new Set(['all']);
+let shuffleOn=true;
+let pool=[],idx=0,answered=false;
+let score=0,perCh={},missed=[];
+
+const $=id=>document.getElementById(id);
+const chipRow=$('chipRow');
+
+/* ---------- Local persistence (this browser only — never sent anywhere) ---------- */
+const STORAGE_KEY='cts_part5_history';
+function loadHistory(){try{return JSON.parse(localStorage.getItem(STORAGE_KEY))||[];}catch(e){return [];}}
+function saveHistory(h){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(h));}catch(e){}}
+function historySummaryText(){
+  const h=loadHistory();
+  if(!h.length)return 'No saved attempts yet.';
+  const last=h[h.length-1];
+  const best=h.reduce((m,r)=>r.pct>m?r.pct:m,0);
+  return h.length+' saved attempt'+(h.length>1?'s':'')+' · last '+last.pct+'% · best '+best+'%';
+}
+function refreshHistoryUI(){$('historySummary').textContent=historySummaryText();}
+$('clearHistBtn').addEventListener('click',()=>{
+  if(!confirm('Clear all saved quiz history for Part V? This cannot be undone.'))return;
+  localStorage.removeItem(STORAGE_KEY);
+  refreshHistoryUI();
+});
+function copyText(text,btnId){
+  navigator.clipboard.writeText(text).then(()=>{
+    const b=$(btnId);if(!b)return;const orig=b.textContent;b.textContent='✓ Copied!';
+    setTimeout(()=>{b.textContent=orig;},1800);
+  }).catch(()=>{prompt('Copy this text:',text);});
+}
+
+function currentPool(){
+  const all=selected.has('all');
+  return BANK.filter(q=>all||selected.has(String(q.ch)));
+}
+function updateCount(){ $('poolCount').textContent=currentPool().length+' questions selected'; }
+chipRow.addEventListener('click',e=>{
+  const b=e.target.closest('.chip');if(!b)return;
+  const ch=b.dataset.ch;
+  if(ch==='all'){selected=new Set(['all']);}
+  else{
+    selected.delete('all');
+    if(selected.has(ch))selected.delete(ch);else selected.add(ch);
+    if(selected.size===0)selected=new Set(['all']);
+  }
+  chipRow.querySelectorAll('.chip').forEach(c=>c.classList.toggle('on',selected.has(c.dataset.ch)));
+  updateCount();
+});
+$('shuffleToggle').addEventListener('click',()=>{
+  shuffleOn=!shuffleOn;
+  $('shuffleToggle').textContent='🔀 Shuffle: '+(shuffleOn?'On':'Off');
+});
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+function show(area){
+  ['setupPanel','quizArea','cardArea','resultArea'].forEach(id=>$(id).classList.add('hidden'));
+  $(area).classList.remove('hidden');
+}
+$('startQuiz').addEventListener('click',()=>{
+  pool=currentPool().slice();
+  if(shuffleOn)shuffle(pool);
+  idx=0;score=0;perCh={};missed=[];
+  pool.forEach(q=>{perCh[q.ch]=perCh[q.ch]||{right:0,total:0};});
+  show('quizArea');renderQ();
+});
+function renderQ(){
+  const q=pool[idx];answered=false;
+  $('progBar').style.width=(idx/pool.length*100)+'%';
+  $('qNum').textContent='Question '+(idx+1)+' of '+pool.length;
+  $('qChap').textContent='Ch '+q.ch+' · '+CH_NAMES[q.ch];
+  $('qText').textContent=q.q;
+  $('qExpl').classList.remove('show');
+  $('qExpl').innerHTML='';
+  $('nextBtn').disabled=true;
+  $('nextBtn').textContent=(idx===pool.length-1)?'Finish ✓':'Next →';
+  $('runScore').textContent='Score: '+score+' / '+idx;
+  const box=$('qOpts');box.innerHTML='';
+  q.opts.forEach((o,j)=>{
+    const b=document.createElement('button');
+    b.className='opt';b.textContent=String.fromCharCode(65+j)+'. '+o;
+    b.addEventListener('click',()=>answer(j,b));
+    box.appendChild(b);
+  });
+}
+function answer(j,btn){
+  if(answered)return;answered=true;
+  const q=pool[idx];
+  perCh[q.ch].total++;
+  const opts=$('qOpts').querySelectorAll('.opt');
+  opts.forEach((b,k)=>{b.disabled=true;if(k===q.ans)b.classList.add('correct');});
+  if(j===q.ans){score++;perCh[q.ch].right++;}
+  else{btn.classList.add('wrong');missed.push({ch:q.ch,q:q.q,chosen:j,chosenText:q.opts[j],correctText:q.opts[q.ans]});}
+  $('qExpl').innerHTML=q.ex;
+  $('qExpl').classList.add('show');
+  $('runScore').textContent='Score: '+score+' / '+(idx+1);
+  $('nextBtn').disabled=false;
+}
+$('nextBtn').addEventListener('click',()=>{
+  if(idx<pool.length-1){idx++;renderQ();}
+  else finish();
+});
+$('quitBtn').addEventListener('click',finish);
+function finish(){
+  show('resultArea');
+  const total=Object.values(perCh).reduce((s,c)=>s+c.total,0);
+  const pct=total?Math.round(score/total*100):0;
+  $('scoreBig').textContent=score+' / '+total+' · '+pct+'%';
+  $('scoreSub').textContent=pct>=80?'Strong — exam-ready territory for these chapters.':pct>=60?'Solid base — review the missed explanations and retake.':'Keep drilling — revisit the study guide sections for your weak chapters.';
+  const tb=$('breakBody');tb.innerHTML='';
+  Object.keys(perCh).sort().forEach(ch=>{
+    const c=perCh[ch];if(!c.total)return;
+    const p=Math.round(c.right/c.total*100);
+    const cls=p>=80?'':p>=60?'mid':'low';
+    const tr=document.createElement('tr');
+    tr.innerHTML='<td>Ch '+ch+' · '+CH_NAMES[ch]+'</td><td>'+c.right+' / '+c.total+'</td>'+
+      '<td><div class="bar '+cls+'"><div style="width:'+p+'%"></div></div></td>';
+    tb.appendChild(tr);
+  });
+
+  const record={date:new Date().toISOString(),score,total,pct,perCh:JSON.parse(JSON.stringify(perCh)),missed};
+  const hist=loadHistory();
+  hist.push(record);
+  if(hist.length>20)hist.shift();
+  saveHistory(hist);
+  window._lastResult=record;
+  refreshHistoryUI();
+  $('histMeta').textContent=hist.length+' attempt(s) saved locally';
+}
+$('retryBtn').addEventListener('click',()=>$('startQuiz').click());
+$('backBtn').addEventListener('click',()=>{show('setupPanel');updateCount();});
+$('copyBtn').addEventListener('click',()=>{
+  const r=window._lastResult;if(!r)return;
+  const lines=[];
+  lines.push('CTS Part V Quiz Result — '+new Date(r.date).toLocaleString());
+  lines.push('Score: '+r.score+'/'+r.total+' ('+r.pct+'%)');
+  lines.push('');
+  lines.push('By chapter:');
+  Object.keys(r.perCh).sort().forEach(ch=>{
+    const c=r.perCh[ch];
+    const p=c.total?Math.round(c.right/c.total*100):0;
+    lines.push('  Ch '+ch+' ('+CH_NAMES[ch]+'): '+c.right+'/'+c.total+' ('+p+'%)');
+  });
+  if(r.missed.length){
+    lines.push('');
+    lines.push('Missed questions ('+r.missed.length+'):');
+    r.missed.forEach(m=>{
+      lines.push('  [Ch '+m.ch+'] '+m.q);
+      lines.push('      Your answer: '+String.fromCharCode(65+m.chosen)+'. '+m.chosenText);
+      lines.push('      Correct: '+m.correctText);
+    });
+  }else{
+    lines.push('');
+    lines.push('No missed questions — perfect run.');
+  }
+  copyText(lines.join('\n'),'copyBtn');
+});
+$('copyHistBtn').addEventListener('click',()=>{
+  const h=loadHistory();if(!h.length)return;
+  const lines=['CTS Part V Quiz — Attempt History ('+h.length+' saved)'];
+  h.forEach((r,i)=>{
+    lines.push('');
+    lines.push('Attempt '+(i+1)+' — '+new Date(r.date).toLocaleString()+' — '+r.score+'/'+r.total+' ('+r.pct+'%)');
+    if(r.missed.length)lines.push('  Missed: '+r.missed.map(m=>'Ch'+m.ch).join(', '));
+  });
+  copyText(lines.join('\n'),'copyHistBtn');
+});
+
+let fPool=[],fIdx=0;
+$('startCards').addEventListener('click',()=>{
+  fPool=currentPool().slice();
+  if(shuffleOn)shuffle(fPool);
+  fIdx=0;show('cardArea');renderF();
+});
+function renderF(){
+  const q=fPool[fIdx];
+  $('fCard').classList.remove('flipped');
+  $('fFront').textContent=q.q;
+  $('fBack').innerHTML=String.fromCharCode(65+q.ans)+'. '+q.opts[q.ans]+' — '+q.ex;
+  $('fChipF').textContent='Ch '+q.ch;
+  $('fChipB').textContent='Ch '+q.ch;
+  $('fCount').textContent=(fIdx+1)+' / '+fPool.length;
+}
+$('fCard').addEventListener('click',()=>$('fCard').classList.toggle('flipped'));
+$('fPrev').addEventListener('click',()=>{fIdx=(fIdx-1+fPool.length)%fPool.length;renderF();});
+$('fNext').addEventListener('click',()=>{fIdx=(fIdx+1)%fPool.length;renderF();});
+$('cardsQuit').addEventListener('click',()=>{show('setupPanel');updateCount();});
+
+updateCount();
+refreshHistoryUI();
+
+
+</script>
+</body>
+</html>

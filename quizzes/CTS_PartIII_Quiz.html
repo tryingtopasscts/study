@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CTS Part III Quiz — Creating AV Solutions</title>
+<style>
+:root{
+  --bg:#0f1117; --bg2:#13161e; --surface:#1a1e2a; --border:#252c3f; --border2:#2e3650;
+  --accent:#5b9cf6; --accent2:#93bbfc; --accent-dim:#1a2f54;
+  --amber:#f5a623; --teal:#2dd4bf; --red:#f87171; --red-dim:#2a0f0f;
+  --purple:#a78bfa; --green:#34d399; --green-dim:#0a2a1e;
+  --text:#dde3f0; --text2:#8e9abf; --text3:#4e5a7a;
+  --mono:'IBM Plex Mono',monospace; --serif:'Fraunces',serif; --sans:'DM Sans',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:18px;line-height:1.6}
+main{max-width:820px;margin:0 auto;padding:2.5rem 1.4rem 5rem}
+header{margin-bottom:1.8rem}
+.kicker{font-family:var(--mono);font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:.5rem}
+h1{font-family:var(--serif);font-weight:700;font-size:2rem;line-height:1.2}
+.lede{color:var(--text2);font-size:.98rem;margin-top:.5rem}
+
+.panel{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:1.3rem 1.4rem;margin-bottom:1.4rem}
+.panel h3{font-family:var(--mono);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent2);margin-bottom:.8rem}
+.chip-row{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:1rem}
+.chip{font-family:var(--sans);font-size:.82rem;font-weight:500;background:var(--surface);border:1px solid var(--border2);
+  color:var(--text2);border-radius:99px;padding:.4rem .95rem;cursor:pointer;transition:all .15s}
+.chip:hover{border-color:var(--accent)}
+.chip.on{background:var(--accent-dim);border-color:var(--accent);color:var(--accent2)}
+.mode-row{display:flex;gap:.6rem;flex-wrap:wrap}
+.btn{font-family:var(--sans);font-weight:500;font-size:.9rem;background:var(--surface);color:var(--text);
+  border:1px solid var(--border2);border-radius:10px;padding:.6rem 1.15rem;cursor:pointer;transition:all .15s}
+.btn:hover{background:var(--accent-dim);border-color:var(--accent)}
+.btn.primary{background:var(--accent-dim);border-color:var(--accent);color:var(--accent2);font-weight:700}
+.btn.small{font-size:.8rem;padding:.4rem .8rem}
+.meta{font-family:var(--mono);font-size:.78rem;color:var(--text3)}
+
+/* quiz */
+.progress{height:6px;background:var(--surface);border-radius:99px;overflow:hidden;margin:1rem 0 1.4rem}
+.progress>div{height:100%;background:var(--accent);width:0;transition:width .3s}
+.q-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:1.4rem 1.5rem}
+.q-meta{font-family:var(--mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:.7rem;display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+.q-text{font-weight:500;font-size:1.05rem;margin-bottom:1rem}
+.opt{display:block;width:100%;text-align:left;background:var(--bg2);border:1px solid var(--border2);color:var(--text);
+  border-radius:10px;padding:.7rem .95rem;margin-bottom:.55rem;cursor:pointer;font-family:var(--sans);font-size:.92rem;transition:all .15s}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt.correct{background:var(--green-dim);border-color:var(--green);color:#fff}
+.opt.wrong{background:var(--red-dim);border-color:var(--red);color:#fff}
+.opt:disabled{cursor:default}
+.expl{display:none;font-size:.88rem;color:var(--text2);border-top:1px dashed var(--border2);padding-top:.8rem;margin-top:.6rem;line-height:1.6}
+.expl.show{display:block}
+.expl b{color:var(--teal)}
+.q-nav{display:flex;justify-content:space-between;align-items:center;margin-top:1.1rem;gap:.6rem;flex-wrap:wrap}
+
+/* results */
+.score-big{font-family:var(--serif);font-size:2.6rem;font-weight:700;color:var(--accent2)}
+.score-sub{color:var(--text2);margin-bottom:1.2rem}
+table{width:100%;border-collapse:collapse;font-size:.88rem;margin-top:.6rem}
+th{font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--accent2);
+  text-align:left;padding:.55rem .6rem;border-bottom:1px solid var(--border2)}
+td{padding:.55rem .6rem;border-bottom:1px solid var(--border);color:var(--text)}
+tr:last-child td{border-bottom:none}
+.bar{height:8px;background:var(--surface);border-radius:99px;overflow:hidden;min-width:110px}
+.bar>div{height:100%;background:var(--green)}
+.bar.low>div{background:var(--red)}
+.bar.mid>div{background:var(--amber)}
+
+/* flashcard mode */
+.flashcard{perspective:1200px;height:280px;cursor:pointer}
+.fc-inner{position:relative;width:100%;height:100%;transition:transform .5s;transform-style:preserve-3d}
+.flashcard.flipped .fc-inner{transform:rotateY(180deg)}
+.fc-face{position:absolute;inset:0;backface-visibility:hidden;border-radius:16px;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;padding:1.6rem 2rem;text-align:center}
+.fc-front{background:var(--surface);border:1px solid var(--border2)}
+.fc-back{background:var(--accent-dim);border:1px solid var(--accent);transform:rotateY(180deg)}
+.fc-label{font-family:var(--mono);font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text3);position:absolute;top:1rem;left:1.2rem}
+.fc-back .fc-label{color:var(--accent2)}
+.fc-text{font-size:1rem;line-height:1.55}
+.fc-back .fc-text{color:#fff;font-size:.92rem}
+.fc-chip{font-family:var(--mono);font-size:.66rem;color:var(--text3);position:absolute;bottom:1rem;right:1.2rem}
+.hidden{display:none}
+footer{text-align:center;color:var(--text3);font-family:var(--mono);font-size:.72rem;padding-top:2.5rem}
+@media (max-width:600px){ h1{font-size:1.6rem} .flashcard{height:330px} }
+</style>
+</head>
+<body>
+<main>
+<header>
+  <div class="kicker">CTS Exam Prep · Part III</div>
+  <h1>Creating AV Solutions — Practice Quiz</h1>
+  <p class="lede">60 original practice questions covering Chapters 11–16. Filter by chapter, shuffle, switch to flashcard mode, and review your per-chapter breakdown at the end.</p>
+</header>
+
+<div class="panel" id="setupPanel">
+  <h3>Chapters</h3>
+  <div class="chip-row" id="chipRow">
+    <button class="chip on" data-ch="all">All chapters</button>
+    <button class="chip" data-ch="11">Ch 11 · Customer Info</button>
+    <button class="chip" data-ch="12">Ch 12 · Site Survey</button>
+    <button class="chip" data-ch="13">Ch 13 · Site Environment</button>
+    <button class="chip" data-ch="14">Ch 14 · Site Changes</button>
+    <button class="chip" data-ch="15">Ch 15 · Project Scope</button>
+    <button class="chip" data-ch="16">Ch 16 · Designing AV</button>
+  </div>
+  <h3>Mode</h3>
+  <div class="mode-row">
+    <button class="btn primary" id="startQuiz">▶ Start Quiz</button>
+    <button class="btn" id="startCards">⚡ Flashcard Mode</button>
+    <button class="btn" id="shuffleToggle">🔀 Shuffle: On</button>
+    <span class="meta" id="poolCount" style="align-self:center"></span>
+  </div>
+  <div class="mode-row" style="margin-top:.8rem">
+    <span class="meta" id="historySummary"></span>
+    <button class="btn small" id="clearHistBtn">🗑 Clear Saved Results</button>
+  </div>
+</div>
+
+<div id="quizArea" class="hidden">
+  <div class="progress"><div id="progBar"></div></div>
+  <div class="q-card">
+    <div class="q-meta"><span id="qNum"></span><span id="qChap"></span></div>
+    <div class="q-text" id="qText"></div>
+    <div id="qOpts"></div>
+    <div class="expl" id="qExpl"></div>
+    <div class="q-nav">
+      <button class="btn small" id="quitBtn">✕ End & score</button>
+      <span class="meta" id="runScore"></span>
+      <button class="btn primary" id="nextBtn" disabled>Next →</button>
+    </div>
+  </div>
+</div>
+
+<div id="cardArea" class="hidden">
+  <div class="flashcard" id="fCard">
+    <div class="fc-inner">
+      <div class="fc-face fc-front"><span class="fc-label">Question</span><div class="fc-text" id="fFront"></div><span class="fc-chip" id="fChipF"></span></div>
+      <div class="fc-face fc-back"><span class="fc-label">Answer</span><div class="fc-text" id="fBack"></div><span class="fc-chip" id="fChipB"></span></div>
+    </div>
+  </div>
+  <div class="q-nav" style="margin-top:1rem">
+    <button class="btn small" id="cardsQuit">✕ Back to setup</button>
+    <span class="meta" id="fCount"></span>
+    <div><button class="btn small" id="fPrev">← Prev</button> <button class="btn small primary" id="fNext">Next →</button></div>
+  </div>
+</div>
+
+<div id="resultArea" class="hidden">
+  <div class="panel">
+    <h3>Results</h3>
+    <div class="score-big" id="scoreBig"></div>
+    <div class="score-sub" id="scoreSub"></div>
+    <table id="breakTable">
+      <thead><tr><th>Chapter</th><th>Score</th><th style="width:35%">Accuracy</th></tr></thead>
+      <tbody id="breakBody"></tbody>
+    </table>
+    <div class="mode-row" style="margin-top:1.2rem">
+      <button class="btn primary" id="retryBtn">↻ Retake</button>
+      <button class="btn" id="backBtn">⚙ Change chapters</button>
+    </div>
+    <div class="mode-row" style="margin-top:.6rem">
+      <button class="btn" id="copyBtn">📋 Copy Results</button>
+      <button class="btn" id="copyHistBtn">📋 Copy Full History</button>
+      <span class="meta" id="histMeta"></span>
+    </div>
+  </div>
+</div>
+
+<footer>CTS Part III · 60 original practice questions · Chapters 11–16</footer>
+</main>
+<script id="app">
+
+const CH_NAMES={11:"Gathering Customer Information",12:"Conducting a Site Survey",13:"Evaluating a Site Environment",14:"Recommending Site Changes",15:"Developing an AV Project Scope",16:"Designing AV Solutions"};
+const BANK=[
+/* ---------- Chapter 11 ---------- */
+{ch:11,q:"During a needs meeting, a colleague keeps steering the client back to display technologies with rapid-fire questions. Why does this undermine active listening?",
+ opts:["It slows the meeting down","It prevents actually hearing what the client is trying to communicate","It makes the client talk too much","It skips the benchmarking step"],ans:1,
+ ex:"Active listening means focusing on the speaker, paraphrasing, and clarifying — <b>not</b> steering the conversation toward the topic you want. Redirecting defeats its purpose."},
+{ch:11,q:"A client needs to review your detailed technical AV plan. The most appropriate delivery method is:",
+ opts:["A long, thorough e-mail message","An attached electronic document","A conference call walking through the details","A series of text messages"],ans:1,
+ ex:"Detailed technical information belongs in an <b>electronic document</b> the client can study; e-mail bodies, calls, and texts are too informal for detailed plans."},
+{ch:11,q:"What is the single most valuable input when defining what an AV system must do?",
+ opts:["Architectural drawings of the building","End users' descriptions of the tasks and applications the system will support","The building owner's equipment brand preferences","Notes from benchmarking visits"],ans:1,
+ ex:"The needs analysis is anchored in <b>end-user task and application descriptions</b> — everything else supports that."},
+{ch:11,q:"The primary purpose of an initial needs analysis is to:",
+ opts:["Produce the equipment list for procurement","Identify end-user activities and the system functions needed to support them","Capture the client's vision for how the room should look","Set the final project budget"],ans:1,
+ ex:"Needs analysis identifies <b>activities and supporting functions</b>. The equipment list comes later and is explicitly not part of the needs analysis."},
+{ch:11,q:"Knowing that the room will be a huddle room helps the designer primarily by:",
+ opts:["Providing a standard design template to hand the architect","Providing a starting point for determining client needs","Eliminating the need for user interviews","Fixing the equipment budget"],ans:1,
+ ex:"Room function gives a <b>starting point</b> — each standard room type carries typical AV expectations — but it never replaces the needs analysis."},
+{ch:11,q:"In the needs-analysis workflow, task parameters (image sources, aspect ratios, viewer distance, etc.) are used to:",
+ opts:["Provide overall information about the desired general AV needs","Choose the exact display models","Lay out furniture positions","Assign installation labor"],ans:0,
+ ex:"Task parameters feed both facility and system requirements — they describe the <b>general AV needs</b> in enough detail to shape design and budget."},
+{ch:11,q:"The core purpose of benchmarking visits is to:",
+ opts:["Audition specific equipment before purchase","Let the client experience several AV designs that address needs similar to theirs","Test the proposed system design in a live venue","Vet integrators before awarding the contract"],ans:1,
+ ex:"Benchmarking gives the owner and design team a <b>shared vision</b> by experiencing comparable facilities — including what those owners would do differently."},
+{ch:11,q:"Why does the AV team need the fullest available set of building drawings, not just floor plans?",
+ opts:["To approve the architect's design","Because the AV design must account for other building systems — including hidden structural, mechanical, and fire systems","Because AV symbols only appear on full sets","To calculate the project markup"],ans:1,
+ ex:"Discipline drawings define a system's function, but its physical relationship to the room lives elsewhere; <b>hidden systems</b> determine what can hang from ceilings and walls."},
+{ch:11,q:"Which contact information should be collected at the initial client meetings?",
+ opts:["Just the primary decision-maker's mobile number","The main contact plus the technical representative","Every stakeholder who may be needed — architect, building manager, IT, security, construction manager, and more","Only e-mail addresses, for the record"],ans:2,
+ ex:"Collect the <b>full stakeholder set</b> — anyone you may need during site inspection, design, and installation."},
+{ch:11,q:"The site has strict noise limits during business hours. The AV team should:",
+ opts:["Substitute quieter equipment in the design","Ask the client to waive the restriction","Develop a work-around plan, such as scheduling noisy work in the evening","Remove the affected tasks from the scope"],ans:2,
+ ex:"Constraints are handled with <b>work-around plans</b> — not dropped scope, swapped gear, or demands that the client remove them."},
+
+/* ---------- Chapter 12 ---------- */
+{ch:12,q:"On a site visit, the primary regulations governing your PPE are typically set by:",
+ opts:["Your employer's safety manual","The AHJ","The client's insurance company","The general contractor"],ans:1,
+ ex:"The <b>Authority Having Jurisdiction</b> defines primary work-site regulations — though client, insurer, and employer rules may add to them."},
+{ch:12,q:"Two applicable codes conflict on a rigging detail. Best practice says to follow:",
+ opts:["The national code, always","Whichever code is cheaper to satisfy","The most restrictive code — and the local AHJ where interpretations clash","The code the client prefers"],ans:2,
+ ex:"AV professionals follow the <b>most restrictive</b> applicable code; the local AHJ settles interpretation disputes."},
+{ch:12,q:"Which of these is NOT part of the standard work-site safety equipment set?",
+ opts:["Fall-protection harnesses and static lines","Approved non-conductive ladders","Tools with non-slip handles","PPE such as hard hats and safety glasses"],ans:2,
+ ex:"The safety triad is <b>PPE, approved non-conductive ladders, and fall protection</b>. Non-slip handles are nice but not required safety equipment."},
+{ch:12,q:"Fall-protection equipment is commonly required by the AHJ when working above:",
+ opts:["4 ft (1.2 m)","6 ft (2 m)","10 ft (3 m)","15 ft (4.5 m)"],ans:1,
+ ex:"Falls are the leading cause of work-site fatalities; harnesses and static lines are typically mandated above <b>6 ft / 2 m</b>."},
+{ch:12,q:"You need to check ceiling space at a live construction site. Which ladder should you carry?",
+ opts:["Aluminum — lightest to transport","Fiberglass — non-conductive","Steel — most rigid","Any ladder rated for your weight"],ans:1,
+ ex:"Never use conductive ladders on a work site — someone else's mistake could energize a surface. <b>Fiberglass is preferred</b>; wood is generally acceptable."},
+{ch:12,q:"Which drawing shows sprinkler heads, HVAC diffusers, and light fixtures you must coordinate around when placing ceiling speakers?",
+ opts:["Elevation drawing","Reflected ceiling plan","Section drawing","Detail drawing"],ans:1,
+ ex:"The <b>RCP</b> depicts the ceiling as if mirrored in the floor — the coordination map for anything ceiling-mounted."},
+{ch:12,q:"To find out what's hidden behind a wall before running cable, consult a:",
+ opts:["Plan drawing","Elevation drawing","Section drawing","Schedule"],ans:2,
+ ex:"Sections are vertical <b>cutouts</b> through the structure; elevations are just <b>pictures</b> of wall faces."},
+{ch:12,q:"A dimension on the drawing reads 1200 mm AFF. This tells you:",
+ opts:["The item is not in your contract","The height above the finished floor at which to install the item","The item is planned for a future phase","The drawing is not to scale"],ans:1,
+ ex:"<b>AFF = above finished floor</b> — the standard way mounting heights are called out. (NIC = not in contract; FUT = future; NTS = not to scale.)"},
+{ch:12,q:"On a 1:50 metric drawing, a corridor measures 20 cm. Its real-world length is:",
+ opts:["1 m","5 m","10 m","20 m"],ans:2,
+ ex:"20 cm × 50 = 1,000 cm = <b>10 m</b>. (Handy anchor: at 1:50, every 2 cm on paper is 1 m real.)"},
+{ch:12,q:"A room is listed as 15 ft wide, 20 ft long, and 10 ft high. Its floor area is:",
+ opts:["300 ft²","3,000 ft²","350 ft²","45 ft²"],ans:0,
+ ex:"Area = length × width = 20 × 15 = <b>300 ft²</b>. The ceiling height is a distractor — only volume uses all three dimensions."},
+
+/* ---------- Chapter 13 ---------- */
+{ch:13,q:"When evaluating the audience area, the AV designer's main concerns are:",
+ opts:["HVAC capacity and lighting wattage","Whether everyone can see and hear the presentation, and move comfortably","Keeping all seats within 25 ft of the screen","Furniture styling choices"],ans:1,
+ ex:"Audience-area evaluation centers on <b>sight, sound, and comfortable movement</b> (with seat/aisle minimums possibly set by the AHJ)."},
+{ch:13,q:"The key question when evaluating a proposed control/projection room is whether it:",
+ opts:["Has a window to the parking lot","Meets size, power, and HVAC requirements and provides the services the AV gear needs","Is on the same floor as the boardroom","Can be locked"],ans:1,
+ ex:"Control areas must offer <b>space, power, HVAC, cabling, task lighting, sound isolation, and monitoring</b> of the main room."},
+{ch:13,q:"An AV designer's chief worry about the building's HVAC system is usually:",
+ opts:["Whether it keeps the audience comfortable","Whether it interferes with AV component placement or generates excessive noise","Whether its controls integrate with the touch panel","Its energy efficiency rating"],ans:1,
+ ex:"For AV, HVAC is primarily a <b>noise and placement-conflict</b> problem — comfort is the mechanical engineer's job."},
+{ch:13,q:"The first things to assess in a room's acoustic environment are:",
+ opts:["Loudspeaker brand options","Ambient noise and reverberation","The mixer channel count","Wall paint color"],ans:1,
+ ex:"<b>Ambient (background) noise and reverberation/echo</b> are the two core acoustic issues that determine intelligibility."},
+{ch:13,q:"A radiology group needs displays for examining medical images at full detail. Which viewing-task category (and DISCAS calculator) applies?",
+ opts:["Passive viewing","Basic decision-making","Analytical decision-making","Full-motion video"],ans:2,
+ ex:"Pixel-level engagement — medical imaging, engineering drawings, forensics — is <b>ADM</b>."},
+{ch:13,q:"A 16:9 display is 4 ft tall. How wide is it?",
+ opts:["5.33 ft","6.0 ft","7.11 ft","8.0 ft"],ans:2,
+ ex:"Width = height × 1.7777 → 4 × 1.7777 ≈ <b>7.11 ft (2.17 m)</b>. Keep four decimals to avoid rounding errors."},
+{ch:13,q:"A projection screen will face a lobby wall of street-level windows. The designer's primary initial concern is:",
+ opts:["Ambient light washing out the image","Traffic noise","Cable distance to the projector","Screen gain rating"],ans:0,
+ ex:"A front screen reflects <b>all</b> light — projected and ambient alike — so ambient light control is the make-or-break issue."},
+{ch:13,q:"Which factor most affects the achievable contrast ratio of a front-projected image?",
+ opts:["Projector mounting angle","Ambient light level in the room","Throw distance","Screen aspect ratio"],ans:1,
+ ex:"Black can't be blacker than the unlit screen, so <b>ambient light</b> sets the floor for system black and thus contrast."},
+{ch:13,q:"One foot-candle equals:",
+ opts:["1 lux","3.28 lux","10.76 lux","76 lux"],ans:2,
+ ex:"1 fc = 1 lumen/ft² = <b>10.76 lux</b> (1 lux = 1 lumen/m²)."},
+{ch:13,q:"The simplest acceptable lighting design for a basic AV presentation room is:",
+ opts:["A single switched circuit for the whole room","Two switched zones — screen-area lights separate from the rest","A theatrical dimming console","Occupancy sensors only"],ans:1,
+ ex:"The baseline is <b>two zones</b>, so lights washing the screen can be killed independently; real systems usually go far beyond."},
+
+/* ---------- Chapter 14 ---------- */
+{ch:14,q:"A sightline study is performed to determine:",
+ opts:["Required projector lumens","Whether the audience has a clear view of the screen from every seat","Loudspeaker aiming angles","The room's occupancy limit"],ans:1,
+ ex:"It maps <b>lowest visible screen point, near/far view angles, off-axis distortion, and ergonomics</b> to guarantee clear views."},
+{ch:14,q:"Which recommendation would NOT reduce ambient light reaching the screen?",
+ opts:["Focused task lighting at work positions","Lighter-colored wall finishes","A lighting control system with dimming","Heavy drapes on the windows"],ans:1,
+ ex:"Light finishes <b>reflect more light</b> toward the screen and reduce perceived contrast — surfaces near the screen should be darker and neutral."},
+{ch:14,q:"Sound-diffusing surfaces are often preferred over heavy absorption because diffusion:",
+ opts:["Is always cheaper","Reduces echoes while preserving a sense of space, without over-deadening the room","Eliminates the need for equalization","Blocks HVAC noise"],ans:1,
+ ex:"Ideal diffusers (irregular/convex surfaces) scatter energy evenly — cutting echo <b>without absorption's extremes</b>. Over-absorbed rooms feel strange."},
+{ch:14,q:"In the United States, the building industry's single-number background-noise rating is called:",
+ opts:["RT60","NC — Noise Criterion","THD","SPL-A"],ans:1,
+ ex:"<b>NR (Noise Rating)</b> internationally, <b>NC (Noise Criterion)</b> in the US; RC (Room Criteria) additionally captures tonal character like rumble and hiss."},
+{ch:14,q:"For sightline calculations, the average seated eye height is:",
+ opts:["1.0 m (39 in)","1.2 m (48 in)","1.3 m (52 in)","1.5 m (62 in)"],ans:1,
+ ex:"Seated eye = <b>1.2 m / 48 in</b> — 100 mm (4 in) below seated head height (1.3 m / 52 in); standing eye is 1.5 m / 62 in."},
+{ch:14,q:"Viewers of a projected image should generally be placed:",
+ opts:["Within a 30° arc of screen center","Within a 60° arc of the far edge of the screen","Anywhere with line of sight","Within 4 screen heights"],ans:1,
+ ex:"The guideline is a <b>60° arc</b> from the screen's far edge; LCD/LED flat panels can tolerate wider angles."},
+{ch:14,q:"Cable pulled through a breathable air-handling space must be:",
+ opts:["Shielded twisted pair","Plenum-rated or low-smoke zero-halogen","Direct-burial rated","Any cable inside an inner jacket"],ans:1,
+ ex:"Burning cable smoke rides the air handlers through the building — plenum spaces demand <b>plenum-rated or LSZH</b> cable."},
+{ch:14,q:"An infrared assistive listening system imposes which design requirement?",
+ opts:["A dedicated 70 V speaker line","Line of sight between the transmitter and listeners' receivers","An induction loop in the floor","Its own VLAN"],ans:1,
+ ex:"IR transmission needs <b>line of sight</b>; RF and induction-loop systems are alternatives without that constraint."},
+{ch:14,q:"Building codes most commonly affect an AV installation by dictating:",
+ opts:["The layout of the AV system","The type of wiring used (plus mounting requirements)","A mandatory separate technical power system","Loudspeaker brands"],ans:1,
+ ex:"AV layout itself isn't typically code-regulated — codes bite through <b>wiring types</b> (plenum, conduit) and mounting/structural rules."},
+{ch:14,q:"Exit signs cast light near your screen wall and can't be relocated. The correct response is to:",
+ opts:["Cover them during presentations","Design the system to accommodate them","File a variance with the AHJ","Specify a brighter projector and ignore the issue"],ans:1,
+ ex:"Life-safety elements are immovable design constraints — the AV designer <b>accommodates</b> them in the overall design."},
+
+/* ---------- Chapter 15 ---------- */
+{ch:15,q:"The objective of the program phase is to:",
+ opts:["Write the control-system code","Produce detailed installation drawings","Describe the AV systems needed to support the defined needs, with general costs","Deliver an enforceable quote"],ans:2,
+ ex:"Programming defines <b>needs → required systems → general costs</b>; detailed design comes after the report is approved."},
+{ch:15,q:"Specific AV system capabilities should be based on:",
+ opts:["The identified needs of the end users","The general contractor's installation capabilities","The most recent benchmarking visit","The architect's aesthetic direction"],ans:0,
+ ex:"Everything traces back to <b>end-user needs</b> — the top of the needs pyramid."},
+{ch:15,q:"The main objective of a concept design/program report is to:",
+ opts:["Give installers pinout details","Communicate the overall systems and budget to decision-makers","List every component part number","Replace the construction contract"],ans:1,
+ ex:"The report tells <b>decision-makers about systems and budget</b> (and users, the design team, and the integrator about scope and functionality)."},
+{ch:15,q:"Which report section identifies the end users who were interviewed?",
+ opts:["Infrastructure considerations","Systems descriptions","Executive summary","AV budgets"],ans:2,
+ ex:"The <b>executive summary</b> covers the project, the programming process (who was consulted), the systems, special issues, and the budget reference."},
+{ch:15,q:"Before detailed design exists, the cost figure appropriate for the program report is:",
+ opts:["A quote","An opinion of probable cost","A line-item estimate","A change order"],ans:1,
+ ex:"<b>Opinion of probable cost</b> = early, experience-based figure. An estimate adds line-item objectivity; a quote is detailed and <b>enforceable</b>."},
+{ch:15,q:"Once approved, the program report becomes the basis for:",
+ opts:["Immediate equipment purchasing","Developing detailed AV design documents and cost estimates","The owner's operating manual","The commissioning checklist"],ans:1,
+ ex:"Approval converts the report into the foundation for <b>detailed design and refined costing</b> — protecting owner and AV team alike."},
+{ch:15,q:"Which standard describes the methods, tasks, and deliverables of the AV design and coordination process?",
+ opts:["AVIXA V202.01 (DISCAS)","ANSI/INFOCOMM 2M-2010","AVIXA A102.01","ANSI S12.60"],ans:1,
+ ex:"<b>ANSI/INFOCOMM 2M-2010</b>, Standard Guide for Audiovisual Systems Design and Coordination Processes — especially relevant to the program phase."},
+{ch:15,q:"A general contractor handling the AV subcontract on a $2M system might add a markup of roughly:",
+ opts:["$2,000–$5,000","$20,000–$40,000","$100,000–$200,000","$500,000+"],ans:2,
+ ex:"GC markups typically run <b>5–10% or more</b> — $100k–$200k on a $2M system."},
+{ch:15,q:"A contingency budget of 5–10% is most appropriate for projects that are:",
+ opts:["Under $50k and under a month","Over $500,000 and lasting a year or more","Design-build only","Government-funded only"],ans:1,
+ ex:"Large, long projects face site conflicts, equipment updates, and new technology — hence the <b>5–10% contingency over $500k / 1 yr+</b>."},
+{ch:15,q:"During report review, which stakeholder typically reviews and routes the document but does NOT sign off?",
+ opts:["The owner","The end users","The architect","The AV technology manager"],ans:2,
+ ex:"Sign-off belongs to the <b>owner and end users</b>; the architect reviews for scope/budget impact and often distributes the report (including to MEP engineers)."},
+
+/* ---------- Chapter 16 ---------- */
+{ch:16,q:"The first consideration when designing a display system is:",
+ opts:["Display resolution","How the client will use the system","Screen mounting method","The switcher model"],ans:1,
+ ex:"<b>Purpose first</b> — usage drives every downstream decision about size, resolution, placement, and sources."},
+{ch:16,q:"The client needs video routed to overflow rooms and a lobby display. The designer should:",
+ opts:["Leave it to the installation team","Provide a spare output in the rack and move on","Determine the monitoring, feed, and recording requirements and support them in the design","Decline — feeds are the IT department's scope"],ans:2,
+ ex:"<b>Monitoring, feeds, and recording</b> are explicit design responsibilities: destinations, distances, transport, audio/control, isolation, and power all need planning."},
+{ch:16,q:"An analog system's overall bandwidth is limited by:",
+ opts:["The highest-bandwidth component","The lowest-bandwidth device in the chain, including interconnects","The display alone","The source alone"],ans:1,
+ ex:"The weakest link caps the system — which is why best practice selects components at <b>2–3× the highest signal bandwidth</b> (recommend 3× for growth)."},
+{ch:16,q:"The three performance parameters every audio system must achieve are:",
+ opts:["Fidelity, headroom, and gain","Loudness, intelligibility, and stability","Coverage, phase, and delay","Bass, mids, and treble"],ans:1,
+ ex:"<b>Intelligibility</b> (understood?), <b>loudness</b> (heard?), <b>stability</b> (no feedback?) — the exam's favorite audio triad."},
+{ch:16,q:"How should the required frequency response of an audio system be determined?",
+ opts:["Always design for 20 Hz–20 kHz","Match it to the applications the system supports","Match the loudspeaker's spec sheet","Widest response the budget allows"],ans:1,
+ ex:"A speech-only system doesn't need full range; a studio does. <b>Application drives response</b> — and a response spec means nothing without its ±dB tolerance."},
+{ch:16,q:"A conference room targets 70 dB SPL (A-weighted) for speech. The maximum acceptable background noise is:",
+ opts:["65 dB SPL (A)","55 dB SPL (A)","45 dB SPL (A)","35 dB SPL (A)"],ans:2,
+ ex:"The intelligibility rule: program at least <b>25 dB above ambient</b> → 70 − 25 = <b>45 dB SPL (A)</b> max background."},
+{ch:16,q:"To improve intelligibility in a videoconferencing system plagued by far-end sound returning through the mics, specify:",
+ opts:["A crossover","An acoustic echo canceler","A compressor","A step-up transformer"],ans:1,
+ ex:"<b>Acoustic echo</b> is far-site sound bouncing around your room into your mics; cancellation (usually a DSP/conferencing function, rated by tail length ~40–270 ms) removes it."},
+{ch:16,q:"Three 4-ohm loudspeakers are wired in series. Total impedance is:",
+ opts:["1.33 ohms","4 ohms","12 ohms","24 ohms"],ans:2,
+ ex:"Series impedance adds: 4 + 4 + 4 = <b>12 Ω</b>. (Parallel with equal speakers divides: Z₁ ÷ N.)"},
+{ch:16,q:"For paging loudspeakers scattered across a large terminal, far from the amplifier, the standard approach is:",
+ opts:["Direct-coupled low-impedance wiring with heavy-gauge cable","A constant-voltage (25/70/100 V) system using transformers with selectable taps","Powered speakers with local mains everywhere","Series wiring of all speakers"],ans:1,
+ ex:"<b>Constant-voltage</b> systems put a step-up transformer at the amp and tapped step-downs at each speaker — many speakers, long runs, minimal loss. Typical taps: ¼–8 W."},
+{ch:16,q:"A listener moves from 6 m to 12 m from a loudspeaker. The level change is found with:",
+ opts:["dB = 20 log(6/12)","dB = 10 log(12/6)","dB = 20 log(6 × 12)","dB = 6/12 × 20"],ans:0,
+ ex:"Inverse square law: dB = <b>20·log(d₁/d₂)</b> = 20·log(0.5) ≈ −6 dB — every distance doubling costs 6 dB. (Power ratios use 10·log(P₂/P₁): +6 dB ≈ 4× power.)"}
+];
+
+/* ---------- App state ---------- */
+let selected=new Set(['all']);
+let shuffleOn=true;
+let pool=[],idx=0,answered=false;
+let score=0,perCh={},missed=[];
+
+const $=id=>document.getElementById(id);
+const chipRow=$('chipRow');
+
+/* ---------- Local persistence (this browser only — never sent anywhere) ---------- */
+const STORAGE_KEY='cts_part3_history';
+function loadHistory(){try{return JSON.parse(localStorage.getItem(STORAGE_KEY))||[];}catch(e){return [];}}
+function saveHistory(h){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(h));}catch(e){}}
+function historySummaryText(){
+  const h=loadHistory();
+  if(!h.length)return 'No saved attempts yet.';
+  const last=h[h.length-1];
+  const best=h.reduce((m,r)=>r.pct>m?r.pct:m,0);
+  return h.length+' saved attempt'+(h.length>1?'s':'')+' · last '+last.pct+'% · best '+best+'%';
+}
+function refreshHistoryUI(){$('historySummary').textContent=historySummaryText();}
+$('clearHistBtn').addEventListener('click',()=>{
+  if(!confirm('Clear all saved quiz history for Part III? This cannot be undone.'))return;
+  localStorage.removeItem(STORAGE_KEY);
+  refreshHistoryUI();
+});
+function copyText(text,btnId){
+  navigator.clipboard.writeText(text).then(()=>{
+    const b=$(btnId);if(!b)return;const orig=b.textContent;b.textContent='✓ Copied!';
+    setTimeout(()=>{b.textContent=orig;},1800);
+  }).catch(()=>{prompt('Copy this text:',text);});
+}
+
+function currentPool(){
+  const all=selected.has('all');
+  return BANK.filter(q=>all||selected.has(String(q.ch)));
+}
+function updateCount(){
+  $('poolCount').textContent=currentPool().length+' questions selected';
+}
+chipRow.addEventListener('click',e=>{
+  const b=e.target.closest('.chip');if(!b)return;
+  const ch=b.dataset.ch;
+  if(ch==='all'){selected=new Set(['all']);}
+  else{
+    selected.delete('all');
+    if(selected.has(ch))selected.delete(ch);else selected.add(ch);
+    if(selected.size===0)selected=new Set(['all']);
+  }
+  chipRow.querySelectorAll('.chip').forEach(c=>c.classList.toggle('on',selected.has(c.dataset.ch)));
+  updateCount();
+});
+$('shuffleToggle').addEventListener('click',()=>{
+  shuffleOn=!shuffleOn;
+  $('shuffleToggle').textContent='🔀 Shuffle: '+(shuffleOn?'On':'Off');
+});
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+/* ---------- Quiz mode ---------- */
+function show(area){
+  ['setupPanel','quizArea','cardArea','resultArea'].forEach(id=>$(id).classList.add('hidden'));
+  $(area).classList.remove('hidden');
+}
+$('startQuiz').addEventListener('click',()=>{
+  pool=currentPool().slice();
+  if(shuffleOn)shuffle(pool);
+  idx=0;score=0;perCh={};missed=[];
+  pool.forEach(q=>{perCh[q.ch]=perCh[q.ch]||{right:0,total:0};});
+  show('quizArea');renderQ();
+});
+function renderQ(){
+  const q=pool[idx];answered=false;
+  $('progBar').style.width=(idx/pool.length*100)+'%';
+  $('qNum').textContent='Question '+(idx+1)+' of '+pool.length;
+  $('qChap').textContent='Ch '+q.ch+' · '+CH_NAMES[q.ch];
+  $('qText').textContent=q.q;
+  $('qExpl').classList.remove('show');
+  $('qExpl').innerHTML='';
+  $('nextBtn').disabled=true;
+  $('nextBtn').textContent=(idx===pool.length-1)?'Finish ✓':'Next →';
+  $('runScore').textContent='Score: '+score+' / '+idx;
+  const box=$('qOpts');box.innerHTML='';
+  q.opts.forEach((o,j)=>{
+    const b=document.createElement('button');
+    b.className='opt';b.textContent=String.fromCharCode(65+j)+'. '+o;
+    b.addEventListener('click',()=>answer(j,b));
+    box.appendChild(b);
+  });
+}
+function answer(j,btn){
+  if(answered)return;answered=true;
+  const q=pool[idx];
+  perCh[q.ch].total++;
+  const opts=$('qOpts').querySelectorAll('.opt');
+  opts.forEach((b,k)=>{b.disabled=true;if(k===q.ans)b.classList.add('correct');});
+  if(j===q.ans){score++;perCh[q.ch].right++;}
+  else{btn.classList.add('wrong');missed.push({ch:q.ch,q:q.q,chosen:j,chosenText:q.opts[j],correctText:q.opts[q.ans]});}
+  $('qExpl').innerHTML=q.ex;
+  $('qExpl').classList.add('show');
+  $('runScore').textContent='Score: '+score+' / '+(idx+1);
+  $('nextBtn').disabled=false;
+}
+$('nextBtn').addEventListener('click',()=>{
+  if(idx<pool.length-1){idx++;renderQ();}
+  else finish();
+});
+$('quitBtn').addEventListener('click',finish);
+function finish(){
+  show('resultArea');
+  const total=Object.values(perCh).reduce((s,c)=>s+c.total,0);
+  const pct=total?Math.round(score/total*100):0;
+  $('scoreBig').textContent=score+' / '+total+' · '+pct+'%';
+  $('scoreSub').textContent=pct>=80?'Strong — exam-ready territory for these chapters.':pct>=60?'Solid base — review the missed explanations and retake.':'Keep drilling — revisit the study guide sections for your weak chapters.';
+  const tb=$('breakBody');tb.innerHTML='';
+  Object.keys(perCh).sort().forEach(ch=>{
+    const c=perCh[ch];if(!c.total)return;
+    const p=Math.round(c.right/c.total*100);
+    const cls=p>=80?'':p>=60?'mid':'low';
+    const tr=document.createElement('tr');
+    tr.innerHTML='<td>Ch '+ch+' · '+CH_NAMES[ch]+'</td><td>'+c.right+' / '+c.total+'</td>'+
+      '<td><div class="bar '+cls+'"><div style="width:'+p+'%"></div></div></td>';
+    tb.appendChild(tr);
+  });
+
+  const record={date:new Date().toISOString(),score,total,pct,perCh:JSON.parse(JSON.stringify(perCh)),missed};
+  const hist=loadHistory();
+  hist.push(record);
+  if(hist.length>20)hist.shift();
+  saveHistory(hist);
+  window._lastResult=record;
+  refreshHistoryUI();
+  $('histMeta').textContent=hist.length+' attempt(s) saved locally';
+}
+$('retryBtn').addEventListener('click',()=>$('startQuiz').click());
+$('backBtn').addEventListener('click',()=>{show('setupPanel');updateCount();});
+$('copyBtn').addEventListener('click',()=>{
+  const r=window._lastResult;if(!r)return;
+  const lines=[];
+  lines.push('CTS Part III Quiz Result — '+new Date(r.date).toLocaleString());
+  lines.push('Score: '+r.score+'/'+r.total+' ('+r.pct+'%)');
+  lines.push('');
+  lines.push('By chapter:');
+  Object.keys(r.perCh).sort().forEach(ch=>{
+    const c=r.perCh[ch];
+    const p=c.total?Math.round(c.right/c.total*100):0;
+    lines.push('  Ch '+ch+' ('+CH_NAMES[ch]+'): '+c.right+'/'+c.total+' ('+p+'%)');
+  });
+  if(r.missed.length){
+    lines.push('');
+    lines.push('Missed questions ('+r.missed.length+'):');
+    r.missed.forEach(m=>{
+      lines.push('  [Ch '+m.ch+'] '+m.q);
+      lines.push('      Your answer: '+String.fromCharCode(65+m.chosen)+'. '+m.chosenText);
+      lines.push('      Correct: '+m.correctText);
+    });
+  }else{
+    lines.push('');
+    lines.push('No missed questions — perfect run.');
+  }
+  copyText(lines.join('\n'),'copyBtn');
+});
+$('copyHistBtn').addEventListener('click',()=>{
+  const h=loadHistory();if(!h.length)return;
+  const lines=['CTS Part III Quiz — Attempt History ('+h.length+' saved)'];
+  h.forEach((r,i)=>{
+    lines.push('');
+    lines.push('Attempt '+(i+1)+' — '+new Date(r.date).toLocaleString()+' — '+r.score+'/'+r.total+' ('+r.pct+'%)');
+    if(r.missed.length)lines.push('  Missed: '+r.missed.map(m=>'Ch'+m.ch).join(', '));
+  });
+  copyText(lines.join('\n'),'copyHistBtn');
+});
+
+/* ---------- Flashcard mode ---------- */
+let fPool=[],fIdx=0;
+$('startCards').addEventListener('click',()=>{
+  fPool=currentPool().slice();
+  if(shuffleOn)shuffle(fPool);
+  fIdx=0;show('cardArea');renderF();
+});
+function renderF(){
+  const q=fPool[fIdx];
+  $('fCard').classList.remove('flipped');
+  $('fFront').textContent=q.q;
+  $('fBack').innerHTML=String.fromCharCode(65+q.ans)+'. '+q.opts[q.ans]+' — '+q.ex;
+  $('fChipF').textContent='Ch '+q.ch;
+  $('fChipB').textContent='Ch '+q.ch;
+  $('fCount').textContent=(fIdx+1)+' / '+fPool.length;
+}
+$('fCard').addEventListener('click',()=>$('fCard').classList.toggle('flipped'));
+$('fPrev').addEventListener('click',()=>{fIdx=(fIdx-1+fPool.length)%fPool.length;renderF();});
+$('fNext').addEventListener('click',()=>{fIdx=(fIdx+1)%fPool.length;renderF();});
+$('cardsQuit').addEventListener('click',()=>{show('setupPanel');updateCount();});
+
+updateCount();
+refreshHistoryUI();
+
+</script>
+</body>
+</html>

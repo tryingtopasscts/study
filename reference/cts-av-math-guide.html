@@ -1,0 +1,1082 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CTS AV Math — Dedicated Study Guide</title>
+<style>
+:root{
+  --bg:#0f1117; --panel:#161a23; --panel2:#1c212e; --border:#2a3040;
+  --text:#e8eaf0; --muted:#9aa3b5; --faint:#6b7386;
+  --teal:#2dd4bf; --amber:#fbbf24; --red:#f87171; --purple:#a78bfa;
+  --blue:#60a5fa; --green:#4ade80;
+  --teal-bg:rgba(45,212,191,.08); --amber-bg:rgba(251,191,36,.08);
+  --red-bg:rgba(248,113,113,.08); --purple-bg:rgba(167,139,250,.08);
+  --blue-bg:rgba(96,165,250,.08); --green-bg:rgba(74,222,128,.08);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:18px;line-height:1.7}
+h1,h2,h3,h4{font-family:'Fraunces',serif;line-height:1.25}
+code,.mono{font-family:'IBM Plex Mono',monospace}
+
+/* ---------- Off-canvas sidebar ---------- */
+#hamburger{position:fixed;top:18px;left:18px;z-index:1001;width:46px;height:46px;border-radius:10px;
+  background:var(--panel2);border:1px solid var(--border);color:var(--text);cursor:pointer;font-size:20px;
+  display:flex;align-items:center;justify-content:center;transition:left .3s ease}
+#hamburger.open{left:308px}
+#sidebar{position:fixed;top:0;left:0;height:100vh;width:290px;background:var(--panel);border-right:1px solid var(--border);
+  transform:translateX(-100%);transition:transform .3s ease;z-index:1000;overflow-y:auto;padding:24px 0 40px;font-size:16px}
+#sidebar.open{transform:translateX(0)}
+#backdrop{position:fixed;inset:0;background:rgba(0,0,0,.55);opacity:0;pointer-events:none;transition:opacity .3s;z-index:999}
+#backdrop.show{opacity:1;pointer-events:auto}
+#sidebar .side-title{font-family:'Fraunces',serif;font-size:19px;padding:8px 22px 14px;border-bottom:1px solid var(--border);color:var(--teal)}
+#sidebar nav{padding:12px 0}
+#sidebar a{display:block;padding:8px 22px;color:var(--muted);text-decoration:none;border-left:3px solid transparent;transition:.15s}
+#sidebar a:hover{color:var(--text);background:var(--panel2);border-left-color:var(--teal)}
+#sidebar .nav-group{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);padding:16px 22px 4px}
+
+/* ---------- Layout ---------- */
+main{max-width:860px;margin:0 auto;padding:80px 28px 120px}
+header.hero{text-align:center;margin-bottom:64px}
+header.hero .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:13px;letter-spacing:.22em;text-transform:uppercase;color:var(--teal);margin-bottom:14px}
+header.hero h1{font-size:52px;font-weight:700;margin-bottom:16px}
+header.hero p{color:var(--muted);max-width:620px;margin:0 auto;font-size:19px}
+section{margin-bottom:80px}
+section>h2{font-size:34px;margin-bottom:8px;padding-top:16px}
+section>.section-sub{color:var(--muted);margin-bottom:28px;font-size:17px}
+h3{font-size:23px;margin:38px 0 14px;color:var(--text)}
+p{margin-bottom:14px}
+ul,ol{margin:0 0 16px 26px}
+li{margin-bottom:8px}
+strong{color:#fff}
+.divider{height:1px;background:var(--border);margin:56px 0}
+
+/* ---------- Callouts ---------- */
+.callout{border-radius:12px;padding:16px 20px;margin:22px 0;border:1px solid;font-size:16.5px}
+.callout .label{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.18em;text-transform:uppercase;display:block;margin-bottom:6px;font-weight:600}
+.callout.keyterm{background:var(--teal-bg);border-color:rgba(45,212,191,.35)}
+.callout.keyterm .label{color:var(--teal)}
+.callout.spec{background:var(--amber-bg);border-color:rgba(251,191,36,.35)}
+.callout.spec .label{color:var(--amber)}
+.callout.watchout{background:var(--red-bg);border-color:rgba(248,113,113,.35)}
+.callout.watchout .label{color:var(--red)}
+.callout.examtip{background:var(--purple-bg);border-color:rgba(167,139,250,.35)}
+.callout.examtip .label{color:var(--purple)}
+
+/* ---------- Formula boxes ---------- */
+.formula-box{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:22px 24px;margin:22px 0}
+.formula-box .fname{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--blue);margin-bottom:12px}
+.formula{font-family:'IBM Plex Mono',monospace;font-size:22px;text-align:center;padding:14px 8px;color:#fff;overflow-x:auto}
+.formula sub{font-size:.62em}
+.formula sup{font-size:.62em}
+.frac{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;margin:0 4px}
+.frac .top{border-bottom:2px solid var(--text);padding:0 8px 2px}
+.frac .bot{padding:2px 8px 0}
+.where{font-size:15.5px;color:var(--muted);margin-top:12px}
+.where li{margin-bottom:4px}
+
+/* ---------- Concept cards ---------- */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin:24px 0}
+.concept-card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:20px}
+.concept-card h4{font-size:18px;margin-bottom:8px;color:var(--teal)}
+.concept-card p{font-size:15.5px;color:var(--muted);margin:0}
+
+/* ---------- Tables ---------- */
+table{width:100%;border-collapse:collapse;margin:22px 0;font-size:16px}
+th{background:var(--panel2);color:var(--text);text-align:left;padding:11px 14px;font-family:'DM Sans',sans-serif;font-weight:700;border-bottom:2px solid var(--border)}
+td{padding:10px 14px;border-bottom:1px solid var(--border);color:var(--muted)}
+td:first-child{color:var(--text)}
+tr:hover td{background:rgba(255,255,255,.02)}
+.tbl-wrap{overflow-x:auto}
+
+/* ---------- Worked examples (step reveal) ---------- */
+.worked{background:var(--panel);border:1px solid var(--border);border-left:4px solid var(--green);border-radius:12px;padding:20px 24px;margin:24px 0}
+.worked .wtitle{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--green);margin-bottom:10px}
+.worked .wproblem{font-weight:500;color:#fff;margin-bottom:14px}
+.wstep{display:none;padding:10px 14px;margin:8px 0;background:var(--panel2);border-radius:8px;font-size:16px}
+.wstep.shown{display:block;animation:fadein .3s}
+.wstep .snum{font-family:'IBM Plex Mono',monospace;color:var(--green);font-size:13px;display:block;margin-bottom:4px}
+.wstep .m{font-family:'IBM Plex Mono',monospace;color:#fff;display:block;margin-top:4px}
+@keyframes fadein{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.wbtn{background:var(--green-bg);border:1px solid rgba(74,222,128,.4);color:var(--green);border-radius:8px;padding:9px 18px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:500;cursor:pointer;margin-top:12px;transition:.15s}
+.wbtn:hover{background:rgba(74,222,128,.16)}
+.wbtn:disabled{opacity:.4;cursor:default}
+
+/* ---------- Calculators ---------- */
+.calc{background:linear-gradient(145deg,var(--panel2),var(--panel));border:1px solid var(--border);border-radius:14px;padding:22px 24px;margin:26px 0}
+.calc .ctitle{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--amber);margin-bottom:14px}
+.calc-row{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;margin-bottom:8px}
+.calc-field{display:flex;flex-direction:column;gap:5px}
+.calc-field label{font-size:13px;color:var(--muted)}
+.calc-field input,.calc-field select{background:var(--bg);border:1px solid var(--border);border-radius:8px;color:#fff;padding:9px 12px;font-family:'IBM Plex Mono',monospace;font-size:16px;width:150px}
+.calc-field input:focus,.calc-field select:focus{outline:none;border-color:var(--teal)}
+.calc-result{font-family:'IBM Plex Mono',monospace;font-size:17px;color:var(--teal);margin-top:12px;min-height:26px}
+.calc-note{font-size:13.5px;color:var(--faint);margin-top:8px}
+
+/* ---------- Cheat sheet ---------- */
+.cheat td:nth-child(2){font-family:'IBM Plex Mono',monospace;font-size:14.5px;color:#fff;white-space:nowrap}
+
+/* ---------- Flashcards ---------- */
+#flash-area{margin:28px 0}
+.flashcard{perspective:1200px;max-width:560px;margin:0 auto;height:280px;cursor:pointer}
+.fc-inner{position:relative;width:100%;height:100%;transition:transform .5s;transform-style:preserve-3d}
+.flashcard.flipped .fc-inner{transform:rotateY(180deg)}
+.fc-face{position:absolute;inset:0;backface-visibility:hidden;border-radius:16px;border:1px solid var(--border);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px;text-align:center}
+.fc-front{background:var(--panel)}
+.fc-back{background:var(--panel2);transform:rotateY(180deg)}
+.fc-face .fc-tag{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--purple);position:absolute;top:18px}
+.fc-face .fc-body{font-size:21px;line-height:1.5}
+.fc-back .fc-body{font-family:'IBM Plex Mono',monospace;font-size:19px;color:var(--teal)}
+.fc-back .fc-extra{font-size:15px;color:var(--muted);margin-top:14px;font-family:'DM Sans',sans-serif}
+.fc-controls{display:flex;gap:12px;justify-content:center;margin-top:20px;flex-wrap:wrap}
+.fc-controls button{background:var(--panel2);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:10px 20px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:15px;transition:.15s}
+.fc-controls button:hover{border-color:var(--teal);color:var(--teal)}
+.fc-count{text-align:center;color:var(--faint);font-size:14px;margin-top:12px;font-family:'IBM Plex Mono',monospace}
+
+/* ---------- Quiz ---------- */
+#quiz-area{margin-top:26px}
+.q-block{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:22px 24px;margin-bottom:20px}
+.q-block .qnum{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--faint);letter-spacing:.14em;margin-bottom:8px}
+.q-block .qtext{font-weight:500;color:#fff;margin-bottom:14px}
+.q-opt{display:block;width:100%;text-align:left;background:var(--panel2);border:1px solid var(--border);color:var(--text);
+  border-radius:10px;padding:11px 16px;margin-bottom:9px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:16px;transition:.15s}
+.q-opt:hover{border-color:var(--blue)}
+.q-opt.correct{border-color:var(--green);background:var(--green-bg);color:var(--green)}
+.q-opt.wrong{border-color:var(--red);background:var(--red-bg);color:var(--red)}
+.q-opt:disabled{cursor:default;opacity:.85}
+.q-expl{display:none;margin-top:12px;padding:14px 16px;background:var(--bg);border-radius:10px;font-size:15.5px;color:var(--muted);border-left:3px solid var(--blue)}
+.q-expl.show{display:block}
+.q-expl .m{font-family:'IBM Plex Mono',monospace;color:#fff;display:block;margin:6px 0}
+#quiz-score{position:sticky;top:0;z-index:50;background:var(--panel2);border:1px solid var(--border);border-radius:0 0 12px 12px;
+  padding:12px 20px;font-family:'IBM Plex Mono',monospace;font-size:15px;color:var(--teal);text-align:center;margin-bottom:24px}
+#quiz-reset{margin:10px auto 0;display:block;background:var(--panel2);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:10px 22px;cursor:pointer;font-size:15px}
+#quiz-reset:hover{border-color:var(--teal);color:var(--teal)}
+
+/* ---------- Log table pills ---------- */
+.log-pills{display:flex;flex-wrap:wrap;gap:10px;margin:18px 0}
+.log-pill{background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:10px 16px;font-family:'IBM Plex Mono',monospace;font-size:15px;color:var(--teal)}
+
+@media(max-width:640px){
+  header.hero h1{font-size:36px}
+  section>h2{font-size:27px}
+  .formula{font-size:18px}
+  main{padding:76px 18px 90px}
+  #hamburger.open{left:auto;right:18px}
+}
+</style>
+</head>
+<body>
+<button id="hamburger" aria-label="Menu">☰</button>
+<div id="backdrop"></div>
+<aside id="sidebar">
+  <div class="side-title">CTS AV Math</div>
+  <nav>
+    <div class="nav-group">Foundations</div>
+    <a href="#foundations">Math Foundations</a>
+    <a href="#logs">Logarithms, Demystified</a>
+    <a href="#wordproblems">The 4-Step Method</a>
+    <div class="nav-group">Electrical</div>
+    <a href="#ohms">Ohm's Law &amp; Power</a>
+    <div class="nav-group">Audio</div>
+    <a href="#decibels">Decibel Math</a>
+    <a href="#speakers">Loudspeaker Math</a>
+    <a href="#audiosignal">Wavelength &amp; Bandwidth</a>
+    <div class="nav-group">Video</div>
+    <a href="#display">Aspect Ratio &amp; Screens</a>
+    <a href="#projection">Throw &amp; Brightness</a>
+    <div class="nav-group">Facility</div>
+    <a href="#heat">Heat Load</a>
+    <div class="nav-group">Wireless</div>
+    <a href="#wireless">RF Spectrum</a>
+    <div class="nav-group">Installation</div>
+    <a href="#installation">Cabling &amp; Rigging Numbers</a>
+    <div class="nav-group">Site Survey</div>
+    <a href="#drawingmath">Drawing &amp; Scale Math</a>
+    <div class="nav-group">Business</div>
+    <a href="#costmath">Cost &amp; Budget Math</a>
+    <a href="#standards">Standards Roster</a>
+    <div class="nav-group">Practice</div>
+    <a href="#cheatsheet">Formula Cheat Sheet</a>
+    <a href="#flashcards">Flashcards</a>
+    <a href="#quiz">Quick-Check Quiz</a>
+  </nav>
+</aside>
+
+<main>
+<header class="hero">
+  <div class="eyebrow">CTS Exam Prep · Dedicated Module</div>
+  <h1>AV Math</h1>
+  <p>Every formula on the CTS exam, built for people who haven't touched math in years. Step-by-step worked examples, live calculators, and zero assumptions about what you remember from school.</p>
+</header>
+
+<div class="callout examtip"><span class="label">Exam Tip</span>
+The CTS exam gives you an on-screen calculator, and the math never goes beyond add, subtract, multiply, divide, square, square root, and the log button. If you can follow a recipe, you can do every calculation in this guide. The skill being tested is <strong>picking the right formula and plugging in the right numbers</strong> — not mental arithmetic.</div>
+
+<!-- ================= FOUNDATIONS ================= -->
+<section id="foundations">
+<h2>Math Foundations</h2>
+<p class="section-sub">Three skills unlock every AV formula: order of operations, rearranging an equation, and reading a logarithm. Start here.</p>
+
+<h3>Order of Operations</h3>
+<p>When a formula has several operations, you solve them in a fixed priority order. Get this order wrong and you'll get a wrong answer even with the right formula.</p>
+<ol>
+<li><strong>P</strong>arentheses — anything inside brackets first</li>
+<li><strong>E</strong>xponents — squares, powers, and roots</li>
+<li><strong>M</strong>ultiplication and <strong>D</strong>ivision — left to right, equal priority</li>
+<li><strong>A</strong>ddition and <strong>S</strong>ubtraction — left to right, equal priority</li>
+</ol>
+<div class="callout keyterm"><span class="label">Key Term</span>
+<strong>PEMDAS</strong> — the acronym for the order of operations. (You may also see BEMDAS, BIDMAS, or BODMAS — same idea, different regional names.) Multiplication does <em>not</em> beat division, and addition does not beat subtraction; within each pair you simply work left to right.</div>
+
+<div class="worked" data-worked>
+<div class="wtitle">Worked Example — Order of Operations</div>
+<div class="wproblem">A projector spec sheet says: Max throw = (5.05 × SW) + 0.2, and the screen width SW is 2.44 m. Solve it.</div>
+<div class="wstep"><span class="snum">Step 1 — Parentheses first</span>Inside the brackets: 5.05 × 2.44<span class="m">5.05 × 2.44 = 12.32</span></div>
+<div class="wstep"><span class="snum">Step 2 — Then the addition</span>Now the formula reads 12.32 + 0.2<span class="m">12.32 + 0.2 = 12.52</span></div>
+<div class="wstep"><span class="snum">Step 3 — Attach units</span>Screen width was in meters, so the answer is in meters.<span class="m">Max throw = 12.52 m</span></div>
+<button class="wbtn">Show next step</button>
+</div>
+
+<h3>Rearranging a Formula</h3>
+<p>Most AV formulas come in one arrangement, but the exam may ask you to solve for a different variable. The rule: <strong>to move something to the other side of the equals sign, do the opposite operation to both sides.</strong> Multiplication moves across as division; addition moves across as subtraction.</p>
+
+<div class="worked" data-worked>
+<div class="wtitle">Worked Example — Rearranging</div>
+<div class="wproblem">You know V = I × R, but you need current (I). Voltage is 2 V and resistance is 8 Ω.</div>
+<div class="wstep"><span class="snum">Step 1 — Write the formula and substitute</span><span class="m">2 = I × 8</span></div>
+<div class="wstep"><span class="snum">Step 2 — Isolate I</span>The 8 is multiplying I, so divide <em>both sides</em> by 8 to cancel it.<span class="m">2 ÷ 8 = I</span></div>
+<div class="wstep"><span class="snum">Step 3 — Compute and attach units</span><span class="m">I = 0.25 A (amps)</span></div>
+<div class="wstep"><span class="snum">Step 4 — Sanity check</span>A D-cell battery is 1.5 V and pushes very little current — so a small answer like 0.25 A is reasonable for a 2 V circuit. If you'd gotten 16, you'd know you multiplied instead of divided.</div>
+<button class="wbtn">Show next step</button>
+</div>
+
+<div class="callout watchout"><span class="label">Watch Out</span>
+<strong>Round only your final answer.</strong> If you round at every step of a multi-step problem, small errors stack up and your result drifts away from the answer choices. Carry full decimals through and round once at the end (answer keys typically round to the nearest tenth).</div>
+</section>
+
+<!-- ================= LOGARITHMS ================= -->
+<section id="logs">
+<h2>Logarithms, Demystified</h2>
+<p class="section-sub">Every decibel formula uses "log." Here's the whole concept in one sentence.</p>
+<p>A base-10 logarithm answers one question: <strong>"10 raised to what power gives me this number?"</strong> That's it.</p>
+<ul>
+<li>log(100) = 2, because 10² = 100</li>
+<li>log(10) = 1, because 10¹ = 10</li>
+<li>log(1) = 0, because 10⁰ = 1</li>
+<li>log(0.5) ≈ −0.301 — numbers <em>less than 1</em> give <em>negative</em> logs</li>
+</ul>
+<p>Why does AV use logs at all? Human hearing perceives loudness logarithmically — the range between the quietest sound you can hear and the onset of pain covers a ratio of roughly 3,000,000:1. A log scale squashes that huge range into friendly numbers.</p>
+<p>On the exam calculator you just type the ratio and press the <span class="mono">log</span> button. But it pays to memorize a few landmark values, because they explain every "rule of thumb" in AV audio:</p>
+<div class="log-pills">
+<div class="log-pill">log(2) ≈ 0.301</div>
+<div class="log-pill">log(0.5) ≈ −0.301</div>
+<div class="log-pill">log(4) ≈ 0.602</div>
+<div class="log-pill">log(10) = 1</div>
+<div class="log-pill">log(0.1) = −1</div>
+<div class="log-pill">log(1) = 0</div>
+</div>
+<div class="callout examtip"><span class="label">Exam Tip</span>
+log(2) ≈ 0.3 is the single most useful number in AV math. It's why doubling <em>power</em> gives +3 dB (10 × 0.301) and doubling <em>distance</em> or <em>voltage</em> gives ±6 dB (20 × 0.301). If you remember 0.3, you can reconstruct most dB shortcuts from scratch.</div>
+</section>
+
+<!-- ================= WORD PROBLEMS ================= -->
+<section id="wordproblems">
+<h2>The 4-Step Word Problem Method</h2>
+<p class="section-sub">Exam questions arrive as scenarios, not equations. This routine turns any scenario into arithmetic.</p>
+<div class="card-grid">
+<div class="concept-card"><h4>1 · Understand</h4><p>Read the whole problem. Find your goal — words like <em>calculate, determine, find,</em> and <em>solve for</em> point straight at it. Then list the given numbers and use context clues ("ohms," "volts") to label what each one is. Predict a rough range for a sensible answer.</p></div>
+<div class="concept-card"><h4>2 · Plan</h4><p>Assign variables to your givens and your goal, then pick a formula that connects them. If no single formula fits, chain two together, or sketch a diagram to see the relationships.</p></div>
+<div class="concept-card"><h4>3 · Execute</h4><p>Write the formula down, substitute the numbers, calculate, and attach units. People who skip writing it out make the most mistakes.</p></div>
+<div class="concept-card"><h4>4 · Check</h4><p>Translate the number back into the real world. 95 V in a loudspeaker circuit? Plausible. 50,000 V? You slipped somewhere. A wrong answer reused in later steps causes cascading errors.</p></div>
+</div>
+</section>
+
+<div class="divider"></div>
+<!-- ================= OHMS LAW ================= -->
+<section id="ohms">
+<h2>Ohm's Law &amp; the Power Formula</h2>
+<p class="section-sub">Two tiny formulas that generate a whole family of electrical calculations.</p>
+
+<div class="formula-box"><div class="fname">Ohm's Law</div>
+<div class="formula">I = <span class="frac"><span class="top">V</span><span class="bot">R</span></span></div>
+<ul class="where"><li><strong>I</strong> — current, in amps (A)</li><li><strong>V</strong> — voltage, in volts (V)</li><li><strong>R</strong> — resistance, in ohms (Ω)</li></ul>
+</div>
+<p>Rearranged, the same relationship gives you <span class="mono">V = I × R</span> and <span class="mono">R = V / I</span>. Current is proportional to voltage (more push, more flow) and inversely proportional to resistance (more opposition, less flow).</p>
+
+<div class="formula-box"><div class="fname">Power Formula</div>
+<div class="formula">P = I × V</div>
+<ul class="where"><li><strong>P</strong> — power, in watts (W)</li><li><strong>I</strong> — current, in amps (A)</li><li><strong>V</strong> — voltage, in volts (V)</li></ul>
+</div>
+<p>Rearranged: <span class="mono">I = P / V</span> and <span class="mono">V = P / I</span>. Combining the two laws also gives useful hybrids like <span class="mono">P = V² / R</span> and <span class="mono">P = I² × R</span> — handy when you know two values but neither formula fits directly.</p>
+
+<div class="callout keyterm"><span class="label">Key Term</span>
+<strong>Impedance (Z)</strong> — the opposition to current flow in an <em>AC</em> circuit, measured in ohms just like resistance. Audio circuits are AC, which is why loudspeaker math uses Z instead of R. The arithmetic works the same way.</div>
+
+<div class="callout spec"><span class="label">Spec</span>
+<strong>The 80% rule:</strong> when planning an electrical system, never plan to exceed <strong>80 percent</strong> of the rated current capacity of any circuit. A 20 A branch circuit should be loaded to no more than 16 A.</div>
+
+<div class="worked" data-worked>
+<div class="wtitle">Worked Example — Chaining Both Laws</div>
+<div class="wproblem">A device draws 300 W from a 120 V outlet. How much current does it pull, and how many of these devices fit on a 20 A circuit under the 80% rule?</div>
+<div class="wstep"><span class="snum">Step 1 — Pick the formula</span>We know P and V, we want I. Rearrange P = I × V.<span class="m">I = P / V = 300 / 120 = 2.5 A per device</span></div>
+<div class="wstep"><span class="snum">Step 2 — Apply the 80% rule</span><span class="m">20 A × 0.80 = 16 A usable</span></div>
+<div class="wstep"><span class="snum">Step 3 — Divide</span><span class="m">16 / 2.5 = 6.4 → 6 devices</span>Round <em>down</em> — you can't plug in 0.4 of a device, and rounding up would overload the circuit.</div>
+<button class="wbtn">Show next step</button>
+</div>
+
+<div class="calc" data-calc="ohms">
+<div class="ctitle">Calculator — Ohm's Law &amp; Power</div>
+<p style="font-size:14.5px;color:var(--muted);margin-bottom:14px">Enter any <strong>two</strong> values and leave the rest blank.</p>
+<div class="calc-row">
+<div class="calc-field"><label>Voltage V (volts)</label><input type="number" step="any" id="oh-v"></div>
+<div class="calc-field"><label>Current I (amps)</label><input type="number" step="any" id="oh-i"></div>
+<div class="calc-field"><label>Resistance R (ohms)</label><input type="number" step="any" id="oh-r"></div>
+<div class="calc-field"><label>Power P (watts)</label><input type="number" step="any" id="oh-p"></div>
+</div>
+<div class="calc-result" id="oh-out">Enter two values…</div>
+<div class="calc-note">Solves the other two from Ohm's law + power law.</div>
+</div>
+</section>
+
+<!-- ================= DECIBELS ================= -->
+<section id="decibels">
+<h2>Decibel Math</h2>
+<p class="section-sub">One concept, three formulas. The only difference is the multiplier out front: 10 for power, 20 for everything else.</p>
+
+<p>A decibel isn't an absolute amount — it's a <strong>logarithmic ratio between two quantities</strong> of the same kind (two powers, two voltages, two distances). It always answers "how much bigger or smaller is this compared to that reference?" A positive result is a gain; a negative result is a loss.</p>
+
+<div class="formula-box"><div class="fname">Decibel — Power</div>
+<div class="formula">dB = 10 × log(<span class="frac"><span class="top">P₁</span><span class="bot">P<sub>r</sub></span></span>)</div>
+<ul class="where"><li><strong>P₁</strong> — new or measured power</li><li><strong>P<sub>r</sub></strong> — original or reference power</li></ul>
+</div>
+
+<div class="formula-box"><div class="fname">Decibel — Voltage</div>
+<div class="formula">dB = 20 × log(<span class="frac"><span class="top">V₁</span><span class="bot">V<sub>R</sub></span></span>)</div>
+<ul class="where"><li><strong>V₁</strong> — new or measured voltage</li><li><strong>V<sub>R</sub></strong> — original or reference voltage</li></ul>
+</div>
+
+<div class="formula-box"><div class="fname">Decibel — Distance (Inverse Square Law)</div>
+<div class="formula">dB = 20 × log(<span class="frac"><span class="top">D₁</span><span class="bot">D₂</span></span>)</div>
+<ul class="where"><li><strong>D₁</strong> — original / reference distance</li><li><strong>D₂</strong> — new / measured distance</li></ul>
+</div>
+
+<div class="callout watchout"><span class="label">Watch Out</span>
+The multiplier is <strong>10 for power</strong> and <strong>20 for voltage and distance</strong>. Also notice the fractions run in different directions: the power and voltage formulas put the <em>new</em> value on top, while the distance formula puts the <em>original</em> distance on top — that's what makes moving farther away come out negative (a loss). Exam distractors love swapping the 10 and the 20.</div>
+
+<h3>The dB Numbers Worth Memorizing</h3>
+<div class="tbl-wrap"><table>
+<tr><th>Change</th><th>Effect</th><th>Why</th></tr>
+<tr><td>±3 dB</td><td>Just-noticeable loudness change</td><td>Smallest change most listeners reliably hear</td></tr>
+<tr><td>Double the power</td><td>+3 dB</td><td>10 × log(2) = 10 × 0.301</td></tr>
+<tr><td>10× the power</td><td>+10 dB</td><td>10 × log(10) = 10 × 1</td></tr>
+<tr><td>Double the distance</td><td>−6 dB</td><td>20 × log(0.5) = 20 × (−0.301)</td></tr>
+<tr><td>Double the voltage</td><td>+6 dB</td><td>20 × log(2)</td></tr>
+<tr><td>Double the open mics (NOM)</td><td>−3 dB gain before feedback</td><td>Each doubling of open microphones costs 3 dB</td></tr>
+<tr><td>0 dB SPL</td><td>Threshold of human hearing</td><td>Reference pressure of 20 µPa</td></tr>
+</table></div>
+
+<div class="callout keyterm"><span class="label">Key Term</span>
+<strong>Inverse square law</strong> — sound energy spreads out over a wider area as it travels, so measured at twice the distance, the energy drops to one-quarter of the original. In decibel terms: every doubling of distance from the source loses about 6 dB.</div>
+
+<div class="worked" data-worked>
+<div class="wtitle">Worked Example — Distance Loss</div>
+<div class="wproblem">A listener moves from 1 m to 8 m away from a loudspeaker. What's the SPL change?</div>
+<div class="wstep"><span class="snum">Step 1 — Pick the formula</span>Two distances → distance formula, multiplier 20, original distance on top.<span class="m">dB = 20 × log(1 / 8)</span></div>
+<div class="wstep"><span class="snum">Step 2 — Divide inside the parentheses first (PEMDAS)</span><span class="m">1 / 8 = 0.125</span></div>
+<div class="wstep"><span class="snum">Step 3 — Take the log</span><span class="m">log(0.125) = −0.903</span></div>
+<div class="wstep"><span class="snum">Step 4 — Multiply</span><span class="m">20 × (−0.903) = −18 dB (rounded)</span></div>
+<div class="wstep"><span class="snum">Step 5 — Check with the shortcut</span>1 m → 2 m → 4 m → 8 m is three doublings. Three × (−6 dB) = −18 dB. ✓ The shortcut and the formula agree.</div>
+<button class="wbtn">Show next step</button>
+</div>
+
+<div class="calc" data-calc="db">
+<div class="ctitle">Calculator — Decibel Change</div>
+<div class="calc-row">
+<div class="calc-field"><label>Type</label><select id="db-type"><option value="power">Power (10 log, new/ref)</option><option value="voltage">Voltage (20 log, new/ref)</option><option value="distance">Distance (20 log, orig/new)</option></select></div>
+<div class="calc-field"><label id="db-l1">Value 1</label><input type="number" step="any" id="db-a"></div>
+<div class="calc-field"><label id="db-l2">Value 2</label><input type="number" step="any" id="db-b"></div>
+</div>
+<div class="calc-result" id="db-out">Enter both values…</div>
+<div class="calc-note">Positive = gain · Negative = loss</div>
+</div>
+</section>
+
+<!-- ================= LOUDSPEAKER MATH ================= -->
+<section id="speakers">
+<h2>Loudspeaker Math</h2>
+<p class="section-sub">Impedance for wiring speakers together, and the two-step calculation for how much amplifier power you need.</p>
+
+<h3>Impedance: Series Circuits</h3>
+<div class="formula-box"><div class="fname">Series Impedance</div>
+<div class="formula">Z<sub>T</sub> = Z₁ + Z₂ + Z₃ … + Z<sub>N</sub></div>
+<ul class="where"><li>Just add them up. Four 8 Ω speakers in series = 32 Ω total.</li></ul>
+</div>
+
+<h3>Impedance: Parallel Circuits</h3>
+<div class="formula-box"><div class="fname">Parallel — All Speakers the Same Impedance</div>
+<div class="formula">Z<sub>T</sub> = <span class="frac"><span class="top">Z₁</span><span class="bot">N</span></span></div>
+<ul class="where"><li><strong>Z₁</strong> — the impedance of each (identical) loudspeaker</li><li><strong>N</strong> — how many loudspeakers are in the circuit</li><li>Four 8 Ω speakers in parallel = 8 / 4 = 2 Ω total.</li></ul>
+</div>
+<div class="formula-box"><div class="fname">Parallel — Different Impedances</div>
+<div class="formula"><span class="frac"><span class="top">1</span><span class="bot">Z<sub>T</sub></span></span> = <span class="frac"><span class="top">1</span><span class="bot">Z₁</span></span> + <span class="frac"><span class="top">1</span><span class="bot">Z₂</span></span> + … + <span class="frac"><span class="top">1</span><span class="bot">Z<sub>N</sub></span></span></div>
+<ul class="where"><li>Add the <em>reciprocals</em>, then flip the result. See the worked example below — it's easier than it looks.</li></ul>
+</div>
+
+<div class="callout examtip"><span class="label">Exam Tip</span>
+Sanity checks that catch most impedance mistakes: <strong>series total is always bigger</strong> than the biggest single speaker; <strong>parallel total is always smaller</strong> than the smallest single speaker. If your parallel answer came out larger, you added when you should have flipped.</div>
+
+<div class="worked" data-worked>
+<div class="wtitle">Worked Example — Mixed Parallel Impedances</div>
+<div class="wproblem">An 8 Ω speaker and a 4 Ω speaker are wired in parallel. What's the total impedance?</div>
+<div class="wstep"><span class="snum">Step 1 — Write the reciprocals</span><span class="m">1/Z_T = 1/8 + 1/4</span></div>
+<div class="wstep"><span class="snum">Step 2 — Convert to decimals and add</span><span class="m">0.125 + 0.25 = 0.375</span></div>
+<div class="wstep"><span class="snum">Step 3 — Flip it back</span>0.375 is 1/Z_T, so Z_T is 1 ÷ 0.375.<span class="m">Z_T = 2.67 Ω</span></div>
+<div class="wstep"><span class="snum">Step 4 — Check</span>2.67 Ω is smaller than the smallest speaker (4 Ω). ✓ Parallel answers must be.</div>
+<button class="wbtn">Show next step</button>
+</div>
+
+<p>For <strong>series/parallel combination</strong> circuits: first use the series formula to total each branch, then treat each branch total as one "speaker" in the parallel formula.</p>
+
+<div class="calc" data-calc="imp">
+<div class="ctitle">Calculator — Loudspeaker Impedance</div>
+<div class="calc-row">
+<div class="calc-field"><label>Wiring</label><select id="imp-mode"><option value="series">Series</option><option value="parallel">Parallel</option></select></div>
+<div class="calc-field" style="flex:1;min-width:220px"><label>Impedances, comma-separated (Ω)</label><input type="text" id="imp-vals" placeholder="8, 8, 4" style="width:100%"></div>
+</div>
+<div class="calc-result" id="imp-out">Enter impedances…</div>
+</div>
+
+<h3>How Much Amplifier Power Do You Need?</h3>
+<p>This is the classic multi-step CTS problem. You're given a loudspeaker <strong>sensitivity</strong> rating (e.g., "92 dB SPL, 1 W @ 1 m"), a listener distance, and a target SPL. The plan is always the same two steps:</p>
+<ol>
+<li><strong>Distance step:</strong> use the inverse square law to find the SPL at the listener with just 1 watt in.</li>
+<li><strong>Power step:</strong> find how many watts it takes to make up the shortfall, using <span class="mono">SPL increase = 10 × log(P₂ / P₁)</span>.</li>
+</ol>
+
+<div class="callout keyterm"><span class="label">Key Term</span>
+<strong>Loudspeaker sensitivity</strong> — the SPL a loudspeaker produces from a known power input at a known distance, typically quoted as "XX dB SPL, 1 watt @ 1 meter." It's your reference point for every power calculation. <strong>Headroom</strong> is extra dB added above the target listening level to handle peaks without distortion.</div>
+
+<div class="worked" data-worked>
+<div class="wtitle">Worked Example — Power Required at the Loudspeaker</div>
+<div class="wproblem">Loudspeaker sensitivity: 92 dB SPL, 1 W @ 1 m. Farthest listener: 8 m. Required level: 70 dB SPL plus 10 dB headroom. How many watts?</div>
+<div class="wstep"><span class="snum">Step 1 — SPL at the listener with 1 watt</span>From the distance example earlier: going 1 m → 8 m loses 18 dB.<span class="m">92 − 18 = 74 dB SPL at 8 m with 1 W</span></div>
+<div class="wstep"><span class="snum">Step 2 — Find the shortfall</span>Target = 70 + 10 headroom = 80 dB SPL.<span class="m">80 − 74 = 6 dB short</span></div>
+<div class="wstep"><span class="snum">Step 3 — Set up the power formula</span><span class="m">6 = 10 × log(x / 1)</span></div>
+<div class="wstep"><span class="snum">Step 4 — Isolate the log</span>Divide both sides by 10.<span class="m">0.6 = log(x)</span></div>
+<div class="wstep"><span class="snum">Step 5 — Undo the log</span>"log(x) = 0.6" means x = 10 to the power 0.6 (the 10^x button on your calculator).<span class="m">x = 3.98 watts ≈ 4 W</span></div>
+<div class="wstep"><span class="snum">Step 6 — Check with shortcuts</span>+3 dB doubles power (1 W → 2 W), another +3 dB doubles again (2 W → 4 W). Six dB = two doublings = 4 W. ✓</div>
+<button class="wbtn">Show next step</button>
+</div>
+
+<div class="calc" data-calc="spk">
+<div class="ctitle">Calculator — Power Required at the Loudspeaker</div>
+<div class="calc-row">
+<div class="calc-field"><label>Sensitivity (dB SPL @ 1W/1m)</label><input type="number" step="any" id="spk-sens" value="92"></div>
+<div class="calc-field"><label>Listener distance (m)</label><input type="number" step="any" id="spk-dist" value="8"></div>
+<div class="calc-field"><label>Target SPL (dB)</label><input type="number" step="any" id="spk-target" value="70"></div>
+<div class="calc-field"><label>Headroom (dB)</label><input type="number" step="any" id="spk-head" value="10"></div>
+</div>
+<div class="calc-result" id="spk-out"></div>
+<div class="calc-note">Free-field estimate — real rooms reflect energy off boundaries, so actual loss is often less than calculated.</div>
+</div>
+</section>
+
+<!-- ================= AUDIO SIGNAL ================= -->
+<section id="audiosignal">
+<h2>Wavelength &amp; Digital Audio Bandwidth</h2>
+<p class="section-sub">Two quick formulas from the audio fundamentals chapters.</p>
+
+<div class="formula-box"><div class="fname">Wavelength</div>
+<div class="formula">λ = <span class="frac"><span class="top">v</span><span class="bot">f</span></span></div>
+<ul class="where"><li><strong>λ</strong> — wavelength (m)</li><li><strong>v</strong> — speed of sound: 343 m/s in air at sea level, 20 °C (1,125 ft/s)</li><li><strong>f</strong> — frequency (Hz)</li></ul>
+</div>
+<p>Wavelength and frequency are inversely proportional: low frequencies have long waves (20 Hz → 343/20 = 17.2 m) and high frequencies have short ones (20 kHz → 17.2 mm). That's the full audible span of human hearing, 20 Hz–20 kHz.</p>
+
+<div class="formula-box"><div class="fname">Digital Audio Bandwidth</div>
+<div class="formula">Bandwidth = Sample Rate × Bit Depth × Channels</div>
+<ul class="where"><li>Bandwidth in bits per second · sample rate in Hz (samples/second) · bit depth in bits per sample</li></ul>
+</div>
+
+<div class="callout spec"><span class="label">Spec</span>
+The <strong>Nyquist–Shannon sampling theorem</strong>: the sample rate must be <em>greater than twice</em> the highest frequency you want to capture. Human hearing tops out around 20 kHz, so digital audio needs a sample rate above 40 kHz — which is why CD audio uses 44.1 kHz at 16 bits.</div>
+
+<div class="worked" data-worked>
+<div class="wtitle">Worked Example — Audio Bandwidth</div>
+<div class="wproblem">How much bandwidth does stereo CD-quality audio need? (44.1 kHz, 16-bit, 2 channels)</div>
+<div class="wstep"><span class="snum">Step 1 — Substitute</span><span class="m">BW = 44,100 × 16 × 2</span></div>
+<div class="wstep"><span class="snum">Step 2 — Multiply left to right</span><span class="m">44,100 × 16 = 705,600 · then × 2 = 1,411,200</span></div>
+<div class="wstep"><span class="snum">Step 3 — Attach sensible units</span><span class="m">≈ 1.41 Mbps</span></div>
+<button class="wbtn">Show next step</button>
+</div>
+
+<div class="calc" data-calc="bw">
+<div class="ctitle">Calculator — Digital Audio Bandwidth</div>
+<div class="calc-row">
+<div class="calc-field"><label>Sample rate (kHz)</label><input type="number" step="any" id="bw-sr" value="48"></div>
+<div class="calc-field"><label>Bit depth</label><input type="number" step="any" id="bw-bd" value="24"></div>
+<div class="calc-field"><label>Channels</label><input type="number" step="any" id="bw-ch" value="2"></div>
+</div>
+<div class="calc-result" id="bw-out"></div>
+</div>
+</section>
+
+<div class="divider"></div>
+<!-- ================= DISPLAY MATH ================= -->
+<section id="display">
+<h2>Aspect Ratio &amp; Screen Sizing</h2>
+<p class="section-sub">Width, height, diagonal — you'll be given two and asked for the third.</p>
+
+<div class="formula-box"><div class="fname">Aspect Ratio</div>
+<div class="formula">AR = <span class="frac"><span class="top">W</span><span class="bot">H</span></span></div>
+<ul class="where"><li><strong>W</strong> — image width · <strong>H</strong> — image height, in the <em>same units</em></li></ul>
+</div>
+<p>Convert a ratio like 16:9 to a decimal by dividing: 16 ÷ 9 = 1.7778. Then two rearrangements do all the work:</p>
+<div class="formula-box"><div class="fname">Height &amp; Width from a Decimal Aspect Ratio</div>
+<div class="formula">H = <span class="frac"><span class="top">W</span><span class="bot">AR</span></span>&nbsp;&nbsp;&nbsp;&nbsp;W = H × AR</div>
+</div>
+
+<div class="callout watchout"><span class="label">Watch Out</span>
+16:9 and 4:3 are repeating decimals (1.7777…, 1.3333…). <strong>Use at least four decimal places</strong> in calculations or rounding errors creep into your answer. And check the display orientation — a portrait display flips the ratio you'd expect.</div>
+
+<div class="tbl-wrap"><table>
+<tr><th>Format</th><th>Ratio</th><th>Decimal</th></tr>
+<tr><td>Legacy / standard video</td><td>4:3</td><td>1.3333</td></tr>
+<tr><td>35 mm film</td><td>3:2</td><td>1.5</td></tr>
+<tr><td>HD video / digital TV</td><td>16:9</td><td>1.7778</td></tr>
+</table></div>
+
+<div class="formula-box"><div class="fname">Screen Diagonal (Pythagorean Theorem)</div>
+<div class="formula">A² + B² = C²</div>
+<ul class="where"><li><strong>A</strong> — screen height · <strong>B</strong> — screen width · <strong>C</strong> — the diagonal</li><li>To find the diagonal: square the height, square the width, add them, take the square root.</li></ul>
+</div>
+
+<div class="worked" data-worked>
+<div class="wtitle">Worked Example — From Width to Diagonal</div>
+<div class="wproblem">A 16:9 screen is 2.44 m wide. Find its height and diagonal.</div>
+<div class="wstep"><span class="snum">Step 1 — Height from aspect ratio</span><span class="m">H = W / AR = 2.44 / 1.7778 = 1.3725 m</span>Keep all the decimals for now.</div>
+<div class="wstep"><span class="snum">Step 2 — Square both sides of the triangle</span><span class="m">2.44² = 5.9536 · 1.3725² = 1.8838</span></div>
+<div class="wstep"><span class="snum">Step 3 — Add, then square root</span><span class="m">5.9536 + 1.8838 = 7.8374 · √7.8374 = 2.7995</span></div>
+<div class="wstep"><span class="snum">Step 4 — Round once, at the end</span><span class="m">Diagonal ≈ 2.8 m</span></div>
+<button class="wbtn">Show next step</button>
+</div>
+
+<div class="calc" data-calc="ar">
+<div class="ctitle">Calculator — Screen Geometry</div>
+<div class="calc-row">
+<div class="calc-field"><label>Aspect ratio</label><select id="ar-ratio"><option value="1.777778">16:9</option><option value="1.333333">4:3</option><option value="1.5">3:2</option><option value="2.37">21:9 (2.37:1)</option></select></div>
+<div class="calc-field"><label>Known dimension</label><select id="ar-known"><option value="w">Width</option><option value="h">Height</option><option value="d">Diagonal</option></select></div>
+<div class="calc-field"><label>Value</label><input type="number" step="any" id="ar-val" placeholder="2.44"></div>
+</div>
+<div class="calc-result" id="ar-out">Enter a value…</div>
+<div class="calc-note">Works in any unit — answers come back in the unit you enter.</div>
+</div>
+
+<h3>Sizing for the Viewer: %EH</h3>
+<p>AVIXA's DISCAS standard (V202.01, Display Image Size for 2D Content) drives image-size decisions from what the viewer must actually see. For <strong>basic decision-making (BDM)</strong> viewing — presentations, classrooms, boardrooms — calculations are based on <em>percent element height</em>:</p>
+<div class="formula-box"><div class="fname">Percent Element Height (DISCAS · BDM)</div>
+<div class="formula">%EH = <span class="frac"><span class="top">Element height</span><span class="bot">Total image height</span></span></div>
+<ul class="where"><li>Expressed as a percentage of the image height. Example: on an HD image 1,080 px high, a symbol with a %EH of 5 is 54 px tall (5% of 1,080). For text, element heights are measured from lowercase characters, excluding descenders.</li></ul>
+</div>
+<div class="callout keyterm"><span class="label">Key Term</span>
+<strong>Closest viewer / farthest viewer</strong> — DISCAS defines viewing distance limits by the nearest position where content can still be comfortably assimilated and the farthest position where the required detail can still be discerned. For <strong>analytical decision-making (ADM)</strong> — medical imaging, engineering drawings — calculations are based on resolving a <em>single pixel</em>.</div>
+<div class="callout spec"><span class="label">Spec</span>
+BDM placement guidance: top of image no more than <strong>30°</strong> above the closest viewer's eye level; viewers within a <strong>60° arc</strong> of the far edge of the screen.</div>
+</section>
+
+<!-- ================= PROJECTION ================= -->
+<section id="projection">
+<h2>Throw Distance &amp; Projector Brightness</h2>
+<p class="section-sub">Where the projector goes, and how its light output is measured.</p>
+
+<div class="formula-box"><div class="fname">Estimating Throw Distance</div>
+<div class="formula">Distance = Screen Width × Throw Ratio</div>
+<ul class="where"><li><strong>Distance</strong> — from the front of the lens to the closest point on the screen</li><li><strong>Throw ratio</strong> — the ratio of throw distance to image width, from the projector's specs</li><li>Always confirm against the owner's manual — every projector/lens combination publishes its own exact formulas.</li></ul>
+</div>
+<p>Manufacturer spec sheets typically give a max-throw formula, a min-throw formula (the zoom range), and sometimes a vertical offset formula. They look like this sample:</p>
+<div class="formula-box"><div class="fname">Sample Manufacturer Formulas</div>
+<div class="formula" style="font-size:18px">Max throw (m) = (5.05 × SW) + 0.2<br>Min throw (m) = (3.2 × SW) + 0.26<br>Offset = 0.03 × SW</div>
+<ul class="where"><li><strong>SW</strong> — screen width. For a 2.44 m wide screen: max = 12.52 m, min = 8.07 m.</li></ul>
+</div>
+<div class="callout examtip"><span class="label">Exam Tip</span>
+These formulas are pure PEMDAS practice: multiply inside the parentheses first, then add the constant. The constants differ per projector — the exam gives you the numbers; your job is just the order of operations.</div>
+
+<div class="calc" data-calc="throw">
+<div class="ctitle">Calculator — Throw Distance</div>
+<div class="calc-row">
+<div class="calc-field"><label>Screen width</label><input type="number" step="any" id="tw-sw" value="2.44"></div>
+<div class="calc-field"><label>Throw ratio</label><input type="number" step="any" id="tw-tr" value="1.5"></div>
+</div>
+<div class="calc-result" id="tw-out"></div>
+</div>
+
+<h3>ANSI Lumens</h3>
+<p>Projector brightness is quoted in lumens, measured with the nine-zone method: project a full-white field, divide the screen into nine equal areas, take an incident light reading at the center of each, average the nine readings, then multiply by the screen area.</p>
+<div class="formula-box"><div class="fname">ANSI Lumen Rating</div>
+<div class="formula">L = SH × SW × AI</div>
+<ul class="where"><li><strong>L</strong> — lumens · <strong>SH</strong> — screen height · <strong>SW</strong> — screen width · <strong>AI</strong> — average illuminance of the nine readings</li></ul>
+</div>
+<div class="callout watchout"><span class="label">Watch Out</span>
+Units must match: if the light readings are in <strong>lux</strong>, screen area must be in <strong>square meters</strong> (1 lux = 1 lumen/m²). If readings are in <strong>foot-candles</strong>, area must be in <strong>square feet</strong> (1 fc = 1 lumen/ft²). Mixing them is the classic trap.</div>
+
+<div class="calc" data-calc="lum">
+<div class="ctitle">Calculator — ANSI Lumens</div>
+<div class="calc-row">
+<div class="calc-field"><label>Screen height (m)</label><input type="number" step="any" id="lm-h" value="1.83"></div>
+<div class="calc-field"><label>Screen width (m)</label><input type="number" step="any" id="lm-w" value="2.44"></div>
+<div class="calc-field"><label>Average illuminance (lux)</label><input type="number" step="any" id="lm-ai" value="500"></div>
+</div>
+<div class="calc-result" id="lm-out"></div>
+</div>
+</section>
+
+<!-- ================= HEAT LOAD ================= -->
+<section id="heat">
+<h2>Heat Load</h2>
+<p class="section-sub">Every watt an AV system consumes eventually becomes heat the HVAC must remove.</p>
+<div class="formula-box"><div class="fname">Heat Load</div>
+<div class="formula">Total Btu = W<sub>E</sub> × 3.4&nbsp;&nbsp;&nbsp;&nbsp;Total kJ = W<sub>E</sub> × 3.6</div>
+<ul class="where"><li><strong>W<sub>E</sub></strong> — total watts of all equipment in the room</li><li>1 watt generates 3.4 Btu of heat per hour, or 3.6 kilojoules per hour</li><li>Neither formula accounts for the heat load generated by amplifiers.</li></ul>
+</div>
+
+<div class="worked" data-worked>
+<div class="wtitle">Worked Example — Rack Heat Load</div>
+<div class="wproblem">A rack contains equipment totaling 1,200 W. What heat load, in Btu per hour, must the HVAC system handle?</div>
+<div class="wstep"><span class="snum">Step 1 — Substitute</span><span class="m">Total Btu = 1,200 × 3.4</span></div>
+<div class="wstep"><span class="snum">Step 2 — Multiply</span><span class="m">= 4,080 Btu per hour</span></div>
+<div class="wstep"><span class="snum">Step 3 — Check</span>Bigger than the wattage but same order of magnitude — reasonable. (In kJ it would be 1,200 × 3.6 = 4,320 kJ/h.)</div>
+<button class="wbtn">Show next step</button>
+</div>
+
+<div class="calc" data-calc="heat">
+<div class="ctitle">Calculator — Heat Load</div>
+<div class="calc-row">
+<div class="calc-field"><label>Total equipment watts</label><input type="number" step="any" id="ht-w" value="1200"></div>
+</div>
+<div class="calc-result" id="ht-out"></div>
+</div>
+</section>
+
+<div class="divider"></div>
+<!-- ================= WIRELESS ================= -->
+<section id="wireless">
+<h2>RF Spectrum</h2>
+<p class="section-sub">Less formula, more "just know this" — but it shows up as straight recall on the exam.</p>
+
+<div class="callout spec"><span class="label">Spec</span>
+<strong>The RF spectrum runs from 3 kHz to 300 GHz.</strong> It has a floor as well as a ceiling — a distractor like "300 GHz and below" is missing the lower bound entirely.</div>
+</section>
+
+<div class="divider"></div>
+<!-- ================= INSTALLATION ================= -->
+<section id="installation">
+<h2>Cabling &amp; Rigging Numbers</h2>
+<p class="section-sub">Installation specs that show up as both straight recall and quick multiplication.</p>
+
+<div class="callout spec"><span class="label">Spec</span>
+<strong>Conduit fill:</strong> when running three or more cables through one conduit, their combined cross-section may occupy no more than <strong>40 percent</strong> of the conduit's interior area.</div>
+
+<div class="callout spec"><span class="label">Spec</span>
+<strong>Cable bend radius:</strong> never bend a cable tighter than <strong>4× its outer diameter</strong> — tighter bends risk damaging the conductors or shield inside.</div>
+
+<div class="formula-box"><div class="fname">Rigging Safety Factor</div>
+<div class="formula">Required rating = Load weight × 5</div>
+<ul class="where"><li>The standard safety factor for anything flown overhead in AV/entertainment rigging is <strong>5:1</strong>.</li></ul>
+</div>
+
+<div class="worked" data-worked>
+<div class="wtitle">Worked Example — Rigging Safety Factor</div>
+<div class="wproblem">A 40 kg (88 lb) display and mounting hardware will be flown overhead. What rating does the mount need?</div>
+<div class="wstep"><span class="snum">Step 1 — Apply the 5:1 factor</span><span class="m">40 kg × 5 = 200 kg</span></div>
+<div class="wstep"><span class="snum">Step 2 — Check</span>200 kg (440 lb) is the minimum rating — this isn't a suggestion, it's a life-safety margin covering shock loading and rigging hardware fatigue over time.</div>
+<button class="wbtn">Show next step</button>
+</div>
+
+<div class="callout spec"><span class="label">Spec</span>
+<strong>RS-485 (used for DMX512):</strong> a balanced serial standard supporting up to <strong>32 daisy-chained devices</strong>, terminated with <strong>120 Ω</strong> resistors at both ends of the run. Don't confuse this with 75 Ω — that's video coax impedance, a different spec entirely.</div>
+</section>
+
+<div class="divider"></div>
+<!-- ================= SITE SURVEY MATH ================= -->
+<section id="drawingmath">
+<h2>Site Survey &amp; Drawing Math</h2>
+<p class="section-sub">Reading a drawing accurately is its own kind of math — mostly proportional scaling.</p>
+
+<div class="formula-box"><div class="fname">Scale Conversion</div>
+<div class="formula">Real-world size = Drawn measurement × Scale factor</div>
+<ul class="where"><li>A 1:50 drawing has a scale factor of 50 — every unit measured on paper equals 50 of that same unit in reality.</li></ul>
+</div>
+
+<div class="worked" data-worked>
+<div class="wtitle">Worked Example — Reading a Scaled Drawing</div>
+<div class="wproblem">On a 1:50 metric drawing, a corridor measures 20 cm. What's its real-world length?</div>
+<div class="wstep"><span class="snum">Step 1 — Multiply by the scale factor</span><span class="m">20 cm × 50 = 1,000 cm</span></div>
+<div class="wstep"><span class="snum">Step 2 — Convert to a sensible unit</span><span class="m">1,000 cm = 10 m</span></div>
+<div class="wstep"><span class="snum">Step 3 — Check</span>A 20 cm mark on paper representing a 10 m corridor is a believable scale relationship. Landing on 1 m instead means the scale factor got divided out rather than multiplied in.</div>
+<button class="wbtn">Show next step</button>
+</div>
+
+<h3>Drawing Abbreviations</h3>
+<div class="tbl-wrap"><table>
+<tr><th>Abbreviation</th><th>Meaning</th></tr>
+<tr><td>AFF</td><td>Above Finished Floor — a mounting height reference</td></tr>
+<tr><td>NTS</td><td>Not To Scale</td></tr>
+<tr><td>NIC</td><td>Not In Contract</td></tr>
+<tr><td>FUT</td><td>Future (planned for a later phase)</td></tr>
+</table></div>
+</section>
+
+<div class="divider"></div>
+<!-- ================= COST MATH ================= -->
+<section id="costmath">
+<h2>Cost &amp; Budget Math</h2>
+<p class="section-sub">Percentage math applied to project budgets — the numbers the exam expects you to have a feel for.</p>
+
+<h3>Cost Terminology Ladder</h3>
+<p>Cost figures get more precise — and more binding — as a project moves through design:</p>
+<div class="card-grid">
+<div class="concept-card"><h4>1 · Opinion of probable cost</h4><p>An early, experience-based figure — appropriate for the program report, before detailed design exists.</p></div>
+<div class="concept-card"><h4>2 · Estimate</h4><p>Adds line-item objectivity once more design detail is available.</p></div>
+<div class="concept-card"><h4>3 · Quote</h4><p>Detailed and enforceable — comes after design is finalized.</p></div>
+</div>
+
+<div class="callout spec"><span class="label">Spec</span>
+<strong>General contractor markup</strong> on an AV subcontract typically runs <strong>5-10% or more</strong>. On a $2M system, that's roughly <strong>$100,000-$200,000</strong> — a common wrong answer undershoots this by an order of magnitude.</div>
+
+<div class="callout spec"><span class="label">Spec</span>
+<strong>Contingency budgets of 5-10%</strong> are most appropriate for projects that are <strong>large and long</strong> — think $500,000+ and lasting a year or more. Small, short projects don't carry the same exposure to site conflicts, equipment updates, and schedule drift.</div>
+</section>
+
+<div class="divider"></div>
+<!-- ================= STANDARDS ROSTER ================= -->
+<section id="standards">
+<h2>Standards Roster</h2>
+<p class="section-sub">Not math, but these reference numbers get cross-wired just as easily as formulas do.</p>
+
+<div class="tbl-wrap"><table>
+<tr><th>Standard</th><th>Governs</th></tr>
+<tr><td>ANSI/INFOCOMM 2M-2010</td><td>The AV design &amp; coordination <strong>process</strong></td></tr>
+<tr><td>ANSI/InfoComm 10:2013</td><td><strong>Performance verification</strong> (commissioning) — proving the installed system meets spec</td></tr>
+<tr><td>AVIXA A102.01</td><td>Audio Coverage Uniformity (ACU) — same SPL at every seat</td></tr>
+<tr><td>AVIXA DISCAS (V202.01)</td><td>Display image sizing for 2D content</td></tr>
+</table></div>
+
+<div class="callout watchout"><span class="label">Watch Out</span>
+2M-2010 and 10:2013 look similar and cover adjacent territory — one governs the <em>design process</em>, the other verifies the <em>finished install</em>. If a question mentions commissioning, testing, or "meets the contracted spec," it wants 10:2013.</div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ================= CHEAT SHEET ================= -->
+<section id="cheatsheet">
+<h2>Formula Cheat Sheet</h2>
+<p class="section-sub">Every formula in one table. Review this the morning of the exam.</p>
+<div class="tbl-wrap"><table class="cheat">
+<tr><th>What</th><th>Formula</th><th>Remember</th></tr>
+<tr><td>Ohm's law</td><td>I = V / R</td><td>V = IR · R = V/I</td></tr>
+<tr><td>Power</td><td>P = I × V</td><td>Also P = V²/R, P = I²R</td></tr>
+<tr><td>dB (power)</td><td>dB = 10 log(P₁/P<sub>r</sub>)</td><td>10 for power</td></tr>
+<tr><td>dB (voltage)</td><td>dB = 20 log(V₁/V<sub>R</sub>)</td><td>20 for voltage</td></tr>
+<tr><td>dB (distance)</td><td>dB = 20 log(D₁/D₂)</td><td>Original distance on top</td></tr>
+<tr><td>Power for SPL increase</td><td>ΔSPL = 10 log(P₂/P₁)</td><td>+3 dB = double the watts</td></tr>
+<tr><td>Series impedance</td><td>Z<sub>T</sub> = Z₁ + Z₂ + …</td><td>Total &gt; largest</td></tr>
+<tr><td>Parallel (same Z)</td><td>Z<sub>T</sub> = Z₁ / N</td><td>Total &lt; smallest</td></tr>
+<tr><td>Parallel (mixed Z)</td><td>1/Z<sub>T</sub> = 1/Z₁ + 1/Z₂ + …</td><td>Flip, add, flip back</td></tr>
+<tr><td>Aspect ratio</td><td>AR = W / H</td><td>H = W/AR · W = H×AR</td></tr>
+<tr><td>Screen diagonal</td><td>A² + B² = C²</td><td>Pythagorean theorem</td></tr>
+<tr><td>Throw distance</td><td>D = SW × Throw Ratio</td><td>Check the manual</td></tr>
+<tr><td>%EH (DISCAS BDM)</td><td>%EH = element H / image H</td><td>ADM uses single pixels</td></tr>
+<tr><td>ANSI lumens</td><td>L = SH × SW × AI</td><td>Lux↔m² · fc↔ft²</td></tr>
+<tr><td>Wavelength</td><td>λ = v / f</td><td>v = 343 m/s in air</td></tr>
+<tr><td>Audio bandwidth</td><td>BW = SR × bits × ch</td><td>Nyquist: SR &gt; 2× max freq</td></tr>
+<tr><td>Heat load (Btu)</td><td>Btu = W<sub>E</sub> × 3.4</td><td>kJ = W<sub>E</sub> × 3.6</td></tr>
+<tr><td>Circuit planning</td><td>Max load = capacity × 0.8</td><td>The 80% rule</td></tr>
+<tr><td>RF spectrum</td><td>3 kHz – 300 GHz</td><td>Has a floor, not just a ceiling</td></tr>
+<tr><td>Conduit fill (3+ cables)</td><td>≤ 40% of interior area</td><td>—</td></tr>
+<tr><td>Cable bend radius</td><td>≥ 4× cable diameter</td><td>—</td></tr>
+<tr><td>Rigging safety factor</td><td>Rating = load × 5</td><td>40 kg → 200 kg mount</td></tr>
+<tr><td>RS-485 / DMX512</td><td>32 devices, 120 Ω</td><td>Not 75 Ω — that's coax</td></tr>
+<tr><td>Drawing scale</td><td>Real = drawn × scale factor</td><td>1:50 → ×50</td></tr>
+<tr><td>GC markup</td><td>~5-10%+</td><td>$2M → $100k-$200k</td></tr>
+<tr><td>Contingency budget</td><td>5-10%</td><td>For $500k+ / 1yr+ projects</td></tr>
+</table></div>
+</section>
+
+<div class="divider"></div>
+<!-- ================= FLASHCARDS ================= -->
+<section id="flashcards">
+<h2>Formula Flashcards</h2>
+<p class="section-sub">Tap the card to flip. Shuffle before each pass so you learn the formula, not the order.</p>
+<div id="flash-area">
+  <div class="flashcard" id="fc-card"><div class="fc-inner">
+    <div class="fc-face fc-front"><span class="fc-tag" id="fc-tag"></span><div class="fc-body" id="fc-q"></div></div>
+    <div class="fc-face fc-back"><span class="fc-tag">Answer</span><div><div class="fc-body" id="fc-a"></div><div class="fc-extra" id="fc-x"></div></div></div>
+  </div></div>
+  <div class="fc-controls">
+    <button id="fc-prev">← Prev</button>
+    <button id="fc-flip">Flip</button>
+    <button id="fc-shuffle">Shuffle</button>
+    <button id="fc-next">Next →</button>
+  </div>
+  <div class="fc-count" id="fc-count"></div>
+</div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ================= QUIZ ================= -->
+<section id="quiz">
+<h2>Quick-Check Quiz</h2>
+<p class="section-sub">26 original math problems in exam style. Every answer comes with a full worked solution.</p>
+<div id="quiz-score">Score: 0 / 0 answered</div>
+<div id="quiz-area"></div>
+<button id="quiz-reset">Reset Quiz</button>
+</section>
+
+<footer style="text-align:center;color:var(--faint);font-size:14px;margin-top:60px;font-family:'IBM Plex Mono',monospace">
+CTS AV Math · Original study material · Companion to the AVIXA CTS Exam Guide, 3rd Ed.
+</footer>
+</main>
+
+<script>
+/* ---------- Sidebar ---------- */
+const sb=document.getElementById('sidebar'),hb=document.getElementById('hamburger'),bd=document.getElementById('backdrop');
+function toggleSB(force){const open=force!==undefined?force:!sb.classList.contains('open');
+sb.classList.toggle('open',open);hb.classList.toggle('open',open);bd.classList.toggle('show',open);hb.textContent=open?'✕':'☰';}
+hb.addEventListener('click',()=>toggleSB());
+bd.addEventListener('click',()=>toggleSB(false));
+sb.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>toggleSB(false)));
+
+/* ---------- Worked example step reveal ---------- */
+document.querySelectorAll('[data-worked]').forEach(w=>{
+  const steps=[...w.querySelectorAll('.wstep')],btn=w.querySelector('.wbtn');let i=0;
+  btn.addEventListener('click',()=>{
+    if(i<steps.length){steps[i].classList.add('shown');i++;}
+    if(i>=steps.length){btn.textContent='All steps shown';btn.disabled=true;}
+  });
+});
+
+/* ---------- Calculators ---------- */
+const $=id=>document.getElementById(id);
+const num=id=>{const v=parseFloat($(id).value);return isNaN(v)?null:v;};
+const fmt=(n,d=3)=>{if(!isFinite(n))return '—';const r=Math.round(n*10**d)/10**d;return r.toLocaleString('en-US',{maximumFractionDigits:d});};
+
+/* Ohm's law */
+function ohmsCalc(){
+  let V=num('oh-v'),I=num('oh-i'),R=num('oh-r'),P=num('oh-p');
+  const given=[V,I,R,P].filter(x=>x!==null).length;
+  const out=$('oh-out');
+  if(given<2){out.textContent='Enter two values…';return;}
+  try{
+    if(V!==null&&I!==null){R=R??V/I;P=P??V*I;}
+    else if(V!==null&&R!==null){I=I??V/R;P=P??V*V/R;}
+    else if(V!==null&&P!==null){I=I??P/V;R=R??V*V/P;}
+    else if(I!==null&&R!==null){V=V??I*R;P=P??I*I*R;}
+    else if(I!==null&&P!==null){V=V??P/I;R=R??P/(I*I);}
+    else if(R!==null&&P!==null){V=V??Math.sqrt(P*R);I=I??Math.sqrt(P/R);}
+    out.textContent=`V = ${fmt(V)} V · I = ${fmt(I)} A · R = ${fmt(R)} Ω · P = ${fmt(P)} W`;
+  }catch(e){out.textContent='Check your inputs.';}
+}
+['oh-v','oh-i','oh-r','oh-p'].forEach(id=>$(id).addEventListener('input',ohmsCalc));
+
+/* dB */
+function dbCalc(){
+  const t=$('db-type').value,a=num('db-a'),b=num('db-b'),out=$('db-out');
+  $('db-l1').textContent = t==='distance'?'Original distance D₁':'New / measured value';
+  $('db-l2').textContent = t==='distance'?'New distance D₂':'Reference value';
+  if(a===null||b===null||b===0){out.textContent='Enter both values…';return;}
+  const mult=t==='power'?10:20;
+  const db=mult*Math.log10(a/b);
+  out.textContent=`dB = ${mult} × log(${fmt(a)}/${fmt(b)}) = ${fmt(db,2)} dB ${db>=0?'(gain)':'(loss)'}`;
+}
+['db-type','db-a','db-b'].forEach(id=>$(id).addEventListener('input',dbCalc));
+$('db-type').addEventListener('change',dbCalc);
+
+/* Impedance */
+function impCalc(){
+  const mode=$('imp-mode').value,out=$('imp-out');
+  const vals=$('imp-vals').value.split(',').map(s=>parseFloat(s.trim())).filter(v=>!isNaN(v)&&v>0);
+  if(!vals.length){out.textContent='Enter impedances…';return;}
+  let zt;
+  if(mode==='series'){zt=vals.reduce((a,b)=>a+b,0);}
+  else{zt=1/vals.reduce((a,b)=>a+1/b,0);}
+  out.textContent=`${vals.length} speaker${vals.length>1?'s':''} in ${mode}: Z_T = ${fmt(zt,2)} Ω`;
+}
+['imp-mode','imp-vals'].forEach(id=>{$(id).addEventListener('input',impCalc);$(id).addEventListener('change',impCalc);});
+
+/* Speaker power */
+function spkCalc(){
+  const s=num('spk-sens'),d=num('spk-dist'),t=num('spk-target'),h=num('spk-head'),out=$('spk-out');
+  if([s,d,t,h].some(v=>v===null)||d<=0){out.textContent='Fill in all fields…';return;}
+  const loss=20*Math.log10(1/d);
+  const at1w=s+loss;
+  const target=t+h;
+  const short=target-at1w;
+  if(short<=0){out.innerHTML=`Loss over ${fmt(d,1)} m: ${fmt(loss,1)} dB → ${fmt(at1w,1)} dB SPL with 1 W. Target ${fmt(target,1)} dB is already met — 1 W suffices.`;return;}
+  const watts=Math.pow(10,short/10);
+  out.innerHTML=`Loss over ${fmt(d,1)} m: ${fmt(loss,1)} dB → ${fmt(at1w,1)} dB SPL with 1 W · Target: ${fmt(target,1)} dB (${fmt(short,1)} dB short) · <strong>Power required ≈ ${fmt(watts,2)} W</strong>`;
+}
+['spk-sens','spk-dist','spk-target','spk-head'].forEach(id=>$(id).addEventListener('input',spkCalc));
+
+/* Bandwidth */
+function bwCalc(){
+  const sr=num('bw-sr'),bd2=num('bw-bd'),ch=num('bw-ch'),out=$('bw-out');
+  if([sr,bd2,ch].some(v=>v===null)){out.textContent='Fill in all fields…';return;}
+  const bits=sr*1000*bd2*ch;
+  out.textContent=`Bandwidth = ${fmt(sr)} kHz × ${fmt(bd2)} bits × ${fmt(ch)} ch = ${fmt(bits/1e6,3)} Mbps`;
+}
+['bw-sr','bw-bd','bw-ch'].forEach(id=>$(id).addEventListener('input',bwCalc));
+
+/* Aspect ratio geometry */
+function arCalc(){
+  const ar=parseFloat($('ar-ratio').value),k=$('ar-known').value,v=num('ar-val'),out=$('ar-out');
+  if(v===null||v<=0){out.textContent='Enter a value…';return;}
+  let w,h;
+  if(k==='w'){w=v;h=v/ar;}
+  else if(k==='h'){h=v;w=v*ar;}
+  else{h=v/Math.sqrt(ar*ar+1);w=h*ar;}
+  const d=Math.sqrt(w*w+h*h);
+  out.textContent=`Width = ${fmt(w,3)} · Height = ${fmt(h,3)} · Diagonal = ${fmt(d,3)}`;
+}
+['ar-ratio','ar-known','ar-val'].forEach(id=>{$(id).addEventListener('input',arCalc);$(id).addEventListener('change',arCalc);});
+
+/* Throw */
+function twCalc(){
+  const sw=num('tw-sw'),tr=num('tw-tr'),out=$('tw-out');
+  if(sw===null||tr===null){out.textContent='Fill in both fields…';return;}
+  out.textContent=`Throw distance = ${fmt(sw)} × ${fmt(tr)} = ${fmt(sw*tr,2)} (same unit as width)`;
+}
+['tw-sw','tw-tr'].forEach(id=>$(id).addEventListener('input',twCalc));
+
+/* Lumens */
+function lmCalc(){
+  const h=num('lm-h'),w=num('lm-w'),ai=num('lm-ai'),out=$('lm-out');
+  if([h,w,ai].some(v=>v===null)){out.textContent='Fill in all fields…';return;}
+  out.textContent=`L = ${fmt(h)} × ${fmt(w)} × ${fmt(ai)} = ${fmt(h*w*ai,0)} lumens`;
+}
+['lm-h','lm-w','lm-ai'].forEach(id=>$(id).addEventListener('input',lmCalc));
+
+/* Heat */
+function htCalc(){
+  const w=num('ht-w'),out=$('ht-out');
+  if(w===null){out.textContent='Enter total watts…';return;}
+  out.textContent=`${fmt(w,0)} W → ${fmt(w*3.4,0)} Btu/h · ${fmt(w*3.6,0)} kJ/h (excludes amplifier heat)`;
+}
+$('ht-w').addEventListener('input',htCalc);
+
+/* run initial calcs for prefilled calculators */
+spkCalc();bwCalc();twCalc();lmCalc();htCalc();dbCalc();
+
+/* ---------- Flashcards ---------- */
+const cards=[
+{t:'Electrical',q:'Ohm\u2019s law — solve for current',a:'I = V / R',x:'Amps = volts ÷ ohms. Rearranged: V = IR, R = V/I.'},
+{t:'Electrical',q:'The power formula',a:'P = I × V',x:'Watts = amps × volts. Also P = V²/R and P = I²R.'},
+{t:'Electrical',q:'Maximum planned load on any circuit',a:'80% of rated capacity',x:'A 20 A circuit should carry no more than 16 A of planned load.'},
+{t:'Decibels',q:'dB change for POWER',a:'dB = 10 × log(P₁ / P_r)',x:'Multiplier 10 — power is the odd one out.'},
+{t:'Decibels',q:'dB change for VOLTAGE',a:'dB = 20 × log(V₁ / V_R)',x:'New or measured voltage over the reference voltage.'},
+{t:'Decibels',q:'dB change for DISTANCE',a:'dB = 20 × log(D₁ / D₂)',x:'Original distance on top — moving away gives a negative (loss).'},
+{t:'Decibels',q:'Doubling the distance from a sound source changes SPL by…',a:'−6 dB',x:'Inverse square law: energy drops to one-quarter at double distance.'},
+{t:'Decibels',q:'Doubling amplifier power changes SPL by…',a:'+3 dB',x:'10 × log(2) = 3.01. Ten times the power = +10 dB.'},
+{t:'Decibels',q:'A just-noticeable change in loudness is about…',a:'±3 dB',x:'The smallest SPL change most listeners reliably perceive.'},
+{t:'Decibels',q:'Doubling the number of open microphones (NOM) costs…',a:'−3 dB gain before feedback',x:'Every doubling of open mics loses 3 dB of usable gain.'},
+{t:'Decibels',q:'0 dB SPL represents…',a:'The threshold of human hearing',x:'Reference pressure of 20 micropascals.'},
+{t:'Loudspeakers',q:'Total impedance of speakers in SERIES',a:'Z_T = Z₁ + Z₂ + …',x:'Just add. The total is always larger than the largest speaker.'},
+{t:'Loudspeakers',q:'Parallel impedance, identical speakers',a:'Z_T = Z₁ / N',x:'One speaker\u2019s impedance divided by the count.'},
+{t:'Loudspeakers',q:'Parallel impedance, mixed speakers',a:'1/Z_T = 1/Z₁ + 1/Z₂ + …',x:'Add the reciprocals, then flip the sum back over.'},
+{t:'Loudspeakers',q:'Watts needed for a required SPL increase',a:'ΔSPL = 10 × log(P₂ / P₁)',x:'Solve for P₂ with the 10^x button: P₂ = P₁ × 10^(ΔSPL/10).'},
+{t:'Loudspeakers',q:'What does "90 dB SPL, 1 W @ 1 m" describe?',a:'Loudspeaker sensitivity',x:'The SPL produced from a known power at a known distance — your reference point.'},
+{t:'Video',q:'Aspect ratio from dimensions',a:'AR = W / H',x:'Height = W ÷ AR · Width = H × AR. Use 4 decimal places for 16:9 (1.7778).'},
+{t:'Video',q:'Screen diagonal formula',a:'A² + B² = C²',x:'Pythagorean theorem: height² + width² = diagonal².'},
+{t:'Video',q:'Estimating throw distance',a:'Distance = Screen Width × Throw Ratio',x:'Always verify with the projector manual\u2019s own formulas.'},
+{t:'Video',q:'ANSI lumen rating formula',a:'L = SH × SW × AI',x:'Screen height × width × the average of nine illuminance readings. Lux pairs with m², foot-candles with ft².'},
+{t:'Video',q:'DISCAS BDM sizing metric',a:'%EH = element height / image height',x:'ADM viewing instead requires resolving a single pixel.'},
+{t:'Audio',q:'Wavelength formula',a:'λ = v / f',x:'Speed of sound in air: 343 m/s (sea level, 20 °C).'},
+{t:'Audio',q:'Digital audio bandwidth',a:'BW = sample rate × bit depth × channels',x:'Result in bits per second.'},
+{t:'Audio',q:'Nyquist–Shannon sampling theorem',a:'Sample rate > 2 × highest frequency',x:'Capturing 20 kHz audio needs a rate above 40 kHz — hence CD\u2019s 44.1 kHz.'},
+{t:'Facility',q:'Heat load in Btu',a:'Total Btu = W_E × 3.4',x:'1 W makes 3.4 Btu of heat per hour. kJ version: × 3.6. Excludes amplifiers.'},
+{t:'Foundations',q:'Order of operations',a:'PEMDAS',x:'Parentheses, Exponents, Multiply/Divide (left→right), Add/Subtract (left→right).'},
+{t:'Foundations',q:'When should you round in a multi-step problem?',a:'Only the final result',x:'Rounding at each step compounds errors.'},
+{t:'Foundations',q:'log(2) ≈ ?',a:'0.301',x:'The key to +3 dB (power doubling) and ±6 dB (distance/voltage doubling).'},
+{t:'Wireless',q:'The RF spectrum range is…',a:'3 kHz to 300 GHz',x:'Has a floor as well as a ceiling.'},
+{t:'Installation',q:'Max conduit fill for 3+ cables',a:'40% of the conduit’s interior area',x:'Combined cable cross-section can’t exceed this.'},
+{t:'Installation',q:'Minimum safe cable bend radius',a:'4× the cable’s outer diameter',x:'Tighter bends risk damaging conductors or shielding.'},
+{t:'Installation',q:'Standard rigging safety factor for overhead loads',a:'5:1',x:'A 40 kg display needs a mount rated for 200 kg.'},
+{t:'Installation',q:'RS-485 / DMX512 device count and termination',a:'32 devices, 120 Ω at both ends',x:'Don’t confuse 120 Ω with 75 Ω — that’s video coax.'},
+{t:'Site Survey',q:'Converting a drawing measurement to real-world size',a:'Drawn measurement × scale factor',x:'1:50 drawing → multiply by 50.'},
+{t:'Site Survey',q:'AFF means…',a:'Above Finished Floor',x:'A mounting-height callout, not a scale note (that’s NTS).'},
+{t:'Business',q:'Typical GC markup on an AV subcontract',a:'5-10% or more',x:'On a $2M system: roughly $100k-$200k.'},
+{t:'Business',q:'A 5-10% contingency budget fits projects that are…',a:'$500k+ and 1 year+ in duration',x:'Small, short projects don’t carry the same risk exposure.'},
+{t:'Business',q:'Cost figure appropriate before detailed design exists',a:'Opinion of probable cost',x:'Ladder: opinion of probable cost → estimate → quote.'},
+{t:'Standards',q:'ANSI/InfoComm 10:2013 governs…',a:'Performance verification (commissioning)',x:'Different from 2M-2010, which governs the design process.'},
+];
+let order=cards.map((_,i)=>i),idx=0;
+const fcCard=$('fc-card');
+function renderCard(){
+  const c=cards[order[idx]];
+  fcCard.classList.remove('flipped');
+  setTimeout(()=>{$('fc-tag').textContent=c.t;$('fc-q').textContent=c.q;$('fc-a').textContent=c.a;$('fc-x').textContent=c.x;},fcCard.classList.contains('flipped')?250:0);
+  $('fc-count').textContent=`Card ${idx+1} of ${cards.length}`;
+}
+fcCard.addEventListener('click',()=>fcCard.classList.toggle('flipped'));
+$('fc-flip').addEventListener('click',()=>fcCard.classList.toggle('flipped'));
+$('fc-next').addEventListener('click',()=>{idx=(idx+1)%cards.length;renderCard();});
+$('fc-prev').addEventListener('click',()=>{idx=(idx-1+cards.length)%cards.length;renderCard();});
+$('fc-shuffle').addEventListener('click',()=>{for(let i=order.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[order[i],order[j]]=[order[j],order[i]];}idx=0;renderCard();});
+renderCard();
+
+/* ---------- Quiz ---------- */
+const quiz=[
+{q:'Calculate the current in a circuit where the voltage is 12 volts and the resistance is 4 ohms.',o:['0.33 A','3 A','48 A','16 A'],c:1,e:'I = V / R = 12 / 4 = 3 A. If you got 48, you multiplied instead of dividing.'},
+{q:'A device is rated 480 W at 120 V. How much current does it draw?',o:['0.25 A','2 A','4 A','57,600 A'],c:2,e:'Rearrange P = I × V → I = P / V = 480 / 120 = 4 A.'},
+{q:'Under the 80% planning rule, what is the maximum planned load on a 15 A branch circuit?',o:['15 A','12 A','10 A','18.75 A'],c:1,e:'15 × 0.80 = 12 A. Never plan to use the full rated capacity.'},
+{q:'A listener moves from 2 m to 4 m from a loudspeaker. The SPL change is:',o:['−3 dB','−6 dB','−12 dB','+6 dB'],c:1,e:'dB = 20 log(2/4) = 20 log(0.5) = 20 × (−0.301) ≈ −6 dB. One doubling of distance = −6 dB.'},
+{q:'A listener moves from 1 m to 16 m from a source. Approximately how much SPL is lost?',o:['6 dB','12 dB','24 dB','48 dB'],c:2,e:'1→2→4→8→16 m is four doublings. 4 × 6 dB = 24 dB. Formula check: 20 log(1/16) = 20 × (−1.204) ≈ −24 dB.'},
+{q:'Amplifier power increases from 100 W to 200 W. The SPL change is:',o:['+2 dB','+3 dB','+6 dB','+10 dB'],c:1,e:'dB = 10 log(200/100) = 10 log(2) = 10 × 0.301 ≈ +3 dB. Power uses the 10 multiplier.'},
+{q:'Power increases from 10 W to 100 W. The change is:',o:['+3 dB','+6 dB','+10 dB','+20 dB'],c:2,e:'10 log(100/10) = 10 log(10) = 10 × 1 = +10 dB. Ten times the power is always +10 dB.'},
+{q:'A signal voltage doubles from 1 V to 2 V. The change is:',o:['+3 dB','+6 dB','+10 dB','+20 dB'],c:1,e:'Voltage uses the 20 multiplier: 20 log(2/1) = 20 × 0.301 ≈ +6 dB.'},
+{q:'Four 8 Ω loudspeakers are wired in series. The total impedance is:',o:['2 Ω','8 Ω','16 Ω','32 Ω'],c:3,e:'Series just adds: 8 + 8 + 8 + 8 = 32 Ω. Series totals are always bigger than any single speaker.'},
+{q:'Four 8 Ω loudspeakers are wired in parallel. The total impedance is:',o:['2 Ω','4 Ω','8 Ω','32 Ω'],c:0,e:'Identical speakers in parallel: Z_T = Z₁ / N = 8 / 4 = 2 Ω.'},
+{q:'A 12 Ω and a 6 Ω loudspeaker are wired in parallel. The total impedance is:',o:['18 Ω','9 Ω','6 Ω','4 Ω'],c:3,e:'1/Z_T = 1/12 + 1/6 = 0.0833 + 0.1667 = 0.25, so Z_T = 1/0.25 = 4 Ω. Parallel totals are always smaller than the smallest speaker.'},
+{q:'A loudspeaker is rated 90 dB SPL, 1 W @ 1 m. With 1 W input, what SPL do you expect at 4 m?',o:['90 dB','84 dB','78 dB','72 dB'],c:2,e:'1→2→4 m is two doublings: −12 dB. 90 − 12 = 78 dB SPL. Formula: 20 log(1/4) = −12 dB.'},
+{q:'You need +9 dB more SPL from a loudspeaker currently fed 1 W. Approximately how much total power is required?',o:['2 W','4 W','8 W','16 W'],c:2,e:'Each +3 dB doubles power: 1→2 W (+3), 2→4 W (+6), 4→8 W (+9). Formula: P = 10^(9/10) = 7.9 ≈ 8 W.'},
+{q:'A 16:9 screen is 3.2 m wide. Its height is approximately:',o:['1.8 m','2.4 m','5.7 m','1.6 m'],c:0,e:'H = W / AR = 3.2 / 1.7778 = 1.8 m. Divide to get height; multiply to get width.'},
+{q:'A screen is 1.2 m high and 1.6 m wide. Its diagonal is:',o:['2.8 m','2.0 m','1.4 m','4.0 m'],c:1,e:'A² + B² = C² → 1.44 + 2.56 = 4.0 → √4.0 = 2.0 m. (A classic 3-4-5 triangle scaled down.)'},
+{q:'A projector has a throw ratio of 1.8 and the required image width is 2.5 m. Estimated throw distance:',o:['0.72 m','1.39 m','4.5 m','4.3 m'],c:2,e:'Distance = SW × TR = 2.5 × 1.8 = 4.5 m.'},
+{q:'A projector spec gives Max throw = (4.5 × SW) + 0.3. For a 2 m wide screen, the max throw is:',o:['9.3 m','9.0 m','9.6 m','10.35 m'],c:0,e:'PEMDAS: parentheses first: 4.5 × 2 = 9.0, then + 0.3 = 9.3 m.'},
+{q:'Screen: 1.5 m high × 2 m wide. The nine-zone readings average 400 lux. The ANSI lumen output is:',o:['400 lumens','1,200 lumens','2,400 lumens','800 lumens'],c:1,e:'L = SH × SW × AI = 1.5 × 2 × 400 = 1,200 lumens. Lux readings pair with area in square meters.'},
+{q:'What is the approximate wavelength of a 100 Hz tone in air?',o:['0.29 m','3.43 m','34.3 m','29 m'],c:1,e:'λ = v / f = 343 / 100 = 3.43 m. Low frequencies have long wavelengths.'},
+{q:'Rack equipment totals 2,000 W. The heat load in Btu per hour is:',o:['2,000','5,880','6,800','7,200'],c:2,e:'Btu = W × 3.4 = 2,000 × 3.4 = 6,800 Btu/h. (kJ version would be × 3.6 = 7,200 kJ/h — note the distractor.)'},
+{q:'A conduit will carry four cables. Their combined cross-sectional area may occupy up to what percentage of the conduit’s interior?',o:['25 percent','40 percent','53 percent','60 percent'],c:1,e:'The rule for three or more cables in one conduit is a maximum 40% fill.'},
+{q:'What is the minimum safe bend radius for a cable with an 8 mm outer diameter?',o:['8 mm','16 mm','24 mm','32 mm'],c:3,e:'Minimum bend radius is 4× the cable diameter: 8 × 4 = 32 mm.'},
+{q:'A 60 kg speaker cluster will be flown overhead. Applying the standard rigging safety factor, the mount should be rated for at least:',o:['120 kg','180 kg','300 kg','60 kg'],c:2,e:'Standard rigging safety factor is 5:1: 60 × 5 = 300 kg.'},
+{q:'On a 1:20 drawing, a hallway measures 15 cm. Its real-world length is:',o:['0.75 m','3 m','30 m','300 m'],c:1,e:'15 cm × 20 = 300 cm = 3 m.'},
+{q:'A general contractor is handling the AV subcontract on a $1.5M system. A typical markup would be approximately:',o:['$1,500-$3,000','$15,000-$30,000','$75,000-$150,000','$750,000+'],c:2,e:'GC markup typically runs 5-10%+: 5-10% of $1.5M is $75,000-$150,000.'},
+{q:'Which standard governs AV systems performance verification (commissioning)?',o:['ANSI/INFOCOMM 2M-2010','ANSI/InfoComm 10:2013','AVIXA A102.01','AVIXA DISCAS'],c:1,e:'ANSI/InfoComm 10:2013 is the performance-verification framework. 2M-2010 governs the design process instead.'},
+];
+const qa=$('quiz-area');let answered=0,scoreN=0;
+function buildQuiz(){
+  qa.innerHTML='';answered=0;scoreN=0;updateScore();
+  quiz.forEach((item,qi)=>{
+    const blk=document.createElement('div');blk.className='q-block';
+    blk.innerHTML=`<div class="qnum">Question ${qi+1} of ${quiz.length}</div><div class="qtext">${item.q}</div>`;
+    item.o.forEach((opt,oi)=>{
+      const b=document.createElement('button');b.className='q-opt';b.textContent=opt;
+      b.addEventListener('click',()=>{
+        if(blk.dataset.done)return;blk.dataset.done='1';answered++;
+        [...blk.querySelectorAll('.q-opt')].forEach((bb,bi)=>{bb.disabled=true;if(bi===item.c)bb.classList.add('correct');});
+        if(oi===item.c){scoreN++;}else{b.classList.add('wrong');}
+        blk.querySelector('.q-expl').classList.add('show');updateScore();
+      });
+      blk.appendChild(b);
+    });
+    const ex=document.createElement('div');ex.className='q-expl';ex.innerHTML=item.e;blk.appendChild(ex);
+    qa.appendChild(blk);
+  });
+}
+function updateScore(){$('quiz-score').textContent=`Score: ${scoreN} / ${answered} answered · ${quiz.length} total${answered===quiz.length?` — Final: ${Math.round(scoreN/quiz.length*100)}%`:''}`;}
+$('quiz-reset').addEventListener('click',buildQuiz);
+buildQuiz();
+</script>
+</body>
+</html>

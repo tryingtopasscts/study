@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CTS Part IV Quiz — Implementing AV Solutions</title>
+<style>
+:root{
+  --bg:#0f1117; --bg2:#13161e; --surface:#1a1e2a; --border:#252c3f; --border2:#2e3650;
+  --accent:#5b9cf6; --accent2:#93bbfc; --accent-dim:#1a2f54;
+  --amber:#f5a623; --teal:#2dd4bf; --red:#f87171; --red-dim:#2a0f0f;
+  --purple:#a78bfa; --green:#34d399; --green-dim:#0a2a1e;
+  --text:#dde3f0; --text2:#8e9abf; --text3:#4e5a7a;
+  --mono:'IBM Plex Mono',monospace; --serif:'Fraunces',serif; --sans:'DM Sans',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:18px;line-height:1.6}
+main{max-width:820px;margin:0 auto;padding:2.5rem 1.4rem 5rem}
+header{margin-bottom:1.8rem}
+.kicker{font-family:var(--mono);font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:.5rem}
+h1{font-family:var(--serif);font-weight:700;font-size:2rem;line-height:1.2}
+.lede{color:var(--text2);font-size:.98rem;margin-top:.5rem}
+
+.panel{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:1.3rem 1.4rem;margin-bottom:1.4rem}
+.panel h3{font-family:var(--mono);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent2);margin-bottom:.8rem}
+.chip-row{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:1rem}
+.chip{font-family:var(--sans);font-size:.82rem;font-weight:500;background:var(--surface);border:1px solid var(--border2);
+  color:var(--text2);border-radius:99px;padding:.4rem .95rem;cursor:pointer;transition:all .15s}
+.chip:hover{border-color:var(--accent)}
+.chip.on{background:var(--accent-dim);border-color:var(--accent);color:var(--accent2)}
+.mode-row{display:flex;gap:.6rem;flex-wrap:wrap}
+.btn{font-family:var(--sans);font-weight:500;font-size:.9rem;background:var(--surface);color:var(--text);
+  border:1px solid var(--border2);border-radius:10px;padding:.6rem 1.15rem;cursor:pointer;transition:all .15s}
+.btn:hover{background:var(--accent-dim);border-color:var(--accent)}
+.btn.primary{background:var(--accent-dim);border-color:var(--accent);color:var(--accent2);font-weight:700}
+.btn.small{font-size:.8rem;padding:.4rem .8rem}
+.meta{font-family:var(--mono);font-size:.78rem;color:var(--text3)}
+
+/* quiz */
+.progress{height:6px;background:var(--surface);border-radius:99px;overflow:hidden;margin:1rem 0 1.4rem}
+.progress>div{height:100%;background:var(--accent);width:0;transition:width .3s}
+.q-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:1.4rem 1.5rem}
+.q-meta{font-family:var(--mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:.7rem;display:flex;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+.q-text{font-weight:500;font-size:1.05rem;margin-bottom:1rem}
+.opt{display:block;width:100%;text-align:left;background:var(--bg2);border:1px solid var(--border2);color:var(--text);
+  border-radius:10px;padding:.7rem .95rem;margin-bottom:.55rem;cursor:pointer;font-family:var(--sans);font-size:.92rem;transition:all .15s}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt.correct{background:var(--green-dim);border-color:var(--green);color:#fff}
+.opt.wrong{background:var(--red-dim);border-color:var(--red);color:#fff}
+.opt:disabled{cursor:default}
+.expl{display:none;font-size:.88rem;color:var(--text2);border-top:1px dashed var(--border2);padding-top:.8rem;margin-top:.6rem;line-height:1.6}
+.expl.show{display:block}
+.expl b{color:var(--teal)}
+.q-nav{display:flex;justify-content:space-between;align-items:center;margin-top:1.1rem;gap:.6rem;flex-wrap:wrap}
+
+/* results */
+.score-big{font-family:var(--serif);font-size:2.6rem;font-weight:700;color:var(--accent2)}
+.score-sub{color:var(--text2);margin-bottom:1.2rem}
+table{width:100%;border-collapse:collapse;font-size:.88rem;margin-top:.6rem}
+th{font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--accent2);
+  text-align:left;padding:.55rem .6rem;border-bottom:1px solid var(--border2)}
+td{padding:.55rem .6rem;border-bottom:1px solid var(--border);color:var(--text)}
+tr:last-child td{border-bottom:none}
+.bar{height:8px;background:var(--surface);border-radius:99px;overflow:hidden;min-width:110px}
+.bar>div{height:100%;background:var(--green)}
+.bar.low>div{background:var(--red)}
+.bar.mid>div{background:var(--amber)}
+
+/* flashcard mode */
+.flashcard{perspective:1200px;height:280px;cursor:pointer}
+.fc-inner{position:relative;width:100%;height:100%;transition:transform .5s;transform-style:preserve-3d}
+.flashcard.flipped .fc-inner{transform:rotateY(180deg)}
+.fc-face{position:absolute;inset:0;backface-visibility:hidden;border-radius:16px;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;padding:1.6rem 2rem;text-align:center}
+.fc-front{background:var(--surface);border:1px solid var(--border2)}
+.fc-back{background:var(--accent-dim);border:1px solid var(--accent);transform:rotateY(180deg)}
+.fc-label{font-family:var(--mono);font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text3);position:absolute;top:1rem;left:1.2rem}
+.fc-back .fc-label{color:var(--accent2)}
+.fc-text{font-size:1rem;line-height:1.55}
+.fc-back .fc-text{color:#fff;font-size:.92rem}
+.fc-chip{font-family:var(--mono);font-size:.66rem;color:var(--text3);position:absolute;bottom:1rem;right:1.2rem}
+.hidden{display:none}
+footer{text-align:center;color:var(--text3);font-family:var(--mono);font-size:.72rem;padding-top:2.5rem}
+@media (max-width:600px){ h1{font-size:1.6rem} .flashcard{height:330px} }
+</style>
+</head>
+<body>
+<main>
+<header>
+  <div class="kicker">CTS Exam Prep · Part III</div>
+  <h1>Implementing AV Solutions — Practice Quiz</h1>
+  <p class="lede">56 original practice questions covering Chapters 17–19. Filter by chapter, shuffle, switch to flashcard mode, and review your per-chapter breakdown at the end.</p>
+</header>
+
+<div class="panel" id="setupPanel">
+  <h3>Chapters</h3>
+  <div class="chip-row" id="chipRow">
+    <button class="chip on" data-ch="all">All chapters</button>
+    <button class="chip" data-ch="17">Ch 17 · Integrating</button>
+    <button class="chip" data-ch="18">Ch 18 · Operating</button>
+    <button class="chip" data-ch="19">Ch 19 · Managing</button>
+  </div>
+  <h3>Mode</h3>
+  <div class="mode-row">
+    <button class="btn primary" id="startQuiz">▶ Start Quiz</button>
+    <button class="btn" id="startCards">⚡ Flashcard Mode</button>
+    <button class="btn" id="shuffleToggle">🔀 Shuffle: On</button>
+    <span class="meta" id="poolCount" style="align-self:center"></span>
+  </div>
+  <div class="mode-row" style="margin-top:.8rem">
+    <span class="meta" id="historySummary"></span>
+    <button class="btn small" id="clearHistBtn">🗑 Clear Saved Results</button>
+  </div>
+</div>
+
+<div id="quizArea" class="hidden">
+  <div class="progress"><div id="progBar"></div></div>
+  <div class="q-card">
+    <div class="q-meta"><span id="qNum"></span><span id="qChap"></span></div>
+    <div class="q-text" id="qText"></div>
+    <div id="qOpts"></div>
+    <div class="expl" id="qExpl"></div>
+    <div class="q-nav">
+      <button class="btn small" id="quitBtn">✕ End & score</button>
+      <span class="meta" id="runScore"></span>
+      <button class="btn primary" id="nextBtn" disabled>Next →</button>
+    </div>
+  </div>
+</div>
+
+<div id="cardArea" class="hidden">
+  <div class="flashcard" id="fCard">
+    <div class="fc-inner">
+      <div class="fc-face fc-front"><span class="fc-label">Question</span><div class="fc-text" id="fFront"></div><span class="fc-chip" id="fChipF"></span></div>
+      <div class="fc-face fc-back"><span class="fc-label">Answer</span><div class="fc-text" id="fBack"></div><span class="fc-chip" id="fChipB"></span></div>
+    </div>
+  </div>
+  <div class="q-nav" style="margin-top:1rem">
+    <button class="btn small" id="cardsQuit">✕ Back to setup</button>
+    <span class="meta" id="fCount"></span>
+    <div><button class="btn small" id="fPrev">← Prev</button> <button class="btn small primary" id="fNext">Next →</button></div>
+  </div>
+</div>
+
+<div id="resultArea" class="hidden">
+  <div class="panel">
+    <h3>Results</h3>
+    <div class="score-big" id="scoreBig"></div>
+    <div class="score-sub" id="scoreSub"></div>
+    <table id="breakTable">
+      <thead><tr><th>Chapter</th><th>Score</th><th style="width:35%">Accuracy</th></tr></thead>
+      <tbody id="breakBody"></tbody>
+    </table>
+    <div class="mode-row" style="margin-top:1.2rem">
+      <button class="btn primary" id="retryBtn">↻ Retake</button>
+      <button class="btn" id="backBtn">⚙ Change chapters</button>
+    </div>
+    <div class="mode-row" style="margin-top:.6rem">
+      <button class="btn" id="copyBtn">📋 Copy Results</button>
+      <button class="btn" id="copyHistBtn">📋 Copy Full History</button>
+      <span class="meta" id="histMeta"></span>
+    </div>
+  </div>
+</div>
+
+<footer>CTS Part IV · 56 original practice questions · Chapters 17–19</footer>
+</main>
+<script id="app">
+
+const CH_NAMES={17:"Integrating AV Solutions",18:"Operating AV Solutions",19:"Managing an AV Project"};
+const BANK=[
+/* ---------- Chapter 17 ---------- */
+{ch:17,q:"Upon arriving at a job site with newly delivered equipment, what should the installer do before installing anything?",
+ opts:["Immediately mount it to save time","Open and inspect each item, checking for damage and powering it on to verify it works","Store it and install it the next day","Log the serial numbers only"],ans:1,
+ ex:"Open, inspect, and test each device on arrival so damaged or faulty gear is caught before it's installed."},
+{ch:17,q:"Poor cable terminations are best described as:",
+ opts:["A minor cosmetic issue","The single most prevalent problem in electronic systems, often causing intermittent faults","Only a concern for fiber optics","Easy to find after the system is built"],ans:1,
+ ex:"They're the #1 cause of AV problems and hard to track down because faults are often intermittent."},
+{ch:17,q:"Stripping a cable improperly can cause what electrical problem?",
+ opts:["Increased voltage","Distorted insulation that alters the cable's impedance","Reduced bend radius","Higher conduit fill"],ans:1,
+ ex:"Distorting the insulation shape during stripping changes the cable's impedance properties."},
+{ch:17,q:"Which connector is terminated using insulation displacement?",
+ opts:["XLR","BNC","8P8C / RJ-45","RCA"],ans:2,
+ ex:"The 8P8C/RJ-45 modular connector is terminated with an insulation-displacement tool that cuts the insulation to contact the conductors."},
+{ch:17,q:"A BNC connector on coaxial video cable is typically terminated by:",
+ opts:["Soldering","Linear compression","Insulation displacement","Direct screw-down"],ans:1,
+ ex:"BNC connectors for video/RF on coax are secured by linear compression, a permanent action."},
+{ch:17,q:"To confirm a completed termination will properly pass a signal, perform a:",
+ opts:["Voltage test","Continuity test","Signal sweep test","Isolation test"],ans:1,
+ ex:"A continuity test (multimeter, or pin-to-pin tester for RJ-45) verifies the termination conducts properly."},
+{ch:17,q:"In a free-standing equipment rack, heavy components should be placed:",
+ opts:["Near the top for easy access","At the bottom to prevent tipping","In the middle for balance","Wherever space allows"],ans:1,
+ ex:"Heavy gear goes at the bottom of a free-standing rack; a top-heavy rack can tip over."},
+{ch:17,q:"Which rack-cooling method uses fans to draw hot air out, with cool air passively pulled in at the bottom?",
+ opts:["Convection","Evacuation","Forced air","Conditioning"],ans:1,
+ ex:"Evacuation cooling uses fans to pull hot air out; forced-air pushes cool air in, and convection is fully passive."},
+{ch:17,q:"What is the drawback of mounting an RF wireless-microphone receiver inside a metal rack?",
+ opts:["It overheats quickly","The metal rack shields the antenna, reducing the RF signal","It requires more rack units","It interferes with the network"],ans:1,
+ ex:"A metal rack acts as a shield; mount antennas facing forward or away from the rack (a metal door also blocks RF/IR)."},
+{ch:17,q:"Within a rack, 'signal separation' means:",
+ opts:["Splitting composite video into RGB","Grouping equipment and cables by function/signal type to reduce EMI crosstalk","Running duplicate cables to each device","Separating power from the building ground"],ans:1,
+ ex:"Signal separation groups cables by signal type/level so low-level signals aren't corrupted by crosstalk."},
+{ch:17,q:"How often should pull boxes be placed along a conduit run?",
+ opts:["Every 10 m (33 ft)","Every 30 m (100 ft), or after 180° of bend","Every 100 m (330 ft)","Only at the ends"],ans:1,
+ ex:"Specify a pull box every 30 m (100 ft) of conduit or after 180° of total bend; junction boxes go at the ends."},
+{ch:17,q:"If running three cables through one conduit, their combined cross-section may occupy up to what fill percentage?",
+ opts:["53 percent","40 percent","31 percent","23 percent"],ans:1,
+ ex:"Conduit fill: 1 cable = 53%, 2 cables = 31%, 3 cables = 40%."},
+{ch:17,q:"The tightest safe bend radius for a cable is approximately:",
+ opts:["Equal to the cable diameter","Twice the cable diameter","Four times the cable diameter","Ten times the cable diameter"],ans:2,
+ ex:"About 4× the cable diameter — critical for twisted-pair, fiber, and coax. Overbent cable that wrinkles or bulges should be discarded."},
+{ch:17,q:"When bundling cables for a pull, which must always be kept separate?",
+ opts:["Loudspeaker cables","Video cables","Microphone cables","Control cables"],ans:2,
+ ex:"Microphone cables carry such low-level signals they're the most susceptible to interference — keep them separate."},
+{ch:17,q:"A 40 kg (88 lb) display and hardware will be flown overhead. Applying the safety factor, the mount should be rated for:",
+ opts:["80 kg (176 lb)","120 kg (264 lb)","200 kg (440 lb)","400 kg (880 lb)"],ans:2,
+ ex:"Safety factor ×5: 40 kg × 5 = 200 kg (440 lb) rated mount."},
+
+/* ---------- Chapter 17 (cont.) ---------- */
+{ch:17,q:"A mounting failure where gravity pulls the mount down the wall and shears the bolts is called:",
+ opts:["Tensile load","Shear load","Pull-out","Shock loading"],ans:1,
+ ex:"Shear load cuts the bolts like scissors; tensile stretches the fastener, pull-out removes it from the structure, shock is a sudden added load."},
+{ch:17,q:"'Blocking' installed before wall finishes go on is used to:",
+ opts:["Improve room acoustics","Reinforce the wall so it can carry heavy displays","Route cabling","Provide EMI shielding"],ans:1,
+ ex:"Blocking is extra timber between studs added before finishes so the wall can support heavy mounted equipment — it requires early coordination."},
+{ch:17,q:"For accessibility, interactive rack equipment should be located between:",
+ opts:["0 and 380 mm AFF","380 and 1,220 mm (15–48 in) AFF","1,220 and 1,800 mm AFF","1,800 and 2,000 mm AFF"],ans:1,
+ ex:"Interactive features should sit 380–1,220 mm (15–48 in) above the finished floor — about 840 mm of usable space per rack."},
+{ch:17,q:"The RS-485 protocol used for DMX512 supports how many daisy-chained devices and what terminations?",
+ opts:["16 devices, 75-ohm","32 devices, 120-ohm","64 devices, 50-ohm","8 devices, 600-ohm"],ans:1,
+ ex:"RS-485 supports up to 32 daisy-chained devices with 120-ohm terminations at both ends of the line."},
+{ch:17,q:"Why is bidirectional control communication (e.g., RS-232) preferred over unidirectional?",
+ opts:["It uses less cable","The device can confirm its status or that an action occurred","It's immune to interference","It needs no configuration"],ans:1,
+ ex:"Two-way flow lets equipment provide confirmation/feedback of its status and actions."},
+{ch:17,q:"In a control system, what is 'firmware'?",
+ opts:["The unique application written for a specific installation","The control CPU's operating system","The touch-panel graphics","The network switch configuration"],ans:1,
+ ex:"Firmware is the control CPU's OS (make-specific); the 'software' is the unique application written for that specific installation."},
+{ch:17,q:"Which IP-addressing approach is the preferred hybrid when a DHCP server exists?",
+ opts:["Manual static addressing of every device","Reserve DHCP","Pure DHCP for all devices","APIPA"],ans:1,
+ ex:"Reserve DHCP sets aside a static block (by MAC) for must-not-change devices and assigns the rest dynamically — better than hand-addressing every device."},
+{ch:17,q:"A VLAN differs from a subnet in that a device:",
+ opts:["Can belong to only one VLAN but many subnets","Can belong to only one subnet but multiple VLANs","Cannot belong to either","Must belong to all VLANs"],ans:1,
+ ex:"A device belongs to one subnet but can be on multiple VLANs; VLANs are independent of physical topology."},
+{ch:17,q:"A projector with a 2.0 zoom lens fills a 4 m (13 ft) wide screen. What is the throw distance?",
+ opts:["2 m (6.5 ft)","4 m (13 ft)","6 m (20 ft)","8 m (26 ft)"],ans:3,
+ ex:"Throw distance = screen width × lens zoom ratio = 4 m × 2.0 = 8 m."},
+{ch:17,q:"When powering up a temporary sound-reinforcement system, the power amplifier should be:",
+ opts:["Powered on first, before other gear","Powered on last, with its inputs zeroed then brought up slowly","Left off entirely","Powered on simultaneously with the mixer"],ans:1,
+ ex:"Power on all gear except the amp, set levels, zero the amp inputs, then power the amp and raise levels slowly."},
+{ch:17,q:"When mounting a flat-panel display to its bracket, you should:",
+ opts:["Use any bolts that fit the holes","Use only the premeasured bolts specified for that make and model","Use the longest bolts available for strength","Substitute wood screws if needed"],ans:1,
+ ex:"Wrong-length or wrong-thread bolts can damage or destroy the panel — use only the specified premeasured mounting bolts."},
+
+/* ---------- Chapter 18 ---------- */
+{ch:18,q:"AVIXA uses the term 'systems performance verification' instead of 'commissioning' because:",
+ opts:["The two are unrelated processes","In construction, commissioning is a lifelong building process; AV testing is one step of it","Commissioning is a trademarked term","Verification is faster"],ans:1,
+ ex:"Construction defines commissioning as an ongoing lifetime process, so AVIXA narrowed its term to the AV testing step (other trades still say commissioning)."},
+{ch:18,q:"Which standard provides the framework for AV systems performance verification?",
+ opts:["ANSI/InfoComm 10:2013","ANSI/INFOCOMM 2M-2010","AVIXA V202.01 (DISCAS)","ISO 9001"],ans:0,
+ ex:"ANSI/InfoComm 10:2013, 'Audiovisual Systems Performance Verification,' includes a reference list of ~150 verification items."},
+{ch:18,q:"What is the primary reason a formal performance-verification process is run before client handover?",
+ opts:["To bill the client","To identify and correct problems and objectively demonstrate the system meets spec","To register component ownership","To launch the system socially with users"],ans:1,
+ ex:"Verification systematically tests the system, proves it meets the contracted specs, and catches problems before handover."},
+{ch:18,q:"An AV technician uses an understanding of signal flow mainly to:",
+ opts:["Set the contract price","Identify the source of problems when troubleshooting","Document components for billing","Choose loudspeaker brands"],ans:1,
+ ex:"Knowing how signals move through the system lets the technician trace and locate problems."},
+{ch:18,q:"When briefing end users on system operation, the AV team should focus on:",
+ opts:["A detailed description of every component","Basic operations — start/stop, source selection, mic and volume control","Providing all manufacturer manuals","A schematic of the signal path"],ans:1,
+ ex:"User briefings cover the basics: powering on/off, displaying sources, selecting mics, and adjusting volume."},
+{ch:18,q:"For an audio system without control-managed shutdown, the correct power-down order starts with:",
+ opts:["Turning everything off at once","Shutting down the power amplifier(s) first","Shutting down sources first","Any order is fine"],ans:1,
+ ex:"Shut down amplifiers first to prevent transient noise peaks from damaging the loudspeakers."},
+{ch:18,q:"Which is NOT an objective of end-user training?",
+ opts:["Increase user confidence","Reduce service calls from user error","Reduce damage from improper use","Eliminate the need for AV company maintenance and repair"],ans:3,
+ ex:"Training doesn't eliminate professional maintenance/repair — that's a distractor. It builds confidence and cuts user-error calls and damage."},
+{ch:18,q:"The recommended group size for effective hands-on end-user training is:",
+ opts:["Up to 3 people","Up to 6 people","10 to 15 people","As many as possible"],ans:1,
+ ex:"Small groups of up to six give every participant hands-on time with the system."},
+{ch:18,q:"When should end-user training typically be scheduled?",
+ opts:["Before installation begins","During cable pulling","After the system is complete and fully operational","Only after the warranty expires"],ans:2,
+ ex:"Train after the system is complete and operational — it's impractical to train on an incomplete system."},
+{ch:18,q:"A quick-reference operation guide for typical users is best delivered as:",
+ opts:["A bound 50-page manual","A single laminated A4/letter sheet with diagrams and simple bulleted steps","An email attachment only","A verbal briefing with no written material"],ans:1,
+ ex:"Presenters glance at instructions moments before use, so a single laminated sheet with large text, diagrams, and bullets works best."},
+{ch:18,q:"Which item belongs in the final AV documentation package?",
+ opts:["Only the invoice","As-built drawings, settings schedules, config files, manuals, and a warranty statement","Just the manufacturer manuals","Only the control-system code"],ans:1,
+ ex:"The handover package spans as-builts, settings/adjustment schedules, configuration files, manuals, spares/keys, and warranty info."},
+{ch:18,q:"A maintenance log should record which of the following?",
+ opts:["Only equipment failures","Date, who performed the work, problems found, corrective measures, and recommended follow-up","Only preventive maintenance dates","Only warranty claims"],ans:1,
+ ex:"A detailed log (date, technician, problems, fixes, follow-up) lets any technician quickly understand the system's history."},
+{ch:18,q:"'Striking' an event refers to:",
+ opts:["Setting up the temporary system","Removing the temporary system after use","Testing the audio system","Negotiating the event contract"],ans:1,
+ ex:"Striking (bumping out) is removing the temporary system after the event; setup is bumping in."},
+{ch:18,q:"When checking a networked AV system's capacity, technicians should determine the network's ___ before bandwidth testing.",
+ opts:["IP address range","peak load","DNS server","VLAN count"],ans:1,
+ ex:"Determine the network's peak load before bandwidth testing to verify there's enough bandwidth for control, audio, video, and data."},
+{ch:18,q:"A good practice when striking an event is to:",
+ opts:["Begin packing before attendees leave to save time","Match each piece of gear to its labeled/bar-coded road case","Leave borrowed venue items in the loading area","Remove tape only if time permits"],ans:1,
+ ex:"Strike after attendees leave, match gear to its labeled case, return borrowed items to a responsible person, and leave the space as found."},
+
+/* ---------- Chapter 19 ---------- */
+{ch:19,q:"The five key elements of a project, all driven by the client's purpose, are:",
+ opts:["Design, build, test, deploy, support","Scope, time, cost, quality, risk","People, process, product, price, place","Plan, do, check, act, review"],ans:1,
+ ex:"Scope, Time, Cost, Quality, and Risk are the five project elements."},
+{ch:19,q:"A work breakdown structure (WBS) defines deliverables and is expressed as:",
+ opts:["Verbs","Nouns","Dates","Costs"],ans:1,
+ ex:"A WBS defines products/services as nouns and relates the elements of work; it doesn't address who, when, or how much."},
+{ch:19,q:"The functions of a logic network diagram are expressed as:",
+ opts:["Nouns","Verbs such as build, test, fabricate","Milestones only","Dollar amounts"],ans:1,
+ ex:"Logic network functions are verbs; the diagram sequences activities and shows dependencies, predecessors, and successors."},
+{ch:19,q:"On a logic network diagram, milestones are typically shown as:",
+ opts:["Circles","Rectangles","Diamonds or triangles","Arrows"],ans:2,
+ ex:"Milestones (materials delivered, racks programmed) appear as diamonds or triangles."},
+{ch:19,q:"'Duration' for a task differs from 'effort' in that duration also reflects:",
+ opts:["Only the hands-on work time","Resource availability, number of resources, and calendars","The contract price","The number of milestones"],ans:1,
+ ex:"Effort is total work time; duration adds resource availability, number of resources, and calendars (weekends/holidays)."},
+{ch:19,q:"The project budget refers to:",
+ opts:["The total the client paid the AV company","The labor and materials the PM has allocated to complete the agreed work","The final amount actually spent","The cost of materials only"],ans:1,
+ ex:"The budget is what the PM allocates (labor, supplies, equipment) to complete the work — not the price paid or the final spend."},
+{ch:19,q:"'Price should never equal cost' because price also includes:",
+ opts:["Only sales tax","A markup covering overhead and profit","The client's budget","The warranty reserve"],ans:1,
+ ex:"Price = cost (labor, supplies, equipment) plus a markup for overhead (taxes, rent, insurance, benefits) and profit."},
+{ch:19,q:"A dependency in a project schedule is:",
+ opts:["A task that must finish by a specific date","A task that cannot begin until another task is complete","An optional task","A task requiring special conditions"],ans:1,
+ ex:"A dependency is a task that can't start until a prior task finishes — e.g., mounting fragile AV gear only after walls are painted."},
+{ch:19,q:"What is the most common format for presenting a project schedule?",
+ opts:["A logic network diagram","A Gantt chart","A WBS","A pie chart"],ans:1,
+ ex:"A Gantt chart shows tasks/subtasks as horizontal bars on a timeline, with sequence, milestones, and dependencies."},
+{ch:19,q:"What makes AV installation unique compared with most other construction trades?",
+ opts:["It requires no coordination","The bulk of the electronics must be installed last, after other trades finish and the site is clean","It is always finished first","It uses no scheduled milestones"],ans:1,
+ ex:"AV electronics are sensitive to dust, moisture, and temperature, so they're installed after other trades are done and the site is clean."},
+{ch:19,q:"When should the AV team coordinate with other trades to best avoid conflicts?",
+ opts:["After installation is complete","Only during the warranty period","Before work starts and continuously through weekly meetings","Never — the GC handles all coordination alone"],ans:2,
+ ex:"Conflicts caught before work starts are easiest to resolve, so active communication via kickoff and weekly status meetings is critical."},
+{ch:19,q:"An approved request for change (RFC) becomes a:",
+ opts:["Progress report","Letter of transmittal","Change order (CO)","Construction change directive"],ans:2,
+ ex:"An approved RFC becomes a change order, which documents the agreed change to scope and pricing."},
+{ch:19,q:"If a building-design modification impacts the AV installation, the AV vendor submits a:",
+ opts:["Modification announcement (MA)","Construction change directive (CCD)","Request for change (RFC)","Progress report (PR)"],ans:2,
+ ex:"An RFC is the document the vendor submits when a change to the AV installation contract is required."},
+{ch:19,q:"A construction change directive (CCD), or field order, is used to:",
+ opts:["Formally ask a project question","Trigger immediate work for time-critical field conditions, bypassing the RFI–RFC–CO process","Transmit drawings","Report weekly progress"],ans:1,
+ ex:"A CCD is issued by the owner or GC for time-critical field conditions to start work immediately, bypassing the formal change process."},
+{ch:19,q:"A client requests a change that increases project cost. The AV company should:",
+ opts:["Perform the work to keep the client happy","Refuse — never deviate from the original contract","Document it in a change order signed by both parties","Cut another feature to hold cost flat"],ans:2,
+ ex:"Document the change and its cost in a CO signed by both the client and company, confirming agreement to the contract change."}
+];
+
+/* ---------- App state ---------- */
+let selected=new Set(['all']);
+let shuffleOn=true;
+let pool=[],idx=0,answered=false;
+let score=0,perCh={},missed=[];
+
+const $=id=>document.getElementById(id);
+const chipRow=$('chipRow');
+
+/* ---------- Local persistence (this browser only — never sent anywhere) ---------- */
+const STORAGE_KEY='cts_part4_history';
+function loadHistory(){try{return JSON.parse(localStorage.getItem(STORAGE_KEY))||[];}catch(e){return [];}}
+function saveHistory(h){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(h));}catch(e){}}
+function historySummaryText(){
+  const h=loadHistory();
+  if(!h.length)return 'No saved attempts yet.';
+  const last=h[h.length-1];
+  const best=h.reduce((m,r)=>r.pct>m?r.pct:m,0);
+  return h.length+' saved attempt'+(h.length>1?'s':'')+' · last '+last.pct+'% · best '+best+'%';
+}
+function refreshHistoryUI(){$('historySummary').textContent=historySummaryText();}
+$('clearHistBtn').addEventListener('click',()=>{
+  if(!confirm('Clear all saved quiz history for Part IV? This cannot be undone.'))return;
+  localStorage.removeItem(STORAGE_KEY);
+  refreshHistoryUI();
+});
+function copyText(text,btnId){
+  navigator.clipboard.writeText(text).then(()=>{
+    const b=$(btnId);if(!b)return;const orig=b.textContent;b.textContent='✓ Copied!';
+    setTimeout(()=>{b.textContent=orig;},1800);
+  }).catch(()=>{prompt('Copy this text:',text);});
+}
+
+function currentPool(){
+  const all=selected.has('all');
+  return BANK.filter(q=>all||selected.has(String(q.ch)));
+}
+function updateCount(){ $('poolCount').textContent=currentPool().length+' questions selected'; }
+chipRow.addEventListener('click',e=>{
+  const b=e.target.closest('.chip');if(!b)return;
+  const ch=b.dataset.ch;
+  if(ch==='all'){selected=new Set(['all']);}
+  else{
+    selected.delete('all');
+    if(selected.has(ch))selected.delete(ch);else selected.add(ch);
+    if(selected.size===0)selected=new Set(['all']);
+  }
+  chipRow.querySelectorAll('.chip').forEach(c=>c.classList.toggle('on',selected.has(c.dataset.ch)));
+  updateCount();
+});
+$('shuffleToggle').addEventListener('click',()=>{
+  shuffleOn=!shuffleOn;
+  $('shuffleToggle').textContent='🔀 Shuffle: '+(shuffleOn?'On':'Off');
+});
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+function show(area){
+  ['setupPanel','quizArea','cardArea','resultArea'].forEach(id=>$(id).classList.add('hidden'));
+  $(area).classList.remove('hidden');
+}
+$('startQuiz').addEventListener('click',()=>{
+  pool=currentPool().slice();
+  if(shuffleOn)shuffle(pool);
+  idx=0;score=0;perCh={};missed=[];
+  pool.forEach(q=>{perCh[q.ch]=perCh[q.ch]||{right:0,total:0};});
+  show('quizArea');renderQ();
+});
+function renderQ(){
+  const q=pool[idx];answered=false;
+  $('progBar').style.width=(idx/pool.length*100)+'%';
+  $('qNum').textContent='Question '+(idx+1)+' of '+pool.length;
+  $('qChap').textContent='Ch '+q.ch+' · '+CH_NAMES[q.ch];
+  $('qText').textContent=q.q;
+  $('qExpl').classList.remove('show');
+  $('qExpl').innerHTML='';
+  $('nextBtn').disabled=true;
+  $('nextBtn').textContent=(idx===pool.length-1)?'Finish ✓':'Next →';
+  $('runScore').textContent='Score: '+score+' / '+idx;
+  const box=$('qOpts');box.innerHTML='';
+  q.opts.forEach((o,j)=>{
+    const b=document.createElement('button');
+    b.className='opt';b.textContent=String.fromCharCode(65+j)+'. '+o;
+    b.addEventListener('click',()=>answer(j,b));
+    box.appendChild(b);
+  });
+}
+function answer(j,btn){
+  if(answered)return;answered=true;
+  const q=pool[idx];
+  perCh[q.ch].total++;
+  const opts=$('qOpts').querySelectorAll('.opt');
+  opts.forEach((b,k)=>{b.disabled=true;if(k===q.ans)b.classList.add('correct');});
+  if(j===q.ans){score++;perCh[q.ch].right++;}
+  else{btn.classList.add('wrong');missed.push({ch:q.ch,q:q.q,chosen:j,chosenText:q.opts[j],correctText:q.opts[q.ans]});}
+  $('qExpl').innerHTML=q.ex;
+  $('qExpl').classList.add('show');
+  $('runScore').textContent='Score: '+score+' / '+(idx+1);
+  $('nextBtn').disabled=false;
+}
+$('nextBtn').addEventListener('click',()=>{
+  if(idx<pool.length-1){idx++;renderQ();}
+  else finish();
+});
+$('quitBtn').addEventListener('click',finish);
+function finish(){
+  show('resultArea');
+  const total=Object.values(perCh).reduce((s,c)=>s+c.total,0);
+  const pct=total?Math.round(score/total*100):0;
+  $('scoreBig').textContent=score+' / '+total+' · '+pct+'%';
+  $('scoreSub').textContent=pct>=80?'Strong — exam-ready territory for these chapters.':pct>=60?'Solid base — review the missed explanations and retake.':'Keep drilling — revisit the study guide sections for your weak chapters.';
+  const tb=$('breakBody');tb.innerHTML='';
+  Object.keys(perCh).sort().forEach(ch=>{
+    const c=perCh[ch];if(!c.total)return;
+    const p=Math.round(c.right/c.total*100);
+    const cls=p>=80?'':p>=60?'mid':'low';
+    const tr=document.createElement('tr');
+    tr.innerHTML='<td>Ch '+ch+' · '+CH_NAMES[ch]+'</td><td>'+c.right+' / '+c.total+'</td>'+
+      '<td><div class="bar '+cls+'"><div style="width:'+p+'%"></div></div></td>';
+    tb.appendChild(tr);
+  });
+
+  const record={date:new Date().toISOString(),score,total,pct,perCh:JSON.parse(JSON.stringify(perCh)),missed};
+  const hist=loadHistory();
+  hist.push(record);
+  if(hist.length>20)hist.shift();
+  saveHistory(hist);
+  window._lastResult=record;
+  refreshHistoryUI();
+  $('histMeta').textContent=hist.length+' attempt(s) saved locally';
+}
+$('retryBtn').addEventListener('click',()=>$('startQuiz').click());
+$('backBtn').addEventListener('click',()=>{show('setupPanel');updateCount();});
+$('copyBtn').addEventListener('click',()=>{
+  const r=window._lastResult;if(!r)return;
+  const lines=[];
+  lines.push('CTS Part IV Quiz Result — '+new Date(r.date).toLocaleString());
+  lines.push('Score: '+r.score+'/'+r.total+' ('+r.pct+'%)');
+  lines.push('');
+  lines.push('By chapter:');
+  Object.keys(r.perCh).sort().forEach(ch=>{
+    const c=r.perCh[ch];
+    const p=c.total?Math.round(c.right/c.total*100):0;
+    lines.push('  Ch '+ch+' ('+CH_NAMES[ch]+'): '+c.right+'/'+c.total+' ('+p+'%)');
+  });
+  if(r.missed.length){
+    lines.push('');
+    lines.push('Missed questions ('+r.missed.length+'):');
+    r.missed.forEach(m=>{
+      lines.push('  [Ch '+m.ch+'] '+m.q);
+      lines.push('      Your answer: '+String.fromCharCode(65+m.chosen)+'. '+m.chosenText);
+      lines.push('      Correct: '+m.correctText);
+    });
+  }else{
+    lines.push('');
+    lines.push('No missed questions — perfect run.');
+  }
+  copyText(lines.join('\n'),'copyBtn');
+});
+$('copyHistBtn').addEventListener('click',()=>{
+  const h=loadHistory();if(!h.length)return;
+  const lines=['CTS Part IV Quiz — Attempt History ('+h.length+' saved)'];
+  h.forEach((r,i)=>{
+    lines.push('');
+    lines.push('Attempt '+(i+1)+' — '+new Date(r.date).toLocaleString()+' — '+r.score+'/'+r.total+' ('+r.pct+'%)');
+    if(r.missed.length)lines.push('  Missed: '+r.missed.map(m=>'Ch'+m.ch).join(', '));
+  });
+  copyText(lines.join('\n'),'copyHistBtn');
+});
+
+let fPool=[],fIdx=0;
+$('startCards').addEventListener('click',()=>{
+  fPool=currentPool().slice();
+  if(shuffleOn)shuffle(fPool);
+  fIdx=0;show('cardArea');renderF();
+});
+function renderF(){
+  const q=fPool[fIdx];
+  $('fCard').classList.remove('flipped');
+  $('fFront').textContent=q.q;
+  $('fBack').innerHTML=String.fromCharCode(65+q.ans)+'. '+q.opts[q.ans]+' — '+q.ex;
+  $('fChipF').textContent='Ch '+q.ch;
+  $('fChipB').textContent='Ch '+q.ch;
+  $('fCount').textContent=(fIdx+1)+' / '+fPool.length;
+}
+$('fCard').addEventListener('click',()=>$('fCard').classList.toggle('flipped'));
+$('fPrev').addEventListener('click',()=>{fIdx=(fIdx-1+fPool.length)%fPool.length;renderF();});
+$('fNext').addEventListener('click',()=>{fIdx=(fIdx+1)%fPool.length;renderF();});
+$('cardsQuit').addEventListener('click',()=>{show('setupPanel');updateCount();});
+
+updateCount();
+refreshHistoryUI();
+
+</script>
+</body>
+</html>

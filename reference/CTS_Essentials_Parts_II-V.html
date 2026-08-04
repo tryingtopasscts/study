@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CTS Essentials — Parts II–V</title>
+<style>
+:root{
+  --bg:#0f1117; --bg2:#161a23; --bg3:#1d2230;
+  --text:#e8eaf0; --muted:#9aa3b5; --line:#2a3040;
+  --teal:#3fd0c9; --amber:#ffb454; --red:#ff6b6b; --purple:#b48cff;
+  --accent:#5b8dee;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',-apple-system,Segoe UI,Roboto,sans-serif;font-size:18px;line-height:1.65}
+h1,h2,h3,h4{font-family:'Fraunces',Georgia,serif;line-height:1.25}
+code,.mono{font-family:'IBM Plex Mono',ui-monospace,Consolas,monospace;font-size:.92em}
+
+/* ---------- Layout ---------- */
+.wrap{max-width:880px;margin:0 auto;padding:32px 22px 120px}
+section{margin-bottom:64px}
+h1{font-size:2.3rem;margin-bottom:8px}
+h2{font-size:1.75rem;margin:48px 0 16px;padding-bottom:10px;border-bottom:2px solid var(--line)}
+h3{font-size:1.28rem;margin:32px 0 12px;color:var(--teal)}
+h4{font-size:1.05rem;margin:20px 0 8px}
+p{margin-bottom:14px}
+.sub{color:var(--muted);font-size:1rem;margin-bottom:24px}
+strong{color:#fff}
+
+/* ---------- Hamburger + Sidebar (off-canvas) ---------- */
+.hamburger{position:fixed;top:16px;left:16px;z-index:1001;background:var(--bg3);border:1px solid var(--line);color:var(--text);width:46px;height:46px;border-radius:10px;font-size:1.3rem;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.hamburger:hover{background:var(--accent);border-color:var(--accent)}
+.backdrop{position:fixed;inset:0;background:rgba(0,0,0,.55);opacity:0;pointer-events:none;transition:opacity .25s;z-index:1000}
+.backdrop.show{opacity:1;pointer-events:auto}
+.sidebar{position:fixed;top:0;left:0;bottom:0;width:290px;background:var(--bg2);border-right:1px solid var(--line);transform:translateX(-100%);transition:transform .25s ease;z-index:1002;overflow-y:auto;padding:22px 18px;font-size:16px}
+.sidebar.open{transform:translateX(0)}
+.sidebar h3{font-size:1.05rem;margin:0 0 14px;color:var(--text)}
+.sidebar a{display:block;color:var(--muted);text-decoration:none;padding:7px 10px;border-radius:8px;margin-bottom:2px}
+.sidebar a:hover{background:var(--bg3);color:var(--text)}
+.sidebar .part-link{color:var(--text);font-weight:600;margin-top:12px}
+.sidebar .sub-link{padding-left:22px;font-size:.93em}
+.sidebar .close-btn{position:absolute;top:14px;right:14px;background:none;border:none;color:var(--muted);font-size:1.4rem;cursor:pointer}
+
+/* ---------- Callouts ---------- */
+.callout{border-left:4px solid;border-radius:0 10px 10px 0;background:var(--bg2);padding:14px 18px;margin:18px 0}
+.callout .tag{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:.72rem;letter-spacing:.08em;font-weight:700;padding:2px 8px;border-radius:5px;margin-bottom:8px}
+.keyterm{border-color:var(--teal)} .keyterm .tag{background:rgba(63,208,201,.15);color:var(--teal)}
+.spec{border-color:var(--amber)} .spec .tag{background:rgba(255,180,84,.15);color:var(--amber)}
+.watchout{border-color:var(--red)} .watchout .tag{background:rgba(255,107,107,.15);color:var(--red)}
+.examtip{border-color:var(--purple)} .examtip .tag{background:rgba(180,140,255,.15);color:var(--purple)}
+
+/* ---------- Formula boxes ---------- */
+.formula{background:var(--bg3);border:1px solid var(--line);border-radius:12px;padding:16px 20px;margin:16px 0}
+.formula .f{font-family:'IBM Plex Mono',monospace;font-size:1.05rem;color:var(--amber);display:block;margin-bottom:6px}
+.formula .fx{color:var(--muted);font-size:.92rem}
+
+/* ---------- Tables ---------- */
+table{width:100%;border-collapse:collapse;margin:18px 0;font-size:.95rem}
+th{background:var(--bg3);color:var(--teal);text-align:left;padding:10px 12px;font-family:'IBM Plex Mono',monospace;font-size:.8rem;letter-spacing:.05em}
+td{padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:hover td{background:rgba(91,141,238,.05)}
+td:first-child{white-space:nowrap;font-weight:600}
+
+/* ---------- Concept cards ---------- */
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;margin:18px 0}
+.card{background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:16px}
+.card h4{margin:0 0 8px;color:var(--accent);font-size:1rem}
+.card p{margin:0;font-size:.93rem;color:var(--muted)}
+.card p strong{color:var(--text)}
+
+/* ---------- Diagrams ---------- */
+.diagram{background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:18px;margin:22px 0;overflow-x:auto}
+.diagram svg{display:block;margin:0 auto;max-width:100%;height:auto}
+.diagram .cap{text-align:center;color:var(--muted);font-size:.85rem;margin-top:10px;font-family:'IBM Plex Mono',monospace}
+
+/* ---------- Part header + summary ---------- */
+.part-head{background:linear-gradient(135deg,var(--bg2),var(--bg3));border:1px solid var(--line);border-radius:14px;padding:24px 26px;margin:56px 0 28px}
+.part-head .kicker{font-family:'IBM Plex Mono',monospace;color:var(--accent);font-size:.8rem;letter-spacing:.12em}
+.part-head h2{border:none;margin:6px 0 4px;padding:0}
+.part-head p{color:var(--muted);margin:0}
+.most-tested{background:rgba(180,140,255,.07);border:1px solid rgba(180,140,255,.35);border-radius:12px;padding:18px 22px;margin:28px 0}
+.most-tested h3{color:var(--purple);margin-top:0}
+.most-tested ul{margin-left:20px}
+.most-tested li{margin-bottom:6px;font-size:.95rem}
+ul,ol{margin:0 0 14px 22px}
+li{margin-bottom:5px}
+@media(max-width:640px){
+  body{font-size:17px}.wrap{padding-top:70px}
+  table{display:block;overflow-x:auto;white-space:normal}
+  td:first-child{white-space:normal}
+}
+</style>
+</head>
+<body>
+
+<button class="hamburger" id="hamb" aria-label="Open navigation">☰</button>
+<div class="backdrop" id="backdrop"></div>
+<nav class="sidebar" id="sidebar">
+  <button class="close-btn" id="closeSb" aria-label="Close">✕</button>
+  <h3>CTS Essentials</h3>
+  <a href="#intro">How to Use This</a>
+  <a href="#part2" class="part-link">Part II — AV Technology</a>
+  <a href="#p2-numbers" class="sub-link">Hard Numbers</a>
+  <a href="#p2-formulas" class="sub-link">Formulas</a>
+  <a href="#p2-concepts" class="sub-link">Concept Essentials</a>
+  <a href="#p2-tested" class="sub-link">Most-Tested</a>
+  <a href="#part3" class="part-link">Part III — Creating Solutions</a>
+  <a href="#p3-numbers" class="sub-link">Hard Numbers</a>
+  <a href="#p3-concepts" class="sub-link">Concept Essentials</a>
+  <a href="#p3-tested" class="sub-link">Most-Tested</a>
+  <a href="#part4" class="part-link">Part IV — Implementing</a>
+  <a href="#p4-numbers" class="sub-link">Hard Numbers</a>
+  <a href="#p4-concepts" class="sub-link">Concept Essentials</a>
+  <a href="#p4-tested" class="sub-link">Most-Tested</a>
+  <a href="#part5" class="part-link">Part V — Servicing</a>
+  <a href="#p5-concepts" class="sub-link">Concept Essentials</a>
+  <a href="#p5-tested" class="sub-link">Most-Tested</a>
+</nav>
+
+<div class="wrap">
+
+<section id="intro">
+  <h1>CTS Essentials</h1>
+  <p class="sub">Parts II–V, stripped to what the exam actually tests. Companion to the full study guides — this is the night-before review layer.</p>
+  <div class="callout examtip"><span class="tag">EXAM TIP</span>
+  Each Part below follows the same shape: <strong>hard numbers</strong> (pure memorization), <strong>formulas</strong> (formula + one worked example, no derivations), <strong>concept essentials</strong> (one card per testable idea), and a <strong>most-tested closer</strong>. If a fact isn't here, it's either in the full guides or it's padding.</div>
+  <div class="callout watchout"><span class="tag">WATCH OUT</span>
+  Parts don't compress equally. Part II is spec-dense and stays long even as "essentials." Parts IV–V are procedural and compress hard. That's the material, not an oversight.</div>
+</section>
+<!-- ============================ PART II ============================ -->
+<section id="part2">
+<div class="part-head">
+  <span class="kicker">PART II · CHAPTERS 3–10</span>
+  <h2>Essentials of AV Technology</h2>
+  <p>Signals, audio, video, networks, signal management, control, electrical, wireless. Foundational — doesn't map to exam duties directly, but everything in Parts III–V assumes it.</p>
+</div>
+
+<h3 id="p2-numbers">Hard Numbers &amp; Specs</h3>
+<p class="sub">Each row: the fact to memorize, then what it actually means in the room. If a value here surprises you, that's the row to flashcard.</p>
+<table>
+<tr><th>SPEC</th><th>VALUE</th><th>WHAT IT MEANS</th></tr>
+<tr><td>Human hearing</td><td>20 Hz – 20 kHz</td><td>The audible range for a healthy ear. Audio systems are designed around this bandwidth, and all the sampling math below starts from the 20 kHz ceiling.</td></tr>
+<tr><td>Nyquist–Shannon</td><td>Sample at <em>more than</em> 2× the highest frequency</td><td>To digitize a signal you can later reconstruct, sample faster than double its top frequency. Capturing 20 kHz audio needs &gt;40 kHz sampling — which is exactly why CD audio landed at 44.1 kHz.</td></tr>
+<tr><td>CD audio</td><td>44.1 kHz / 16-bit ≈ 96 dB dynamic range</td><td>16 bits = 65,536 discrete levels, ≈ 96 dB of range — covers most of human hearing. Rounding an analog voltage to the nearest level creates <strong>quantization error</strong>, audible as low-level noise.</td></tr>
+<tr><td>Pro audio sampling</td><td>48 / 96 / 192 kHz · 24-bit ≈ 144 dB · 32-bit ≈ 192 dB</td><td>Recording and live production use higher rates to capture overtones, and deeper bit depths to keep quantization noise down while mixing multiple digital signals together.</td></tr>
+<tr><td>dB references</td><td>0 dB SPL = 20 µPa · 0 dBu = 775 mV · 0 dBV = 1.0 V · 0 dBm = 1 mW</td><td>A decibel is a <strong>ratio, not a quantity</strong> — "85 dB" is meaningless until you know 85 dB <em>relative to what</em>. SPL references the threshold of hearing. Note: −20 dBu isn't negative voltage, just a voltage below 775 mV.</td></tr>
+<tr><td>Doubling distance</td><td>−6 dB, every time</td><td>Double the distance from a source and the energy spreads over 4× the area, so level drops 6 dB. Identical physics for loudspeakers and light fixtures — the inverse square law, diagrammed below.</td></tr>
+<tr><td>Pro mic impedance</td><td>Low-Z ≤ 200 Ω · high-Z &gt; 25 kΩ</td><td>Professional mics are low impedance: they pick up less noise and support much longer cable runs. High-impedance mics are consumer-grade and distance-limited.</td></tr>
+<tr><td>Impedance bridging</td><td>Output ≤ 1/10 of the input it feeds</td><td>Modern audio transfers <strong>voltage</strong>, not power. A device's output impedance should be at most one-tenth of the input impedance downstream — e.g., a ≤200 Ω mic feeding a ≥2 kΩ input.</td></tr>
+<tr><td>Speaker sensitivity</td><td>dB SPL @ 1 W @ 1 m</td><td>How loud the speaker gets from 1 watt, measured 1 meter away. It's the anchor of every amplifier power calc: start here, subtract distance loss (20-log), add headroom.</td></tr>
+<tr><td>Coax impedance</td><td>75 Ω = video · 50 Ω = RF/data</td><td>Impedance comes from the cable's physical construction (conductor spacing, dielectric), so these are genuinely different cables — never interchangeable, even though they look alike.</td></tr>
+<tr><td>Fiber jackets</td><td>Single-mode = yellow · multimode = orange</td><td>Single-mode carries one light path and reaches the farthest distances; multimode carries many paths over shorter runs. In the field, the jacket color <em>is</em> the ID.</td></tr>
+<tr><td>Aspect ratios</td><td>16:9 = 1.7778 · 4:3 = 1.3333 · computers often 16:10</td><td>Width ÷ height. Portrait-mounting a display flips the ratio (16:10 becomes 10:16) — always check the spec. Carry four decimals through calculations and round only at the end.</td></tr>
+<tr><td>Illuminance</td><td>1 fc = 10.76 lux</td><td>Both measure light <em>falling on a surface</em>: foot-candles are lumens per square foot, lux are lumens per square meter. Same light, different floor unit — multiply fc by 10.76 to get lux.</td></tr>
+<tr><td>IEEE 802.11</td><td>The Wi-Fi standard family</td><td>Connection speed is tied to signal strength: as strength weakens, the link <strong>slows down</strong> (it doesn't just drop). User count on the access point also drags speed.</td></tr>
+<tr><td>IPv6 address</td><td>8 groups of 4 hex digits</td><td>Versus IPv4's four decimal octets. Recognize the format on sight — it's a recall question.</td></tr>
+<tr><td>Manual IP config</td><td>IP address + subnet mask (minimum)</td><td>Those two are required to configure a device by hand. Otherwise a <strong>DHCP server</strong> assigns addressing automatically when the device joins the network.</td></tr>
+<tr><td>Ethernet termination</td><td>8P8C connector · T568-B pinout dominant</td><td>8P8C is what everyone calls "RJ-45." Nearly all installs use the T568-B wiring format; terminate A on one end and B on the other and you've made a <strong>crossover cable</strong> — two devices can link without a switch.</td></tr>
+<tr><td>RS-485 / DMX512</td><td>Balanced · 32 devices · 120 Ω both ends · 5-pin XLR</td><td>The serial standard under DMX512 lighting control: a balanced line daisy-chaining up to 32 devices, requiring 120 Ω terminating resistors at <em>both</em> ends of the run.</td></tr>
+<tr><td>GFCI / RCD trip time</td><td>&lt; 1/10 second</td><td>Ground-fault devices sense minuscule current leaking to earth and cut the supply in under a tenth of a second. Widely used, and code-mandated in many jurisdictions.</td></tr>
+<tr><td>Circuit loading</td><td>Plan to ≤ 80% of capacity</td><td>Universal electrical design rule, permanent or temporary installs alike: never plan a circuit to carry more than 80% of its rating.</td></tr>
+</table>
+
+<h3 id="p2-formulas">Formulas</h3>
+<div class="formula"><span class="f">dB = 10 × log(P₁/P₂)</span><span class="fx">Power ratio. Ex: 2× power = 10 log(2) = <strong>+3 dB</strong></span></div>
+<div class="formula"><span class="f">dB = 20 × log(V₁/V₂) &nbsp;·&nbsp; dB = 20 × log(D₁/D₂)</span><span class="fx">Voltage and distance use 20-log (quadratic relationships). Ex: doubling distance = 20 log(1/2) = <strong>−6 dB</strong></span></div>
+<div class="formula"><span class="f">λ = v / f</span><span class="fx">Wavelength = speed of sound ÷ frequency. Ex: 343 ÷ 1000 Hz ≈ <strong>0.34 m</strong></span></div>
+<div class="formula"><span class="f">V = I × R &nbsp;·&nbsp; P = V × I</span><span class="fx">Ohm's law + power. Ex: 2 A through 8 Ω → V = 16 V, P = 32 W</span></div>
+<div class="formula"><span class="f">AR = W / H &nbsp;·&nbsp; A² + B² = C²</span><span class="fx">Aspect ratio; screen diagonal via Pythagoras. Ex: 16:9 screen 4 ft tall → W = 4 × 1.7778 = <strong>7.11 ft</strong></span></div>
+<div class="formula"><span class="f">Expected SPL = Sensitivity + 20 log(D₁/D₂)</span><span class="fx">Ex: 92 dB @ 1 W @ 1 m speaker, listener at 8 m → 92 + 20 log(1/8) = 92 − 18 = <strong>74 dB SPL</strong></span></div>
+
+<div class="diagram">
+<svg viewBox="0 0 740 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Inverse square law">
+<defs>
+<radialGradient id="glow" cx="0.5" cy="0.5"><stop offset="0%" stop-color="#ffb454" stop-opacity="0.9"/><stop offset="100%" stop-color="#ffb454" stop-opacity="0"/></radialGradient>
+<marker id="arrI" markerWidth="9" markerHeight="7" refX="7" refY="3.5" orient="auto"><path d="M0,0 L9,3.5 L0,7 z" fill="#5b8dee"/></marker>
+</defs>
+<circle cx="60" cy="120" r="30" fill="url(#glow)"/><circle cx="60" cy="120" r="11" fill="#ffb454"/>
+<text x="60" y="170" fill="#9aa3b5" font-size="12" text-anchor="middle" font-family="monospace">speaker</text>
+<text x="60" y="185" fill="#9aa3b5" font-size="12" text-anchor="middle" font-family="monospace">92 dB @ 1 W</text>
+<line x1="78" y1="106" x2="700" y2="30" stroke="#2a3040" stroke-width="1.5"/>
+<line x1="78" y1="134" x2="700" y2="210" stroke="#2a3040" stroke-width="1.5"/>
+<!-- 1x: one unit square -->
+<rect x="195" y="98" width="26" height="26" fill="none" stroke="#3fd0c9" stroke-width="2.5"/>
+<text x="208" y="86" fill="#3fd0c9" font-size="13" font-weight="700" text-anchor="middle" font-family="monospace">1 m</text>
+<text x="208" y="145" fill="#e8eaf0" font-size="13" text-anchor="middle" font-family="monospace">92 dB</text>
+<text x="208" y="162" fill="#9aa3b5" font-size="11" text-anchor="middle" font-family="monospace">1× area</text>
+<!-- 2x: 2x2 grid -->
+<g stroke="#b48cff" stroke-width="2" fill="none">
+<rect x="390" y="72" width="52" height="52"/>
+<line x1="416" y1="72" x2="416" y2="124"/><line x1="390" y1="98" x2="442" y2="98"/>
+</g>
+<text x="416" y="60" fill="#b48cff" font-size="13" font-weight="700" text-anchor="middle" font-family="monospace">2 m</text>
+<text x="416" y="145" fill="#e8eaf0" font-size="13" text-anchor="middle" font-family="monospace">86 dB (−6)</text>
+<text x="416" y="162" fill="#9aa3b5" font-size="11" text-anchor="middle" font-family="monospace">4× area · ¼ energy</text>
+<!-- 4x: 4x4 grid -->
+<g stroke="#ff6b6b" stroke-width="1.6" fill="none">
+<rect x="580" y="46" width="104" height="104"/>
+<line x1="606" y1="46" x2="606" y2="150"/><line x1="632" y1="46" x2="632" y2="150"/><line x1="658" y1="46" x2="658" y2="150"/>
+<line x1="580" y1="72" x2="684" y2="72"/><line x1="580" y1="98" x2="684" y2="98"/><line x1="580" y1="124" x2="684" y2="124"/>
+</g>
+<text x="632" y="34" fill="#ff6b6b" font-size="13" font-weight="700" text-anchor="middle" font-family="monospace">4 m</text>
+<text x="632" y="172" fill="#e8eaf0" font-size="13" text-anchor="middle" font-family="monospace">80 dB (−12)</text>
+<text x="632" y="189" fill="#9aa3b5" font-size="11" text-anchor="middle" font-family="monospace">16× area · 1/16 energy</text>
+<!-- takeaway strip -->
+<rect x="60" y="222" width="620" height="58" rx="10" fill="#1d2230" stroke="#2a3040"/>
+<text x="370" y="246" fill="#5b8dee" font-size="13.5" font-weight="700" text-anchor="middle" font-family="sans-serif">Every doubling of distance = −6 dB, because the same energy covers 4× the area</text>
+<text x="370" y="268" fill="#9aa3b5" font-size="12.5" text-anchor="middle" font-family="monospace">92 dB @ 1 m → 86 @ 2 m → 80 @ 4 m → 74 @ 8 m &nbsp;·&nbsp; dB = 20 log(D₁/D₂)</text>
+</svg>
+<div class="cap">Inverse square law with a worked chain. Same math for light: double the throw distance, quarter the illuminance.</div>
+</div>
+
+<h3 id="p2-concepts">Concept Essentials</h3>
+<div class="cards">
+<div class="card"><h4>Analog vs. digital noise</h4><p>Analog noise <strong>accumulates</strong> with every re-amplification. Digital circuitry decides high/low and <strong>retransmits clean</strong> — until it fails entirely.</p></div>
+<div class="card"><h4>Lossless vs. lossy</h4><p>Lossless (ZIP, FLAC, PNG) reconstructs perfectly; required for text/financial data. Lossy (MP3, JPEG, H.264, HEVC) discards what humans can't perceive — fine for AV. A <strong>codec</strong> encodes and decodes.</p></div>
+<div class="card"><h4>Balanced vs. unbalanced</h4><p>Balanced circuits + twisted pair reject common-mode interference → longer runs. Coax is inherently <strong>unbalanced</strong> (center = signal, shield = return).</p></div>
+<div class="card"><h4>Signal levels</h4><p>Mic level (~mV) → line level (~1 V) → speaker level (~30 V+). Keep them physically <strong>separated</strong> in racks and cable runs to prevent crosstalk.</p></div>
+<div class="card"><h4>HDMI = DVI + extras</h4><p>HDMI adds <strong>audio, EDID, HDCP, Ethernet</strong> to DVI (backward compatible). SDI (SMPTE, 75 Ω BNC) carries audio + control but <strong>no HDCP</strong>. HDBaseT puts HDMI + Ethernet + control + USB + 100 W power on one Cat cable.</p></div>
+<div class="card"><h4>EDID &amp; native resolution</h4><p>EDID tells the source what the display can do. Feeding a display its <strong>native resolution</strong> avoids scaling and gives the best image.</p></div>
+<div class="card"><h4>OSI model anchors</h4><p><strong>Layer 1</strong> Physical = cabling, patchbays. <strong>Layer 7</strong> Application. AV pros live at 1 and 7. MAC address = Layer 2; IP/routing = Layer 3.</p></div>
+<div class="card"><h4>Subnets vs. VLANs</h4><p>Subnets <strong>isolate broadcast traffic</strong> (don't reduce bandwidth use). VLANs subdivide further, ignore physical topology — a device has one subnet but can join <strong>multiple VLANs</strong>. Digital signage = classic VLAN use.</p></div>
+<div class="card"><h4>Network gear roles</h4><p><strong>Unmanaged switch</strong>: plug and play. <strong>Router</strong>: moves packets between networks. <strong>Gateway</strong>: connects to outside networks. <strong>Firewall</strong>: filters by security rules. <strong>DHCP</strong>: auto-assigns IPs.</p></div>
+<div class="card"><h4>Control system types</h4><p>Contact closure, variable voltage, <strong>IR (line of sight)</strong>, serial digital (RS-232 unbalanced/DB-9; RS-422 balanced = longer runs), RF, and networked. Bidirectional preferred — devices confirm status.</p></div>
+<div class="card"><h4>Grounding</h4><p>Safety ground = low-resistance fault path that trips breakers. <strong>Isolated/technical ground</strong> gives all gear one reference → kills <strong>ground loops</strong> (50/60 Hz hum, rolling video bars). Class II double-insulated gear (square-in-square symbol) needs no ground.</p></div>
+<div class="card"><h4>Series vs. parallel</h4><p>Series: same current everywhere, voltage divides (biggest R drops most V). Parallel: same voltage everywhere, current divides (biggest R gets least I).</p></div>
+</div>
+
+<div class="callout watchout"><span class="tag">WATCH OUT</span>
+Never use ground-lift adapters — for any reason. And never run non-AV loads (coffee makers, vacuums) on technical power circuits; they inject switching noise and can overload the circuit.</div>
+
+<div class="most-tested" id="p2-tested">
+<h3>Part II — Most Tested</h3>
+<ul>
+<li>Nyquist: sample at <strong>more than twice</strong> the highest frequency</li>
+<li>Digital regenerates through noise; analog degrades generation by generation</li>
+<li>10-log for power, <strong>20-log for voltage and distance</strong>; double distance = −6 dB</li>
+<li>75 Ω = video coax, 50 Ω = RF/data; yellow fiber = single-mode = farthest</li>
+<li>1 fc = 10.76 lux; 16:9 = 1.78 (use 1.7778 in math)</li>
+<li>HDMI adds audio/EDID/HDCP/Ethernet to DVI; SDI has no HDCP</li>
+<li>Manual IP needs address + subnet mask; DHCP does it for you</li>
+<li>Ground loops = hum + rolling bars; fixed by isolated grounding, never by ground lifts</li>
+</ul>
+</div>
+</section>
+<!-- ============================ PART III ============================ -->
+<section id="part3">
+<div class="part-head">
+  <span class="kicker">PART III · CHAPTERS 11–16 · CREATING AV SOLUTIONS</span>
+  <h2>Creating AV Solutions</h2>
+  <p>The biggest exam duty area. Ch. 11 and much of 13–15 is heavily padded "professionalism" prose — the testable core below is small but dense. Scope development alone ≈ 9% of your score.</p>
+</div>
+
+<h3 id="p3-numbers">Hard Numbers &amp; Specs</h3>
+<p class="sub">Fewer numbers here — Part III is process-heavy. But these are the ones that show up as straight recall.</p>
+<table>
+<tr><th>SPEC</th><th>VALUE</th><th>WHAT IT MEANS</th></tr>
+<tr><td>16:9 as a decimal</td><td>1.7778 — keep four decimals</td><td>16 ÷ 9 = 1.7778, so HD screen width = height × 1.7778. A 4-ft-tall image is 7.11 ft wide. Round only at the final step of a multi-step problem — early rounding compounds.</td></tr>
+<tr><td>Conference speech levels</td><td>Target 70 dB SPL A · background ≤ 45 dB SPL A</td><td>The design target at the listener is 70 dB SPL (A-weighted); background noise must stay 25 dB below it so speech detail isn't masked. That 25 dB cushion is the point of the pairing.</td></tr>
+<tr><td>dB weighting</td><td>A = quiet listening · C = loud (&gt; 85 dB SPL)</td><td>At low levels the ear discounts bass, so A-weighting mirrors quiet-level perception (conference rooms). Above ~85 dB SPL the ear flattens out, so C-weighting fits loud environments like concerts. Match the weighting to the level.</td></tr>
+<tr><td>Lighting zones</td><td>Minimum two, separately controlled</td><td>Presentation spaces need the screen-area lights switchable/dimmable independently of audience lights — the screen zone goes dark while people can still take notes.</td></tr>
+<tr><td>Design process standard</td><td>ANSI/INFOCOMM 2M-2010</td><td>Defines the methods, tasks, and deliverables of the whole AV design-and-coordination process. It applies to every phase but is the governing reference for the <strong>program phase</strong> specifically.</td></tr>
+<tr><td>Audio coverage standard</td><td>AVIXA A102.01:2017 (ACU)</td><td>Audio Coverage Uniformity: every seat should hear the same SPL. One listener at 70 dB while another strains at 60 dB = a failed system, regardless of average level.</td></tr>
+<tr><td>Display sizing standard</td><td>AVIXA DISCAS</td><td>Given the <em>viewing task</em> (see ramp below), DISCAS calculations yield image size, closest and farthest viewer positions, and horizontal viewing angles. It also feeds content-design metrics.</td></tr>
+</table>
+
+<div class="diagram">
+<svg viewBox="0 0 760 270" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Needs analysis pyramid">
+<defs><marker id="arrP" markerWidth="9" markerHeight="7" refX="7" refY="3.5" orient="auto"><path d="M0,0 L9,3.5 L0,7 z" fill="#ffb454"/></marker></defs>
+<!-- pyramid -->
+<polygon points="230,25 330,85 130,85" fill="#3fd0c9" opacity="0.9"/>
+<polygon points="122,95 338,95 390,165 70,165" fill="#5b8dee" opacity="0.85"/>
+<polygon points="62,175 398,175 450,245 10,245" fill="#b48cff" opacity="0.8"/>
+<text x="230" y="66" fill="#0f1117" font-size="16" font-weight="700" text-anchor="middle" font-family="sans-serif">NEEDS</text>
+<text x="230" y="126" fill="#0f1117" font-size="14" font-weight="700" text-anchor="middle" font-family="sans-serif">APPLICATIONS</text>
+<text x="230" y="147" fill="#0f1117" font-size="11" text-anchor="middle" font-family="sans-serif">activities the AV supports</text>
+<text x="230" y="205" fill="#0f1117" font-size="14" font-weight="700" text-anchor="middle" font-family="sans-serif">SYSTEMS → INFRASTRUCTURE</text>
+<text x="230" y="226" fill="#0f1117" font-size="11" text-anchor="middle" font-family="sans-serif">equipment · architectural · electrical · mechanical</text>
+<path d="M 470 235 L 470 45" stroke="#ffb454" stroke-width="2.5" fill="none" marker-end="url(#arrP)"/>
+<text x="470" y="30" fill="#ffb454" font-size="11.5" font-family="monospace" text-anchor="middle">start at the top</text>
+<!-- worked example -->
+<text x="620" y="28" fill="#9aa3b5" font-size="11.5" font-family="monospace" text-anchor="middle">— worked example —</text>
+<g font-family="sans-serif">
+<rect x="510" y="40" width="220" height="42" rx="8" fill="#1d2230" stroke="#3fd0c9" stroke-width="1.8"/>
+<text x="620" y="57" fill="#3fd0c9" font-size="11" font-weight="700" text-anchor="middle">NEED</text>
+<text x="620" y="73" fill="#e8eaf0" font-size="11.5" text-anchor="middle">"train our remote sales staff"</text>
+<rect x="510" y="94" width="220" height="42" rx="8" fill="#1d2230" stroke="#5b8dee" stroke-width="1.8"/>
+<text x="620" y="111" fill="#5b8dee" font-size="11" font-weight="700" text-anchor="middle">APPLICATION</text>
+<text x="620" y="127" fill="#e8eaf0" font-size="11.5" text-anchor="middle">videoconferencing</text>
+<rect x="510" y="148" width="220" height="42" rx="8" fill="#1d2230" stroke="#ffb454" stroke-width="1.8"/>
+<text x="620" y="165" fill="#ffb454" font-size="11" font-weight="700" text-anchor="middle">SYSTEM / FUNCTIONS</text>
+<text x="620" y="181" fill="#e8eaf0" font-size="11.5" text-anchor="middle">codec · displays · mics · control</text>
+<rect x="510" y="202" width="220" height="42" rx="8" fill="#1d2230" stroke="#b48cff" stroke-width="1.8"/>
+<text x="620" y="219" fill="#b48cff" font-size="11" font-weight="700" text-anchor="middle">INFRASTRUCTURE</text>
+<text x="620" y="235" fill="#e8eaf0" font-size="11.5" text-anchor="middle">network · power · acoustics · sightlines</text>
+</g>
+<line x1="620" y1="82" x2="620" y2="94" stroke="#2a3040" stroke-width="2"/>
+<line x1="620" y1="136" x2="620" y2="148" stroke="#2a3040" stroke-width="2"/>
+<line x1="620" y1="190" x2="620" y2="202" stroke="#2a3040" stroke-width="2"/>
+</svg>
+<div class="cap">Needs drive everything downstream. The classic wrong answer starts at the bottom — picking equipment before the need is defined.</div>
+</div>
+
+<div class="diagram">
+<svg viewBox="0 0 700 230" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Four viewing tasks as increasing detail">
+<rect x="30" y="128" width="145" height="62" rx="8" fill="#1d2230" stroke="#3fd0c9" stroke-width="2"/>
+<rect x="200" y="103" width="145" height="87" rx="8" fill="#1d2230" stroke="#5b8dee" stroke-width="2"/>
+<rect x="370" y="78" width="145" height="112" rx="8" fill="#1d2230" stroke="#ffb454" stroke-width="2"/>
+<rect x="540" y="53" width="145" height="137" rx="8" fill="#1d2230" stroke="#ff6b6b" stroke-width="2"/>
+<g font-family="sans-serif">
+<text x="102" y="150" fill="#3fd0c9" font-size="13" font-weight="700" text-anchor="middle">Passive</text>
+<text x="102" y="166" fill="#9aa3b5" font-size="10.5" text-anchor="middle">movies, signage</text>
+<text x="102" y="182" fill="#e8eaf0" font-size="10.5" text-anchor="middle">sized: general content</text>
+<text x="272" y="125" fill="#5b8dee" font-size="13" font-weight="700" text-anchor="middle">Basic (BDM)</text>
+<text x="272" y="141" fill="#9aa3b5" font-size="10.5" text-anchor="middle">read slides, spreadsheets,</text>
+<text x="272" y="154" fill="#9aa3b5" font-size="10.5" text-anchor="middle">make decisions from them</text>
+<text x="272" y="173" fill="#e8eaf0" font-size="10.5" text-anchor="middle">sized by the smallest</text>
+<text x="272" y="185" fill="#e8eaf0" font-size="10.5" text-anchor="middle">text element on screen</text>
+<text x="442" y="100" fill="#ffb454" font-size="13" font-weight="700" text-anchor="middle">Analytical (ADM)</text>
+<text x="442" y="116" fill="#9aa3b5" font-size="10.5" text-anchor="middle">medical imaging, CAD,</text>
+<text x="442" y="129" fill="#9aa3b5" font-size="10.5" text-anchor="middle">forensics, engineering</text>
+<text x="442" y="148" fill="#e8eaf0" font-size="10.5" text-anchor="middle">sized so viewers can</text>
+<text x="442" y="160" fill="#e8eaf0" font-size="10.5" text-anchor="middle">resolve pixel-level detail</text>
+<text x="442" y="180" fill="#9aa3b5" font-size="10" text-anchor="middle">closest viewer matters too</text>
+<text x="612" y="75" fill="#ff6b6b" font-size="13" font-weight="700" text-anchor="middle">Full-motion</text>
+<text x="612" y="91" fill="#9aa3b5" font-size="10.5" text-anchor="middle">sports replay, simulation,</text>
+<text x="612" y="104" fill="#9aa3b5" font-size="10.5" text-anchor="middle">live camera feeds</text>
+<text x="612" y="123" fill="#e8eaf0" font-size="10.5" text-anchor="middle">detail must survive</text>
+<text x="612" y="135" fill="#e8eaf0" font-size="10.5" text-anchor="middle">while images move</text>
+</g>
+<line x1="30" y1="203" x2="685" y2="203" stroke="#2a3040" stroke-width="1.5"/>
+<text x="357" y="220" fill="#9aa3b5" font-size="11" text-anchor="middle" font-family="monospace">→ stricter task → bigger image and/or closer farthest-viewer → different DISCAS calculator</text>
+</svg>
+<div class="cap">DISCAS viewing-task categories. Exam pattern: match the space to the task (radiology reading room = ADM), then the task to the sizing rule.</div>
+</div>
+
+<h3 id="p3-concepts">Concept Essentials</h3>
+<div class="cards">
+<div class="card"><h4>Needs analysis ≠ equipment list</h4><p>A needs analysis identifies what end users need to <strong>do</strong>. Best info source: <strong>end-user task descriptions</strong>, not management assumptions. Systems designed on designer assumptions alone are "frequently off the mark."</p></div>
+<div class="card"><h4>Benchmarking</h4><p>Letting the client <strong>experience existing AV systems</strong> that solve similar problems, to calibrate expectations before design.</p></div>
+<div class="card"><h4>Program report</h4><p>AKA concept design report / return brief / AV narrative. Contents: <strong>executive summary, space planning, systems descriptions, infrastructure, AV budgets</strong>. Objective: tell decision-makers the overall capabilities and budget. On approval it becomes the (often contractual) basis of the design phase — and sometimes the RFP.</p></div>
+<div class="card"><h4>Form follows function</h4><p>Needs → applications → system functions → infrastructure. Include end users in the program phase so all parties are invested. Detailed technical info goes to clients as an <strong>electronic document</strong>, not email/phone.</p></div>
+<div class="card"><h4>Site survey math</h4><p>Drawing scales, architectural symbols, area/volume, and unit conversions — the most legitimately testable slice of Ch. 12. All formulas live in the AV Math guide.</p></div>
+<div class="card"><h4>Ambient light rules image</h4><p>A front-projection screen reflects <strong>all</strong> light — projected and ambient alike. Black can't be blacker than the unlit screen, so <strong>ambient light sets the contrast floor</strong>. Windows facing screens are problem #1.</p></div>
+<div class="card"><h4>Finishes &amp; sightlines</h4><p>Surfaces near the screen should be <strong>darker and neutral</strong> — light finishes bounce light into the screen. A sightline study maps lowest visible screen point, near/far viewing angles, off-axis distortion, ergonomics.</p></div>
+<div class="card"><h4>Acoustic assessment</h4><p>Noise criteria ratings (<strong>NC / NR / RC</strong>) quantify background noise. Reverberation comes from hard parallel surfaces. Speech systems need level <em>and</em> uniformity (AVIXA ACU standard) — same SPL at every seat.</p></div>
+<div class="card"><h4>Audio stability</h4><p>Feedback and distortion fixes: <strong>acoustic treatment, EQ, feedback suppression, mix-minus</strong> — plus proper mic/speaker selection and placement in the first place.</p></div>
+<div class="card"><h4>Defining a control system</h4><p>Start with a blank sheet: equipment needing control on the left, <strong>required functions per device</strong> on the right. That function list is step one of communicating with the programmer. Then interoperability (control path layout) and interconnectivity.</p></div>
+</div>
+
+<div class="callout watchout"><span class="tag">WATCH OUT</span>
+The Udemy instructor rounds 16:9 to "1.7." The correct decimal is <strong>1.78 (1.7778)</strong>. His answer happened to land on 7.11 ft, but 1.7 will not reliably reproduce correct results. Round only at the end.</div>
+
+<div class="most-tested" id="p3-tested">
+<h3>Part III — Most Tested</h3>
+<ul>
+<li>Pyramid order: <strong>needs → applications → systems → infrastructure</strong> — never gear-first</li>
+<li>Best needs source = end users describing tasks; program report communicates capability + budget to decision-makers</li>
+<li>Viewing tasks: passive / BDM / ADM (pixel-level = medical, CAD) / full-motion</li>
+<li>Ambient light sets contrast; front screens reflect everything; two lighting zones minimum</li>
+<li>70 dB SPL A target, ≤ 45 dB SPL A background for conference speech</li>
+<li>A-weighting = quiet, C-weighting = loud (&gt; 85 dB SPL)</li>
+<li>ANSI/INFOCOMM 2M-2010 governs the program/design process; DISCAS governs display sizing</li>
+</ul>
+</div>
+</section>
+<!-- ============================ PART IV ============================ -->
+<section id="part4">
+<div class="part-head">
+  <span class="kicker">PART IV · CHAPTERS 17–19 · IMPLEMENTING AV SOLUTIONS</span>
+  <h2>Implementing AV Solutions</h2>
+  <p>Integration (racks, cable, mounting, control, network config), operation/verification, and project management. Project management alone ≈ 8% of your score.</p>
+</div>
+
+<h3 id="p4-numbers">Hard Numbers &amp; Specs</h3>
+<p class="sub">Implementation numbers are few but concrete — these are exactly the kind of spec the exam quizzes verbatim.</p>
+<table>
+<tr><th>SPEC</th><th>VALUE</th><th>WHAT IT MEANS</th></tr>
+<tr><td>Accessible controls</td><td>380–1,220 mm (15–48 in) above floor</td><td>Any control or media slot a user must reach has to sit in this band, which leaves only ~840 mm (33 in) of usable rack height for accessible gear — sometimes forcing an additional rack.</td></tr>
+<tr><td>Heavy equipment placement</td><td>Bottom of free-standing racks</td><td>Weight up high makes a rack tippable. Heavy 1–2 RU pieces may also need <strong>rear rail support</strong> — front-only mounting puts serious torque on the faceplate.</td></tr>
+<tr><td>Heat management</td><td>Hot gear high or separated · fill every space</td><td>Heat rises, so the hottest equipment goes near the top or gets spacing. Every unused RU gets a blank or vent panel — an empty slot short-circuits the designed airflow path.</td></tr>
+<tr><td>Verification standard</td><td>ANSI/InfoComm 10:2013</td><td>The performance-verification (commissioning) framework: a reference list of ~150 verification items proving the installed system meets the contracted spec, with problems caught <em>before</em> handover.</td></tr>
+<tr><td>Termination check</td><td>Continuity test</td><td>After terminating, a continuity test confirms the conductor path end to end. Visible stray wires (or visible solder) are the telltale of a badly fabricated termination.</td></tr>
+<tr><td>Change order (CO)</td><td>Signed by client AND company</td><td>Any work beyond the contracted scope gets documented — the work and its cost — in a CO signed by both parties <em>before</em> the work happens. No handshake extras.</td></tr>
+<tr><td>Building change hits AV?</td><td>Submit an RFC</td><td>When a modification to the building design impacts AV installation requirements, the AV company's document is the <strong>request for change</strong> — not a progress report, not a CCD.</td></tr>
+</table>
+
+<div class="diagram">
+<svg viewBox="0 0 720 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="WBS to logic network to Gantt">
+<defs>
+<marker id="arr2" markerWidth="10" markerHeight="8" refX="8" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 z" fill="#5b8dee"/></marker>
+<marker id="arr3" markerWidth="10" markerHeight="8" refX="8" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 z" fill="#ffb454"/></marker>
+</defs>
+<!-- WBS box -->
+<rect x="20" y="30" width="205" height="160" rx="10" fill="#1d2230" stroke="#3fd0c9" stroke-width="2"/>
+<text x="122" y="56" fill="#3fd0c9" font-size="15" font-weight="700" text-anchor="middle" font-family="sans-serif">1. WBS</text>
+<text x="122" y="74" fill="#9aa3b5" font-size="11" text-anchor="middle" font-family="sans-serif">WHAT the client receives</text>
+<!-- mini tree glyph -->
+<rect x="92" y="86" width="60" height="18" rx="4" fill="#3fd0c9" opacity="0.85"/>
+<text x="122" y="99" fill="#0f1117" font-size="9.5" font-weight="700" text-anchor="middle" font-family="sans-serif">AV system</text>
+<line x1="122" y1="104" x2="70" y2="120" stroke="#2a3040" stroke-width="1.5"/>
+<line x1="122" y1="104" x2="122" y2="120" stroke="#2a3040" stroke-width="1.5"/>
+<line x1="122" y1="104" x2="174" y2="120" stroke="#2a3040" stroke-width="1.5"/>
+<rect x="42" y="120" width="56" height="16" rx="4" fill="#1d2230" stroke="#3fd0c9"/>
+<rect x="94" y="120" width="56" height="16" rx="4" fill="#1d2230" stroke="#3fd0c9"/>
+<rect x="146" y="120" width="56" height="16" rx="4" fill="#1d2230" stroke="#3fd0c9"/>
+<text x="70" y="132" fill="#e8eaf0" font-size="9" text-anchor="middle" font-family="sans-serif">racks</text>
+<text x="122" y="132" fill="#e8eaf0" font-size="9" text-anchor="middle" font-family="sans-serif">displays</text>
+<text x="174" y="132" fill="#e8eaf0" font-size="9" text-anchor="middle" font-family="sans-serif">control</text>
+<text x="122" y="158" fill="#e8eaf0" font-size="10.5" text-anchor="middle" font-family="monospace">NOUNS · deliverables</text>
+<text x="122" y="176" fill="#9aa3b5" font-size="10" text-anchor="middle" font-family="sans-serif">no who, when, or how much</text>
+<path d="M 230 110 L 258 110" stroke="#5b8dee" stroke-width="2.5" marker-end="url(#arr2)"/>
+<!-- Logic network box -->
+<rect x="262" y="30" width="205" height="160" rx="10" fill="#1d2230" stroke="#5b8dee" stroke-width="2"/>
+<text x="364" y="56" fill="#5b8dee" font-size="15" font-weight="700" text-anchor="middle" font-family="sans-serif">2. Logic Network</text>
+<text x="364" y="74" fill="#9aa3b5" font-size="11" text-anchor="middle" font-family="sans-serif">SEQUENCE by dependency</text>
+<!-- mini network glyph: node -> node -> diamond -->
+<rect x="282" y="96" width="46" height="20" rx="5" fill="#1d2230" stroke="#5b8dee" stroke-width="1.5"/>
+<text x="305" y="110" fill="#e8eaf0" font-size="9" text-anchor="middle" font-family="sans-serif">build</text>
+<line x1="328" y1="106" x2="346" y2="106" stroke="#5b8dee" stroke-width="1.8" marker-end="url(#arr2)"/>
+<rect x="350" y="96" width="46" height="20" rx="5" fill="#1d2230" stroke="#5b8dee" stroke-width="1.5"/>
+<text x="373" y="110" fill="#e8eaf0" font-size="9" text-anchor="middle" font-family="sans-serif">test</text>
+<line x1="396" y1="106" x2="414" y2="106" stroke="#5b8dee" stroke-width="1.8" marker-end="url(#arr2)"/>
+<polygon points="432,94 446,106 432,118 418,106" fill="#ffb454"/>
+<text x="432" y="132" fill="#ffb454" font-size="9" text-anchor="middle" font-family="sans-serif">milestone ◆</text>
+<text x="364" y="158" fill="#e8eaf0" font-size="10.5" text-anchor="middle" font-family="monospace">VERBS · activities</text>
+<text x="364" y="176" fill="#9aa3b5" font-size="10" text-anchor="middle" font-family="sans-serif">ordered by dependency, not dates</text>
+<path d="M 472 110 L 500 110" stroke="#ffb454" stroke-width="2.5" marker-end="url(#arr3)"/>
+<!-- Gantt box -->
+<rect x="504" y="30" width="196" height="160" rx="10" fill="#1d2230" stroke="#ffb454" stroke-width="2"/>
+<text x="602" y="56" fill="#ffb454" font-size="15" font-weight="700" text-anchor="middle" font-family="sans-serif">3. Gantt Chart</text>
+<text x="602" y="74" fill="#9aa3b5" font-size="11" text-anchor="middle" font-family="sans-serif">WHEN on the calendar</text>
+<!-- mini gantt glyph -->
+<rect x="524" y="92" width="70" height="12" rx="3" fill="#ffb454" opacity="0.9"/>
+<rect x="560" y="110" width="86" height="12" rx="3" fill="#5b8dee" opacity="0.9"/>
+<rect x="612" y="128" width="66" height="12" rx="3" fill="#3fd0c9" opacity="0.9"/>
+<line x1="560" y1="104" x2="560" y2="110" stroke="#9aa3b5" stroke-width="1.2" stroke-dasharray="2,2"/>
+<line x1="612" y1="122" x2="612" y2="128" stroke="#9aa3b5" stroke-width="1.2" stroke-dasharray="2,2"/>
+<text x="602" y="158" fill="#e8eaf0" font-size="10.5" text-anchor="middle" font-family="monospace">BARS · timeline</text>
+<text x="602" y="176" fill="#9aa3b5" font-size="10" text-anchor="middle" font-family="sans-serif">dependent tasks start after predecessors</text>
+<!-- takeaway strip -->
+<rect x="20" y="204" width="680" height="36" rx="10" fill="rgba(180,140,255,0.07)" stroke="rgba(180,140,255,0.35)"/>
+<text x="360" y="227" fill="#b48cff" font-size="12.5" text-anchor="middle" font-family="sans-serif">Exam cue: "defines deliverables" = WBS · "sequences activities" = logic network · "timeline with dependencies" = Gantt</text>
+</svg>
+<div class="cap">The three planning artifacts, in build order. A dependency = a task that cannot start until another finishes (mount the display only after walls are painted).</div>
+</div>
+
+<h3 id="p4-concepts">Concept Essentials</h3>
+<div class="cards">
+<div class="card"><h4>Rack building</h4><p>Three tasks: build the rack, install equipment, wire it. Guided by the <strong>rack-elevation drawing</strong>. Assemble in the shop (lay the rack on its back), record <strong>serial numbers before loading</strong>.</p></div>
+<div class="card"><h4>Ergonomics &amp; signal separation</h4><p>User-facing gear at easy reach; rarely-touched gear top/bottom. Group cables by <strong>signal level</strong> — mic-level (mV) physically apart from speaker-level (30 V) to prevent EMI crosstalk.</p></div>
+<div class="card"><h4>RF/IR in racks</h4><p>The metal rack can <strong>shield rack-mounted receivers</strong> from their own signal — antennas must be positioned for reception.</p></div>
+<div class="card"><h4>Cable discipline</h4><p>Right cable/connector per signal, gentle bends, near-minimum lengths, label everything, tie off, <strong>continuity-test</strong> before connecting. Neat inside and out.</p></div>
+<div class="card"><h4>Serial control refresher</h4><p><strong>RS-232</strong>: DB-9, unbalanced, bidirectional. <strong>RS-422</strong>: balanced → longer distances. <strong>RS-485</strong>: balanced, 32 devices, 120 Ω both ends (DMX512). Bidirectional preferred for status feedback.</p></div>
+<div class="card"><h4>Networked AV config</h4><p>Subnetting, VLANs, VPN, IP addressing settled with the client's IT <strong>during design</strong> — installation is where you configure to that plan, in coordination with IT staff.</p></div>
+<div class="card"><h4>Performance verification</h4><p>ANSI/InfoComm 10:2013 = the commissioning framework. Proves the system meets the contracted spec, finds issues <strong>before handover</strong>. Method: test-signal generator at the start of the path, calibrate at points along it.</p></div>
+<div class="card"><h4>AV goes in last</h4><p>AV electronics install <strong>after other trades finish and the site is clean</strong> — the gear is too sensitive to dust, moisture, and temperature. But conduit/backboxes must precede cable, and cable precedes ceiling grid.</p></div>
+<div class="card"><h4>Effort vs. duration</h4><p><strong>Effort</strong> = work time in a perfect world. <strong>Duration</strong> = calendar reality (resource availability, other projects, holidays). Perfect-world estimating underbids labor.</p></div>
+<div class="card"><h4>Price ≠ cost</h4><p>Client fee = cost of labor/materials <strong>+ markup</strong> covering overhead (rent, insurance, benefits) and profit. Budget = allocated labor + materials for the agreed work.</p></div>
+</div>
+
+<div class="most-tested" id="p4-tested">
+<h3>Part IV — Most Tested</h3>
+<ul>
+<li>Heavy gear low, hot gear high/separated, <strong>fill every rack space</strong> for airflow</li>
+<li>Signal separation = grouping by signal level to prevent crosstalk</li>
+<li>Accessible interface zone: 380–1,220 mm (15–48 in)</li>
+<li>Stray wires = bad termination; verify with a <strong>continuity test</strong></li>
+<li>WBS = nouns/deliverables; logic network = verbs/dependencies; Gantt = timeline; dependency = task that can't start until another finishes</li>
+<li>Extra work requires a <strong>signed change order</strong>; building-design impacts go in an RFC</li>
+<li>ANSI/InfoComm 10:2013 = performance verification/commissioning</li>
+</ul>
+</div>
+</section>
+
+<!-- ============================ PART V ============================ -->
+<section id="part5">
+<div class="part-head">
+  <span class="kicker">PART V · CHAPTERS 20–22 · SERVICING AV SOLUTIONS</span>
+  <h2>Servicing AV Solutions</h2>
+  <p>Operations upkeep, maintenance, and troubleshooting. Troubleshooting/repair ≈ 10% of your score — and it's nearly all one method.</p>
+</div>
+
+<div class="diagram">
+<svg viewBox="0 0 720 360" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Troubleshooting flow">
+<defs>
+<marker id="arr5" markerWidth="10" markerHeight="8" refX="8" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 z" fill="#5b8dee"/></marker>
+<marker id="arr6" markerWidth="10" markerHeight="8" refX="8" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 z" fill="#3fd0c9"/></marker>
+<marker id="arr7" markerWidth="10" markerHeight="8" refX="8" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 z" fill="#ffb454"/></marker>
+</defs>
+<rect x="150" y="10" width="320" height="52" rx="10" fill="#1d2230" stroke="#3fd0c9" stroke-width="2"/>
+<text x="310" y="32" fill="#3fd0c9" font-size="14" font-weight="700" text-anchor="middle" font-family="sans-serif">1. Identify the failure symptoms</text>
+<text x="310" y="50" fill="#9aa3b5" font-size="10.5" text-anchor="middle" font-family="sans-serif">when did it last work? what changed? who was using it? intermittent? user error?</text>
+<path d="M 310 62 L 310 82" stroke="#5b8dee" stroke-width="2.5" marker-end="url(#arr5)"/>
+<rect x="150" y="86" width="320" height="52" rx="10" fill="#1d2230" stroke="#5b8dee" stroke-width="2"/>
+<text x="310" y="108" fill="#5b8dee" font-size="14" font-weight="700" text-anchor="middle" font-family="sans-serif">2. Check the simple stuff</text>
+<text x="310" y="126" fill="#9aa3b5" font-size="10.5" text-anchor="middle" font-family="sans-serif">powered? plugged in? fuse or reset button? cycle the power?</text>
+<path d="M 470 112 L 540 112" stroke="#3fd0c9" stroke-width="2" marker-end="url(#arr6)"/>
+<text x="505" y="102" fill="#3fd0c9" font-size="10.5" text-anchor="middle" font-family="monospace">fixed?</text>
+<path d="M 310 138 L 310 158" stroke="#5b8dee" stroke-width="2.5" marker-end="url(#arr5)"/>
+<rect x="150" y="162" width="320" height="52" rx="10" fill="#1d2230" stroke="#ffb454" stroke-width="2"/>
+<text x="310" y="184" fill="#ffb454" font-size="14" font-weight="700" text-anchor="middle" font-family="sans-serif">3. Divide and conquer</text>
+<text x="310" y="202" fill="#9aa3b5" font-size="10.5" text-anchor="middle" font-family="sans-serif">split the signal path in half · test the midpoint · keep the failed half</text>
+<!-- loop-back arrow on step 3 -->
+<path d="M 150 196 C 100 196 100 172 148 176" stroke="#ffb454" stroke-width="2" fill="none" marker-end="url(#arr7)"/>
+<text x="78" y="192" fill="#ffb454" font-size="10" text-anchor="middle" font-family="monospace">repeat until</text>
+<text x="78" y="205" fill="#ffb454" font-size="10" text-anchor="middle" font-family="monospace">isolated</text>
+<path d="M 310 214 L 310 234" stroke="#5b8dee" stroke-width="2.5" marker-end="url(#arr5)"/>
+<rect x="150" y="238" width="320" height="52" rx="10" fill="#1d2230" stroke="#b48cff" stroke-width="2"/>
+<text x="310" y="260" fill="#b48cff" font-size="14" font-weight="700" text-anchor="middle" font-family="sans-serif">4. Swap with known-good</text>
+<text x="310" y="278" fill="#9aa3b5" font-size="10.5" text-anchor="middle" font-family="sans-serif">suspect mic? swap in a working mic · suspect cable? swap the cable</text>
+<path d="M 470 264 L 540 264" stroke="#3fd0c9" stroke-width="2" marker-end="url(#arr6)"/>
+<text x="505" y="254" fill="#3fd0c9" font-size="10.5" text-anchor="middle" font-family="monospace">confirmed?</text>
+<!-- resolution box -->
+<rect x="544" y="86" width="156" height="230" rx="10" fill="rgba(63,208,201,0.06)" stroke="#3fd0c9" stroke-width="1.6"/>
+<text x="622" y="120" fill="#3fd0c9" font-size="13" font-weight="700" text-anchor="middle" font-family="sans-serif">Resolve</text>
+<text x="622" y="150" fill="#e8eaf0" font-size="11" text-anchor="middle" font-family="sans-serif">repair or replace</text>
+<text x="622" y="172" fill="#e8eaf0" font-size="11" text-anchor="middle" font-family="sans-serif">verify full operation</text>
+<text x="622" y="194" fill="#e8eaf0" font-size="11" text-anchor="middle" font-family="sans-serif">(or temporary</text>
+<text x="622" y="208" fill="#e8eaf0" font-size="11" text-anchor="middle" font-family="sans-serif">work-around)</text>
+<line x1="562" y1="226" x2="682" y2="226" stroke="#2a3040" stroke-width="1.5"/>
+<text x="622" y="250" fill="#9aa3b5" font-size="11" text-anchor="middle" font-family="sans-serif">document the fix</text>
+<text x="622" y="270" fill="#9aa3b5" font-size="11" text-anchor="middle" font-family="sans-serif">record labor + parts</text>
+<text x="622" y="290" fill="#9aa3b5" font-size="11" text-anchor="middle" font-family="sans-serif">for accurate billing</text>
+<!-- bottom takeaway -->
+<rect x="20" y="326" width="680" height="28" rx="8" fill="rgba(255,107,107,0.07)" stroke="rgba(255,107,107,0.35)"/>
+<text x="360" y="345" fill="#ff6b6b" font-size="12" text-anchor="middle" font-family="sans-serif">Random button-pushing and blind cable-swapping wastes time and creates new problems — the method IS the answer on the exam</text>
+</svg>
+<div class="cap">The systematic method with its exits: simple checks can end it early; divide-and-conquer loops until the fault is isolated; every fix gets verified and documented.</div>
+</div>
+
+<h3 id="p5-concepts">Concept Essentials</h3>
+<div class="cards">
+<div class="card"><h4>Warranty taxonomy</h4><p><strong>Manufacturer's warranty</strong>: new device fails in the first weeks. <strong>System warranty</strong>: the integrator's coverage of the installed system. <strong>Service agreement</strong>: commits the AV company to <strong>ongoing preventive maintenance</strong>.</p></div>
+<div class="card"><h4>Preventive maintenance</h4><p>Fix it <strong>before</strong> it fails: replacing a projector lamp near end-of-life on schedule is the canonical example. Upgrades are not maintenance.</p></div>
+<div class="card"><h4>First response to a problem report</h4><p><strong>Gather symptom information first</strong> — before traveling, before touching anything. Working at all? Powers on? Error messages? All sources or one? This narrows causes and shapes what you bring.</p></div>
+<div class="card"><h4>Most likely culprit</h4><p><strong>Cables and connectors</strong> are the most common AV failure point. Next step in a dead-input chain with verified signal and correct input: <strong>swap the cable for a known-good one</strong>.</p></div>
+<div class="card"><h4>Intermittent problems</h4><p>Defined as failures that are <strong>difficult to reproduce</strong>. Either observe until it recurs or have the client call immediately when it does — and ask demarcation questions (before/after what?).</p></div>
+<div class="card"><h4>User error counts</h4><p>Always consider it — users change settings and take actions that cause failures. Distinguish abnormal performance from misunderstood normal performance.</p></div>
+<div class="card"><h4>Updates cascade</h4><p>An update to one element (including owner-furnished computers/network) can trigger <strong>chains of unexpected results</strong> in connected systems. Consider carefully before installing.</p></div>
+<div class="card"><h4>Operations upkeep (Ch. 20)</h4><p>Stock management, equipment security and theft deterrence, <strong>up-to-date equipment records</strong>, staff training, client-site monitoring. Procedural, lightly tested — know it exists.</p></div>
+</div>
+
+<div class="callout examtip"><span class="tag">EXAM TIP</span>
+Troubleshooting questions are usually "what's the NEXT logical step?" Answer with the method: symptoms → simple checks → halve the system → swap known-good. The wrong answers skip steps (replace parts immediately) or regress (re-ask the user after diagnosis has begun).</div>
+
+<div class="most-tested" id="p5-tested">
+<h3>Part V — Most Tested</h3>
+<ul>
+<li>First troubleshooting step: <strong>clearly identify the failure symptoms</strong></li>
+<li>Most efficient localization: <strong>divide the system in half</strong>, repeat on the failed half</li>
+<li>Most likely failure source: <strong>cable/connector</strong>; confirm by swapping known-good</li>
+<li>Intermittent = difficult to reproduce; user error is always a candidate</li>
+<li>Manufacturer's warranty covers early failures; service agreement = ongoing preventive maintenance</li>
+<li>Preventive maintenance = scheduled replacement before failure (lamps, filters)</li>
+<li>First response to any client problem report: gather symptom detail before traveling</li>
+</ul>
+</div>
+</section>
+
+<section id="closer">
+<h2>Cross-Cutting Candidates (flagged, not yet built)</h2>
+<p>Concepts that repeat across Parts and may deserve consolidated appendices later: <strong>units &amp; conversions</strong> (metric/imperial, lux↔fc, dB reference levels), the <strong>standards roster</strong> (2M-2010, 10:2013, A102.01, DISCAS, 802.11), and the <strong>inverse square law</strong> (already unified in Part II above — light and sound in one diagram).</p>
+</section>
+
+</div><!-- /wrap -->
+
+<script>
+(function(){
+  var sb=document.getElementById('sidebar'),bd=document.getElementById('backdrop'),
+      hb=document.getElementById('hamb'),cb=document.getElementById('closeSb');
+  function open(){sb.classList.add('open');bd.classList.add('show');}
+  function close(){sb.classList.remove('open');bd.classList.remove('show');}
+  hb.addEventListener('click',open);
+  cb.addEventListener('click',close);
+  bd.addEventListener('click',close);
+  sb.querySelectorAll('a').forEach(function(a){a.addEventListener('click',close);});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')close();});
+})();
+</script>
+</body>
+</html>

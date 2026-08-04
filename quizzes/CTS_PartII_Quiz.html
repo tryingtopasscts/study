@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CTS Part II — Practice Quiz</title>
+<style>
+:root {
+  --bg:#0d0f14; --bg2:#13161d; --bg3:#1a1e28; --surface:#1e2330; --surface2:#252b3b;
+  --border:#2e354a; --border2:#3d4660;
+  --accent:#4f9cf9; --accent2:#7eb8ff; --accent-dim:#1a2f54;
+  --green:#3ecf8e; --green-dim:#0a2a1e; --green-border:#1a5c3f;
+  --red:#f87171; --red-dim:#2a0f0f; --red-border:#5c1a1a;
+  --amber:#f5a623; --amber-dim:#2a1e00;
+  --purple:#a78bfa; --purple-dim:#1e1540;
+  --text:#dde3f0; --text2:#8e9abf; --text3:#4e5a7a;
+  --mono:'IBM Plex Mono',monospace; --serif:'Fraunces',serif; --sans:'DM Sans',sans-serif;
+  --radius:8px; --radius-lg:12px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:15px;line-height:1.7;min-height:100vh;}
+
+/* ── LAYOUT ── */
+.app{display:flex;flex-direction:column;min-height:100vh;}
+
+/* ── HEADER ── */
+.header{background:var(--bg2);border-bottom:1px solid var(--border);padding:1.25rem 2rem;display:flex;align-items:center;gap:1.5rem;flex-wrap:wrap;}
+.header-title{font-family:var(--serif);font-size:1.4rem;font-weight:700;color:var(--text);}
+.header-title em{font-style:italic;color:var(--accent2);}
+.header-meta{font-family:var(--mono);font-size:11px;color:var(--text3);}
+.header-actions{margin-left:auto;display:flex;gap:.75rem;align-items:center;flex-wrap:wrap;}
+
+/* ── CONTROLS BAR ── */
+.controls{background:var(--bg3);border-bottom:1px solid var(--border);padding:.75rem 2rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;}
+.filter-label{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);}
+.ch-pills{display:flex;gap:.5rem;flex-wrap:wrap;}
+.ch-pill{font-family:var(--mono);font-size:11px;padding:4px 12px;border-radius:100px;border:1px solid var(--border2);background:var(--surface);color:var(--text2);cursor:pointer;transition:all .15s;}
+.ch-pill:hover{border-color:var(--accent);color:var(--accent2);}
+.ch-pill.active{background:var(--accent-dim);border-color:var(--accent);color:var(--accent2);}
+.controls-right{margin-left:auto;display:flex;gap:.75rem;align-items:center;}
+.mode-toggle{display:flex;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;}
+.mode-btn{font-family:var(--mono);font-size:11px;padding:5px 14px;cursor:pointer;color:var(--text2);background:none;border:none;transition:all .15s;}
+.mode-btn.active{background:var(--accent-dim);color:var(--accent2);}
+
+/* ── PROGRESS BAR ── */
+.progress-bar{height:3px;background:var(--border);}
+.progress-fill{height:100%;background:var(--green);transition:width .4s ease;width:0;}
+
+/* ── MAIN CONTENT ── */
+.main{flex:1;padding:2rem;max-width:760px;margin:0 auto;width:100%;}
+
+/* ── SCORE DASHBOARD ── */
+.dashboard{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2rem;}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1rem;text-align:center;}
+.stat-num{font-family:var(--mono);font-size:1.6rem;font-weight:500;color:var(--text);}
+.stat-num.green{color:var(--green);}
+.stat-num.red{color:var(--red);}
+.stat-num.amber{color:var(--amber);}
+.stat-label{font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-top:.25rem;}
+
+/* ── QUIZ CARD ── */
+.quiz-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:2rem;margin-bottom:1.25rem;}
+.q-meta{display:flex;align-items:center;gap:.75rem;margin-bottom:1rem;}
+.q-num{font-family:var(--mono);font-size:10px;color:var(--text3);}
+.q-chapter{font-family:var(--mono);font-size:10px;padding:3px 10px;border-radius:100px;background:var(--accent-dim);color:var(--accent2);border:1px solid var(--border2);}
+.q-text{font-size:15.5px;color:var(--text);font-weight:500;line-height:1.65;margin-bottom:1.25rem;}
+.options{display:flex;flex-direction:column;gap:.5rem;}
+.option{display:flex;align-items:flex-start;gap:.75rem;padding:.7rem 1rem;border-radius:var(--radius);border:1px solid var(--border);cursor:pointer;transition:all .15s;font-size:14px;color:var(--text2);}
+.option:hover:not(.locked){border-color:var(--border2);background:var(--bg3);color:var(--text);}
+.option.correct{border-color:var(--green);background:var(--green-dim);color:var(--green);cursor:default;}
+.option.wrong{border-color:var(--red);background:var(--red-dim);color:var(--red);cursor:default;}
+.option.reveal{border-color:var(--green);background:var(--green-dim);color:var(--green);opacity:.55;cursor:default;}
+.option.locked{cursor:default;}
+.opt-letter{font-family:var(--mono);font-size:11px;font-weight:500;flex-shrink:0;min-width:20px;margin-top:1px;}
+.feedback{display:none;margin-top:.9rem;padding:.65rem 1rem;border-radius:var(--radius);font-size:13px;line-height:1.6;}
+.feedback.correct{display:block;background:var(--green-dim);color:var(--green);border:1px solid var(--green-border);}
+.feedback.wrong{display:block;background:var(--red-dim);color:var(--red);border:1px solid var(--red-border);}
+
+/* ── FLASHCARD MODE ── */
+.flashcard{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:2.5rem 2rem;min-height:220px;display:flex;flex-direction:column;justify-content:center;cursor:pointer;transition:border-color .2s;position:relative;}
+.flashcard:hover{border-color:var(--border2);}
+.fc-q{font-size:16px;color:var(--text);font-weight:500;line-height:1.65;margin-bottom:1rem;}
+.fc-a{font-size:14.5px;color:var(--green);line-height:1.7;border-top:1px solid var(--border);padding-top:1rem;display:none;}
+.flashcard.flipped .fc-a{display:block;}
+.fc-hint{font-family:var(--mono);font-size:10.5px;color:var(--text3);margin-top:.75rem;}
+.fc-chapter{font-family:var(--mono);font-size:10px;color:var(--accent);margin-bottom:.5rem;}
+.fc-nav{display:flex;align-items:center;gap:.75rem;margin-top:1rem;}
+.fc-count{font-family:var(--mono);font-size:12px;color:var(--text3);flex:1;text-align:center;}
+
+/* ── BUTTONS ── */
+.btn{padding:8px 20px;border-radius:var(--radius);font-size:13px;font-family:var(--sans);cursor:pointer;border:1px solid var(--border2);background:var(--surface2);color:var(--text2);transition:all .15s;}
+.btn:hover{background:var(--border2);color:var(--text);}
+.btn.primary{background:var(--accent-dim);color:var(--accent2);border-color:var(--accent);}
+.btn.primary:hover{background:var(--accent);color:#fff;}
+.btn.danger{background:var(--red-dim);color:var(--red);border-color:var(--red-border);}
+
+/* ── COMPLETION ── */
+.completion{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:2.5rem;text-align:center;}
+.completion-score{font-family:var(--mono);font-size:3rem;font-weight:500;color:var(--green);margin-bottom:.5rem;}
+.completion-label{font-size:14px;color:var(--text2);margin-bottom:1.5rem;}
+.completion-breakdown{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:.75rem;margin:1.5rem 0;}
+.ch-result{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:.75rem 1rem;text-align:left;}
+.ch-result-name{font-size:12px;color:var(--text2);margin-bottom:.25rem;}
+.ch-result-score{font-family:var(--mono);font-size:13px;font-weight:500;}
+.ch-result-score.perfect{color:var(--green);}
+.ch-result-score.good{color:var(--amber);}
+.ch-result-score.needs-work{color:var(--red);}
+
+/* ── EMPTY STATE ── */
+.empty{text-align:center;padding:4rem 2rem;color:var(--text3);}
+.empty-icon{font-size:3rem;margin-bottom:1rem;}
+
+@media(max-width:600px){
+  .dashboard{grid-template-columns:1fr 1fr;}
+  .header{padding:1rem;}
+  .controls{padding:.75rem 1rem;}
+  .main{padding:1rem;}
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- HEADER -->
+<header class="header">
+  <div>
+    <div class="header-title">CTS Part II — <em>Practice Quiz</em></div>
+    <div class="header-meta">86 questions · Chapters 3–10 · From the textbook</div>
+    <div class="header-meta" id="overall-progress" style="margin-top:2px"></div>
+  </div>
+  <div class="header-actions">
+    <button class="btn primary" onclick="shuffleQuestions()">Shuffle</button>
+    <button class="btn" onclick="resetAll()">Reset</button>
+  </div>
+</header>
+
+<!-- CONTROLS -->
+<div class="controls">
+  <span class="filter-label">Chapter</span>
+  <div class="ch-pills">
+    <div class="ch-pill active" data-ch="all" onclick="setChapter('all',this)">All</div>
+    <div class="ch-pill" data-ch="3" onclick="setChapter(3,this)">Ch 3</div>
+    <div class="ch-pill" data-ch="4" onclick="setChapter(4,this)">Ch 4</div>
+    <div class="ch-pill" data-ch="5" onclick="setChapter(5,this)">Ch 5</div>
+    <div class="ch-pill" data-ch="6" onclick="setChapter(6,this)">Ch 6</div>
+    <div class="ch-pill" data-ch="7" onclick="setChapter(7,this)">Ch 7</div>
+    <div class="ch-pill" data-ch="8" onclick="setChapter(8,this)">Ch 8</div>
+    <div class="ch-pill" data-ch="9" onclick="setChapter(9,this)">Ch 9</div>
+    <div class="ch-pill" data-ch="10" onclick="setChapter(10,this)">Ch 10</div>
+  </div>
+  <div class="controls-right">
+    <div class="mode-toggle">
+      <button class="mode-btn active" id="btn-quiz" onclick="setMode('quiz')">Quiz</button>
+      <button class="mode-btn" id="btn-flash" onclick="setMode('flash')">Flashcard</button>
+    </div>
+  </div>
+</div>
+
+<!-- PROGRESS -->
+<div class="progress-bar"><div class="progress-fill" id="prog"></div></div>
+
+<!-- MAIN -->
+<main class="main">
+  <!-- DASHBOARD -->
+  <div class="dashboard">
+    <div class="stat-card">
+      <div class="stat-num" id="stat-total">0</div>
+      <div class="stat-label">Total</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" id="stat-answered">0</div>
+      <div class="stat-label">Answered</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num green" id="stat-correct">0</div>
+      <div class="stat-label">Correct</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num amber" id="stat-pct">—</div>
+      <div class="stat-label">Score</div>
+    </div>
+  </div>
+
+  <!-- QUIZ CONTENT -->
+  <div id="quiz-content"></div>
+  <div id="flash-content" style="display:none"></div>
+</main>
+</div>
+
+<script>
+const ALL_QUESTIONS = [
+  {ch:3,chName:'Analog & Digital Signals',q:'In a digital signal, the on state is represented by _____, and the off state is represented by ____.',opts:['Two; one', 'One; two', 'Zero; one', 'One; zero'],ans:3,exp:'In a digital signal, the on state is represented by one, and the off state is represented by zero.'},
+  {ch:3,chName:'Analog & Digital Signals',q:'A signal that has many varying states is called a(n) _____ signal.',opts:['Analog', 'Fluctuating', 'Dimmer', 'Digital'],ans:0,exp:'A signal that has many varying states is an analog signal.'},
+  {ch:3,chName:'Analog & Digital Signals',q:'Bit depth is defined as the number of _____ you have in which to describe the value.',opts:['Signals', 'Speeds', 'States', 'Rates'],ans:2,exp:'Bit depth is defined as the number of states you have in which to describe the value.'},
+  {ch:3,chName:'Analog & Digital Signals',q:'Lossy compression is particularly suitable for the transmission of _______.',opts:['Spreadsheets', 'Text files', 'Financial data', 'Audio, video, and images'],ans:3,exp:'Lossy compression is particularly suitable for the transmission of audio, video, and images.'},
+  {ch:3,chName:'Analog & Digital Signals',q:'What is a codec?',opts:['A structure of data containment', 'A formatting system', 'A program that holds data', 'A device or processing system that encodes and decodes data'],ans:3,exp:'A codec is a device or processing system that encodes and decodes data.'},
+  {ch:3,chName:'Analog & Digital Signals',q:'As noise is introduced along a(n) _____ signal path, processing circuitry can determine whether the signal is intended to be high or low and then retransmit a solid signal without the imposed noise.',opts:['Digital', 'Dirty', 'Analog', 'Clean'],ans:0,exp:'As noise is introduced along a digital signal path, processing circuitry can determine whether the signal is intended to be high or low and then retransmit a solid signal without the imposed noise.'},
+  {ch:3,chName:'Analog & Digital Signals',q:'Noise overcomes the signal after many generations of re-amplification of a(n) _____ signal.',opts:['Digital', 'Analog', 'Low', 'High'],ans:1,exp:'Noise overcomes the signal after many generations of re-amplification of an analog signal.'},
+  {ch:4,chName:'Audio Systems',q:'How sound moves through the air is called_____.',opts:['Generation', 'Compression', 'Acoustical', 'Propagation'],ans:3,exp:'How sound moves through the air is called propagation.'},
+  {ch:4,chName:'Audio Systems',q:'Wavelength is the _____.',opts:['Number of times a wavelength cycle occurs per second', 'Intensity or loudness of a sound in a particular medium', 'Physical distance between two points of a waveform that are exactly one cycle apart', 'Cycle when molecules move from rest through compression to rest to rarefaction'],ans:2,exp:'Wavelength is the physical distance between two points of a waveform that are exactly one cycle apart.'},
+  {ch:4,chName:'Audio Systems',q:'Which of the following does 0dB SPL describe?',opts:['The threshold of human hearing', 'Ambient noise level', 'The threshold of pain', 'Normal listening level'],ans:0,exp:'0dB SPL describes the threshold of human hearing.'},
+  {ch:4,chName:'Audio Systems',q:'A “just noticeable” change in sound pressure level, either louder or softer, requires a _____ change.',opts:['+/–10dB', '+/–6dB', '+/–1dB', '+/–3dB'],ans:3,exp:'A “just noticeable” change in sound pressure level, either louder or softer, requires a +/–3dB change.'},
+  {ch:4,chName:'Audio Systems',q:'Acoustics covers how sound is _____, and its _____ and _____.',opts:['Received; effects; structure', 'Produced; propagation; control', 'Controlled; delivery; translation', 'Produced; amplification; reception'],ans:1,exp:'Acoustics covers how sound is produced and its propagation and control.'},
+  {ch:4,chName:'Audio Systems',q:'Numerous, persistent reflections of sound are called _____.',opts:['Directional sound', 'Echo', 'Surface reflection', 'Reverberation'],ans:3,exp:'Numerous, persistent reflections of sound are called reverberation.'},
+  {ch:4,chName:'Audio Systems',q:'Ambient noise is sound that _____ the desired message or signal.',opts:['Interferes with', 'Completely blocks', 'Enhances', 'Is louder than'],ans:0,exp:'Ambient noise is sound that interferes with the desired message or signal.'},
+  {ch:4,chName:'Audio Systems',q:'The audio signal ends up in a(n) _____ before being converted into acoustical energy.',opts:['Output device', 'Electrical signal', 'Processor', 'Microphone'],ans:0,exp:'The audio signal ends up in an output device before being converted into acoustical energy.'},
+  {ch:4,chName:'Audio Systems',q:'The strength of the electrical audio signal from a microphone is called a(n) _____ -level signal.',opts:['Dynamic', 'Condenser', 'Electret', 'Mic'],ans:3,exp:'The strength of the electrical audio signal from a microphone is called a mic-level signal.'},
+  {ch:4,chName:'Audio Systems',q:'Phantom power is the _____ required to power a condenser microphone.',opts:['Polarized conductor', 'Electrical field', 'Remote power', 'Internal capacitor'],ans:2,exp:'Phantom power is the remote power required to power a condenser microphone.'},
+  {ch:4,chName:'Audio Systems',q:'Typically, what type of connector finishes the shielded twisted-pair cable?',opts:['XRL', 'RXL', 'LRX', 'XLR'],ans:3,exp:'An XLR connector typically finishes the shielded twisted-pair cable.'},
+  {ch:4,chName:'Audio Systems',q:'The simultaneous use of multiple wireless microphone systems requires ____.',opts:['Frequency coordination', 'Multiple receivers all tuned to the same frequency', 'Using lavalier microphones', 'Using IR wireless microphones'],ans:0,exp:'The simultaneous use of multiple wireless microphone systems requires frequency coordination.'},
+  {ch:4,chName:'Audio Systems',q:'If a technician changes the level of a signal, it is called _____.',opts:['Unity gain', 'Gain adjustment', 'Attenuation', 'Signal expansion'],ans:1,exp:'If a technician changes the level of a signal, it is called gain adjustment.'},
+  {ch:4,chName:'Audio Systems',q:'The amplifier comes right before _____ in the audio system chain.',opts:['The equalizer', 'Everything', 'The audio processor', 'The loudspeakers'],ans:3,exp:'The amplifier comes right before the loudspeakers in the audio system chain.'},
+  {ch:4,chName:'Audio Systems',q:'What is a crossover?',opts:['A loudspeaker containing multiple drivers', 'A loudspeaker enclosure with more than one frequency range', 'An electrical frequency dividing network circuit', 'A single driver reproducing the entire frequency range'],ans:2,exp:'A crossover is an electrical frequency–dividing network circuit.'},
+  {ch:5,chName:'Video Systems',q:'Electromagnetic radiation is categorized by its _____.',opts:['Spectrum', 'Visibility', 'Vectors', 'Wavelength'],ans:3,exp:'Electromagnetic radiation is categorized by its wavelength.'},
+  {ch:5,chName:'Video Systems',q:'Generally, a _____ measurement of incident light is taken at a task area like a video screen.',opts:['Lumen', 'LED', 'Foot-candle', 'Lux'],ans:3,exp:'Generally, a lux measurement of incident light is taken at a task area like a video screen.'},
+  {ch:5,chName:'Video Systems',q:'Illumination decreases by _____ when the distance from a light source is doubled.',opts:['95 percent', '75 percent', '50 percent', '25 percent'],ans:1,exp:'Illumination decreases by 75 percent when the distance from a light source is doubled.'},
+  {ch:5,chName:'Video Systems',q:'The amount of ambient light in a displayed environment _____.',opts:['Negatively affects the quality of the displayed image', 'Does not affect the quality of the displayed image', 'Improves the quality of the displayed image', 'Complements the quality of the displayed image'],ans:0,exp:'The amount of ambient light in a displayed environment negatively affects the quality of the displayed image.'},
+  {ch:5,chName:'Video Systems',q:'The native resolution of display device is defined by its_______.',opts:['Contrast ratio', 'Horizontal rows and vertical columns of pixels', 'Horizontal and vertical sync signals', 'Aspect ratio'],ans:1,exp:'The native resolution of display device is defined by its horizontal rows and vertical columns of pixels.'},
+  {ch:5,chName:'Video Systems',q:'According to the Projected Image System Contrast Ratio standard, what is the minimum contrast ratio required for viewing full-motion video?',opts:['16:9', '15:1', '2.39:1', '80:1'],ans:3,exp:'According to the Projected Image System Contrast Ratio standard, the minimum contrast ratio required for viewing full-motion video is 80:1.'},
+  {ch:5,chName:'Video Systems',q:'Four factors related to primary optics that influence the quality of the projected image are _____.',opts:['Reflection, curvature, spherical aberration, and dispersion of field', 'Reflection, dispersion, spherical aberration, and curvature of field', 'Refraction, presentation, spherical aberration, and curvature of field', 'Refraction, dispersion, spherical aberration, and curvature of field'],ans:3,exp:'The four factors related to primary optics that influence the quality of the projected image are refraction, dispersion, spherical aberration, and curvature of field.'},
+  {ch:5,chName:'Video Systems',q:'Three of the major formats of digital signal connections are _____.',opts:['DVI, HDVI, and DisplayPort', 'DMI, HDVI, and DisplayPort', 'DVI, HDMI, and DisplayPort', 'DMI, HDMI, and DisplayPort'],ans:2,exp:'Three of the major formats of digital video connections are DVI, HDMI, and DisplayPort.'},
+  {ch:5,chName:'Video Systems',q:'To measure the bandwidth of an image, you will need a _____.',opts:['Spectrum analyzer', 'Frequency analyzer', 'Output monitor', 'Bandwidth monitor'],ans:0,exp:'To measure the bandwidth of an image, you will need a spectrum analyzer.'},
+  {ch:5,chName:'Video Systems',q:'Rear-screen display applications are considered _____.',opts:['Remissive', 'Emissive', 'Transmissive', 'Reflective'],ans:2,exp:'Rear-screen display applications are considered transmissive.'},
+  {ch:5,chName:'Video Systems',q:'LCDs first pass light through a ____, which blocks certain light waves.',opts:['Transistor mask', 'Polarizer', 'Pixel grid', 'Resistor network'],ans:1,exp:'LCDs first pass light through a polarizer, which blocks certain light waves.'},
+  {ch:5,chName:'Video Systems',q:'When selecting a display type, what should be your first step?',opts:['Decide if you should use an analog or digital display', 'Figure out what type of mount you will need', 'Determine the distance of the farthest viewer', 'Determine what you want to display'],ans:3,exp:'When selecting a display type, your first step should be to determine what you want to display.'},
+  {ch:5,chName:'Video Systems',q:'The _____ the gain number of a projection screen, the _____ the image.',opts:['Higher; brighter', 'Lower; sharper', 'Higher; softer', 'Lower; brighter'],ans:0,exp:'The higher the gain number of a projection screen, the brighter the image.'},
+  {ch:5,chName:'Video Systems',q:'What quality would the image have if the phase setting of a display needs adjusting?',opts:['Blurry only at the image center', 'Oversaturation of red and green', 'Edge of image in sharp focus', 'Fuzzy details'],ans:3,exp:'If the phase setting of a display needs adjusting, the details of the image will be fuzzy.'},
+  {ch:5,chName:'Video Systems',q:'The formula for an ANSI lumen rating is _____.',opts:['L=SH×SW×AI', 'L=SH×SW×AH', 'L=SH×SA×SF', 'L=SH×SW×AS'],ans:0,exp:'The formula for an ANSI lumen rating isL=SH×SW×AI.'},
+  {ch:6,chName:'Networks',q:'Which of the following network topologies connects devices in sequence along a linear path?',opts:['Bus', 'Star', 'Mesh', 'Ring'],ans:0,exp:'A bus network connects devices in sequence along a linear path.'},
+  {ch:6,chName:'Networks',q:'Which IEEE standard defines Wi-Fi communications methods?',opts:['802.1x', 'EIA-485', 'IPv6', '802.11'],ans:3,exp:'The IEEE 802.11 standard defines Wi-Fi communications methods.'},
+  {ch:6,chName:'Networks',q:'What happens to the connection speed in a Wi-Fi connection if the signal strength declines?',opts:['Speeds up', 'Stops', 'Slows down', 'Remains constant'],ans:2,exp:'The connection speed in a Wi-Fi connection slows down if the signal strength declines.'},
+  {ch:6,chName:'Networks',q:'Which of the following is a type of fiber-optic cable identified by its yellow outer jacket?',opts:['ST', 'SC', 'Multimode', 'Single-mode'],ans:3,exp:'Single-mode fiber-optic cable can be identified by its yellow outer jacket.'},
+  {ch:6,chName:'Networks',q:'The _____ model is a guide that assists with conforming network communications and their processes to standards.',opts:['Network interface', 'OSI reference', 'Informal data link', 'Asynchronous transfer mode'],ans:1,exp:'The OSI reference model is a guide that assists with conforming network communications and their processes to standards.'},
+  {ch:6,chName:'Networks',q:'In the OSI model, cabling and patchbays are elements of _____.',opts:['Layer 2, the Data Link layer', 'Layer 4, the Transport layer', 'Layer 1, the Physical layer', 'Layer 3, the Network layer'],ans:2,exp:'In the OSI model, cabling and patchbays are elements of layer 1, the Physical layer.'},
+  {ch:6,chName:'Networks',q:'A _____ address is unique to every device and identifies a network’s equipment.',opts:['Transfer mode', 'Baseband', 'Digital subscriber line', 'MAC'],ans:3,exp:'A MAC address is unique to every device and identifies a network’s equipment.'},
+  {ch:6,chName:'Networks',q:'IP deals with which of the following on a network?',opts:['Addresses', 'Names', 'Routes', 'Versions'],ans:0,exp:'IP deals with addresses on a network.'},
+  {ch:6,chName:'Networks',q:'An IPv6 address uses _____ groups of four hexadecimal numbers.',opts:['Three', 'Eight', 'Six', 'One'],ans:1,exp:'An IPv6 address uses eight groups of four hexadecimal numbers.'},
+  {ch:6,chName:'Networks',q:'Subnet masks can indicate how many _____ are allowed on the network.',opts:['Computers', 'Gateways', 'Devices', 'Printers'],ans:2,exp:'Subnet masks can indicate how many devices are allowed on the network.'},
+  {ch:6,chName:'Networks',q:'What is required to set an IP address manually on a network?',opts:['IP address and device name', 'Subnet mask and gateway', 'Subnet mask and DNS server', 'IP address and subnet mask'],ans:3,exp:'An IP address and subnet mask are required to set an IP address manually on a network.'},
+  {ch:6,chName:'Networks',q:'Which type of server automatically assigns an IP address to the MAC address during the device’s connection to a network?',opts:['Gateway', 'Virtual private network', 'DNS', 'DHCP'],ans:3,exp:'A DHCP server automatically assigns an IP address to the MAC address during the device’s connection to a network.'},
+  {ch:6,chName:'Networks',q:'Which of the following switches just needs to be plugged in and connected to devices?',opts:['Unmanaged', 'LAN', 'Addressing', 'Managed'],ans:0,exp:'Unmanaged switches just need to be plugged in and connected to devices.'},
+  {ch:6,chName:'Networks',q:'A _____ sends packets to different locations on a network and connects to outside networks.',opts:['Switch', 'Gateway', 'Bridge', 'Router'],ans:1,exp:'A gateway sends packets to different locations on a network and connects to outside networks.'},
+  {ch:6,chName:'Networks',q:'A _____ controls incoming and outgoing network traffic and determines what will be allowed through based on a set of security rules.',opts:['Switch', 'Gateway', 'Firewall', 'Router'],ans:2,exp:'A firewall controls incoming and outgoing network traffic and determines what will be allowed through.'},
+  {ch:7,chName:'Signal-Management Systems',q:'The path on which signal types travel is called _____.',opts:['Signal flow', 'Signal transfer route', 'Wires and cables', 'Audio and video control'],ans:0,exp:'The path on which signal types travel is calledsignal flow.'},
+  {ch:7,chName:'Signal-Management Systems',q:'The purpose of shielding is to prevent _____ from mixing with the signal.',opts:['Insulation', 'Jackets', 'Conductors', 'Noise'],ans:3,exp:'The purpose of shielding is to prevent noise from mixing with the signal.'},
+  {ch:7,chName:'Signal-Management Systems',q:'Which of the following differentiates cable from wire?',opts:['Cable contains a shield.', 'Cable contains only one conductor.', 'Cable contains multiple conductors.', 'Conductors are insulated.'],ans:2,exp:'Cable contains multiple conductors.'},
+  {ch:7,chName:'Signal-Management Systems',q:'Twisted-pair cable using balanced circuitry can help in _____.',opts:['Keeping noise from audio and video', 'Blocking static', 'Preserving the original transmission', 'Rejecting interference'],ans:3,exp:'Twisted-pair cable using balanced circuitry can help in rejecting interference.'},
+  {ch:7,chName:'Signal-Management Systems',q:'Unless amplified or buffered, digital signals generally do not travel as far as _____ signals.',opts:['Wireless', 'Analog', 'Fiber', 'Cable'],ans:1,exp:'Unless amplified or buffered, digital signals generally do not travel as far as analog signals.'},
+  {ch:7,chName:'Signal-Management Systems',q:'Switchers _____.',opts:['Must have power to operate', 'Mix different inputs to a signal output', 'Connect multiple inputs simultaneously to one output', 'Allow the user to select one input from a number of inputs'],ans:3,exp:'Switchers allow the user to select one input from a number of inputs.'},
+  {ch:7,chName:'Signal-Management Systems',q:'A 4 × 2 matrix switcher _____.',opts:['Can connect any of four inputs to one or both of two outputs', 'Must have only one output connected at any given time', 'Can connect either of two inputs to any or all of four outputs', 'Has effectively eight outputs'],ans:0,exp:'A 4 × 2 matrix switcher can connect any of four inputs to one or both of two outputs.'},
+  {ch:7,chName:'Signal-Management Systems',q:'An AV rack is a housing unit that _____ electronic equipment.',opts:['Identifies', 'Elevates', 'Protects and organizes', 'Cools'],ans:2,exp:'An AV rack is a housing unit that protects and organizes electronic equipment.'},
+  {ch:7,chName:'Signal-Management Systems',q:'The inside of a typical AV rack is _____ wide, and the outside varies from _____.',opts:['1 foot (305mm); 2 to 7 feet (610mm to 2.13m)', '19 inches (482.6mm); 21 to 25 inches (533 to 635mm)', '25 inches (635mm); 19 to 21 inches (482.6 to 533mm)', '21 inches (533mm); 19 to 25 inches (482.6 to 635mm)'],ans:1,exp:'The inside of a typical AV rack is 19 inches (482.6mm) wide, and the outside varies from 21 to 25 inches (533 to 635mm).'},
+  {ch:8,chName:'Control Systems',q:'Remote control systems _____ the operation of an AV system.',opts:['Complicate', 'Automate', 'Reconfigure', 'Simplify'],ans:3,exp:'Control systems simplify the operation of an AV system.'},
+  {ch:8,chName:'Control Systems',q:'Which of these isnota common method of interfacing with a control system?',opts:['GUIs', 'Flip charts', 'Wireless touch panels', 'Wall switches'],ans:1,exp:'Flip charts are not a common method of interfacing with a control system.'},
+  {ch:8,chName:'Control Systems',q:'Which of the following is most likely to be a function rather than a program?',opts:['Starting a videoconference', 'Playing a video', 'Dimming the lights and starting a media player', 'Setting volume levels'],ans:3,exp:'Setting volume levels is more likely to be a function than a program.'},
+  {ch:8,chName:'Control Systems',q:'Which of the following would most likely require a program?',opts:['Turning on the lights', 'Activating a single function on a device', 'Powering on the audio amplifier and display', 'Setting a volume level'],ans:2,exp:'Powering on the audio amplifier and display would most likely be a program.'},
+  {ch:8,chName:'Control Systems',q:'The purpose of a control system interface is to send instructions to the _____.',opts:['Internet gateway', 'Network printers', 'Hard drive', 'Control system CPU'],ans:3,exp:'The purpose of a control system interface is to send instructions to the control system CPU.'},
+  {ch:8,chName:'Control Systems',q:'Communication that allows a return message is called _____.',opts:['Omnidirectional', 'Bidirectional', 'Multidirectional', 'Unidirectional'],ans:1,exp:'Communication that allows a return message is calledbidirectional.'},
+  {ch:8,chName:'Control Systems',q:'Contact-closure control communication provides device operation by _____.',opts:['Increasing the power level of the electrical circuit', 'Reducing the wattage in a current loop', 'Increasing resistance in a voltage loop', 'Closing or opening an electrical contact'],ans:3,exp:'Contact-closure control communication provides device operation by closing or opening an electrical contact.'},
+  {ch:8,chName:'Control Systems',q:'Which of the following can interfere with an IR control?',opts:['Quality of the device', 'Strength of the power source', 'Shadows and darkness', 'Bright sunshine or fluorescent lighting'],ans:3,exp:'Bright sunshine or fluorescent lighting can interfere with an IR control.'},
+  {ch:8,chName:'Control Systems',q:'Ethernet is mainly used in control systems _____.',opts:['To control complex systems', 'For one-way device communication', 'To create IP addresses', 'For analog devices'],ans:0,exp:'Ethernet is mainly used in control systems to control complex systems.'},
+  {ch:9,chName:'Electrical Systems',q:'Voltage is the force that causes ____ to flow through a conductor.',opts:['Ohms', 'Neutrons', 'Watts', 'Current'],ans:3,exp:'Voltage is the force that causes current to flow through a conductor.'},
+  {ch:9,chName:'Electrical Systems',q:'Current is measured in ____.',opts:['Amperes', 'Volts', 'Ohms', 'Watts'],ans:0,exp:'Current is measured in amperes.'},
+  {ch:9,chName:'Electrical Systems',q:'The opposition to the flow of current in an AC circuit is called _____.',opts:['Ohms', 'Resistance', 'Impedance', 'Dissipation'],ans:2,exp:'The opposition to the flow of current in an AC circuit is called impedance.'},
+  {ch:9,chName:'Electrical Systems',q:'Power is measured in _____.',opts:['Voltage', 'Impedance', 'Resistance', 'Watts'],ans:3,exp:'Power is measured in watts.'},
+  {ch:9,chName:'Electrical Systems',q:'The relationship between voltage, current, and resistance is defined by the formula _____.',opts:['V=I/R', 'I=R/V', 'I=V/R', 'R=V*I'],ans:2,exp:'The relationship between voltage, current, and resistance is defined by the formulaI=V/R.'},
+  {ch:9,chName:'Electrical Systems',q:'A current is always seeking to return to the _____.',opts:['Battery', 'Load', 'Ground', 'Source'],ans:3,exp:'A current is always seeking to return to the source.'},
+  {ch:9,chName:'Electrical Systems',q:'The main panel distributes power using _____.',opts:['Distribution panels and service entrances', 'Feeders and distribution panels', 'Branch circuits and feeders', 'Service entrances and distribution panels'],ans:1,exp:'The main panel distributes power using feeders and distribution panels.'},
+  {ch:9,chName:'Electrical Systems',q:'At what point in the AC power system are the branch circuits that power wall outlets and AV equipment connected?',opts:['Lateral feed', 'Feeders', 'Main distribution', 'Subsidiary distribution panel (panelboard)'],ans:3,exp:'The branch circuits that power wall outlets and AV equipment are connected to the subsidiary distribution panel (panelboard).'},
+  {ch:9,chName:'Electrical Systems',q:'When planning an electrical system, do not plan to exceed ____ of the current capacity of any circuit.',opts:['95 percent', '80 percent', '65 percent', '75 percent'],ans:1,exp:'When planning an electrical system, do not plan to exceed 80 percent of the current capacity of any circuit.'},
+  {ch:10,chName:'Wireless Radio Systems',q:'An AC signal of _____ falls into the RF spectrum.',opts:['9kHz to 300GHz', 'No less than 9kHz', '300GHz and below', '3kHz to 300GHz'],ans:3,exp:'An AC signal of 3kHz to 300GHz falls into the RF spectrum.'},
+  {ch:10,chName:'Wireless Radio Systems',q:'What does the transmitter do with its incoming signal stream?',opts:['Modulates it to be sent out via an antenna', 'Stores and reads it', 'Demodulates it', 'Converts it so that it can be translated and received'],ans:0,exp:'A transmitter modulates its incoming signal stream to be sent out via antenna.'},
+  {ch:10,chName:'Wireless Radio Systems',q:'_____ is the most important step in converting data in a transmitter.',opts:['Transmission', 'Demodulation', 'Extraction', 'Modulation'],ans:3,exp:'Modulation is the most important step in converting data in a transmitter.'},
+  {ch:10,chName:'Wireless Radio Systems',q:'The range of frequencies between 300MHz and 3GHz is the ___ band.',opts:['VHF', 'HF', 'VLF', 'UHF'],ans:3,exp:'The range of frequencies between 300MHz and 3GHz is the UHF band.'},
+  {ch:10,chName:'Wireless Radio Systems',q:'One of the most efficient configurations for a vertical antenna is to _____.',opts:['Have a physical length one-quarter of the signal wavelength', 'Have a wavelength one-half the size of the receiving antenna', 'Have proper orientation', 'Have a mounting close to the ground'],ans:0,exp:'One of the most efficient configurations for a vertical antenna is to have a physical length one-quarter of the signal wavelength.'},
+  {ch:10,chName:'Wireless Radio Systems',q:'The main function of a diversity receiver is to ____.',opts:['Amplify echoes so that the main signal is strengthened', 'Find incident and reflected signals that arrive in phase', 'Compare phase differences between signals to avoid cancellation', 'Eliminate multipath signals that come from the transmitter'],ans:2,exp:'The main function of a diversity receiver is to compare the phase differences between signals to avoid cancellation.'},
+  {ch:10,chName:'Wireless Radio Systems',q:'Parabolic antennas are ideal for use ____',opts:['In tropical climates', 'In point-to-point communications', 'Where wide area coverage is important', 'Where the transmitters or receivers are in motion'],ans:1,exp:'Parabolic antennas are ideal for use in point-to-point communications.'}
+];
+ALL_QUESTIONS.forEach((q, i) => { q.id = i; });
+
+let activeChapter = 'all';
+let mode = 'quiz';
+let filteredQ = [];
+let answered = {};   // qid → {chosen, correct}  — persists across filters/shuffles/reloads
+let shuffled = false;
+let fcIndex = 0;
+
+// ── LOCAL PERSISTENCE (this browser only — nothing is ever sent anywhere) ──
+const STORAGE_KEY = 'cts_part2_progress';
+function saveProgress() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(answered)); } catch (e) {}
+}
+function loadProgress() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    answered = raw ? JSON.parse(raw) : {};
+  } catch (e) { answered = {}; }
+}
+
+// ── FILTER ────────────────────────────────────────────────────────────────
+function filterQuestions() {
+  filteredQ = activeChapter === 'all'
+    ? [...ALL_QUESTIONS]
+    : ALL_QUESTIONS.filter(q => q.ch === activeChapter);
+  render();
+}
+
+function setChapter(ch, el) {
+  activeChapter = ch === 'all' ? 'all' : parseInt(ch);
+  document.querySelectorAll('.ch-pill').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  fcIndex = 0;
+  filterQuestions();
+}
+
+// ── MODE ──────────────────────────────────────────────────────────────────
+function setMode(m) {
+  mode = m;
+  document.getElementById('btn-quiz').classList.toggle('active', m === 'quiz');
+  document.getElementById('btn-flash').classList.toggle('active', m === 'flash');
+  document.getElementById('quiz-content').style.display = m === 'quiz' ? '' : 'none';
+  document.getElementById('flash-content').style.display = m === 'flash' ? '' : 'none';
+  if (m === 'flash') renderFlash();
+}
+
+// ── SHUFFLE ───────────────────────────────────────────────────────────────
+function shuffleQuestions() {
+  filteredQ = filteredQ.sort(() => Math.random() - 0.5);
+  fcIndex = 0;
+  render();
+}
+
+function resetAll() {
+  if (!confirm('Reset ALL saved progress for this quiz (every chapter)? This cannot be undone.')) return;
+  answered = {};
+  fcIndex = 0;
+  try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
+  document.getElementById('quiz-content').innerHTML = '';
+  filterQuestions();
+}
+
+// ── STATS ─────────────────────────────────────────────────────────────────
+function updateStats() {
+  const total = filteredQ.length;
+  const answeredList = filteredQ.map(q => answered[q.id]).filter(a => a !== undefined);
+  const answeredCount = answeredList.length;
+  const correctCount = answeredList.filter(a => a.correct).length;
+  const pct = answeredCount > 0 ? Math.round(correctCount / answeredCount * 100) : null;
+  document.getElementById('stat-total').textContent = total;
+  document.getElementById('stat-answered').textContent = answeredCount;
+  document.getElementById('stat-correct').textContent = correctCount;
+  document.getElementById('stat-pct').textContent = pct !== null ? pct + '%' : '—';
+  document.getElementById('prog').style.width = (total > 0 ? (answeredCount / total * 100) : 0) + '%';
+
+  const overallAnswered = ALL_QUESTIONS.filter(q => answered[q.id] !== undefined).length;
+  const overallCorrect = ALL_QUESTIONS.filter(q => answered[q.id] && answered[q.id].correct).length;
+  document.getElementById('overall-progress').textContent =
+    `Saved progress (all chapters): ${overallAnswered}/${ALL_QUESTIONS.length} answered, ${overallCorrect} correct`;
+}
+
+// ── QUIZ RENDER ────────────────────────────────────────────────────────────
+function render() {
+  if (mode === 'quiz') renderQuiz();
+  else renderFlash();
+  updateStats();
+}
+
+function applyAnswerStyle(qi, q, chosen, isCorrect) {
+  for (let oi = 0; oi < q.opts.length; oi++) {
+    const el = document.getElementById(`opt-${qi}-${oi}`);
+    el.classList.add('locked');
+    if (oi === chosen && isCorrect) el.classList.add('correct');
+    else if (oi === chosen && !isCorrect) el.classList.add('wrong');
+    else if (oi === q.ans && !isCorrect) el.classList.add('reveal');
+  }
+  const fb = document.getElementById(`fb-${qi}`);
+  fb.className = 'feedback ' + (isCorrect ? 'correct' : 'wrong');
+  fb.textContent = (isCorrect ? '✓ Correct! ' : '✗ Incorrect. ') + q.exp;
+}
+
+function renderQuiz() {
+  const container = document.getElementById('quiz-content');
+  if (filteredQ.length === 0) {
+    container.innerHTML = '<div class="empty"><div class="empty-icon">📭</div><p>No questions for this filter.</p></div>';
+    return;
+  }
+  container.innerHTML = '';
+  filteredQ.forEach((q, qi) => {
+    const div = document.createElement('div');
+    div.className = 'quiz-card';
+    div.id = `qcard-${qi}`;
+    const opts = q.opts.map((opt, oi) => {
+      const letter = String.fromCharCode(65 + oi);
+      return `<div class="option" id="opt-${qi}-${oi}" onclick="answer(${qi}, ${oi})">
+        <span class="opt-letter">${letter}.</span>${opt}
+      </div>`;
+    }).join('');
+    div.innerHTML = `
+      <div class="q-meta">
+        <span class="q-num">Q${qi + 1} of ${filteredQ.length}</span>
+        <span class="q-chapter">Ch ${q.ch}: ${q.chName}</span>
+      </div>
+      <div class="q-text">${q.q}</div>
+      <div class="options">${opts}</div>
+      <div class="feedback" id="fb-${qi}"></div>`;
+    container.appendChild(div);
+    const prior = answered[q.id];
+    if (prior !== undefined) applyAnswerStyle(qi, q, prior.chosen, prior.correct);
+  });
+  // Check if all answered (show completion)
+  checkCompletion();
+}
+
+function answer(qi, chosen) {
+  const q = filteredQ[qi];
+  if (answered[q.id] !== undefined) return;
+  const isCorrect = chosen === q.ans;
+  answered[q.id] = { chosen, correct: isCorrect };
+  saveProgress();
+
+  applyAnswerStyle(qi, q, chosen, isCorrect);
+  updateStats();
+
+  // Scroll to next unanswered
+  const nextUnanswered = filteredQ.findIndex((qq, i) => i > qi && answered[qq.id] === undefined);
+  if (nextUnanswered !== -1) {
+    setTimeout(() => {
+      document.getElementById(`qcard-${nextUnanswered}`).scrollIntoView({behavior:'smooth', block:'center'});
+    }, 600);
+  } else {
+    checkCompletion();
+  }
+}
+
+function checkCompletion() {
+  if (filteredQ.length > 0 && filteredQ.every(q => answered[q.id] !== undefined)) {
+    setTimeout(showCompletion, 400);
+  }
+}
+
+function retryFiltered(doShuffle) {
+  filteredQ.forEach(q => { delete answered[q.id]; });
+  if (doShuffle) filteredQ = filteredQ.sort(() => Math.random() - 0.5);
+  fcIndex = 0;
+  saveProgress();
+  render();
+}
+
+function showCompletion() {
+  const total = filteredQ.length;
+  const correct = filteredQ.filter(q => answered[q.id] && answered[q.id].correct).length;
+  const pct = Math.round(correct / total * 100);
+  const grade = pct >= 90 ? '🏆 Excellent!' : pct >= 75 ? '✓ Good work!' : pct >= 60 ? '📖 More review needed' : '⚠ Keep studying';
+
+  // Per-chapter breakdown
+  const chStats = {};
+  filteredQ.forEach(q => {
+    if (!chStats[q.ch]) chStats[q.ch] = {name: q.chName, correct: 0, total: 0};
+    chStats[q.ch].total++;
+    if (answered[q.id] && answered[q.id].correct) chStats[q.ch].correct++;
+  });
+
+  const breakdown = Object.entries(chStats).map(([ch, s]) => {
+    const p = Math.round(s.correct / s.total * 100);
+    const cls = p === 100 ? 'perfect' : p >= 60 ? 'good' : 'needs-work';
+    return `<div class="ch-result">
+      <div class="ch-result-name">Ch ${ch}: ${s.name}</div>
+      <div class="ch-result-score ${cls}">${s.correct}/${s.total} (${p}%)</div>
+    </div>`;
+  }).join('');
+
+  const missed = filteredQ.filter(q => answered[q.id] && !answered[q.id].correct);
+
+  const el = document.createElement('div');
+  el.className = 'quiz-card';
+  el.innerHTML = `
+    <div class="completion">
+      <div class="completion-score">${pct}%</div>
+      <div class="completion-label">${correct} of ${total} correct — ${grade}</div>
+      <div class="completion-breakdown">${breakdown}</div>
+      <div style="display:flex;gap:.75rem;justify-content:center;margin-top:1rem;flex-wrap:wrap;">
+        <button class="btn primary" onclick="retryFiltered(false)">Try Again</button>
+        <button class="btn" onclick="retryFiltered(true)">Shuffle & Retry</button>
+        <button class="btn" id="copy-btn" onclick="copyResults()">📋 Copy Results Summary</button>
+      </div>
+    </div>`;
+  document.getElementById('quiz-content').appendChild(el);
+  el.scrollIntoView({behavior:'smooth', block:'center'});
+
+  window._lastResults = {pct, correct, total, grade, chStats, missed};
+}
+
+function copyResults() {
+  const r = window._lastResults;
+  if (!r) return;
+  const lines = [];
+  lines.push(`CTS Part II Quiz Results — ${new Date().toLocaleString()}`);
+  lines.push(`Score: ${r.correct}/${r.total} (${r.pct}%) — ${r.grade}`);
+  lines.push('');
+  lines.push('By chapter:');
+  Object.entries(r.chStats).forEach(([ch, s]) => {
+    const p = Math.round(s.correct / s.total * 100);
+    lines.push(`  Ch ${ch} (${s.name}): ${s.correct}/${s.total} (${p}%)`);
+  });
+  if (r.missed.length) {
+    lines.push('');
+    lines.push(`Missed questions (${r.missed.length}):`);
+    r.missed.forEach(q => {
+      const a = answered[q.id];
+      const chosenLetter = String.fromCharCode(65 + a.chosen);
+      const correctLetter = String.fromCharCode(65 + q.ans);
+      lines.push(`  [Ch ${q.ch}] ${q.q}`);
+      lines.push(`      Your answer: ${chosenLetter}. ${q.opts[a.chosen]}`);
+      lines.push(`      Correct: ${correctLetter}. ${q.opts[q.ans]}`);
+    });
+  } else {
+    lines.push('');
+    lines.push('No missed questions — perfect score.');
+  }
+  const text = lines.join('\n');
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('copy-btn');
+    if (btn) { const orig = btn.textContent; btn.textContent = '✓ Copied!'; setTimeout(() => { btn.textContent = orig; }, 1800); }
+  }).catch(() => {
+    prompt('Copy this text:', text);
+  });
+}
+
+// ── FLASHCARD RENDER ────────────────────────────────────────────────────────
+function renderFlash() {
+  const container = document.getElementById('flash-content');
+  if (filteredQ.length === 0) {
+    container.innerHTML = '<div class="empty"><div class="empty-icon">📭</div><p>No questions for this filter.</p></div>';
+    return;
+  }
+  const q = filteredQ[fcIndex];
+  const letter = String.fromCharCode(65 + q.ans);
+  const answer = q.opts[q.ans];
+  container.innerHTML = `
+    <div class="flashcard" id="fc" onclick="flipCard()">
+      <div class="fc-chapter">Ch ${q.ch}: ${q.chName}</div>
+      <div class="fc-q">${q.q}</div>
+      <div class="fc-a"><strong>${letter}. ${answer}</strong><br><br>${q.exp}</div>
+      <div class="fc-hint">↩ tap to reveal answer</div>
+    </div>
+    <div class="fc-nav">
+      <button class="btn" onclick="prevCard()">← Prev</button>
+      <span class="fc-count">${fcIndex + 1} / ${filteredQ.length}</span>
+      <button class="btn" onclick="nextCard()">Next →</button>
+    </div>`;
+}
+
+function flipCard() {
+  const fc = document.getElementById('fc');
+  if (!fc) return;
+  fc.classList.toggle('flipped');
+  const hint = fc.querySelector('.fc-hint');
+  hint.textContent = fc.classList.contains('flipped') ? '↩ tap to hide' : '↩ tap to reveal answer';
+}
+
+function prevCard() {
+  fcIndex = (fcIndex - 1 + filteredQ.length) % filteredQ.length;
+  renderFlash();
+}
+function nextCard() {
+  fcIndex = (fcIndex + 1) % filteredQ.length;
+  renderFlash();
+}
+
+// ── INIT ───────────────────────────────────────────────────────────────────
+loadProgress();
+filterQuestions();
+</script>
+</body>
+</html>

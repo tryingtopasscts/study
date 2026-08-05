@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CTS Weak Spots &amp; Hard Numbers Log</title>
+<style>
+  :root{
+    --ink:#0b0d12; --surface:#161a23; --surface2:#1d2230; --line:#262c3a;
+    --text:#e4e7ef; --muted:#8891a8; --faint:#565f75;
+    --signal:#5b9dfa; --signal-dim:rgba(91,157,250,.12);
+    --flag:#e8a23d; --flag-dim:rgba(232,162,61,.12);
+    --font-display: ui-serif, 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
+    --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    --font-mono: ui-monospace, 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
+  }
+  @media (prefers-color-scheme: light){
+    :root{
+      --ink:#f5f6f8; --surface:#ffffff; --surface2:#f0f2f6; --line:#dde1e8;
+      --text:#1a1e28; --muted:#5b6478; --faint:#8891a8;
+      --signal:#2f6fd6; --signal-dim:rgba(47,111,214,.08);
+      --flag:#a9660a; --flag-dim:rgba(169,102,10,.1);
+    }
+  }
+  :root[data-theme="dark"]{
+    --ink:#0b0d12; --surface:#161a23; --surface2:#1d2230; --line:#262c3a;
+    --text:#e4e7ef; --muted:#8891a8; --faint:#565f75;
+    --signal:#5b9dfa; --signal-dim:rgba(91,157,250,.12);
+    --flag:#e8a23d; --flag-dim:rgba(232,162,61,.12);
+  }
+  :root[data-theme="light"]{
+    --ink:#f5f6f8; --surface:#ffffff; --surface2:#f0f2f6; --line:#dde1e8;
+    --text:#1a1e28; --muted:#5b6478; --faint:#8891a8;
+    --signal:#2f6fd6; --signal-dim:rgba(47,111,214,.08);
+    --flag:#a9660a; --flag-dim:rgba(169,102,10,.1);
+  }
+  *{box-sizing:border-box}
+  body{margin:0; background:var(--ink); color:var(--text); font-family:var(--font-body); line-height:1.6; -webkit-font-smoothing:antialiased}
+  .page{max-width:820px; margin:0 auto; padding:2.75rem 1.4rem 5rem}
+  .back{font-family:var(--font-mono); font-size:.78rem; color:var(--muted); text-decoration:none}
+  .back:hover{color:var(--signal)}
+  header{margin:1.2rem 0 2.2rem}
+  .kicker{font-family:var(--font-mono); font-size:.72rem; letter-spacing:.14em; text-transform:uppercase; color:var(--signal); margin-bottom:.6rem}
+  h1{font-family:var(--font-display); font-weight:600; font-size:2rem; line-height:1.15; margin:0 0 .55rem; text-wrap:balance}
+  .lede{color:var(--muted); font-size:.98rem; max-width:62ch}
+  .note{margin-top:1.4rem; padding:.85rem 1rem; background:var(--surface2); border:1px solid var(--line); border-radius:10px; font-size:.85rem; color:var(--muted)}
+  .note strong{color:var(--text)}
+
+  h2{font-family:var(--font-mono); font-size:.78rem; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--flag); margin:2.6rem 0 .3rem; padding-bottom:.5rem; border-bottom:1px solid var(--line)}
+  h2.terms{color:var(--signal)}
+  .section-sub{color:var(--muted); font-size:.88rem; margin-bottom:1.3rem}
+  h3{font-family:var(--font-mono); font-size:.72rem; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); margin:1.8rem 0 .7rem}
+
+  .tbl-wrap{overflow-x:auto; border:1px solid var(--line); border-radius:10px}
+  table{width:100%; border-collapse:collapse; font-size:.88rem}
+  th{background:var(--surface2); color:var(--muted); text-align:left; padding:.6rem .85rem; font-family:var(--font-mono); font-size:.7rem; letter-spacing:.06em; text-transform:uppercase; border-bottom:1px solid var(--line)}
+  td{padding:.65rem .85rem; border-bottom:1px solid var(--line); color:var(--text); vertical-align:top}
+  tr:last-child td{border-bottom:none}
+  td:first-child{color:var(--muted); white-space:nowrap}
+  strong{color:var(--text)}
+
+  .callout{margin:1.6rem 0; padding:1rem 1.15rem; background:var(--signal-dim); border:1px solid var(--line); border-left:3px solid var(--signal); border-radius:0 10px 10px 0; font-size:.9rem; color:var(--text)}
+  .callout .tag{display:block; font-family:var(--font-mono); font-size:.66rem; letter-spacing:.1em; text-transform:uppercase; color:var(--signal); margin-bottom:.4rem}
+
+  footer{margin-top:3rem; padding-top:1.4rem; border-top:1px solid var(--line); font-size:.82rem; color:var(--faint); font-family:var(--font-mono); line-height:1.7}
+  @media(max-width:560px){ td:first-child{white-space:normal} }
+</style>
+</head>
+<body>
+<div class="page">
+  <a class="back" href="../index.html">← Study Console</a>
+
+  <header>
+    <div class="kicker">CTS Exam Prep — Progress Log</div>
+    <h1>Weak Spots &amp; Hard Numbers Log</h1>
+    <p class="lede">Pulled from actual missed questions across the Part II, III, and IV diagnostic quizzes. Split on purpose: hard numbers/formulas (untouched until this got built) vs. terms that just need re-anchoring.</p>
+    <div class="note">Updated as new quizzes reveal new misses. Part A pairs directly with the <a href="cts-av-math-guide.html" style="color:var(--signal)">AV Math Guide</a>, which now covers every item below.</div>
+  </header>
+
+  <h2>Part A — Hard Numbers, Formulas &amp; Standards</h2>
+  <p class="section-sub">The priority set — flagged as not studied at all until the AV Math Guide was expanded to cover it.</p>
+
+  <h3>Electrical</h3>
+  <div class="tbl-wrap"><table>
+    <tr><td>Unit of current</td><td><strong>Amperes</strong> (not watts — watts is power, P = V×I)</td></tr>
+    <tr><td>Opposition in an <strong>AC</strong> circuit</td><td><strong>Impedance</strong> (resistance is the DC-only term)</td></tr>
+    <tr><td>Ohm's Law, solved for current</td><td><strong>I = V / R</strong></td></tr>
+    <tr><td>Power path from the street</td><td>Service entrance → main panel → <strong>feeders</strong> → <strong>distribution panels</strong> → branch circuits</td></tr>
+  </table></div>
+
+  <h3>RF / Wireless</h3>
+  <div class="tbl-wrap"><table>
+    <tr><td>RF spectrum range</td><td><strong>3 kHz to 300 GHz</strong> — has a floor, not just a ceiling</td></tr>
+  </table></div>
+
+  <h3>Video / Light</h3>
+  <div class="tbl-wrap"><table>
+    <tr><td>ANSI lumens formula</td><td><strong>L = Screen Height × Screen Width × Average Illuminance</strong></td></tr>
+    <tr><td>Throw distance formula</td><td><strong>Throw distance = Throw ratio × Image width</strong> (e.g., 2.0 × 4 m = 8 m)</td></tr>
+  </table></div>
+
+  <h3>Audio Math</h3>
+  <div class="tbl-wrap"><table>
+    <tr><td>Inverse square law</td><td><strong>dB = 20 log(D1/D2)</strong> — a ratio, not a product</td></tr>
+  </table></div>
+
+  <h3>Drawing / Site Survey Math</h3>
+  <div class="tbl-wrap"><table>
+    <tr><td>Scale conversion</td><td>Multiply the drawn measurement by the scale factor (1:50 → ×50)</td></tr>
+    <tr><td>AFF</td><td><strong>A</strong>bove <strong>F</strong>inished <strong>F</strong>loor — a mounting height</td></tr>
+    <tr><td>NTS</td><td>Not To Scale</td></tr>
+    <tr><td>NIC</td><td>Not In Contract</td></tr>
+    <tr><td>FUT</td><td>Future (planned for a later phase)</td></tr>
+  </table></div>
+
+  <h3>Cabling / Rigging Specs</h3>
+  <div class="tbl-wrap"><table>
+    <tr><td>Max conduit fill (3+ cables)</td><td><strong>40%</strong></td></tr>
+    <tr><td>Min cable bend radius</td><td><strong>4×</strong> the cable diameter</td></tr>
+    <tr><td>Rigging safety factor</td><td><strong>5:1</strong> (a 40 kg display needs a 200 kg-rated mount)</td></tr>
+    <tr><td>RS-485 / DMX512</td><td><strong>32 devices</strong>, <strong>120 Ω</strong> termination at both ends</td></tr>
+  </table></div>
+
+  <h3>Cost / Budget Numbers</h3>
+  <div class="tbl-wrap"><table>
+    <tr><td>GC markup on an AV subcontract</td><td>Roughly <strong>5-10%+</strong> (e.g., $100k-$200k on a $2M system)</td></tr>
+    <tr><td>5-10% contingency budget fits</td><td>Projects that are <strong>$500k+ and 1 year+</strong> in duration</td></tr>
+    <tr><td>Cost figure before detailed design exists</td><td><strong>Opinion of probable cost</strong> (→ estimate → quote, increasing detail/enforceability)</td></tr>
+  </table></div>
+
+  <h3>Standards Roster</h3>
+  <div class="tbl-wrap"><table>
+    <tr><th>Standard</th><th>Governs</th></tr>
+    <tr><td>ANSI/INFOCOMM 2M-2010</td><td>The AV design &amp; coordination process</td></tr>
+    <tr><td>ANSI/InfoComm 10:2013</td><td>Performance verification (commissioning)</td></tr>
+    <tr><td>AVIXA A102.01</td><td>Audio Coverage Uniformity (ACU)</td></tr>
+    <tr><td>AVIXA DISCAS (V202.01)</td><td>Display image sizing</td></tr>
+  </table></div>
+
+  <h2 class="terms">Part B — Terms &amp; Concepts to Re-Anchor</h2>
+  <p class="section-sub">Vocabulary that's already half-known — these need re-anchoring, not new learning.</p>
+  <div class="tbl-wrap"><table>
+    <tr><th>Confusion</th><th>The distinction</th></tr>
+    <tr><td>Analog vs. digital</td><td>Analog = many/continuously varying states. Digital = discrete states.</td></tr>
+    <tr><td>Signal chain endpoint</td><td>The output device (e.g., loudspeaker) converts signal to acoustic energy — a processor doesn't.</td></tr>
+    <tr><td>Video bandwidth measurement tool</td><td>Spectrum analyzer ("bandwidth monitor" isn't a real instrument)</td></tr>
+    <tr><td>Bus vs. mesh topology</td><td>Bus = one linear line. Mesh = fully interconnected, redundant paths.</td></tr>
+    <tr><td>802.11 vs. 802.1X</td><td>802.11 = Wi-Fi. 802.1X = port-based access control. Similar numbers, unrelated standards.</td></tr>
+    <tr><td>Fiber jacket colors</td><td>Yellow = single-mode (longest reach). Orange = multimode (shorter reach).</td></tr>
+    <tr><td>Router vs. gateway</td><td>Gateway = specifically connects to an outside network.</td></tr>
+    <tr><td>Cable vs. wire</td><td>Cable = multiple conductors bundled. Shielding is unrelated to the distinction.</td></tr>
+    <tr><td>Function vs. program</td><td>Function = one action, one device. Program = coordinated multi-step/multi-device sequence.</td></tr>
+    <tr><td>Task parameters' purpose</td><td>Feed general AV needs/requirements — not exact equipment model selection.</td></tr>
+    <tr><td>Reflected ceiling plan</td><td>Shows sprinklers/HVAC/lighting for ceiling coordination — not an elevation drawing.</td></tr>
+    <tr><td>Ambient light control</td><td>Lighter wall finishes hurt (reflect more light); focused task lighting helps (a valid reduction strategy).</td></tr>
+    <tr><td>Building codes' scope on AV</td><td>Dictate wiring type + mounting/structural rules — not the AV system's functional layout.</td></tr>
+    <tr><td>Audio frequency response spec</td><td>Match it to the application — not "widest the budget allows."</td></tr>
+    <tr><td>IDC termination</td><td>8P8C/RJ-45 = insulation displacement. BNC is a different (twist-lock) mechanism.</td></tr>
+    <tr><td>Rack cooling types</td><td>Evacuation = fan-driven exhaust. Convection = passive, no fans.</td></tr>
+    <tr><td>"Striking" an event</td><td>Tearing down the temporary system after use — not testing audio.</td></tr>
+    <tr><td>WBS vs. logic network</td><td>WBS = nouns (deliverables, "what"). Logic network = verbs (activities: build, test, fabricate).</td></tr>
+    <tr><td>RFI → RFC → CO chain</td><td>RFI = ask a question. RFC = propose a change. Approved RFC becomes a CO (change order). CCD/field order = a separate emergency bypass of that whole chain.</td></tr>
+  </table></div>
+
+  <div class="callout"><span class="tag">Recurring Pattern</span>
+  Two separate misses (the 1:50 drawing-scale conversion, and the inverse square law calc) were the same mistake in different clothes: <strong>multiplying when the formula calls for a ratio.</strong> Before plugging numbers into any formula question, check whether the relationship is proportional (divide) or compound (multiply).</div>
+
+  <footer>
+    Raw log with dates/chapters lives in the working project files, not published here. This page is the trimmed, review-ready version.
+  </footer>
+</div>
+</body>
+</html>

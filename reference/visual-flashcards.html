@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CTS Visual Flashcards — Hard Numbers &amp; Concepts</title>
+<style>
+:root{
+  --bg:#0f1117; --bg2:#13161e; --surface:#1a1e2a; --border:#252c3f; --border2:#2e3650;
+  --accent:#5b9cf6; --accent2:#93bbfc; --accent-dim:#1a2f54;
+  --amber:#f5a623; --amber-dim:#2a1f0a; --teal:#2dd4bf; --red:#f87171; --red-dim:#2a0f0f;
+  --purple:#a78bfa; --green:#34d399; --green-dim:#0a2a1e;
+  --text:#dde3f0; --text2:#8e9abf; --text3:#4e5a7a;
+  --mono:'IBM Plex Mono',Consolas,monospace; --serif:'Fraunces',Georgia,serif; --sans:'DM Sans',-apple-system,'Segoe UI',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:18px;line-height:1.6;-webkit-tap-highlight-color:transparent}
+main{max-width:640px;margin:0 auto;padding:2.2rem 1.1rem 4.5rem}
+header{margin-bottom:1.4rem}
+.kicker{font-family:var(--mono);font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:.5rem}
+.kicker a{color:inherit;text-decoration:none}
+.kicker a:hover{text-decoration:underline}
+h1{font-family:var(--serif);font-weight:700;font-size:1.9rem;line-height:1.2}
+.lede{color:var(--text2);font-size:.95rem;margin-top:.45rem}
+
+.chip-row{display:flex;flex-wrap:wrap;gap:.45rem;margin:1.1rem 0 .9rem}
+.chip{font-family:var(--sans);font-size:.82rem;font-weight:500;background:var(--surface);border:1px solid var(--border2);
+  color:var(--text2);border-radius:99px;padding:.38rem .9rem;cursor:pointer;transition:all .15s}
+.chip:hover{border-color:var(--accent)}
+.chip.on{background:var(--accent-dim);border-color:var(--accent);color:var(--accent2)}
+.chip .n{font-family:var(--mono);font-size:.72rem;opacity:.75;margin-left:.3rem}
+.chip.miss-chip.on{background:var(--red-dim);border-color:var(--red);color:var(--red)}
+
+.top-row{display:flex;justify-content:space-between;align-items:center;gap:.8rem;margin-bottom:.55rem}
+.meta{font-family:var(--mono);font-size:.78rem;color:var(--text3)}
+.btn{font-family:var(--sans);font-weight:500;font-size:.86rem;background:var(--surface);color:var(--text);
+  border:1px solid var(--border2);border-radius:10px;padding:.55rem 1.05rem;cursor:pointer;transition:all .15s}
+.btn:hover{background:var(--accent-dim);border-color:var(--accent)}
+.btn.small{font-size:.78rem;padding:.35rem .75rem}
+.btn.got{border-color:var(--green);color:var(--green)}
+.btn.got:hover{background:var(--green-dim)}
+.btn.again{border-color:var(--red);color:var(--red)}
+.btn.again:hover{background:var(--red-dim)}
+.btn.primary{background:var(--accent-dim);border-color:var(--accent);color:var(--accent2);font-weight:700}
+
+.progress{height:6px;background:var(--surface);border-radius:99px;overflow:hidden;margin:0 0 1.1rem}
+.progress>div{height:100%;background:var(--accent);width:0;transition:width .3s}
+
+/* ---- the card ---- */
+.stage{perspective:1400px}
+.flashcard{position:relative;min-height:430px;cursor:pointer}
+.fc-inner{position:relative;width:100%;height:100%;min-height:430px;transition:transform .55s cubic-bezier(.4,.1,.2,1);transform-style:preserve-3d}
+.flashcard.flipped .fc-inner{transform:rotateY(180deg)}
+.fc-face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:18px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.9rem;
+  padding:2.6rem 1.5rem 1.6rem;text-align:center;overflow-y:auto}
+.fc-front{background:var(--surface);border:1px solid var(--border2)}
+.fc-back{background:var(--bg2);border:1px solid var(--accent);transform:rotateY(180deg)}
+.fc-label{font-family:var(--mono);font-size:.64rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text3);
+  position:absolute;top:.95rem;left:1.2rem}
+.fc-cat{font-family:var(--mono);font-size:.64rem;letter-spacing:.1em;text-transform:uppercase;color:var(--accent2);
+  position:absolute;top:.95rem;right:1.2rem}
+.fc-back .fc-label{color:var(--accent2)}
+.fc-q{font-size:1.12rem;font-weight:500;line-height:1.5;max-width:30ch;text-wrap:balance}
+.fc-a{font-size:1rem;line-height:1.55;max-width:44ch}
+.fc-a b{color:var(--accent2)}
+.fc-a .big{display:block;font-family:var(--serif);font-size:1.5rem;font-weight:700;color:var(--accent2);margin-bottom:.35rem}
+.fc-hint{font-family:var(--mono);font-size:.7rem;color:var(--text3);position:absolute;bottom:.85rem;left:0;right:0}
+.fc-note{font-size:.82rem;line-height:1.5;color:var(--amber);background:var(--amber-dim);border:1px solid rgba(245,166,35,.35);
+  border-radius:10px;padding:.5rem .8rem;max-width:46ch}
+.fc-note b{color:var(--amber)}
+.fc-viz{width:100%;max-width:400px;flex-shrink:0}
+.fc-viz svg{width:100%;height:auto;display:block}
+
+.flashcard.deal{animation:deal .28s ease}
+@keyframes deal{from{opacity:0;transform:translateX(18px)}to{opacity:1;transform:none}}
+
+/* svg vocabulary */
+svg .ln{stroke:var(--text2);stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+svg .thin{stroke:var(--text3);stroke-width:1.4;fill:none;stroke-linecap:round}
+svg .ac{stroke:var(--accent);stroke-width:2.4;fill:none;stroke-linecap:round;stroke-linejoin:round}
+svg .am{stroke:var(--amber);stroke-width:2.2;fill:none;stroke-linecap:round}
+svg .gr{stroke:var(--green);stroke-width:2.2;fill:none;stroke-linecap:round}
+svg .box{fill:var(--surface);stroke:var(--border2);stroke-width:1.5}
+svg .boxac{fill:var(--accent-dim);stroke:var(--accent);stroke-width:1.5}
+svg text{font-family:var(--mono);fill:var(--text2);font-size:11px}
+svg .t-big{font-size:14px;fill:var(--text);font-weight:600}
+svg .t-ac{fill:var(--accent2);font-weight:600}
+svg .t-am{fill:var(--amber);font-weight:600}
+svg .t-dim{fill:var(--text3);font-size:9.5px}
+svg .flow{stroke-dasharray:6 6;animation:dash 1.1s linear infinite}
+@keyframes dash{to{stroke-dashoffset:-12}}
+svg .arc1,svg .arc2,svg .arc3{animation:arcfade 2.4s ease-out infinite}
+svg .arc2{animation-delay:.35s} svg .arc3{animation-delay:.7s}
+@keyframes arcfade{0%{opacity:0}25%{opacity:1}100%{opacity:0}}
+svg .rise{animation:rise 1.8s ease-in-out infinite}
+@keyframes rise{0%,100%{transform:translateY(0);opacity:.4}50%{transform:translateY(-5px);opacity:1}}
+svg .spin{transform-origin:center;transform-box:fill-box;animation:spin 1.6s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.grade-row{display:flex;justify-content:center;gap:.7rem;margin-top:1rem;min-height:2.6rem;align-items:center;flex-wrap:wrap}
+.nav-row{display:flex;justify-content:space-between;align-items:center;margin-top:.8rem}
+.kbd-hint{font-family:var(--mono);font-size:.7rem;color:var(--text3);text-align:center;margin-top:1.6rem;line-height:1.8}
+.kbd-hint kbd{border:1px solid var(--border2);border-radius:5px;padding:1px 6px;background:var(--surface)}
+
+/* done panel */
+.done{background:var(--bg2);border:1px solid var(--border);border-radius:18px;padding:2rem 1.6rem;text-align:center;display:none}
+.done .score-big{font-family:var(--serif);font-size:2.4rem;font-weight:700;color:var(--accent2)}
+.done .sub{color:var(--text2);margin:.4rem 0 1.2rem;font-size:.95rem}
+.done .row{display:flex;justify-content:center;gap:.7rem;flex-wrap:wrap}
+
+footer{margin-top:2.6rem;padding-top:1.2rem;border-top:1px solid var(--border);font-size:.78rem;color:var(--text3);font-family:var(--mono);line-height:1.7}
+
+@media (max-width:480px){
+  body{font-size:17px}
+  .flashcard,.fc-inner{min-height:470px}
+  .kbd-hint .desk{display:none}
+}
+@media (prefers-reduced-motion: reduce){
+  .fc-inner{transition:none}
+  .flashcard.deal{animation:none}
+  svg *{animation:none !important}
+}
+</style>
+</head>
+<body>
+<main>
+
+<header>
+  <div class="kicker"><a href="../index.html">← CTS Study Console</a> · Drill</div>
+  <h1>Visual Flashcards</h1>
+  <p class="lede">Every hard number, formula, and half-known concept from your missed-question log — drawn, not just written. Tap a card to flip it, then grade yourself honestly.</p>
+</header>
+
+<div class="chip-row" id="filters">
+  <button class="chip on" data-f="all">All <span class="n" id="n-all"></span></button>
+  <button class="chip" data-f="A">Numbers &amp; formulas <span class="n" id="n-A"></span></button>
+  <button class="chip" data-f="B">Concepts <span class="n" id="n-B"></span></button>
+  <button class="chip miss-chip" data-f="miss">My misses <span class="n" id="n-miss"></span></button>
+</div>
+
+<div class="top-row">
+  <span class="meta" id="counter"></span>
+  <span>
+    <button class="btn small" id="shuffleBtn">Shuffle</button>
+    <button class="btn small" id="resetBtn" title="Clear saved grades">Reset stats</button>
+  </span>
+</div>
+<div class="progress"><div id="pbar"></div></div>
+
+<div class="stage" id="stage">
+  <div class="flashcard" id="card">
+    <div class="fc-inner" id="cardInner">
+      <div class="fc-face fc-front">
+        <span class="fc-label">Prompt</span>
+        <span class="fc-cat" id="catF"></span>
+        <div class="fc-q" id="qText"></div>
+        <div class="fc-hint">tap / space to flip</div>
+      </div>
+      <div class="fc-face fc-back">
+        <span class="fc-label">Answer</span>
+        <span class="fc-cat" id="catB"></span>
+        <div class="fc-viz" id="viz"></div>
+        <div class="fc-a" id="aText"></div>
+        <div class="fc-note" id="noteBox" style="display:none"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grade-row" id="gradeRow">
+    <button class="btn again" id="againBtn" style="display:none">✕ Again</button>
+    <button class="btn got" id="gotBtn" style="display:none">✓ Got it</button>
+  </div>
+
+  <div class="nav-row">
+    <button class="btn small" id="prevBtn">← Prev</button>
+    <span class="meta" id="sessionStats"></span>
+    <button class="btn small" id="nextBtn">Skip →</button>
+  </div>
+</div>
+
+<div class="done" id="done">
+  <div class="score-big" id="doneScore"></div>
+  <div class="sub" id="doneSub"></div>
+  <div class="row">
+    <button class="btn primary" id="reviewMissesBtn">Review misses</button>
+    <button class="btn" id="restartBtn">Run deck again</button>
+  </div>
+</div>
+
+<div class="kbd-hint"><span class="desk"><kbd>space</kbd> flip &nbsp; <kbd>←</kbd><kbd>→</kbd> navigate &nbsp; <kbd>1</kbd> again &nbsp; <kbd>2</kbd> got it<br></span>On mobile: tap to flip, swipe to move between cards.</div>
+
+<footer>
+  Sourced from the Weak Spots &amp; Hard Numbers log (updated 2026-08-04). Grades save to this browser only.
+  A card leaves "My misses" after you get it right twice in a row.
+</footer>
+
+</main>
+
+<script>
+/* ============ SVG visuals ============ */
+const V = {
+
+ohm: `<svg viewBox="0 0 320 150" aria-hidden="true">
+  <path class="ac" d="M160 14 L242 122 L78 122 Z"/>
+  <line class="thin" x1="112" y1="78" x2="208" y2="78"/>
+  <line class="thin" x1="160" y1="78" x2="160" y2="122"/>
+  <text class="t-big t-ac" x="160" y="62" text-anchor="middle" font-size="22">V</text>
+  <text class="t-big" x="135" y="108" text-anchor="middle" font-size="18">I</text>
+  <text class="t-big" x="186" y="108" text-anchor="middle" font-size="18">R</text>
+  <text class="t-dim" x="160" y="144" text-anchor="middle">cover the one you want — I = V / R</text>
+</svg>`,
+
+impedance: `<svg viewBox="0 0 320 130" aria-hidden="true">
+  <path class="thin" d="M20 40 H150"/>
+  <text class="t-dim" x="20" y="28">DC — steady</text>
+  <text x="152" y="44" class="t-dim">→ resistance (R)</text>
+  <path class="ac flow" d="M20 95 q 16 -30 32 0 t 32 0 t 32 0 t 32 0"/>
+  <text class="t-dim" x="20" y="122">AC — alternating</text>
+  <text x="185" y="99" class="t-ac t-big">→ impedance (Z)</text>
+</svg>`,
+
+powerpath: `<svg viewBox="0 0 340 150" aria-hidden="true">
+  <path class="ac flow" d="M30 30 H310"/>
+  <g>
+    <rect class="boxac" x="12" y="16" width="36" height="28" rx="6"/>
+    <rect class="box" x="76" y="16" width="36" height="28" rx="6"/>
+    <rect class="box" x="146" y="16" width="36" height="28" rx="6"/>
+    <rect class="box" x="216" y="16" width="36" height="28" rx="6"/>
+    <rect class="box" x="286" y="16" width="36" height="28" rx="6"/>
+  </g>
+  <text x="30" y="62" text-anchor="middle">service</text><text x="30" y="75" text-anchor="middle">entrance</text>
+  <text x="94" y="62" text-anchor="middle">main</text><text x="94" y="75" text-anchor="middle">panel</text>
+  <text x="164" y="62" text-anchor="middle">feeders</text>
+  <text x="234" y="62" text-anchor="middle">distribution</text><text x="234" y="75" text-anchor="middle">panels</text>
+  <text x="304" y="62" text-anchor="middle">branch</text><text x="304" y="75" text-anchor="middle">circuits</text>
+  <text class="t-dim" x="170" y="105" text-anchor="middle">street side ————————————→ your outlet</text>
+</svg>`,
+
+rf: `<svg viewBox="0 0 320 120" aria-hidden="true">
+  <defs><linearGradient id="rfg" x1="0" x2="1"><stop offset="0" stop-color="#5b9cf6"/><stop offset="1" stop-color="#a78bfa"/></linearGradient></defs>
+  <rect x="40" y="45" width="240" height="22" rx="11" fill="url(#rfg)" opacity=".85"/>
+  <line class="ln" x1="40" y1="30" x2="40" y2="82"/>
+  <line class="ln" x1="280" y1="30" x2="280" y2="82"/>
+  <text class="t-big t-ac" x="40" y="20" text-anchor="middle">3 kHz</text>
+  <text class="t-big t-ac" x="280" y="20" text-anchor="middle">300 GHz</text>
+  <text class="t-dim" x="40" y="100" text-anchor="middle">floor</text>
+  <text class="t-dim" x="280" y="100" text-anchor="middle">ceiling</text>
+  <text x="160" y="61" text-anchor="middle" fill="#0f1117" font-weight="700">RF spectrum</text>
+</svg>`,
+
+lumens: `<svg viewBox="0 0 320 160" aria-hidden="true">
+  <rect class="boxac" x="90" y="20" width="140" height="90" rx="4"/>
+  <g fill="var(--accent2)">
+    <circle cx="120" cy="45" r="3"/><circle cx="160" cy="45" r="3"/><circle cx="200" cy="45" r="3"/>
+    <circle cx="120" cy="65" r="3"/><circle cx="160" cy="65" r="3"/><circle cx="200" cy="65" r="3"/>
+    <circle cx="120" cy="85" r="3"/><circle cx="160" cy="85" r="3"/><circle cx="200" cy="85" r="3"/>
+  </g>
+  <path class="am" d="M60 25 V105" /><text class="t-am" x="48" y="70" text-anchor="middle">H</text>
+  <path class="am" d="M95 130 H225"/><text class="t-am" x="160" y="147" text-anchor="middle">W</text>
+  <text class="t-dim" x="248" y="68">9-zone avg</text>
+  <text class="t-dim" x="248" y="82">illuminance</text>
+</svg>`,
+
+throw_: `<svg viewBox="0 0 340 140" aria-hidden="true">
+  <rect class="box" x="14" y="55" width="44" height="26" rx="5"/>
+  <circle cx="58" cy="68" r="4" fill="var(--amber)"/>
+  <path class="thin" d="M62 68 L268 20 M62 68 L268 116" opacity=".7"/>
+  <rect class="boxac" x="268" y="16" width="8" height="104" rx="3"/>
+  <path class="am flow" d="M62 132 H268"/>
+  <text class="t-am t-big" x="165" y="127" text-anchor="middle">throw distance T</text>
+  <path class="ac" d="M290 20 V116"/>
+  <text class="t-ac" x="302" y="72">W</text>
+  <text class="t-dim" x="36" y="48" text-anchor="middle">projector</text>
+</svg>`,
+
+invsq: `<svg viewBox="0 0 340 140" aria-hidden="true">
+  <rect class="box" x="14" y="52" width="26" height="36" rx="4"/>
+  <path class="ln" d="M40 52 L54 40 V100 L40 88 Z" fill="var(--surface)"/>
+  <path class="ac arc1" d="M66 46 a34 34 0 0 1 0 48"/>
+  <path class="ac arc2" d="M84 34 a52 52 0 0 1 0 72"/>
+  <path class="ac arc3" d="M102 22 a72 72 0 0 1 0 96"/>
+  <circle cx="150" cy="70" r="3.5" fill="var(--amber)"/><text class="t-am" x="150" y="94" text-anchor="middle">D</text>
+  <circle cx="260" cy="70" r="3.5" fill="var(--amber)"/><text class="t-am" x="260" y="94" text-anchor="middle">2D</text>
+  <path class="thin" d="M158 70 H252" stroke-dasharray="3 5"/>
+  <text class="t-big t-am" x="300" y="62" text-anchor="middle">−6 dB</text>
+  <text class="t-dim" x="300" y="78" text-anchor="middle">per doubling</text>
+</svg>`,
+
+scale: `<svg viewBox="0 0 320 120" aria-hidden="true">
+  <rect class="box" x="20" y="30" width="120" height="26" rx="4"/>
+  <g class="thin"><line x1="40" y1="30" x2="40" y2="42"/><line x1="60" y1="30" x2="60" y2="38"/><line x1="80" y1="30" x2="80" y2="42"/><line x1="100" y1="30" x2="100" y2="38"/><line x1="120" y1="30" x2="120" y2="42"/></g>
+  <text x="80" y="74" text-anchor="middle">drawn: 20 mm</text>
+  <path class="am flow" d="M150 43 H196"/>
+  <text class="t-am t-big" x="173" y="32" text-anchor="middle">× 50</text>
+  <text class="t-ac t-big" x="258" y="47" text-anchor="middle">real: 1000 mm</text>
+  <text class="t-dim" x="160" y="104" text-anchor="middle">1:50 → multiply the drawing by the scale factor</text>
+</svg>`,
+
+aff: `<svg viewBox="0 0 320 150" aria-hidden="true">
+  <line class="ln" x1="20" y1="126" x2="300" y2="126"/>
+  <g class="thin" opacity=".6"><line x1="30" y1="126" x2="20" y2="138"/><line x1="60" y1="126" x2="50" y2="138"/><line x1="90" y1="126" x2="80" y2="138"/><line x1="120" y1="126" x2="110" y2="138"/><line x1="150" y1="126" x2="140" y2="138"/><line x1="180" y1="126" x2="170" y2="138"/><line x1="210" y1="126" x2="200" y2="138"/><line x1="240" y1="126" x2="230" y2="138"/><line x1="270" y1="126" x2="260" y2="138"/><line x1="298" y1="126" x2="288" y2="138"/></g>
+  <text class="t-dim" x="290" y="118" text-anchor="end">finished floor</text>
+  <rect class="boxac" x="120" y="22" width="80" height="46" rx="5"/>
+  <text class="t-dim" x="160" y="49" text-anchor="middle">display ⌀</text>
+  <path class="am" d="M96 126 V68 M92 74 L96 66 L100 74 M92 120 L96 128 L100 120"/>
+  <text class="t-am t-big" x="70" y="100" text-anchor="middle">AFF</text>
+</svg>`,
+
+conduit: `<svg viewBox="0 0 320 150" aria-hidden="true">
+  <circle class="ln" cx="110" cy="75" r="58"/>
+  <path d="M52 75 a58 58 0 0 0 116 0 Z" fill="var(--accent-dim)" stroke="var(--accent)" stroke-width="1.5"/>
+  <circle class="thin" cx="88" cy="98" r="14" fill="var(--surface)"/>
+  <circle class="thin" cx="118" cy="106" r="12" fill="var(--surface)"/>
+  <circle class="thin" cx="140" cy="92" r="13" fill="var(--surface)"/>
+  <text class="t-big t-ac" x="228" y="66">40% max</text>
+  <text class="t-dim" x="228" y="84">3+ cables</text>
+  <text class="t-dim" x="110" y="34" text-anchor="middle">conduit cross-section</text>
+</svg>`,
+
+bend: `<svg viewBox="0 0 320 150" aria-hidden="true">
+  <path class="ac" d="M30 40 H150 a60 60 0 0 1 60 60 V130" stroke-width="10" opacity=".9"/>
+  <path class="thin" d="M150 100 L210 100 M150 100 L150 40" stroke-dasharray="3 5"/>
+  <path class="am" d="M150 100 L193 58"/>
+  <text class="t-am t-big" x="185" y="92">r</text>
+  <text class="t-big t-ac" x="248" y="40" text-anchor="middle">r ≥ 4 ×</text>
+  <text class="t-ac" x="248" y="58" text-anchor="middle">cable ⌀</text>
+</svg>`,
+
+rig: `<svg viewBox="0 0 320 150" aria-hidden="true">
+  <line class="ln" x1="60" y1="18" x2="260" y2="18"/>
+  <g class="thin" opacity=".6"><line x1="80" y1="18" x2="90" y2="8"/><line x1="120" y1="18" x2="130" y2="8"/><line x1="160" y1="18" x2="170" y2="8"/><line x1="200" y1="18" x2="210" y2="8"/><line x1="240" y1="18" x2="250" y2="8"/></g>
+  <line class="am" x1="160" y1="18" x2="160" y2="58"/>
+  <rect class="boxac" x="105" y="58" width="110" height="58" rx="6"/>
+  <text class="t-big" x="160" y="84" text-anchor="middle">display</text>
+  <text class="t-am" x="160" y="104" text-anchor="middle">40 kg load</text>
+  <text class="t-big t-ac" x="262" y="72">× 5</text>
+  <text class="t-ac" x="262" y="92">mount rated</text>
+  <text class="t-ac" x="262" y="108">200 kg</text>
+</svg>`,
+
+rs485: `<svg viewBox="0 0 340 120" aria-hidden="true">
+  <path class="ln flow" d="M46 60 H294"/>
+  <path class="am" d="M22 46 l6 0 3 -8 6 16 6 -16 6 16 3 -8 6 0" transform="translate(0,14)"/>
+  <path class="am" d="M288 46 l6 0 3 -8 6 16 6 -16 6 16 3 -8 6 0" transform="translate(-18,14)"/>
+  <g fill="var(--accent)"><circle cx="80" cy="60" r="6"/><circle cx="120" cy="60" r="6"/><circle cx="160" cy="60" r="6"/><circle cx="200" cy="60" r="6"/><circle cx="240" cy="60" r="6"/></g>
+  <text class="t-am" x="40" y="34" text-anchor="middle">120 Ω</text>
+  <text class="t-am" x="300" y="34" text-anchor="middle">120 Ω</text>
+  <text class="t-big t-ac" x="170" y="98" text-anchor="middle">≤ 32 devices, terminated both ends</text>
+</svg>`,
+
+cost: `<svg viewBox="0 0 340 120" aria-hidden="true">
+  <rect x="14" y="34" width="88" height="40" rx="8" fill="none" stroke="var(--text3)" stroke-width="1.5" stroke-dasharray="5 5"/>
+  <text x="58" y="52" text-anchor="middle">opinion of</text><text x="58" y="66" text-anchor="middle">probable cost</text>
+  <path class="thin" d="M104 54 h20 m-6 -5 6 5 -6 5"/>
+  <rect class="box" x="128" y="34" width="80" height="40" rx="8"/>
+  <text x="168" y="59" text-anchor="middle">estimate</text>
+  <path class="thin" d="M210 54 h20 m-6 -5 6 5 -6 5"/>
+  <rect class="boxac" x="234" y="34" width="80" height="40" rx="8"/>
+  <text class="t-ac" x="274" y="59" text-anchor="middle">quote</text>
+  <text class="t-dim" x="170" y="102" text-anchor="middle">→ increasing detail &amp; enforceability →</text>
+</svg>`,
+
+busmesh: `<svg viewBox="0 0 340 150" aria-hidden="true">
+  <path class="ln" d="M20 60 H140"/>
+  <g class="thin"><line x1="40" y1="60" x2="40" y2="42"/><line x1="70" y1="60" x2="70" y2="42"/><line x1="100" y1="60" x2="100" y2="42"/><line x1="126" y1="60" x2="126" y2="42"/></g>
+  <g fill="var(--accent)"><circle cx="40" cy="38" r="5"/><circle cx="70" cy="38" r="5"/><circle cx="100" cy="38" r="5"/><circle cx="126" cy="38" r="5"/></g>
+  <text x="78" y="96" text-anchor="middle" class="t-big">BUS</text>
+  <text class="t-dim" x="78" y="112" text-anchor="middle">one shared line</text>
+  <g class="thin"><line x1="220" y1="30" x2="300" y2="30"/><line x1="220" y1="30" x2="220" y2="86"/><line x1="300" y1="30" x2="300" y2="86"/><line x1="220" y1="86" x2="300" y2="86"/><line x1="220" y1="30" x2="300" y2="86"/><line x1="300" y1="30" x2="220" y2="86"/></g>
+  <g fill="var(--purple)"><circle cx="220" cy="30" r="5"/><circle cx="300" cy="30" r="5"/><circle cx="220" cy="86" r="5"/><circle cx="300" cy="86" r="5"/></g>
+  <text x="260" y="112" text-anchor="middle" class="t-big">MESH</text>
+  <text class="t-dim" x="260" y="128" text-anchor="middle">every node ↔ every node</text>
+</svg>`,
+
+fiber: `<svg viewBox="0 0 320 130" aria-hidden="true">
+  <rect x="30" y="26" width="180" height="18" rx="9" fill="#e8c93d"/>
+  <text x="225" y="40" class="t-big">single-mode</text>
+  <text class="t-dim" x="30" y="62">yellow · longest reach</text>
+  <rect x="30" y="80" width="130" height="18" rx="9" fill="#e88a3d"/>
+  <text x="175" y="94" class="t-big">multimode</text>
+  <text class="t-dim" x="30" y="116">orange · shorter reach</text>
+</svg>`,
+
+cooling: `<svg viewBox="0 0 340 150" aria-hidden="true">
+  <rect class="box" x="30" y="40" width="90" height="90" rx="6"/>
+  <circle class="ac spin" cx="75" cy="30" r="11"/>
+  <path class="ac spin" d="M75 19 v22 M64 30 h22" />
+  <g class="am"><path class="rise" d="M55 18 v-10"/><path class="rise" style="animation-delay:.3s" d="M75 14 v-10"/><path class="rise" style="animation-delay:.6s" d="M95 18 v-10"/></g>
+  <text x="75" y="148" text-anchor="middle" class="t-big">EVACUATION</text>
+  <rect class="box" x="220" y="40" width="90" height="90" rx="6"/>
+  <g class="thin"><path class="rise" d="M245 34 q4 -6 0 -12"/><path class="rise" style="animation-delay:.4s" d="M265 34 q4 -6 0 -12"/><path class="rise" style="animation-delay:.8s" d="M285 34 q4 -6 0 -12"/></g>
+  <text x="265" y="148" text-anchor="middle" class="t-big">CONVECTION</text>
+  <text class="t-dim" x="75" y="60" text-anchor="middle">fan-driven</text>
+  <text class="t-dim" x="265" y="60" text-anchor="middle">passive, no fans</text>
+</svg>`,
+
+analog: `<svg viewBox="0 0 320 130" aria-hidden="true">
+  <path class="ac" d="M20 45 q 14 -28 28 0 t 28 0 t 28 0 t 28 0"/>
+  <text x="160" y="50" class="t-big">ANALOG</text>
+  <text class="t-dim" x="160" y="66">continuously varying</text>
+  <path class="am" d="M20 110 h18 v-14 h18 v14 h18 v-14 h18 v14 h18"/>
+  <text x="160" y="106" class="t-big">DIGITAL</text>
+  <text class="t-dim" x="160" y="122">discrete states</text>
+</svg>`,
+
+sigchain: `<svg viewBox="0 0 340 110" aria-hidden="true">
+  <rect class="box" x="14" y="34" width="60" height="34" rx="6"/><text x="44" y="55" text-anchor="middle">source</text>
+  <path class="thin flow" d="M76 51 h18"/>
+  <rect class="box" x="96" y="34" width="70" height="34" rx="6"/><text x="131" y="55" text-anchor="middle">processor</text>
+  <path class="thin flow" d="M168 51 h18"/>
+  <rect class="box" x="188" y="34" width="48" height="34" rx="6"/><text x="212" y="55" text-anchor="middle">amp</text>
+  <path class="thin flow" d="M238 51 h14"/>
+  <rect class="boxac" x="254" y="30" width="52" height="42" rx="6"/><text class="t-ac" x="280" y="55" text-anchor="middle">🔊</text>
+  <path class="ac arc1" d="M312 40 a16 16 0 0 1 0 22"/>
+  <path class="ac arc2" d="M320 34 a24 24 0 0 1 0 34"/>
+  <text class="t-dim" x="280" y="94" text-anchor="middle">signal → acoustic</text>
+</svg>`,
+
+wbs: `<svg viewBox="0 0 340 150" aria-hidden="true">
+  <rect class="box" x="45" y="14" width="70" height="26" rx="5"/><text x="80" y="31" text-anchor="middle">system</text>
+  <path class="thin" d="M80 40 v12 M45 52 h70 M45 52 v10 M115 52 v10"/>
+  <rect class="box" x="16" y="62" width="58" height="24" rx="5"/><text x="45" y="78" text-anchor="middle">racks</text>
+  <rect class="box" x="88" y="62" width="58" height="24" rx="5"/><text x="117" y="78" text-anchor="middle">displays</text>
+  <text x="80" y="118" text-anchor="middle" class="t-big">WBS</text>
+  <text class="t-dim" x="80" y="134" text-anchor="middle">nouns — deliverables</text>
+  <g><rect class="boxac" x="192" y="48" width="52" height="26" rx="13"/><text class="t-ac" x="218" y="65" text-anchor="middle">build</text>
+  <path class="ac flow" d="M246 61 h18 m-6 -5 6 5 -6 5"/>
+  <rect class="boxac" x="268" y="48" width="52" height="26" rx="13"/><text class="t-ac" x="294" y="65" text-anchor="middle">test</text></g>
+  <text x="256" y="118" text-anchor="middle" class="t-big">LOGIC NETWORK</text>
+  <text class="t-dim" x="256" y="134" text-anchor="middle">verbs — activities in sequence</text>
+</svg>`,
+
+rfi: `<svg viewBox="0 0 340 140" aria-hidden="true">
+  <rect class="box" x="20" y="70" width="70" height="34" rx="7"/><text x="55" y="86" text-anchor="middle">RFI</text><text class="t-dim" x="55" y="99" text-anchor="middle">ask</text>
+  <path class="thin flow" d="M92 87 h24 m-7 -5 7 5 -7 5"/>
+  <rect class="box" x="120" y="70" width="76" height="34" rx="7"/><text x="158" y="86" text-anchor="middle">RFC</text><text class="t-dim" x="158" y="99" text-anchor="middle">propose</text>
+  <path class="thin flow" d="M198 87 h24 m-7 -5 7 5 -7 5"/>
+  <rect class="boxac" x="226" y="70" width="90" height="34" rx="7"/><text class="t-ac" x="271" y="86" text-anchor="middle">CO</text><text class="t-dim" x="271" y="99" text-anchor="middle">approved change</text>
+  <path class="am" d="M55 66 Q 165 6 271 66" stroke-dasharray="6 5" fill="none"/>
+  <path class="am" d="M264 60 l7 6 -9 3"/>
+  <text class="t-am" x="165" y="26" text-anchor="middle">CCD / field order — emergency bypass</text>
+</svg>`,
+
+cablewire: `<svg viewBox="0 0 320 130" aria-hidden="true">
+  <circle class="ln" cx="80" cy="60" r="14" fill="var(--surface)"/>
+  <circle cx="80" cy="60" r="5" fill="var(--amber)"/>
+  <text x="80" y="102" text-anchor="middle" class="t-big">WIRE</text>
+  <text class="t-dim" x="80" y="118" text-anchor="middle">one conductor</text>
+  <circle class="ac" cx="230" cy="60" r="34" fill="var(--surface)"/>
+  <g fill="var(--amber)"><circle cx="218" cy="50" r="7"/><circle cx="242" cy="50" r="7"/><circle cx="218" cy="72" r="7"/><circle cx="242" cy="72" r="7"/></g>
+  <text x="230" y="112" text-anchor="middle" class="t-big">CABLE</text>
+  <text class="t-dim" x="230" y="128" text-anchor="middle">multiple conductors, bundled</text>
+</svg>`,
+
+light: `<svg viewBox="0 0 320 140" aria-hidden="true">
+  <rect x="20" y="20" width="120" height="80" rx="6" fill="#f0ead8" opacity=".9"/>
+  <g class="am"><path d="M50 30 l14 18"/><path d="M64 48 l-14 18" opacity=".7"/><path d="M90 26 l14 22"/><path d="M104 48 l-14 22" opacity=".7"/></g>
+  <text x="80" y="118" text-anchor="middle" class="t-big">light wall = bounces</text>
+  <rect x="180" y="20" width="120" height="80" rx="6" fill="#2a2f3d"/>
+  <path class="am" d="M225 26 l30 34"/>
+  <circle cx="256" cy="62" r="3" fill="var(--amber)" opacity=".5"/>
+  <text x="240" y="118" text-anchor="middle" class="t-big">dark wall = absorbs</text>
+</svg>`,
+
+amp: `<svg viewBox="0 0 320 120" aria-hidden="true">
+  <path class="ac flow" d="M20 58 H130"/>
+  <path class="ac flow" d="M190 58 H300"/>
+  <circle class="ln" cx="160" cy="58" r="28" fill="var(--surface)"/>
+  <text class="t-ac" x="160" y="66" text-anchor="middle" font-size="22" font-weight="700">A</text>
+  <text class="t-dim" x="160" y="110" text-anchor="middle">the meter counts flowing charge — amperes</text>
+</svg>`,
+
+nts: `<svg viewBox="0 0 320 140" aria-hidden="true">
+  <rect class="box" x="24" y="18" width="150" height="100" rx="6"/>
+  <rect class="thin" x="46" y="36" width="70" height="44"/>
+  <path class="thin" d="M46 96 H116 m-70 -5 v10 m70 -10 v10"/>
+  <text class="t-dim" x="81" y="112" text-anchor="middle">“3 m”?</text>
+  <rect class="box" x="212" y="48" width="84" height="20" rx="4"/>
+  <g class="thin"><line x1="226" y1="48" x2="226" y2="58"/><line x1="240" y1="48" x2="240" y2="54"/><line x1="254" y1="48" x2="254" y2="58"/><line x1="268" y1="48" x2="268" y2="54"/><line x1="282" y1="48" x2="282" y2="58"/></g>
+  <path d="M206 78 L302 38" stroke="var(--red)" stroke-width="3" stroke-linecap="round"/>
+  <text class="t-am" x="254" y="100" text-anchor="middle">no scaling off</text>
+  <text class="t-am" x="254" y="114" text-anchor="middle">the sheet</text>
+</svg>`,
+
+nic: `<svg viewBox="0 0 320 130" aria-hidden="true">
+  <rect class="boxac" x="30" y="30" width="110" height="56" rx="8"/>
+  <text class="t-ac" x="85" y="55" text-anchor="middle">in your</text>
+  <text class="t-ac" x="85" y="71" text-anchor="middle">contract</text>
+  <rect x="180" y="30" width="110" height="56" rx="8" fill="none" stroke="var(--amber)" stroke-width="1.6" stroke-dasharray="6 5"/>
+  <text class="t-am" x="235" y="55" text-anchor="middle">NIC</text>
+  <text class="t-dim" x="235" y="71" text-anchor="middle">someone else’s</text>
+  <text class="t-dim" x="160" y="116" text-anchor="middle">drawn for context only</text>
+</svg>`,
+
+fut: `<svg viewBox="0 0 320 130" aria-hidden="true">
+  <path class="ln" d="M20 96 H300 m-8 -5 8 5 -8 5"/>
+  <rect class="boxac" x="46" y="34" width="92" height="44" rx="7"/>
+  <text class="t-ac" x="92" y="53" text-anchor="middle">install now</text>
+  <text class="t-dim" x="92" y="68" text-anchor="middle">phase 1</text>
+  <rect x="186" y="34" width="92" height="44" rx="7" fill="none" stroke="var(--text3)" stroke-width="1.6" stroke-dasharray="6 5"/>
+  <text x="232" y="53" text-anchor="middle">FUT</text>
+  <text class="t-dim" x="232" y="68" text-anchor="middle">later phase</text>
+  <text class="t-dim" x="92" y="118" text-anchor="middle">today</text>
+  <text class="t-dim" x="232" y="118" text-anchor="middle">future</text>
+</svg>`,
+
+gcmark: `<svg viewBox="0 0 320 120" aria-hidden="true">
+  <rect x="30" y="44" width="200" height="30" rx="6" fill="var(--accent-dim)" stroke="var(--accent)" stroke-width="1.5"/>
+  <text class="t-ac" x="130" y="63" text-anchor="middle">AV subcontract · $2M</text>
+  <rect x="234" y="44" width="24" height="30" rx="6" fill="var(--amber-dim)" stroke="var(--amber)" stroke-width="1.5"/>
+  <path class="thin" d="M246 38 V26"/>
+  <text class="t-am" x="246" y="18" text-anchor="middle">GC +5–10%</text>
+  <text class="t-dim" x="160" y="102" text-anchor="middle">= $100k–$200k on top</text>
+</svg>`,
+
+conting: `<svg viewBox="0 0 320 120" aria-hidden="true">
+  <rect x="26" y="40" width="220" height="30" rx="6" fill="var(--surface)" stroke="var(--border2)" stroke-width="1.5"/>
+  <text x="136" y="59" text-anchor="middle">project budget</text>
+  <rect x="250" y="40" width="26" height="30" rx="6" fill="var(--amber-dim)" stroke="var(--amber)" stroke-width="1.5"/>
+  <text class="t-am" x="263" y="30" text-anchor="middle">5–10%</text>
+  <text class="t-big t-ac" x="160" y="100" text-anchor="middle">$500k+ · 1 year+</text>
+</svg>`,
+
+std2m: `<svg viewBox="0 0 320 130" aria-hidden="true">
+  <rect class="boxac" x="96" y="8" width="128" height="22" rx="11"/>
+  <text class="t-ac" x="160" y="23" text-anchor="middle">2M-2010</text>
+  <rect class="box" x="20" y="50" width="76" height="32" rx="7"/><text x="58" y="70" text-anchor="middle">design</text>
+  <path class="thin flow" d="M98 66 h22 m-7 -5 7 5 -7 5"/>
+  <rect class="box" x="124" y="50" width="86" height="32" rx="7"/><text x="167" y="70" text-anchor="middle">coordinate</text>
+  <path class="thin flow" d="M212 66 h22 m-7 -5 7 5 -7 5"/>
+  <rect class="box" x="238" y="50" width="66" height="32" rx="7"/><text x="271" y="70" text-anchor="middle">build</text>
+  <text class="t-dim" x="160" y="114" text-anchor="middle">governs how the whole AV project runs</text>
+</svg>`,
+
+std10: `<svg viewBox="0 0 320 140" aria-hidden="true">
+  <rect class="box" x="104" y="18" width="112" height="108" rx="8"/>
+  <rect class="boxac" x="138" y="10" width="44" height="16" rx="8"/>
+  <g class="gr"><path d="M122 50 l7 7 12 -13"/><path d="M122 76 l7 7 12 -13"/><path d="M122 102 l7 7 12 -13"/></g>
+  <text x="152" y="55">audio</text><text x="152" y="81">video</text><text x="152" y="107">control</text>
+  <text class="t-dim" x="264" y="62" text-anchor="middle">does it meet</text>
+  <text class="t-dim" x="264" y="76" text-anchor="middle">the spec?</text>
+</svg>`,
+
+stdacu: `<svg viewBox="0 0 320 140" aria-hidden="true">
+  <rect class="box" x="146" y="10" width="28" height="20" rx="4"/>
+  <path class="ac arc1" d="M138 36 a30 30 0 0 0 44 0"/>
+  <path class="ac arc2" d="M124 44 a52 52 0 0 0 72 0"/>
+  <path class="ac arc3" d="M110 52 a76 76 0 0 0 100 0"/>
+  <g fill="var(--text2)"><circle cx="80" cy="96" r="8"/><circle cx="120" cy="96" r="8"/><circle cx="160" cy="96" r="8"/><circle cx="200" cy="96" r="8"/><circle cx="240" cy="96" r="8"/></g>
+  <text class="t-am" x="80" y="126" text-anchor="middle">70</text>
+  <text class="t-am" x="120" y="126" text-anchor="middle">70</text>
+  <text class="t-am" x="160" y="126" text-anchor="middle">70</text>
+  <text class="t-am" x="200" y="126" text-anchor="middle">70</text>
+  <text class="t-am" x="240" y="126" text-anchor="middle">70</text>
+  <text class="t-dim" x="284" y="100">dB — even</text>
+</svg>`,
+
+discas: `<svg viewBox="0 0 340 140" aria-hidden="true">
+  <circle class="ln" cx="46" cy="52" r="10" fill="var(--surface)"/>
+  <path class="ln" d="M46 62 V92"/>
+  <path class="thin" d="M58 52 L252 26 M58 52 L252 96" opacity=".6"/>
+  <rect class="boxac" x="252" y="20" width="10" height="82" rx="3"/>
+  <path class="am flow" d="M58 120 H252"/>
+  <text class="t-am" x="155" y="114" text-anchor="middle">viewing distance</text>
+  <path class="ac" d="M276 20 V102"/>
+  <text class="t-ac" x="290" y="56">image</text><text class="t-ac" x="290" y="70">height</text>
+</svg>`,
+
+specan: `<svg viewBox="0 0 320 140" aria-hidden="true">
+  <rect class="box" x="60" y="14" width="200" height="100" rx="8"/>
+  <g class="thin" opacity=".35"><line x1="60" y1="44" x2="260" y2="44"/><line x1="60" y1="74" x2="260" y2="74"/><line x1="110" y1="14" x2="110" y2="114"/><line x1="160" y1="14" x2="160" y2="114"/><line x1="210" y1="14" x2="210" y2="114"/></g>
+  <path class="gr" d="M64 104 L84 96 96 60 108 98 128 90 142 34 154 96 176 88 190 64 204 100 224 92 240 76 256 102"/>
+  <text class="t-dim" x="160" y="132" text-anchor="middle">amplitude vs. frequency</text>
+</svg>`,
+
+wifi: `<svg viewBox="0 0 340 140" aria-hidden="true">
+  <path class="ac arc1" d="M62 52 a22 22 0 0 1 36 0"/>
+  <path class="ac arc2" d="M52 40 a38 38 0 0 1 56 0"/>
+  <path class="ac arc3" d="M42 28 a55 55 0 0 1 76 0"/>
+  <circle cx="80" cy="62" r="5" fill="var(--accent)"/>
+  <text class="t-big" x="80" y="96" text-anchor="middle">802.11</text>
+  <text class="t-dim" x="80" y="112" text-anchor="middle">Wi-Fi itself</text>
+  <rect x="226" y="46" width="28" height="20" rx="4" fill="var(--amber-dim)" stroke="var(--amber)" stroke-width="1.6"/>
+  <path d="M232 46 v-6 a8 8 0 0 1 16 0 v6" fill="none" stroke="var(--amber)" stroke-width="1.6"/>
+  <text class="t-big" x="240" y="96" text-anchor="middle">802.1X</text>
+  <text class="t-dim" x="240" y="112" text-anchor="middle">who may use the port</text>
+</svg>`,
+
+gateway: `<svg viewBox="0 0 340 130" aria-hidden="true">
+  <rect class="box" x="16" y="30" width="110" height="66" rx="10"/>
+  <g fill="var(--accent)"><circle cx="46" cy="54" r="6"/><circle cx="76" cy="54" r="6"/><circle cx="61" cy="76" r="6"/></g>
+  <text class="t-dim" x="71" y="112" text-anchor="middle">your network</text>
+  <rect class="boxac" x="146" y="46" width="52" height="34" rx="7"/>
+  <text class="t-ac" x="172" y="67" text-anchor="middle">GW</text>
+  <path class="ac flow" d="M200 63 H236"/>
+  <rect class="box" x="240" y="42" width="84" height="42" rx="21"/>
+  <text x="282" y="67" text-anchor="middle">outside</text>
+  <text class="t-dim" x="282" y="112" text-anchor="middle">the wider world</text>
+</svg>`,
+
+funcprog: `<svg viewBox="0 0 340 150" aria-hidden="true">
+  <circle cx="36" cy="36" r="12" fill="var(--accent-dim)" stroke="var(--accent)" stroke-width="1.5"/>
+  <path class="thin flow" d="M52 36 h22 m-6 -5 6 5 -6 5"/>
+  <rect class="box" x="80" y="22" width="64" height="28" rx="6"/><text x="112" y="40" text-anchor="middle">mute</text>
+  <text class="t-big" x="88" y="102" text-anchor="middle">FUNCTION</text>
+  <text class="t-dim" x="88" y="118" text-anchor="middle">one action, one device</text>
+  <circle cx="206" cy="36" r="12" fill="var(--accent-dim)" stroke="var(--accent)" stroke-width="1.5"/>
+  <path class="thin flow" d="M222 36 h16 m-6 -5 6 5 -6 5"/>
+  <rect class="box" x="244" y="10" width="80" height="20" rx="5"/><text x="284" y="24" text-anchor="middle" class="t-dim">screen down</text>
+  <rect class="box" x="244" y="36" width="80" height="20" rx="5"/><text x="284" y="50" text-anchor="middle" class="t-dim">lights 30%</text>
+  <rect class="box" x="244" y="62" width="80" height="20" rx="5"/><text x="284" y="76" text-anchor="middle" class="t-dim">projector on</text>
+  <text class="t-big" x="264" y="102" text-anchor="middle">PROGRAM</text>
+  <text class="t-dim" x="264" y="118" text-anchor="middle">coordinated sequence</text>
+</svg>`,
+
+taskparam: `<svg viewBox="0 0 340 130" aria-hidden="true">
+  <rect class="box" x="20" y="34" width="92" height="52" rx="7"/>
+  <text x="66" y="56" text-anchor="middle">task</text><text x="66" y="72" text-anchor="middle">parameters</text>
+  <path class="ac flow" d="M114 60 h32 m-8 -5 8 5 -8 5"/>
+  <rect class="boxac" x="150" y="34" width="102" height="52" rx="7"/>
+  <text class="t-ac" x="201" y="56" text-anchor="middle">needs &amp;</text><text class="t-ac" x="201" y="72" text-anchor="middle">requirements</text>
+  <rect x="272" y="44" width="56" height="32" rx="6" fill="none" stroke="var(--text3)" stroke-width="1.4" stroke-dasharray="4 4"/>
+  <text class="t-dim" x="300" y="64" text-anchor="middle">SKU-123</text>
+  <path d="M272 82 L328 38" stroke="var(--red)" stroke-width="3" stroke-linecap="round"/>
+  <text class="t-dim" x="300" y="104" text-anchor="middle">not models</text>
+</svg>`,
+
+rcp: `<svg viewBox="0 0 320 140" aria-hidden="true">
+  <rect class="box" x="40" y="16" width="240" height="96" rx="6"/>
+  <g class="thin" opacity=".5"><line x1="100" y1="16" x2="100" y2="112"/><line x1="160" y1="16" x2="160" y2="112"/><line x1="220" y1="16" x2="220" y2="112"/><line x1="40" y1="48" x2="280" y2="48"/><line x1="40" y1="80" x2="280" y2="80"/></g>
+  <circle class="am" cx="70" cy="32" r="7"/><path class="am" d="M65 32 h10 M70 27 v10"/>
+  <rect x="182" y="26" width="26" height="12" rx="2" fill="var(--accent-dim)" stroke="var(--accent)" stroke-width="1.4"/>
+  <circle cx="130" cy="96" r="8" fill="var(--amber-dim)" stroke="var(--amber)" stroke-width="1.4"/>
+  <rect x="236" y="90" width="30" height="12" rx="2" fill="none" stroke="var(--teal)" stroke-width="1.4"/>
+  <text class="t-dim" x="160" y="132" text-anchor="middle">sprinklers · lights · HVAC — the ceiling, mirrored down</text>
+</svg>`,
+
+codes: `<svg viewBox="0 0 320 140" aria-hidden="true">
+  <path class="ln" d="M160 12 l54 16 v36 c0 30 -26 48 -54 60 -28 -12 -54 -30 -54 -60 v-36 Z" fill="var(--surface)"/>
+  <g class="gr"><path d="M124 48 l6 6 10 -11"/></g><text x="148" y="56">wiring type</text>
+  <g class="gr"><path d="M124 74 l6 6 10 -11"/></g><text x="148" y="82">mounting</text>
+  <path d="M124 96 l14 12 m0 -12 l-14 12" stroke="var(--red)" stroke-width="2.4" stroke-linecap="round"/>
+  <text class="t-dim" x="148" y="108">system layout</text>
+</svg>`,
+
+freqresp: `<svg viewBox="0 0 320 140" aria-hidden="true">
+  <path class="thin" d="M30 110 H296 M30 110 V22"/>
+  <rect x="88" y="26" width="110" height="84" rx="6" fill="var(--accent-dim)" opacity=".55"/>
+  <path class="ac" d="M34 96 C 70 40 110 40 150 44 C 200 48 240 52 292 96"/>
+  <text class="t-ac" x="143" y="18" text-anchor="middle">what the application needs</text>
+  <text class="t-dim" x="30" y="128">20 Hz</text>
+  <text class="t-dim" x="292" y="128" text-anchor="end">20 kHz</text>
+</svg>`,
+
+idc: `<svg viewBox="0 0 320 140" aria-hidden="true">
+  <rect class="box" x="106" y="30" width="108" height="70" rx="8"/>
+  <g class="am"><line x1="118" y1="30" x2="118" y2="52"/><line x1="130" y1="30" x2="130" y2="52"/><line x1="142" y1="30" x2="142" y2="52"/><line x1="154" y1="30" x2="154" y2="52"/><line x1="166" y1="30" x2="166" y2="52"/><line x1="178" y1="30" x2="178" y2="52"/><line x1="190" y1="30" x2="190" y2="52"/><line x1="202" y1="30" x2="202" y2="52"/></g>
+  <path class="ac" d="M106 78 H56 q-16 0 -24 8" stroke-width="7" opacity=".85"/>
+  <text class="t-am" x="240" y="44">8 blades</text>
+  <text class="t-dim" x="160" y="124" text-anchor="middle">blades slice the jacket — no stripping</text>
+</svg>`,
+
+strike: `<svg viewBox="0 0 320 140" aria-hidden="true">
+  <rect x="60" y="22" width="44" height="56" rx="5" fill="none" stroke="var(--text3)" stroke-width="1.6" stroke-dasharray="5 4"/>
+  <path class="thin" d="M82 78 V104 M66 104 h32" stroke-dasharray="5 4"/>
+  <path class="am flow" d="M120 50 h44 m-10 -7 10 7 -10 7"/>
+  <rect class="box" x="180" y="52" width="90" height="52" rx="8"/>
+  <path class="thin" d="M180 70 H270"/>
+  <circle class="thin" cx="200" cy="112" r="7" fill="var(--surface)"/>
+  <circle class="thin" cx="250" cy="112" r="7" fill="var(--surface)"/>
+  <text class="t-dim" x="225" y="88" text-anchor="middle">road case</text>
+  <text class="t-dim" x="160" y="134" text-anchor="middle">event over → pack it out</text>
+</svg>`
+};
+
+/* ============ card data ============ */
+/* deck A = numbers & formulas (priority) · deck B = concepts to re-anchor */
+const CARDS = [
+{id:'amp', d:'A', c:'Electrical', q:'What is the unit of electrical current?',
+ a:'<span class="big">Amperes (A)</span>Current is amps. <b>Watts measure power</b> — P&nbsp;=&nbsp;V&nbsp;×&nbsp;I.', viz:'amp',
+ n:'<b>Trap:</b> "watts" is the tempting wrong answer — that\'s power, the product of volts × amps.'},
+{id:'imped', d:'A', c:'Electrical', q:'What opposes current flow in an AC circuit?',
+ a:'<span class="big">Impedance (Z)</span>Resistance is the <b>DC-only</b> term. If the question says AC, the answer is impedance.', viz:'impedance'},
+{id:'ohm', d:'A', c:'Electrical', q:'Ohm’s Law, solved for current:',
+ a:'<span class="big">I = V / R</span>Cover the quantity you want in the triangle; what remains is the formula.', viz:'ohm'},
+{id:'ppath', d:'A', c:'Electrical', q:'Power path from the street to a branch circuit — name the 5 stages in order.',
+ a:'Service entrance → <b>main panel</b> → <b>feeders</b> → <b>distribution panels</b> → branch circuits.', viz:'powerpath'},
+{id:'rf', d:'A', c:'RF / Wireless', q:'What is the frequency range of the RF spectrum?',
+ a:'<span class="big">3 kHz – 300 GHz</span>It has a <b>floor</b>, not just a ceiling.', viz:'rf',
+ n:'<b>Trap:</b> answers that only bound the top ("up to 300 GHz") miss the 3 kHz floor.'},
+{id:'lumens', d:'A', c:'Video / Light', q:'ANSI lumens formula:',
+ a:'<span class="big">L = H × W × avg illuminance</span>Screen height × screen width × the average of 9 measured zones.', viz:'lumens'},
+{id:'throw', d:'A', c:'Video / Light', q:'Throw distance formula:',
+ a:'<span class="big">T = throw ratio × image width</span>e.g. ratio 2.0 × 4 m wide image = projector sits <b>8 m</b> back.', viz:'throw_'},
+{id:'invsq', d:'A', c:'Audio Math', q:'Inverse square law — level change between two distances:',
+ a:'<span class="big">dB = 20 log(D1 / D2)</span>Every <b>doubling</b> of distance loses <b>6 dB</b>.', viz:'invsq',
+ n:'<b>Trap:</b> it’s a <b>ratio</b> of the two distances — never multiply them.'},
+{id:'scale', d:'A', c:'Drawings', q:'A drawing is 1:50 scale. How do you get the real dimension?',
+ a:'<span class="big">measured × 50</span>Multiply what you measure on the page by the scale factor.', viz:'scale',
+ n:'This is the one place you <b>do</b> multiply — check ratio vs. product before every formula.'},
+{id:'aff', d:'A', c:'Drawings', q:'On a drawing: what does AFF mean?',
+ a:'<span class="big">Above Finished Floor</span>A <b>mounting height</b>, measured up from the finished floor line.', viz:'aff'},
+{id:'nts', d:'A', c:'Drawings', q:'On a drawing: NTS?',
+ a:'<span class="big">Not To Scale</span>Don’t measure it — dimensions on that view can’t be trusted with a ruler.', viz:'nts'},
+{id:'nic', d:'A', c:'Drawings', q:'On a drawing: NIC?',
+ a:'<span class="big">Not In Contract</span>Shown for context, but somebody else’s scope (or nobody’s).', viz:'nic'},
+{id:'fut', d:'A', c:'Drawings', q:'On a drawing: FUT?',
+ a:'<span class="big">Future</span>Planned for a <b>later phase</b> — rough-in now, install later.', viz:'fut'},
+{id:'conduit', d:'A', c:'Cabling', q:'Max conduit fill with 3 or more cables:',
+ a:'<span class="big">40%</span>Of the conduit’s cross-sectional area.', viz:'conduit'},
+{id:'bend', d:'A', c:'Cabling', q:'Minimum cable bend radius:',
+ a:'<span class="big">4 × cable diameter</span>Tighter than that risks damaging the cable.', viz:'bend'},
+{id:'rig', d:'A', c:'Rigging', q:'Safety factor for overhead-flown loads:',
+ a:'<span class="big">5 : 1</span>A 40 kg display needs a mount rated for <b>200 kg</b>.', viz:'rig'},
+{id:'rs485', d:'A', c:'Control', q:'RS-485 / DMX512: max devices and termination?',
+ a:'<span class="big">32 devices · 120 Ω</span>Terminate with 120 Ω at <b>both ends</b> of the line.', viz:'rs485'},
+{id:'gcmark', d:'A', c:'Budget', q:'Typical GC markup on an AV subcontract:',
+ a:'<span class="big">~5–10%+</span>e.g. $100k–$200k added on a $2M AV system.', viz:'gcmark'},
+{id:'conting', d:'A', c:'Budget', q:'A 5–10% contingency budget fits what kind of project?',
+ a:'<span class="big">$500k+ and 1 year+</span>Big, long projects carry formal contingency.', viz:'conting'},
+{id:'opc', d:'A', c:'Budget', q:'What’s the cost figure given before detailed design exists — and what follows it?',
+ a:'<span class="big">Opinion of probable cost</span>→ estimate → quote, in increasing detail and enforceability.', viz:'cost'},
+{id:'std2m', d:'A', c:'Standards', q:'ANSI/INFOCOMM 2M-2010 governs…',
+ a:'<span class="big">The AV design &amp; coordination process</span>The "how a project runs" standard.', viz:'std2m'},
+{id:'std10', d:'A', c:'Standards', q:'ANSI/InfoComm 10:2013 governs…',
+ a:'<span class="big">Performance verification</span>Commissioning — proving the system meets spec.', viz:'std10'},
+{id:'stdacu', d:'A', c:'Standards', q:'AVIXA A102.01 governs…',
+ a:'<span class="big">Audio Coverage Uniformity (ACU)</span>Even sound levels across the listening area.', viz:'stdacu'},
+{id:'discas', d:'A', c:'Standards', q:'AVIXA V202.01 (DISCAS) governs…',
+ a:'<span class="big">Display image sizing</span>How big the image must be for the viewing task.', viz:'discas'},
+
+{id:'analog', d:'B', c:'Signals', q:'Analog vs. digital — the actual distinction?',
+ a:'<b>Analog</b> = continuously varying states.<br><b>Digital</b> = discrete states.', viz:'analog'},
+{id:'endpoint', d:'B', c:'Signals', q:'What device ends the audio signal chain — and why?',
+ a:'The <span class="big">output device</span>The loudspeaker converts signal into <b>acoustic energy</b>. A processor never leaves the electrical domain.', viz:'sigchain'},
+{id:'specan', d:'B', c:'Test gear', q:'What instrument measures video bandwidth?',
+ a:'<span class="big">Spectrum analyzer</span>', viz:'specan', n:'<b>Trap:</b> "bandwidth monitor" is not a real instrument.'},
+{id:'busmesh', d:'B', c:'Networks', q:'Bus vs. mesh topology?',
+ a:'<b>Bus</b> = one shared linear line.<br><b>Mesh</b> = fully interconnected — redundant paths.', viz:'busmesh'},
+{id:'80211', d:'B', c:'Networks', q:'802.11 vs. 802.1X?',
+ a:'<b>802.11</b> = Wi-Fi.<br><b>802.1X</b> = port-based network <b>access control</b>.', viz:'wifi',
+ n:'Similar numbers, <b>unrelated</b> standards — that’s the whole trick.'},
+{id:'fiber', d:'B', c:'Cabling', q:'Fiber jacket colors — yellow vs. orange?',
+ a:'<b>Yellow = single-mode</b> (longest reach).<br><b>Orange = multimode</b> (shorter reach).', viz:'fiber'},
+{id:'gateway', d:'B', c:'Networks', q:'Router vs. gateway?',
+ a:'A <span class="big">gateway</span>specifically connects to an <b>outside</b> network. A router routes between networks generally.', viz:'gateway'},
+{id:'cable', d:'B', c:'Cabling', q:'Cable vs. wire?',
+ a:'<b>Cable = multiple conductors</b> bundled together.<br>Shielding has <b>nothing</b> to do with the distinction.', viz:'cablewire'},
+{id:'funcprog', d:'B', c:'Control', q:'Function vs. program (control systems)?',
+ a:'<b>Function</b> = one action, one device.<br><b>Program</b> = coordinated multi-step, multi-device sequence.', viz:'funcprog'},
+{id:'taskparam', d:'B', c:'Design', q:'What do task parameters feed?',
+ a:'General <span class="big">AV needs &amp; requirements</span>— <b>not</b> exact equipment model selection.', viz:'taskparam'},
+{id:'rcp', d:'B', c:'Drawings', q:'What does a reflected ceiling plan show?',
+ a:'<span class="big">Sprinklers, HVAC, lighting</span>Everything in the ceiling, for coordination. It is <b>not</b> an elevation drawing.', viz:'rcp'},
+{id:'ambient', d:'B', c:'Environment', q:'Ambient light control: do lighter wall finishes help?',
+ a:'<span class="big">No — they hurt</span>Light walls <b>reflect more light</b> onto the screen. Focused <b>task lighting</b> is a valid reduction strategy.', viz:'light'},
+{id:'codes', d:'B', c:'Codes', q:'What do building codes dictate about AV?',
+ a:'<b>Wiring type</b> + <b>mounting/structural</b> rules.<br>Not the AV system’s functional layout.', viz:'codes'},
+{id:'freqresp', d:'B', c:'Audio', q:'How should an audio frequency-response spec be chosen?',
+ a:'Match it to the <span class="big">application</span>Not "the widest the budget allows."', viz:'freqresp'},
+{id:'idc', d:'B', c:'Terminations', q:'Which connector uses insulation displacement (IDC)?',
+ a:'<span class="big">8P8C / RJ-45</span>BNC is a different, <b>twist-lock</b> mechanism.', viz:'idc'},
+{id:'cooling', d:'B', c:'Racks', q:'Rack cooling: evacuation vs. convection?',
+ a:'<b>Evacuation</b> = fan-driven exhaust.<br><b>Convection</b> = passive, no fans.', viz:'cooling'},
+{id:'strike', d:'B', c:'Events', q:'What does "striking" an event mean?',
+ a:'<span class="big">Tearing down</span>the temporary system after use — <b>not</b> testing audio.', viz:'strike'},
+{id:'wbs', d:'B', c:'Project mgmt', q:'WBS vs. logic network diagram?',
+ a:'<b>WBS = nouns</b> — deliverables, the "what."<br><b>Logic network = verbs</b> — activities: build, test, fabricate.', viz:'wbs'},
+{id:'rfichain', d:'B', c:'Project mgmt', q:'RFI → RFC → CO: what’s each step, and what bypasses the chain?',
+ a:'<b>RFI</b> asks a question → <b>RFC</b> proposes a change → approved RFC becomes a <b>CO</b> (change order). A <b>CCD / field order</b> is a separate <b>emergency bypass</b> of the whole chain.', viz:'rfi'}
+];
+
+/* ============ state & storage ============ */
+const KEY='cts_visual_flashcards_v1';
+function loadStats(){try{return JSON.parse(localStorage.getItem(KEY))||{};}catch(e){return{};}}
+function saveStats(){try{localStorage.setItem(KEY,JSON.stringify(stats));}catch(e){}}
+let stats=loadStats();               // {cardId:{streak,again,got}}
+const isMiss=id=>{const s=stats[id];return !!s && s.again>0 && (s.streak||0)<2;};
+
+let filter='all', queue=[], pos=0, sGot=0, sAgain=0;
+
+function pool(){
+  if(filter==='A')return CARDS.filter(c=>c.d==='A');
+  if(filter==='B')return CARDS.filter(c=>c.d==='B');
+  if(filter==='miss')return CARDS.filter(c=>isMiss(c.id));
+  return CARDS.slice();
+}
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+/* ============ dom ============ */
+const $=id=>document.getElementById(id);
+const card=$('card'), stage=$('stage'), done=$('done');
+
+function updateCounts(){
+  $('n-all').textContent=CARDS.length;
+  $('n-A').textContent=CARDS.filter(c=>c.d==='A').length;
+  $('n-B').textContent=CARDS.filter(c=>c.d==='B').length;
+  $('n-miss').textContent=CARDS.filter(c=>isMiss(c.id)).length;
+}
+
+function startRun(shuffled){
+  queue=pool(); if(shuffled)shuffle(queue);
+  pos=0; sGot=0; sAgain=0;
+  stage.style.display=queue.length?'block':'none';
+  done.style.display='none';
+  if(!queue.length){
+    done.style.display='block';
+    $('doneScore').textContent='Nothing here 🎉';
+    $('doneSub').textContent=filter==='miss'?'No active misses — every missed card has been answered correctly twice in a row.':'No cards in this deck.';
+    $('reviewMissesBtn').style.display='none';
+  } else { render(); }
+  updateCounts();
+}
+
+function render(){
+  const c=queue[pos];
+  const inner=$('cardInner');
+  // snap straight back to the front — no reverse-flip that would flash the next answer
+  inner.style.transition='none';
+  card.classList.remove('flipped');
+  void inner.offsetWidth;
+  inner.style.transition='';
+  card.classList.remove('deal');
+  void card.offsetWidth;
+  card.classList.add('deal');
+  $('catF').textContent=c.c; $('catB').textContent=c.c;
+  $('qText').innerHTML=c.q;
+  $('aText').innerHTML=c.a;
+  $('viz').innerHTML=c.viz?V[c.viz]:'';
+  const nb=$('noteBox');
+  if(c.n){nb.innerHTML=c.n;nb.style.display='block';}else{nb.style.display='none';}
+  $('counter').textContent=`Card ${pos+1} / ${queue.length}`;
+  $('pbar').style.width=(pos/queue.length*100)+'%';
+  $('sessionStats').textContent=`✓ ${sGot} · ✕ ${sAgain}`;
+  setGradeVisible(false);
+}
+function setGradeVisible(v){
+  $('againBtn').style.display=v?'inline-block':'none';
+  $('gotBtn').style.display=v?'inline-block':'none';
+}
+function flip(){
+  card.classList.toggle('flipped');
+  setGradeVisible(card.classList.contains('flipped'));
+}
+function grade(got){
+  const c=queue[pos];
+  const s=stats[c.id]||(stats[c.id]={streak:0,again:0,got:0});
+  if(got){s.got++;s.streak=(s.streak||0)+1;sGot++;}
+  else{s.again++;s.streak=0;sAgain++;
+    // re-queue the missed card a few positions later
+    const reinsert=Math.min(queue.length,pos+4);
+    queue.splice(reinsert,0,c);
+  }
+  saveStats(); next();
+}
+function next(){
+  if(pos<queue.length-1){pos++;render();}
+  else finish();
+}
+function prev(){ if(pos>0){pos--;render();} }
+function finish(){
+  stage.style.display='none'; done.style.display='block';
+  $('pbar').style.width='100%';
+  const total=sGot+sAgain;
+  $('doneScore').textContent=total?`${sGot} / ${total}`:'Done';
+  $('doneSub').textContent=total?`graded this run · ${sAgain} marked "again"`:'You skipped through without grading — flip and grade to build your misses deck.';
+  const misses=CARDS.filter(c=>isMiss(c.id)).length;
+  $('reviewMissesBtn').style.display=misses?'inline-block':'none';
+  $('reviewMissesBtn').textContent=`Review misses (${misses})`;
+  updateCounts();
+}
+
+/* ============ events ============ */
+card.addEventListener('click',flip);
+$('gotBtn').addEventListener('click',e=>{e.stopPropagation();grade(true);});
+$('againBtn').addEventListener('click',e=>{e.stopPropagation();grade(false);});
+$('nextBtn').addEventListener('click',next);
+$('prevBtn').addEventListener('click',prev);
+$('shuffleBtn').addEventListener('click',()=>startRun(true));
+$('restartBtn').addEventListener('click',()=>startRun(true));
+$('reviewMissesBtn').addEventListener('click',()=>{filter='miss';syncChips();startRun(true);});
+$('resetBtn').addEventListener('click',()=>{
+  if(confirm('Clear all saved grades and miss history for the flashcards?')){stats={};saveStats();startRun(false);}
+});
+document.querySelectorAll('#filters .chip').forEach(ch=>ch.addEventListener('click',()=>{
+  filter=ch.dataset.f; syncChips(); startRun(filter!=='miss');
+}));
+function syncChips(){document.querySelectorAll('#filters .chip').forEach(x=>x.classList.toggle('on',x.dataset.f===filter));}
+
+document.addEventListener('keydown',e=>{
+  if(done.style.display==='block')return;
+  if(e.code==='Space'){e.preventDefault();flip();}
+  else if(e.key==='ArrowRight')next();
+  else if(e.key==='ArrowLeft')prev();
+  else if(e.key==='1'&&card.classList.contains('flipped'))grade(false);
+  else if(e.key==='2'&&card.classList.contains('flipped'))grade(true);
+});
+
+let tx=null;
+card.addEventListener('touchstart',e=>{tx=e.changedTouches[0].clientX;},{passive:true});
+card.addEventListener('touchend',e=>{
+  if(tx===null)return;
+  const dx=e.changedTouches[0].clientX-tx; tx=null;
+  if(Math.abs(dx)>60){dx<0?next():prev();}
+},{passive:true});
+
+startRun(false);
+</script>
+</body>
+</html>

@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CTS AV Math — Dedicated Study Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=DM+Sans:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{
   --bg:#0f1117; --panel:#161a23; --panel2:#1c212e; --border:#2a3040;
@@ -81,6 +83,37 @@ strong{color:#fff}
 .concept-card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:20px}
 .concept-card h4{font-size:18px;margin-bottom:8px;color:var(--teal)}
 .concept-card p{font-size:15.5px;color:var(--muted);margin:0}
+
+/* ---------- Plain-English lead ---------- */
+.plain{border-left:3px solid var(--blue);background:var(--blue-bg);border-radius:0 12px 12px 0;padding:14px 18px;margin:18px 0;font-size:16.5px}
+.plain .label{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--blue);display:block;margin-bottom:6px;font-weight:600}
+
+/* ---------- Diagrams ---------- */
+.diagram{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:20px 16px 16px;margin:24px 0;text-align:center}
+.diagram svg{max-width:100%;height:auto}
+.diagram .dcap{font-size:14.5px;color:var(--muted);margin-top:12px;line-height:1.55;text-align:left;max-width:640px;margin-left:auto;margin-right:auto}
+.diagram text{font-family:'DM Sans',sans-serif;font-size:15px;fill:var(--muted)}
+.diagram text.dt{fill:var(--text)}
+.diagram text.dm{font-family:'IBM Plex Mono',monospace;font-size:14px}
+.diagram text.dteal{fill:var(--teal)}
+.diagram text.damber{fill:var(--amber)}
+.diagram text.dgreen{fill:var(--green)}
+.diagram text.dred{fill:var(--red)}
+.diagram text.dsmall{font-size:12.5px}
+.diagram text.dbig{font-size:27px}
+.dg-line{stroke:var(--faint);stroke-width:1.5;fill:none}
+.dg-border{stroke:var(--border);stroke-width:1.5;fill:none}
+.dg-teal{stroke:var(--teal);stroke-width:2;fill:none}
+.dg-amber{stroke:var(--amber);stroke-width:2;fill:none}
+.dg-blue{stroke:var(--blue);stroke-width:2;fill:none}
+.dg-green{stroke:var(--green);stroke-width:2;fill:none}
+.dg-red{stroke:var(--red);stroke-width:2;fill:none}
+.dg-dash{stroke-dasharray:5 5}
+.dg-fill-teal{fill:rgba(45,212,191,.14);stroke:var(--teal);stroke-width:1.5}
+.dg-fill-amber{fill:rgba(251,191,36,.14);stroke:var(--amber);stroke-width:1.5}
+.dg-fill-panel{fill:var(--panel2);stroke:var(--border);stroke-width:1.5}
+.dg-dot-teal{fill:var(--teal)}
+.dg-dot-amber{fill:var(--amber)}
 
 /* ---------- Tables ---------- */
 table{width:100%;border-collapse:collapse;margin:22px 0;font-size:16px}
@@ -205,10 +238,16 @@ tr:hover td{background:rgba(255,255,255,.02)}
 </aside>
 
 <main>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" style="fill:var(--faint)"/></marker>
+<marker id="arrT" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" style="fill:var(--teal)"/></marker>
+<marker id="arrA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" style="fill:var(--amber)"/></marker>
+<marker id="arrB" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" style="fill:var(--blue)"/></marker>
+</defs></svg>
 <header class="hero">
   <div class="eyebrow">CTS Exam Prep · Dedicated Module</div>
   <h1>AV Math</h1>
-  <p>Every formula on the CTS exam, built for people who haven't touched math in years. Step-by-step worked examples, live calculators, and zero assumptions about what you remember from school.</p>
+  <p>Every formula on the CTS exam, built for people who haven't touched math in years. Visual explainers for every concept, step-by-step worked examples, live calculators, and zero assumptions about what you remember from school.</p>
 </header>
 
 <div class="callout examtip"><span class="label">Exam Tip</span>
@@ -230,6 +269,29 @@ The CTS exam gives you an on-screen calculator, and the math never goes beyond a
 <div class="callout keyterm"><span class="label">Key Term</span>
 <strong>PEMDAS</strong> — the acronym for the order of operations. (You may also see BEMDAS, BIDMAS, or BODMAS — same idea, different regional names.) Multiplication does <em>not</em> beat division, and addition does not beat subtraction; within each pair you simply work left to right.</div>
 
+<div class="diagram">
+<svg viewBox="0 0 700 130" role="img" aria-label="PEMDAS order of operations flow">
+  <text x="85" y="22" text-anchor="middle" class="dm dteal dsmall">DO FIRST</text>
+  <text x="610" y="22" text-anchor="middle" class="dm damber dsmall">DO LAST</text>
+  <rect x="10" y="34" width="150" height="64" rx="12" class="dg-fill-teal"/>
+  <text x="85" y="62" text-anchor="middle" class="dm dt">( )</text>
+  <text x="85" y="84" text-anchor="middle" class="dsmall">parentheses</text>
+  <line x1="164" y1="66" x2="182" y2="66" class="dg-line" marker-end="url(#arr)"/>
+  <rect x="185" y="34" width="150" height="64" rx="12" class="dg-fill-panel"/>
+  <text x="260" y="62" text-anchor="middle" class="dm dt">x²  √x</text>
+  <text x="260" y="84" text-anchor="middle" class="dsmall">exponents &amp; roots</text>
+  <line x1="339" y1="66" x2="357" y2="66" class="dg-line" marker-end="url(#arr)"/>
+  <rect x="360" y="34" width="150" height="64" rx="12" class="dg-fill-panel"/>
+  <text x="435" y="62" text-anchor="middle" class="dm dt">×  ÷</text>
+  <text x="435" y="84" text-anchor="middle" class="dsmall">left to right</text>
+  <line x1="514" y1="66" x2="532" y2="66" class="dg-line" marker-end="url(#arr)"/>
+  <rect x="535" y="34" width="150" height="64" rx="12" class="dg-fill-amber"/>
+  <text x="610" y="62" text-anchor="middle" class="dm dt">+  −</text>
+  <text x="610" y="84" text-anchor="middle" class="dsmall">left to right</text>
+</svg>
+<div class="dcap">Work any formula in this order, one stage at a time. Everything inside brackets gets fully solved before anything outside them — which is why <span class="mono">(5.05 × SW) + 0.2</span> means "multiply first, then add," never the reverse.</div>
+</div>
+
 <div class="worked" data-worked>
 <div class="wtitle">Worked Example — Order of Operations</div>
 <div class="wproblem">A projector spec sheet says: Max throw = (5.05 × SW) + 0.2, and the screen width SW is 2.44 m. Solve it.</div>
@@ -241,6 +303,27 @@ The CTS exam gives you an on-screen calculator, and the math never goes beyond a
 
 <h3>Rearranging a Formula</h3>
 <p>Most AV formulas come in one arrangement, but the exam may ask you to solve for a different variable. The rule: <strong>to move something to the other side of the equals sign, do the opposite operation to both sides.</strong> Multiplication moves across as division; addition moves across as subtraction.</p>
+
+<div class="diagram">
+<svg viewBox="0 0 640 200" role="img" aria-label="An equation drawn as a balance scale">
+  <line x1="140" y1="70" x2="500" y2="70" class="dg-teal" style="stroke-width:3"/>
+  <polygon points="320,72 296,140 344,140" class="dg-fill-panel"/>
+  <line x1="250" y1="142" x2="390" y2="142" class="dg-border" style="stroke-width:3"/>
+  <line x1="140" y1="70" x2="140" y2="106" class="dg-line"/>
+  <line x1="500" y1="70" x2="500" y2="106" class="dg-line"/>
+  <rect x="106" y="106" width="68" height="11" rx="5" class="dg-fill-panel"/>
+  <rect x="466" y="106" width="68" height="11" rx="5" class="dg-fill-panel"/>
+  <text x="140" y="56" text-anchor="middle" class="dm dt">V</text>
+  <text x="500" y="56" text-anchor="middle" class="dm dt">I × R</text>
+  <text x="320" y="56" text-anchor="middle" class="dm dteal">=</text>
+  <line x1="140" y1="152" x2="140" y2="126" class="dg-amber" marker-end="url(#arrA)"/>
+  <line x1="500" y1="152" x2="500" y2="126" class="dg-amber" marker-end="url(#arrA)"/>
+  <text x="140" y="174" text-anchor="middle" class="dm damber">÷ R</text>
+  <text x="500" y="174" text-anchor="middle" class="dm damber">÷ R</text>
+  <text x="320" y="174" text-anchor="middle" class="dsmall">same operation, both sides</text>
+</svg>
+<div class="dcap">An equation is a balance scale — it only stays true if both sides get identical treatment. Want I by itself out of <span class="mono">V = I × R</span>? The R is multiplying, so divide <em>both</em> pans by R: on the right it cancels away, and you're left with <span class="mono">V ÷ R = I</span>.</div>
+</div>
 
 <div class="worked" data-worked>
 <div class="wtitle">Worked Example — Rearranging</div>
@@ -268,6 +351,24 @@ The CTS exam gives you an on-screen calculator, and the math never goes beyond a
 <li>log(0.5) ≈ −0.301 — numbers <em>less than 1</em> give <em>negative</em> logs</li>
 </ul>
 <p>Why does AV use logs at all? Human hearing perceives loudness logarithmically — the range between the quietest sound you can hear and the onset of pain covers a ratio of roughly 3,000,000:1. A log scale squashes that huge range into friendly numbers.</p>
+
+<div class="diagram">
+<svg viewBox="0 0 720 160" role="img" aria-label="Log scale ruler: each times-ten step adds one to the log">
+  <line x1="46" y1="30" x2="146" y2="30" class="dg-amber" marker-end="url(#arrA)"/>
+  <text x="154" y="35" text-anchor="start" class="dm damber dsmall">× 10 each step</text>
+  <line x1="40" y1="72" x2="680" y2="72" class="dg-line"/>
+  <line x1="40" y1="64" x2="40" y2="80" class="dg-line"/><text x="40" y="56" text-anchor="middle" class="dm dt">1</text><text x="40" y="102" text-anchor="middle" class="dm dteal">0</text>
+  <line x1="146.7" y1="64" x2="146.7" y2="80" class="dg-line"/><text x="146.7" y="56" text-anchor="middle" class="dm dt">10</text><text x="146.7" y="102" text-anchor="middle" class="dm dteal">1</text>
+  <line x1="253.3" y1="64" x2="253.3" y2="80" class="dg-line"/><text x="253.3" y="56" text-anchor="middle" class="dm dt">100</text><text x="253.3" y="102" text-anchor="middle" class="dm dteal">2</text>
+  <line x1="360" y1="64" x2="360" y2="80" class="dg-line"/><text x="360" y="56" text-anchor="middle" class="dm dt">1k</text><text x="360" y="102" text-anchor="middle" class="dm dteal">3</text>
+  <line x1="466.7" y1="64" x2="466.7" y2="80" class="dg-line"/><text x="466.7" y="56" text-anchor="middle" class="dm dt">10k</text><text x="466.7" y="102" text-anchor="middle" class="dm dteal">4</text>
+  <line x1="573.3" y1="64" x2="573.3" y2="80" class="dg-line"/><text x="573.3" y="56" text-anchor="middle" class="dm dt">100k</text><text x="573.3" y="102" text-anchor="middle" class="dm dteal">5</text>
+  <line x1="680" y1="64" x2="680" y2="80" class="dg-line"/><text x="680" y="56" text-anchor="middle" class="dm dt">1M</text><text x="680" y="102" text-anchor="middle" class="dm dteal">6</text>
+  <line x1="46" y1="128" x2="146" y2="128" class="dg-teal" marker-end="url(#arrT)"/>
+  <text x="154" y="133" text-anchor="start" class="dm dteal dsmall">+ 1 on the log each step</text>
+</svg>
+<div class="dcap">The whole trick in one ruler: the top row is <strong>the number</strong>, the bottom row is <strong>its log</strong>. Multiplying by 10 up top just adds 1 down below — so a monster ratio like 1,000,000:1 becomes a tidy "6." Decibels are this idea with a multiplier attached.</div>
+</div>
 <p>On the exam calculator you just type the ratio and press the <span class="mono">log</span> button. But it pays to memorize a few landmark values, because they explain every "rule of thumb" in AV audio:</p>
 <div class="log-pills">
 <div class="log-pill">log(2) ≈ 0.301</div>
@@ -299,6 +400,25 @@ log(2) ≈ 0.3 is the single most useful number in AV math. It's why doubling <e
 <h2>Ohm's Law &amp; the Power Formula</h2>
 <p class="section-sub">Two tiny formulas that generate a whole family of electrical calculations.</p>
 
+<div class="plain"><span class="label">In Plain English</span>
+Electricity in a wire behaves like water in a pipe. <strong>Voltage</strong> is the pressure pushing it along, <strong>current</strong> is how much is actually flowing, and <strong>resistance</strong> is how much the path squeezes back. Ohm's law is just the obvious consequence: flow = push ÷ squeeze. More voltage means more current; more resistance means less. <strong>Power</strong> (watts) is the rate work gets done — push × flow together.</div>
+
+<div class="diagram">
+<svg viewBox="0 0 720 235" role="img" aria-label="A simple circuit loop: voltage source pushes current through a resistance">
+  <path d="M170,104 L170,64 Q170,50 184,50 L606,50 Q620,50 620,64 L620,90" class="dg-border" style="stroke-width:2.5"/>
+  <path d="M620,150 L620,176 Q620,190 606,190 L184,190 Q170,190 170,176 L170,116" class="dg-border" style="stroke-width:2.5"/>
+  <line x1="152" y1="104" x2="188" y2="104" class="dg-amber" style="stroke-width:3"/>
+  <line x1="162" y1="116" x2="178" y2="116" class="dg-amber" style="stroke-width:5"/>
+  <polyline points="620,90 632,96 608,104 632,112 608,120 632,128 608,136 632,144 620,150" class="dg-red"/>
+  <line x1="290" y1="50" x2="340" y2="50" class="dg-teal" marker-end="url(#arrT)"/>
+  <line x1="450" y1="50" x2="500" y2="50" class="dg-teal" marker-end="url(#arrT)"/>
+  <text x="395" y="28" text-anchor="middle" class="dteal">I — current: the flow (amps)</text>
+  <text x="40" y="226" text-anchor="start" class="damber">V — voltage: the push (volts)</text>
+  <text x="680" y="226" text-anchor="end" class="dred">R — resistance: the squeeze (ohms)</text>
+</svg>
+<div class="dcap">A circuit is a closed loop. The source (left, amber) provides the push, the wire carries the flow, and whatever's in the path — a lamp, a loudspeaker, a device — pushes back (right, red). One push, one loop, one flow: that's why knowing any two of V, I, and R always reveals the third.</div>
+</div>
+
 <div class="formula-box"><div class="fname">Ohm's Law</div>
 <div class="formula">I = <span class="frac"><span class="top">V</span><span class="bot">R</span></span></div>
 <ul class="where"><li><strong>I</strong> — current, in amps (A)</li><li><strong>V</strong> — voltage, in volts (V)</li><li><strong>R</strong> — resistance, in ohms (Ω)</li></ul>
@@ -310,6 +430,26 @@ log(2) ≈ 0.3 is the single most useful number in AV math. It's why doubling <e
 <ul class="where"><li><strong>P</strong> — power, in watts (W)</li><li><strong>I</strong> — current, in amps (A)</li><li><strong>V</strong> — voltage, in volts (V)</li></ul>
 </div>
 <p>Rearranged: <span class="mono">I = P / V</span> and <span class="mono">V = P / I</span>. Combining the two laws also gives useful hybrids like <span class="mono">P = V² / R</span> and <span class="mono">P = I² × R</span> — handy when you know two values but neither formula fits directly.</p>
+
+<div class="diagram">
+<svg viewBox="0 0 640 250" role="img" aria-label="Cover-up triangles for Ohm's law and the power formula">
+  <polygon points="160,30 40,210 280,210" class="dg-fill-panel"/>
+  <line x1="100" y1="120" x2="220" y2="120" class="dg-border"/>
+  <line x1="160" y1="120" x2="160" y2="210" class="dg-border"/>
+  <text x="160" y="95" text-anchor="middle" class="dm dt dbig">V</text>
+  <text x="127" y="180" text-anchor="middle" class="dm dteal dbig">I</text>
+  <text x="194" y="180" text-anchor="middle" class="dm dred dbig">R</text>
+  <text x="160" y="238" text-anchor="middle" class="dsmall">Ohm's law</text>
+  <polygon points="480,30 360,210 600,210" class="dg-fill-panel"/>
+  <line x1="420" y1="120" x2="540" y2="120" class="dg-border"/>
+  <line x1="480" y1="120" x2="480" y2="210" class="dg-border"/>
+  <text x="480" y="95" text-anchor="middle" class="dm dt dbig">P</text>
+  <text x="447" y="180" text-anchor="middle" class="dm dteal dbig">I</text>
+  <text x="514" y="180" text-anchor="middle" class="dm damber dbig">V</text>
+  <text x="480" y="238" text-anchor="middle" class="dsmall">Power</text>
+</svg>
+<div class="dcap">The cover-up trick: put a thumb over the letter you're solving for, and the layout of the two that remain <em>is</em> the formula. Cover I → V sits over R, so <span class="mono">I = V ÷ R</span>. Cover V → I and R sit side by side, so <span class="mono">V = I × R</span>. Works identically on the power triangle.</div>
+</div>
 
 <div class="callout keyterm"><span class="label">Key Term</span>
 <strong>Impedance (Z)</strong> — the opposition to current flow in an <em>AC</em> circuit, measured in ohms just like resistance. Audio circuits are AC, which is why loudspeaker math uses Z instead of R. The arithmetic works the same way.</div>
@@ -380,6 +520,28 @@ The multiplier is <strong>10 for power</strong> and <strong>20 for voltage and d
 <div class="callout keyterm"><span class="label">Key Term</span>
 <strong>Inverse square law</strong> — sound energy spreads out over a wider area as it travels, so measured at twice the distance, the energy drops to one-quarter of the original. In decibel terms: every doubling of distance from the source loses about 6 dB.</div>
 
+<div class="diagram">
+<svg viewBox="0 0 720 260" role="img" aria-label="Inverse square law: the same energy spreads over four times the area at double the distance">
+  <rect x="24" y="116" width="14" height="28" class="dg-fill-panel"/>
+  <polygon points="38,116 58,102 58,158 38,144" class="dg-fill-teal"/>
+  <line x1="60" y1="130" x2="440" y2="70" class="dg-line dg-dash"/>
+  <line x1="60" y1="130" x2="440" y2="190" class="dg-line dg-dash"/>
+  <rect x="250" y="100" width="60" height="60" class="dg-fill-teal"/>
+  <rect x="440" y="70" width="120" height="120" class="dg-fill-amber"/>
+  <line x1="440" y1="130" x2="560" y2="130" class="dg-amber" style="stroke-width:1.5"/>
+  <line x1="500" y1="70" x2="500" y2="190" class="dg-amber" style="stroke-width:1.5"/>
+  <text x="280" y="90" text-anchor="middle" class="dsmall">all the energy → 1 square</text>
+  <text x="500" y="56" text-anchor="middle" class="dsmall">same energy → 4 squares</text>
+  <text x="612" y="120" text-anchor="start" class="dm damber">¼ each</text>
+  <text x="612" y="142" text-anchor="start" class="dm damber">= −6 dB</text>
+  <line x1="60" y1="212" x2="280" y2="212" class="dg-line" marker-end="url(#arr)"/>
+  <text x="170" y="230" text-anchor="middle" class="dm">1 m</text>
+  <line x1="60" y1="240" x2="500" y2="240" class="dg-line" marker-end="url(#arr)"/>
+  <text x="280" y="257" text-anchor="middle" class="dm">2 m</text>
+</svg>
+<div class="dcap">Sound doesn't get "used up" with distance — it gets <em>spread out</em>. The energy that filled one square at 1 m must cover four squares at 2 m, so each square receives a quarter of it. A quarter of the power is 10 × log(0.25) ≈ −6 dB — which is exactly where the "double the distance, lose 6 dB" rule comes from.</div>
+</div>
+
 <div class="worked" data-worked>
 <div class="wtitle">Worked Example — Distance Loss</div>
 <div class="wproblem">A listener moves from 1 m to 8 m away from a loudspeaker. What's the SPL change?</div>
@@ -408,6 +570,9 @@ The multiplier is <strong>10 for power</strong> and <strong>20 for voltage and d
 <h2>Loudspeaker Math</h2>
 <p class="section-sub">Impedance for wiring speakers together, and the two-step calculation for how much amplifier power you need.</p>
 
+<div class="plain"><span class="label">In Plain English</span>
+Every loudspeaker pushes back against the amplifier driving it — that pushback is its <strong>impedance</strong>. The amp never sees individual speakers; it sees one <em>combined</em> total, and that total depends entirely on how the speakers are wired together. Get it too low and the amp overworks and overheats; that's why these formulas matter on real jobs, not just on the exam.</div>
+
 <h3>Impedance: Series Circuits</h3>
 <div class="formula-box"><div class="fname">Series Impedance</div>
 <div class="formula">Z<sub>T</sub> = Z₁ + Z₂ + Z₃ … + Z<sub>N</sub></div>
@@ -422,6 +587,38 @@ The multiplier is <strong>10 for power</strong> and <strong>20 for voltage and d
 <div class="formula-box"><div class="fname">Parallel — Different Impedances</div>
 <div class="formula"><span class="frac"><span class="top">1</span><span class="bot">Z<sub>T</sub></span></span> = <span class="frac"><span class="top">1</span><span class="bot">Z₁</span></span> + <span class="frac"><span class="top">1</span><span class="bot">Z₂</span></span> + … + <span class="frac"><span class="top">1</span><span class="bot">Z<sub>N</sub></span></span></div>
 <ul class="where"><li>Add the <em>reciprocals</em>, then flip the result. See the worked example below — it's easier than it looks.</li></ul>
+</div>
+
+<div class="diagram">
+<svg viewBox="0 0 720 250" role="img" aria-label="Series wiring versus parallel wiring of loudspeakers">
+  <text x="170" y="40" text-anchor="middle" class="dt">SERIES — one path</text>
+  <rect x="20" y="90" width="70" height="60" rx="8" class="dg-fill-panel"/>
+  <text x="55" y="125" text-anchor="middle" class="dm dt">AMP</text>
+  <line x1="90" y1="105" x2="150" y2="105" class="dg-border" style="stroke-width:2.5"/>
+  <rect x="150" y="85" width="44" height="40" rx="6" class="dg-fill-teal"/>
+  <text x="172" y="110" text-anchor="middle" class="dm dsmall dt">8Ω</text>
+  <line x1="194" y1="105" x2="240" y2="105" class="dg-border" style="stroke-width:2.5"/>
+  <rect x="240" y="85" width="44" height="40" rx="6" class="dg-fill-teal"/>
+  <text x="262" y="110" text-anchor="middle" class="dm dsmall dt">8Ω</text>
+  <path d="M284,105 L316,105 L316,180 L55,180 L55,150" class="dg-border" style="stroke-width:2.5"/>
+  <line x1="262" y1="180" x2="218" y2="180" class="dg-teal" marker-end="url(#arrT)"/>
+  <text x="170" y="226" text-anchor="middle" class="dm dteal">Z = 8 + 8 = 16 Ω</text>
+  <text x="550" y="40" text-anchor="middle" class="dt">PARALLEL — extra paths</text>
+  <rect x="390" y="90" width="70" height="60" rx="8" class="dg-fill-panel"/>
+  <text x="425" y="125" text-anchor="middle" class="dm dt">AMP</text>
+  <line x1="460" y1="105" x2="680" y2="105" class="dg-border" style="stroke-width:2.5"/>
+  <path d="M425,150 L425,185 L680,185" class="dg-border" style="stroke-width:2.5"/>
+  <line x1="540" y1="105" x2="540" y2="125" class="dg-border" style="stroke-width:2.5"/>
+  <line x1="540" y1="165" x2="540" y2="185" class="dg-border" style="stroke-width:2.5"/>
+  <rect x="518" y="125" width="44" height="40" rx="6" class="dg-fill-teal"/>
+  <text x="540" y="150" text-anchor="middle" class="dm dsmall dt">8Ω</text>
+  <line x1="630" y1="105" x2="630" y2="125" class="dg-border" style="stroke-width:2.5"/>
+  <line x1="630" y1="165" x2="630" y2="185" class="dg-border" style="stroke-width:2.5"/>
+  <rect x="608" y="125" width="44" height="40" rx="6" class="dg-fill-teal"/>
+  <text x="630" y="150" text-anchor="middle" class="dm dsmall dt">8Ω</text>
+  <text x="550" y="226" text-anchor="middle" class="dm damber">Z = 8 ÷ 2 = 4 Ω</text>
+</svg>
+<div class="dcap"><strong>Series</strong> chains speakers into a single path — the signal has to push through each one in turn, so the opposition stacks up and impedances <em>add</em>. <strong>Parallel</strong> gives the signal extra side-by-side routes — more paths means less total opposition, so the combined impedance <em>drops below the smallest speaker</em>. Same two speakers, opposite results: 16 Ω vs 4 Ω.</div>
 </div>
 
 <div class="callout examtip"><span class="label">Exam Tip</span>
@@ -454,6 +651,30 @@ Sanity checks that catch most impedance mistakes: <strong>series total is always
 <li><strong>Distance step:</strong> use the inverse square law to find the SPL at the listener with just 1 watt in.</li>
 <li><strong>Power step:</strong> find how many watts it takes to make up the shortfall, using <span class="mono">SPL increase = 10 × log(P₂ / P₁)</span>.</li>
 </ol>
+
+<div class="diagram">
+<svg viewBox="0 0 720 240" role="img" aria-label="Two-step amplifier power plan: distance loss, then power to make up the shortfall">
+  <rect x="34" y="116" width="14" height="28" class="dg-fill-panel"/>
+  <polygon points="48,116 68,102 68,158 48,144" class="dg-fill-teal"/>
+  <text x="80" y="58" text-anchor="start" class="dm dteal">92 dB SPL @ 1 m with 1 W</text>
+  <path d="M100,80 Q340,135 590,148" class="dg-teal dg-dash"/>
+  <circle cx="590" cy="148" r="5" class="dg-dot-teal"/>
+  <text x="555" y="172" text-anchor="middle" class="dm dteal dsmall">74 dB with 1 W</text>
+  <line x1="440" y1="110" x2="590" y2="110" class="dg-amber dg-dash"/>
+  <text x="588" y="98" text-anchor="end" class="dm damber dsmall">target: 80 dB SPL</text>
+  <line x1="590" y1="144" x2="590" y2="116" class="dg-amber" marker-end="url(#arrA)"/>
+  <text x="500" y="198" text-anchor="middle" class="dm damber">6 dB short → need ≈ 4 W</text>
+  <circle cx="660" cy="110" r="10" class="dg-line"/>
+  <line x1="660" y1="120" x2="660" y2="158" class="dg-line"/>
+  <line x1="660" y1="132" x2="646" y2="144" class="dg-line"/>
+  <line x1="660" y1="132" x2="674" y2="144" class="dg-line"/>
+  <line x1="660" y1="158" x2="648" y2="180" class="dg-line"/>
+  <line x1="660" y1="158" x2="672" y2="180" class="dg-line"/>
+  <line x1="100" y1="215" x2="640" y2="215" class="dg-line" marker-end="url(#arr)"/>
+  <text x="370" y="234" text-anchor="middle" class="dm">8 m to the farthest listener</text>
+</svg>
+<div class="dcap">The picture behind every amp-power question: sound leaves the speaker at its rated sensitivity, <em>fades</em> along the way (inverse square law), and arrives short of the target level. Step 1 measures the fade; step 2 buys the shortfall back with watts. That's the whole problem.</div>
+</div>
 
 <div class="callout keyterm"><span class="label">Key Term</span>
 <strong>Loudspeaker sensitivity</strong> — the SPL a loudspeaker produces from a known power input at a known distance, typically quoted as "XX dB SPL, 1 watt @ 1 meter." It's your reference point for every power calculation. <strong>Headroom</strong> is extra dB added above the target listening level to handle peaks without distortion.</div>
@@ -488,11 +709,28 @@ Sanity checks that catch most impedance mistakes: <strong>series total is always
 <h2>Wavelength &amp; Digital Audio Bandwidth</h2>
 <p class="section-sub">Two quick formulas from the audio fundamentals chapters.</p>
 
+<div class="plain"><span class="label">In Plain English</span>
+Sound is a pressure wave rippling through air — squeeze, release, squeeze, release. <strong>Frequency</strong> is how many of those cycles happen per second (Hz); <strong>wavelength</strong> is the physical distance one complete cycle occupies in the air. Since every frequency travels at the same speed (343 m/s), the two are locked together: know one, divide it into the speed of sound, get the other.</div>
+
 <div class="formula-box"><div class="fname">Wavelength</div>
 <div class="formula">λ = <span class="frac"><span class="top">v</span><span class="bot">f</span></span></div>
 <ul class="where"><li><strong>λ</strong> — wavelength (m)</li><li><strong>v</strong> — speed of sound: 343 m/s in air at sea level, 20 °C (1,125 ft/s)</li><li><strong>f</strong> — frequency (Hz)</li></ul>
 </div>
 <p>Wavelength and frequency are inversely proportional: low frequencies have long waves (20 Hz → 343/20 = 17.2 m) and high frequencies have short ones (20 kHz → 17.2 mm). That's the full audible span of human hearing, 20 Hz–20 kHz.</p>
+
+<div class="diagram">
+<svg viewBox="0 0 720 230" role="img" aria-label="A low frequency has a long wavelength; a high frequency has a short one">
+  <line x1="135" y1="24" x2="435" y2="24" class="dg-amber"/>
+  <line x1="135" y1="24" x2="135" y2="36" class="dg-amber"/>
+  <line x1="435" y1="24" x2="435" y2="36" class="dg-amber"/>
+  <text x="285" y="16" text-anchor="middle" class="dm damber dsmall">λ — one full cycle</text>
+  <path d="M60,70 q75,-68 150,0 q75,68 150,0 q75,-68 150,0 q75,68 150,0" class="dg-teal"/>
+  <text x="660" y="122" text-anchor="end" class="dm dteal dsmall">low frequency → long wavelength</text>
+  <path d="M60,175 q25,-48 50,0 q25,48 50,0 q25,-48 50,0 q25,48 50,0 q25,-48 50,0 q25,48 50,0 q25,-48 50,0 q25,48 50,0 q25,-48 50,0 q25,48 50,0 q25,-48 50,0 q25,48 50,0" class="dg-blue"/>
+  <text x="660" y="224" text-anchor="end" class="dm dsmall" style="fill:var(--blue)">high frequency → short wavelength</text>
+</svg>
+<div class="dcap">Both waves travel at the same 343 m/s. The lower one simply repeats more often, so each cycle has to fit into less distance. A 100 Hz bass note is a 3.4 m wave — furniture-sized, which is why bass wraps around obstacles; a 10 kHz sizzle is 3.4 cm — easily blocked by a head in the way.</div>
+</div>
 
 <div class="formula-box"><div class="fname">Digital Audio Bandwidth</div>
 <div class="formula">Bandwidth = Sample Rate × Bit Depth × Channels</div>
@@ -501,6 +739,25 @@ Sanity checks that catch most impedance mistakes: <strong>series total is always
 
 <div class="callout spec"><span class="label">Spec</span>
 The <strong>Nyquist–Shannon sampling theorem</strong>: the sample rate must be <em>greater than twice</em> the highest frequency you want to capture. Human hearing tops out around 20 kHz, so digital audio needs a sample rate above 40 kHz — which is why CD audio uses 44.1 kHz at 16 bits.</div>
+
+<div class="diagram">
+<svg viewBox="0 0 720 170" role="img" aria-label="Digital sampling: measuring the wave's height at regular intervals">
+  <line x1="60" y1="85" x2="660" y2="85" class="dg-line dg-dash"/>
+  <path d="M60,85 q50,-80 100,0 q50,80 100,0 q50,-80 100,0 q50,80 100,0 q50,-80 100,0 q50,80 100,0" class="dg-teal"/>
+  <line x1="110" y1="85" x2="110" y2="45" class="dg-line"/><circle cx="110" cy="45" r="4.5" class="dg-dot-amber"/>
+  <line x1="210" y1="85" x2="210" y2="125" class="dg-line"/><circle cx="210" cy="125" r="4.5" class="dg-dot-amber"/>
+  <line x1="310" y1="85" x2="310" y2="45" class="dg-line"/><circle cx="310" cy="45" r="4.5" class="dg-dot-amber"/>
+  <line x1="410" y1="85" x2="410" y2="125" class="dg-line"/><circle cx="410" cy="125" r="4.5" class="dg-dot-amber"/>
+  <line x1="510" y1="85" x2="510" y2="45" class="dg-line"/><circle cx="510" cy="45" r="4.5" class="dg-dot-amber"/>
+  <line x1="610" y1="85" x2="610" y2="125" class="dg-line"/><circle cx="610" cy="125" r="4.5" class="dg-dot-amber"/>
+  <circle cx="60" cy="85" r="4.5" class="dg-dot-amber"/><circle cx="160" cy="85" r="4.5" class="dg-dot-amber"/>
+  <circle cx="260" cy="85" r="4.5" class="dg-dot-amber"/><circle cx="360" cy="85" r="4.5" class="dg-dot-amber"/>
+  <circle cx="460" cy="85" r="4.5" class="dg-dot-amber"/><circle cx="560" cy="85" r="4.5" class="dg-dot-amber"/>
+  <circle cx="660" cy="85" r="4.5" class="dg-dot-amber"/>
+  <text x="360" y="160" text-anchor="middle" class="dsmall">each dot = one sample (its height stored as a number, bit depth = how precisely)</text>
+</svg>
+<div class="dcap">Digital audio is just measurements: the converter checks the wave's height thousands of times per second (the <strong>sample rate</strong>) and stores each reading as a number (the <strong>bit depth</strong>). More than two samples per cycle and the wave survives — fewer and it's misread as a lower frequency. That's why Nyquist demands a rate above <em>double</em> the highest frequency, and why bandwidth is simply samples × bits × channels.</div>
+</div>
 
 <div class="worked" data-worked>
 <div class="wtitle">Worked Example — Audio Bandwidth</div>
@@ -528,6 +785,9 @@ The <strong>Nyquist–Shannon sampling theorem</strong>: the sample rate must be
 <h2>Aspect Ratio &amp; Screen Sizing</h2>
 <p class="section-sub">Width, height, diagonal — you'll be given two and asked for the third.</p>
 
+<div class="plain"><span class="label">In Plain English</span>
+An aspect ratio is a <strong>shape promise</strong>: "16:9" just means every 16 units of width come with 9 units of height, whatever the actual size. Divide the two numbers (16 ÷ 9 = 1.7778) and the promise becomes a single number you can multiply or divide by — which is all screen-sizing math ever is. The <strong>diagonal</strong> matters because that's how displays are bought and sold, and it comes free from the right triangle every rectangle hides inside it.</div>
+
 <div class="formula-box"><div class="fname">Aspect Ratio</div>
 <div class="formula">AR = <span class="frac"><span class="top">W</span><span class="bot">H</span></span></div>
 <ul class="where"><li><strong>W</strong> — image width · <strong>H</strong> — image height, in the <em>same units</em></li></ul>
@@ -550,6 +810,22 @@ The <strong>Nyquist–Shannon sampling theorem</strong>: the sample rate must be
 <div class="formula-box"><div class="fname">Screen Diagonal (Pythagorean Theorem)</div>
 <div class="formula">A² + B² = C²</div>
 <ul class="where"><li><strong>A</strong> — screen height · <strong>B</strong> — screen width · <strong>C</strong> — the diagonal</li><li>To find the diagonal: square the height, square the width, add them, take the square root.</li></ul>
+</div>
+
+<div class="diagram">
+<svg viewBox="0 0 640 340" role="img" aria-label="A 16:9 screen with width, height, and diagonal labeled">
+  <rect x="80" y="40" width="432" height="243" class="dg-fill-panel"/>
+  <text x="108" y="74" text-anchor="start" class="dm dt">16 : 9</text>
+  <line x1="80" y1="283" x2="512" y2="40" class="dg-amber dg-dash"/>
+  <text x="296" y="150" text-anchor="middle" class="dm damber" transform="rotate(-29 296 150)">C — the diagonal</text>
+  <polyline points="496,283 496,267 512,267" class="dg-line"/>
+  <line x1="80" y1="305" x2="512" y2="305" class="dg-teal" marker-start="url(#arrT)" marker-end="url(#arrT)"/>
+  <text x="296" y="328" text-anchor="middle" class="dm dteal">W — width (16 parts)</text>
+  <line x1="540" y1="40" x2="540" y2="283" class="dg-blue" marker-start="url(#arrB)" marker-end="url(#arrB)"/>
+  <text x="560" y="158" text-anchor="start" class="dm" style="fill:var(--blue)">H</text>
+  <text x="560" y="178" text-anchor="start" class="dsmall">(9 parts)</text>
+</svg>
+<div class="dcap">One rectangle, three connected numbers. Know W and the ratio → divide for H. Know H → multiply for W. Know both → the dashed diagonal is the hypotenuse of a right triangle, so square, add, square-root. Every screen-sizing question is one of these three moves.</div>
 </div>
 
 <div class="worked" data-worked>
@@ -579,6 +855,22 @@ The <strong>Nyquist–Shannon sampling theorem</strong>: the sample rate must be
 <div class="formula">%EH = <span class="frac"><span class="top">Element height</span><span class="bot">Total image height</span></span></div>
 <ul class="where"><li>Expressed as a percentage of the image height. Example: on an HD image 1,080 px high, a symbol with a %EH of 5 is 54 px tall (5% of 1,080). For text, element heights are measured from lowercase characters, excluding descenders.</li></ul>
 </div>
+
+<div class="diagram">
+<svg viewBox="0 0 640 295" role="img" aria-label="Percent element height: the height of the smallest thing a viewer must read, as a share of the image height">
+  <rect x="100" y="30" width="400" height="225" class="dg-fill-panel"/>
+  <rect x="180" y="126" width="64" height="64" rx="6" class="dg-fill-teal"/>
+  <text x="212" y="174" text-anchor="middle" class="dt" style="font-size:44px;font-family:'Fraunces',serif">E</text>
+  <line x1="246" y1="126" x2="270" y2="126" class="dg-line dg-dash"/>
+  <line x1="246" y1="190" x2="270" y2="190" class="dg-line dg-dash"/>
+  <line x1="270" y1="126" x2="270" y2="190" class="dg-teal" marker-start="url(#arrT)" marker-end="url(#arrT)"/>
+  <text x="282" y="162" text-anchor="start" class="dsmall dteal">element height</text>
+  <line x1="530" y1="30" x2="530" y2="255" class="dg-blue" marker-start="url(#arrB)" marker-end="url(#arrB)"/>
+  <text x="556" y="146" text-anchor="middle" class="dsmall" transform="rotate(90 556 146)">total image height</text>
+  <text x="300" y="286" text-anchor="middle" class="dm dteal">%EH = element ÷ image height × 100</text>
+</svg>
+<div class="dcap">DISCAS starts from the content, not the screen: find the smallest thing a viewer genuinely has to read — a lowercase letter, a chart symbol — and ask what slice of the image's height it takes up. If the required %EH forces the image bigger, the image gets bigger. Content drives screen size, never the other way around.</div>
+</div>
 <div class="callout keyterm"><span class="label">Key Term</span>
 <strong>Closest viewer / farthest viewer</strong> — DISCAS defines viewing distance limits by the nearest position where content can still be comfortably assimilated and the farthest position where the required detail can still be discerned. For <strong>analytical decision-making (ADM)</strong> — medical imaging, engineering drawings — calculations are based on resolving a <em>single pixel</em>.</div>
 <div class="callout spec"><span class="label">Spec</span>
@@ -590,9 +882,29 @@ BDM placement guidance: top of image no more than <strong>30°</strong> above th
 <h2>Throw Distance &amp; Projector Brightness</h2>
 <p class="section-sub">Where the projector goes, and how its light output is measured.</p>
 
+<div class="plain"><span class="label">In Plain English</span>
+A projector's lens spreads light in a fixed-angle cone, so the farther back it sits, the wider the picture gets. <strong>Throw ratio</strong> captures that geometry in one number: how many screen-widths back the lens must sit. A ratio of 1.5 with a 2 m wide image means the lens belongs 3 m from the screen — that's the entire calculation.</div>
+
 <div class="formula-box"><div class="fname">Estimating Throw Distance</div>
 <div class="formula">Distance = Screen Width × Throw Ratio</div>
 <ul class="where"><li><strong>Distance</strong> — from the front of the lens to the closest point on the screen</li><li><strong>Throw ratio</strong> — the ratio of throw distance to image width, from the projector's specs</li><li>Always confirm against the owner's manual — every projector/lens combination publishes its own exact formulas.</li></ul>
+</div>
+
+<div class="diagram">
+<svg viewBox="0 0 720 250" role="img" aria-label="Bird's-eye view: projector throw distance to a screen of a given width">
+  <rect x="40" y="95" width="90" height="50" rx="8" class="dg-fill-panel"/>
+  <text x="85" y="126" text-anchor="middle" class="dm dt dsmall">PROJ</text>
+  <rect x="130" y="110" width="12" height="20" rx="3" class="dg-fill-teal"/>
+  <line x1="600" y1="40" x2="600" y2="200" class="dg-teal" style="stroke-width:5"/>
+  <line x1="142" y1="120" x2="600" y2="40" class="dg-line dg-dash"/>
+  <line x1="142" y1="120" x2="600" y2="200" class="dg-line dg-dash"/>
+  <text x="371" y="30" text-anchor="middle" class="dm dteal">D = SW × throw ratio</text>
+  <line x1="142" y1="222" x2="600" y2="222" class="dg-amber" marker-start="url(#arrA)" marker-end="url(#arrA)"/>
+  <text x="371" y="243" text-anchor="middle" class="dm damber">throw distance D (lens → screen)</text>
+  <line x1="632" y1="40" x2="632" y2="200" class="dg-blue" marker-start="url(#arrB)" marker-end="url(#arrB)"/>
+  <text x="660" y="122" text-anchor="middle" class="dsmall" transform="rotate(90 660 122)">image width SW</text>
+</svg>
+<div class="dcap">Bird's-eye view. The dashed cone is the lens's fixed spread: back the projector up and the image grows, bring it in and the image shrinks. Zoom lenses give a <em>range</em> of ratios — that's why manufacturer spec sheets publish separate max-throw and min-throw formulas.</div>
 </div>
 <p>Manufacturer spec sheets typically give a max-throw formula, a min-throw formula (the zoom range), and sometimes a vertical offset formula. They look like this sample:</p>
 <div class="formula-box"><div class="fname">Sample Manufacturer Formulas</div>
@@ -613,6 +925,21 @@ These formulas are pure PEMDAS practice: multiply inside the parentheses first, 
 
 <h3>ANSI Lumens</h3>
 <p>Projector brightness is quoted in lumens, measured with the nine-zone method: project a full-white field, divide the screen into nine equal areas, take an incident light reading at the center of each, average the nine readings, then multiply by the screen area.</p>
+
+<div class="diagram">
+<svg viewBox="0 0 640 280" role="img" aria-label="ANSI nine-zone measurement: readings at the center of nine equal screen areas">
+  <rect x="120" y="20" width="400" height="225" class="dg-fill-panel"/>
+  <line x1="253.3" y1="20" x2="253.3" y2="245" class="dg-border"/>
+  <line x1="386.7" y1="20" x2="386.7" y2="245" class="dg-border"/>
+  <line x1="120" y1="95" x2="520" y2="95" class="dg-border"/>
+  <line x1="120" y1="170" x2="520" y2="170" class="dg-border"/>
+  <circle cx="186.7" cy="57.5" r="6" class="dg-dot-amber"/><circle cx="320" cy="57.5" r="6" class="dg-dot-amber"/><circle cx="453.3" cy="57.5" r="6" class="dg-dot-amber"/>
+  <circle cx="186.7" cy="132.5" r="6" class="dg-dot-amber"/><circle cx="320" cy="132.5" r="6" class="dg-dot-amber"/><circle cx="453.3" cy="132.5" r="6" class="dg-dot-amber"/>
+  <circle cx="186.7" cy="207.5" r="6" class="dg-dot-amber"/><circle cx="320" cy="207.5" r="6" class="dg-dot-amber"/><circle cx="453.3" cy="207.5" r="6" class="dg-dot-amber"/>
+  <text x="320" y="270" text-anchor="middle" class="dm dteal dsmall">average the 9 readings → × screen area (m²) → lumens</text>
+</svg>
+<div class="dcap">Why nine readings instead of one? Projectors are brightest dead-center and dimmer toward the corners. Averaging a reading from the middle of nine equal zones keeps the rating honest — then multiplying by screen area converts light-per-square-meter (lux) into total light output (lumens).</div>
+</div>
 <div class="formula-box"><div class="fname">ANSI Lumen Rating</div>
 <div class="formula">L = SH × SW × AI</div>
 <ul class="where"><li><strong>L</strong> — lumens · <strong>SH</strong> — screen height · <strong>SW</strong> — screen width · <strong>AI</strong> — average illuminance of the nine readings</li></ul>
@@ -635,6 +962,31 @@ Units must match: if the light readings are in <strong>lux</strong>, screen area
 <section id="heat">
 <h2>Heat Load</h2>
 <p class="section-sub">Every watt an AV system consumes eventually becomes heat the HVAC must remove.</p>
+
+<div class="plain"><span class="label">In Plain English</span>
+An equipment rack is, thermodynamically, a space heater with features. Once the light has left the lens and the sound has left the speakers, essentially every watt the gear consumed has turned into heat in the room — and the air conditioning has to carry it back out. The formula just converts electrical units (watts) into the units HVAC engineers size systems in (Btu/h or kJ/h).</div>
+
+<div class="diagram">
+<svg viewBox="0 0 640 255" role="img" aria-label="Rack equipment turning watts into heat the HVAC must remove">
+  <rect x="70" y="60" width="140" height="160" rx="8" class="dg-fill-panel"/>
+  <rect x="82" y="74" width="116" height="26" rx="4" class="dg-border"/>
+  <rect x="82" y="108" width="116" height="26" rx="4" class="dg-border"/>
+  <rect x="82" y="142" width="116" height="26" rx="4" class="dg-border"/>
+  <rect x="82" y="176" width="116" height="26" rx="4" class="dg-border"/>
+  <text x="140" y="245" text-anchor="middle" class="dm">1,200 W of gear</text>
+  <path d="M105,52 q8,-12 0,-24 q-8,-12 0,-24" class="dg-amber"/>
+  <path d="M140,52 q8,-12 0,-24 q-8,-12 0,-24" class="dg-amber"/>
+  <path d="M175,52 q8,-12 0,-24 q-8,-12 0,-24" class="dg-amber"/>
+  <line x1="240" y1="130" x2="360" y2="130" class="dg-amber" marker-end="url(#arrA)"/>
+  <text x="300" y="118" text-anchor="middle" class="dsmall damber">heat</text>
+  <rect x="380" y="90" width="190" height="80" rx="10" class="dg-fill-panel"/>
+  <text x="475" y="124" text-anchor="middle" class="dm dt">HVAC</text>
+  <text x="475" y="148" text-anchor="middle" class="dsmall">must remove it all</text>
+  <text x="475" y="200" text-anchor="middle" class="dm damber">1,200 × 3.4 = 4,080 Btu/h</text>
+</svg>
+<div class="dcap">Watts in, heat out — there's nowhere else for the energy to go. Multiply equipment watts by 3.4 for Btu per hour (3.6 for kJ/h) and hand that number to the mechanical engineer. Remember the stated exception: these formulas don't account for amplifier heat.</div>
+</div>
+
 <div class="formula-box"><div class="fname">Heat Load</div>
 <div class="formula">Total Btu = W<sub>E</sub> × 3.4&nbsp;&nbsp;&nbsp;&nbsp;Total kJ = W<sub>E</sub> × 3.6</div>
 <ul class="where"><li><strong>W<sub>E</sub></strong> — total watts of all equipment in the room</li><li>1 watt generates 3.4 Btu of heat per hour, or 3.6 kilojoules per hour</li><li>Neither formula accounts for the heat load generated by amplifiers.</li></ul>
@@ -666,6 +1018,32 @@ Units must match: if the light readings are in <strong>lux</strong>, screen area
 
 <div class="callout spec"><span class="label">Spec</span>
 <strong>The RF spectrum runs from 3 kHz to 300 GHz.</strong> It has a floor as well as a ceiling — a distractor like "300 GHz and below" is missing the lower bound entirely.</div>
+
+<div class="diagram">
+<svg viewBox="0 0 720 190" role="img" aria-label="The RF spectrum from 3 kilohertz to 300 gigahertz on a log scale">
+  <text x="242" y="66" text-anchor="middle" class="dsmall">AM radio</text>
+  <line x1="242" y1="80" x2="242" y2="70" class="dg-line"/>
+  <text x="402" y="42" text-anchor="middle" class="dsmall">FM radio</text>
+  <line x1="402" y1="80" x2="402" y2="46" class="dg-line"/>
+  <text x="430" y="66" text-anchor="middle" class="dsmall dteal">wireless mics (UHF)</text>
+  <line x1="464" y1="80" x2="464" y2="70" class="dg-teal" style="stroke-width:1.5"/>
+  <text x="548" y="42" text-anchor="middle" class="dsmall">Wi-Fi 2.4 / 5 GHz</text>
+  <line x1="512" y1="80" x2="535" y2="48" class="dg-line"/>
+  <rect x="40" y="80" width="640" height="34" rx="6" class="dg-fill-teal"/>
+  <line x1="120" y1="114" x2="120" y2="122" class="dg-line"/><text x="120" y="140" text-anchor="middle" class="dm dsmall">30k</text>
+  <line x1="200" y1="114" x2="200" y2="122" class="dg-line"/><text x="200" y="140" text-anchor="middle" class="dm dsmall">300k</text>
+  <line x1="280" y1="114" x2="280" y2="122" class="dg-line"/><text x="280" y="140" text-anchor="middle" class="dm dsmall">3M</text>
+  <line x1="360" y1="114" x2="360" y2="122" class="dg-line"/><text x="360" y="140" text-anchor="middle" class="dm dsmall">30M</text>
+  <line x1="440" y1="114" x2="440" y2="122" class="dg-line"/><text x="440" y="140" text-anchor="middle" class="dm dsmall">300M</text>
+  <line x1="520" y1="114" x2="520" y2="122" class="dg-line"/><text x="520" y="140" text-anchor="middle" class="dm dsmall">3G</text>
+  <line x1="600" y1="114" x2="600" y2="122" class="dg-line"/><text x="600" y="140" text-anchor="middle" class="dm dsmall">30G</text>
+  <text x="46" y="140" text-anchor="middle" class="dm damber">3 kHz</text>
+  <text x="672" y="140" text-anchor="middle" class="dm damber">300 GHz</text>
+  <text x="46" y="164" text-anchor="middle" class="dsmall damber">the floor</text>
+  <text x="672" y="164" text-anchor="middle" class="dsmall damber">the ceiling</text>
+</svg>
+<div class="dcap">Nine factors of ten, drawn on a log scale — everything wireless lives somewhere on this band. For the exam, the two amber endpoints are the answer: <strong>3 kHz to 300 GHz</strong>, floor <em>and</em> ceiling.</div>
+</div>
 </section>
 
 <div class="divider"></div>
@@ -677,12 +1055,60 @@ Units must match: if the light readings are in <strong>lux</strong>, screen area
 <div class="callout spec"><span class="label">Spec</span>
 <strong>Conduit fill:</strong> when running three or more cables through one conduit, their combined cross-section may occupy no more than <strong>40 percent</strong> of the conduit's interior area.</div>
 
+<div class="diagram">
+<svg viewBox="0 0 360 220" role="img" aria-label="Conduit cross-section with cables filling at most 40 percent of the area">
+  <circle cx="110" cy="110" r="92" class="dg-border" style="stroke-width:3"/>
+  <circle cx="110" cy="110" r="80" class="dg-border"/>
+  <circle cx="82" cy="144" r="30" class="dg-fill-teal"/>
+  <circle cx="137" cy="148" r="26" class="dg-fill-teal"/>
+  <circle cx="105" cy="90" r="24" class="dg-fill-teal"/>
+  <text x="268" y="95" text-anchor="middle" class="dm dteal">cables ≤ 40%</text>
+  <text x="268" y="120" text-anchor="middle" class="dsmall">of the interior area</text>
+  <text x="268" y="145" text-anchor="middle" class="dsmall">the rest stays open</text>
+</svg>
+<div class="dcap">End-on view of a conduit. The 40% limit isn't bureaucracy: cables need free space to shed heat, and you physically have to pull them through without wrecking their jackets. Cross-section area, not cable count, is what's limited.</div>
+</div>
+
 <div class="callout spec"><span class="label">Spec</span>
 <strong>Cable bend radius:</strong> never bend a cable tighter than <strong>4× its outer diameter</strong> — tighter bends risk damaging the conductors or shield inside.</div>
+
+<div class="diagram">
+<svg viewBox="0 0 380 220" role="img" aria-label="Cable bend radius at least four times the cable diameter">
+  <path d="M50,25 L50,80 A80,80 0 0 0 130,160 L330,160" style="stroke:rgba(45,212,191,.30);stroke-width:18;fill:none;stroke-linecap:round"/>
+  <path d="M50,25 L50,80 A80,80 0 0 0 130,160 L330,160" class="dg-teal dg-dash" style="stroke-width:1.5"/>
+  <circle cx="130" cy="80" r="3.5" class="dg-dot-amber"/>
+  <line x1="130" y1="80" x2="76" y2="134" class="dg-amber" marker-end="url(#arrA)"/>
+  <text x="112" y="122" text-anchor="middle" class="dm damber">R</text>
+  <line x1="252" y1="151" x2="268" y2="151" class="dg-line"/>
+  <line x1="252" y1="169" x2="268" y2="169" class="dg-line"/>
+  <line x1="260" y1="151" x2="260" y2="169" class="dg-line"/>
+  <text x="260" y="196" text-anchor="middle" class="dm">D</text>
+  <text x="255" y="60" text-anchor="middle" class="dm dteal">R ≥ 4 × D</text>
+</svg>
+<div class="dcap">Inside the jacket are conductors, foil, and braid that only tolerate so much curving before they kink or tear. Measure the cable's outer diameter D, multiply by four — the bend's radius R may never be tighter. An 8 mm cable turns no tighter than a 32 mm radius.</div>
+</div>
 
 <div class="formula-box"><div class="fname">Rigging Safety Factor</div>
 <div class="formula">Required rating = Load weight × 5</div>
 <ul class="where"><li>The standard safety factor for anything flown overhead in AV/entertainment rigging is <strong>5:1</strong>.</li></ul>
+</div>
+
+<div class="diagram">
+<svg viewBox="0 0 420 245" role="img" aria-label="An overhead load requires hardware rated for five times its weight">
+  <line x1="40" y1="30" x2="380" y2="30" class="dg-border" style="stroke-width:4"/>
+  <line x1="60" y1="30" x2="48" y2="16" class="dg-line"/><line x1="100" y1="30" x2="88" y2="16" class="dg-line"/>
+  <line x1="140" y1="30" x2="128" y2="16" class="dg-line"/><line x1="180" y1="30" x2="168" y2="16" class="dg-line"/>
+  <line x1="220" y1="30" x2="208" y2="16" class="dg-line"/><line x1="260" y1="30" x2="248" y2="16" class="dg-line"/>
+  <line x1="300" y1="30" x2="288" y2="16" class="dg-line"/><line x1="340" y1="30" x2="328" y2="16" class="dg-line"/>
+  <line x1="160" y1="30" x2="160" y2="110" class="dg-line" style="stroke-width:2"/>
+  <circle cx="160" cy="110" r="6" class="dg-dot-amber"/>
+  <rect x="90" y="122" width="140" height="80" rx="8" class="dg-fill-panel"/>
+  <text x="160" y="158" text-anchor="middle" class="dsmall">actual load</text>
+  <text x="160" y="182" text-anchor="middle" class="dm dt">40 kg</text>
+  <text x="248" y="98" text-anchor="start" class="dm damber">every link rated for</text>
+  <text x="248" y="120" text-anchor="start" class="dm damber">40 × 5 = 200 kg</text>
+</svg>
+<div class="dcap">Overhead means over people. The 5:1 factor covers what the arithmetic can't see — shock loads when something snags, hardware fatigue over years, imperfect installation — and it applies to <em>every</em> component in the chain: the mount, the hardware, and the structure it bolts to.</div>
 </div>
 
 <div class="worked" data-worked>
@@ -706,6 +1132,25 @@ Units must match: if the light readings are in <strong>lux</strong>, screen area
 <div class="formula-box"><div class="fname">Scale Conversion</div>
 <div class="formula">Real-world size = Drawn measurement × Scale factor</div>
 <ul class="where"><li>A 1:50 drawing has a scale factor of 50 — every unit measured on paper equals 50 of that same unit in reality.</li></ul>
+</div>
+
+<div class="diagram">
+<svg viewBox="0 0 720 205" role="img" aria-label="A measurement on a scaled drawing multiplied out to real-world size">
+  <rect x="40" y="30" width="160" height="140" rx="6" class="dg-fill-panel"/>
+  <line x1="60" y1="100" x2="180" y2="100" class="dg-teal" style="stroke-width:3"/>
+  <line x1="60" y1="93" x2="60" y2="107" class="dg-teal"/>
+  <line x1="180" y1="93" x2="180" y2="107" class="dg-teal"/>
+  <text x="120" y="86" text-anchor="middle" class="dm dteal">20 cm</text>
+  <text x="120" y="152" text-anchor="middle" class="dsmall">1:50 floor plan</text>
+  <line x1="222" y1="100" x2="298" y2="100" class="dg-amber" marker-end="url(#arrA)"/>
+  <text x="260" y="84" text-anchor="middle" class="dm damber">× 50</text>
+  <line x1="320" y1="55" x2="690" y2="55" class="dg-border" style="stroke-width:3"/>
+  <line x1="320" y1="145" x2="690" y2="145" class="dg-border" style="stroke-width:3"/>
+  <line x1="335" y1="100" x2="675" y2="100" class="dg-teal" marker-start="url(#arrT)" marker-end="url(#arrT)"/>
+  <text x="505" y="88" text-anchor="middle" class="dm dt">1,000 cm = 10 m</text>
+  <text x="505" y="170" text-anchor="middle" class="dsmall">the actual corridor</text>
+</svg>
+<div class="dcap">A scale drawing shrinks the building by one fixed factor, so reading it is always the same two moves: measure on paper, multiply by the scale factor — then convert to a sensible unit. If your answer feels like dollhouse furniture, you divided when you should have multiplied.</div>
 </div>
 
 <div class="worked" data-worked>
@@ -739,6 +1184,22 @@ Units must match: if the light readings are in <strong>lux</strong>, screen area
 <div class="concept-card"><h4>1 · Opinion of probable cost</h4><p>An early, experience-based figure — appropriate for the program report, before detailed design exists.</p></div>
 <div class="concept-card"><h4>2 · Estimate</h4><p>Adds line-item objectivity once more design detail is available.</p></div>
 <div class="concept-card"><h4>3 · Quote</h4><p>Detailed and enforceable — comes after design is finalized.</p></div>
+</div>
+
+<div class="diagram">
+<svg viewBox="0 0 720 230" role="img" aria-label="Cost uncertainty narrowing from opinion to estimate to quote">
+  <line x1="400" y1="26" x2="400" y2="190" class="dg-line dg-dash"/>
+  <text x="400" y="212" text-anchor="middle" class="dsmall">the final price</text>
+  <text x="188" y="55" text-anchor="end" class="dsmall dt">Opinion of probable cost</text>
+  <line x1="205" y1="50" x2="620" y2="50" class="dg-amber"/>
+  <line x1="205" y1="43" x2="205" y2="57" class="dg-amber"/><line x1="620" y1="43" x2="620" y2="57" class="dg-amber"/>
+  <text x="188" y="115" text-anchor="end" class="dsmall dt">Estimate</text>
+  <line x1="275" y1="110" x2="545" y2="110" class="dg-blue"/>
+  <line x1="275" y1="103" x2="275" y2="117" class="dg-blue"/><line x1="545" y1="103" x2="545" y2="117" class="dg-blue"/>
+  <text x="188" y="175" text-anchor="end" class="dsmall dt">Quote</text>
+  <line x1="382" y1="170" x2="422" y2="170" class="dg-green" style="stroke-width:4"/>
+</svg>
+<div class="dcap">Same project, three stages of certainty. Each bar is the range the real price could land in: an early opinion of probable cost is honest but wide, line-item estimating narrows it, and a quote is a commitment you can hold someone to. The exam tests whether you match the term to the design stage it belongs to.</div>
 </div>
 
 <div class="callout spec"><span class="label">Spec</span>

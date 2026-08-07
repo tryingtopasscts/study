@@ -62,6 +62,18 @@
   .callout{margin:1.6rem 0; padding:1rem 1.15rem; background:var(--signal-dim); border:1px solid var(--line); border-left:3px solid var(--signal); border-radius:0 10px 10px 0; font-size:.9rem; color:var(--text)}
   .callout .tag{display:block; font-family:var(--font-mono); font-size:.66rem; letter-spacing:.1em; text-transform:uppercase; color:var(--signal); margin-bottom:.4rem}
 
+  .stat-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:.75rem; margin:1.4rem 0 1.8rem}
+  .stat-tile{background:var(--surface2); border:1px solid var(--line); border-radius:12px; padding:1rem 1.1rem}
+  .stat-num{font-family:var(--font-mono); font-size:1.9rem; font-weight:700; color:var(--text); font-variant-numeric:tabular-nums; line-height:1}
+  .stat-num .pct{font-size:1rem; color:var(--muted); font-weight:500; margin-left:.35rem}
+  .stat-label{font-family:var(--font-mono); font-size:.68rem; letter-spacing:.07em; text-transform:uppercase; margin-top:.5rem; margin-bottom:.4rem}
+  .stat-label.c-term{color:var(--signal)} .stat-label.c-concept{color:#c586ff} .stat-label.c-number{color:var(--flag)} .stat-label.c-op{color:#3fd0c9} .stat-label.c-read{color:var(--muted)}
+  .stat-note{font-size:.82rem; color:var(--muted); line-height:1.5}
+
+  h3.pattern{display:flex; align-items:center; gap:.6rem}
+  .pattern-count{font-family:var(--font-mono); font-size:.72rem; color:var(--muted); font-weight:400; text-transform:none; letter-spacing:0}
+  td.hits{font-family:var(--font-mono); font-size:.78rem; color:var(--faint); text-align:center; white-space:nowrap}
+
   footer{margin-top:3rem; padding-top:1.4rem; border-top:1px solid var(--line); font-size:.82rem; color:var(--faint); font-family:var(--font-mono); line-height:1.7}
   @media(max-width:560px){ td:first-child{white-space:normal} }
 </style>
@@ -73,9 +85,43 @@
   <header>
     <div class="kicker">CTS Exam Prep — Progress Log</div>
     <h1>Weak Spots &amp; Hard Numbers Log</h1>
-    <p class="lede">Pulled from actual missed questions across all four Part diagnostic quizzes (II, III, IV, and V). Split on purpose: hard numbers/formulas (untouched until this got built) vs. terms that just need re-anchoring.</p>
+    <p class="lede">Pulled from actual missed questions across all four Part diagnostic quizzes (II, III, IV, and V) — 52 in total. Part A is the reference material (numbers/formulas to memorize); Part B groups every miss by <em>why</em> it happened, which says more about what to actually do next than a chapter list does.</p>
     <div class="note">Updated as new quizzes reveal new misses. Part A pairs directly with the <a href="cts-av-math-guide.html" style="color:var(--signal)">AV Math Guide</a>, which now covers every item below.</div>
   </header>
+
+  <h2 style="color:var(--signal)">How You're Missing Questions</h2>
+  <p class="section-sub">All 52 missed questions across the four diagnostics, sorted by <em>why</em> they were missed, not just which chapter. This is the more useful lens — it says what to actually do about each bucket, not just what to re-read.</p>
+
+  <div class="stat-grid">
+    <div class="stat-tile">
+      <div class="stat-num">23<span class="pct">44%</span></div>
+      <div class="stat-label c-term">Term Confusions</div>
+      <div class="stat-note">You know both things exist — you just have the pairing wrong. Drill these as A-vs-B pairs, never in isolation.</div>
+    </div>
+    <div class="stat-tile">
+      <div class="stat-num">12<span class="pct">23%</span></div>
+      <div class="stat-label c-concept">Conceptual Gaps</div>
+      <div class="stat-note">The underlying idea itself needs a slower re-read — a vocabulary fix won't help here.</div>
+    </div>
+    <div class="stat-tile">
+      <div class="stat-num">11<span class="pct">21%</span></div>
+      <div class="stat-label c-number">Hard-Number Gaps</div>
+      <div class="stat-note">Pure memorization you hadn't gotten to yet. The AV Math Guide now covers every one of these.</div>
+    </div>
+    <div class="stat-tile">
+      <div class="stat-num">4<span class="pct">8%</span></div>
+      <div class="stat-label c-op">Operation Errors</div>
+      <div class="stat-note">Right approach, wrong math step — almost always multiplying when the formula wanted a ratio.</div>
+    </div>
+    <div class="stat-tile">
+      <div class="stat-num">2<span class="pct">4%</span></div>
+      <div class="stat-label c-read">Reading Slips</div>
+      <div class="stat-note">Answers that don't survive a second look. Not a knowledge gap — just slow down on "which is NOT" questions.</div>
+    </div>
+  </div>
+
+  <div class="callout"><span class="tag">The headline</span>
+  Almost half of everything you've missed (23 of 52) isn't a knowledge gap at all — it's two things you already know, filed under the wrong label. That's the cheapest category to fix: paired flashcards ("A vs. B," not "what is A") close it faster than re-reading a chapter would.</div>
 
   <h2>Part A — Hard Numbers, Formulas &amp; Standards</h2>
   <p class="section-sub">The priority set — flagged as not studied at all until the AV Math Guide was expanded to cover it.</p>
@@ -142,41 +188,70 @@
     <tr><td>AVIXA DISCAS (V202.01)</td><td>Display image sizing</td></tr>
   </table></div>
 
-  <h2 class="terms">Part B — Terms &amp; Concepts to Re-Anchor</h2>
-  <p class="section-sub">Vocabulary that's already half-known — these need re-anchoring, not new learning.</p>
+  <h2 class="terms">Part B — Grouped by How You Missed Them</h2>
+  <p class="section-sub">Same underlying material as before, regrouped by error pattern instead of chapter order — this is the breakdown behind the stat tiles above.</p>
+
+  <h3 class="pattern" style="color:var(--signal)">Term Confusions <span class="pattern-count">— 23 questions, 20 distinct mix-ups</span></h3>
+  <p class="section-sub">You knew both options were live candidates. Fix these by drilling the pair together — "which one is X" flashcards, not "define X" flashcards.</p>
   <div class="tbl-wrap"><table>
-    <tr><th>Confusion</th><th>The distinction</th></tr>
-    <tr><td>Analog vs. digital</td><td>Analog = many/continuously varying states. Digital = discrete states.</td></tr>
-    <tr><td>Signal chain endpoint</td><td>The output device (e.g., loudspeaker) converts signal to acoustic energy — a processor doesn't.</td></tr>
-    <tr><td>Video bandwidth measurement tool</td><td>Spectrum analyzer ("bandwidth monitor" isn't a real instrument)</td></tr>
-    <tr><td>Bus vs. mesh topology</td><td>Bus = one linear line. Mesh = fully interconnected, redundant paths.</td></tr>
-    <tr><td>802.11 vs. 802.1X</td><td>802.11 = Wi-Fi. 802.1X = port-based access control. Similar numbers, unrelated standards.</td></tr>
-    <tr><td>Fiber jacket colors</td><td>Yellow = single-mode (longest reach). Orange = multimode (shorter reach).</td></tr>
-    <tr><td>Router vs. gateway</td><td>Gateway = specifically connects to an outside network.</td></tr>
-    <tr><td>Cable vs. wire</td><td>Cable = multiple conductors bundled. Shielding is unrelated to the distinction.</td></tr>
-    <tr><td>Function vs. program</td><td>Function = one action, one device. Program = coordinated multi-step/multi-device sequence.</td></tr>
-    <tr><td>Task parameters' purpose</td><td>Feed general AV needs/requirements — not exact equipment model selection.</td></tr>
-    <tr><td>Reflected ceiling plan</td><td>Shows sprinklers/HVAC/lighting for ceiling coordination — not an elevation drawing.</td></tr>
-    <tr><td>Ambient light control</td><td>Lighter wall finishes hurt (reflect more light); focused task lighting helps (a valid reduction strategy).</td></tr>
-    <tr><td>Building codes' scope on AV</td><td>Dictate wiring type + mounting/structural rules — not the AV system's functional layout.</td></tr>
-    <tr><td>Audio frequency response spec</td><td>Match it to the application — not "widest the budget allows."</td></tr>
-    <tr><td>IDC termination</td><td>8P8C/RJ-45 = insulation displacement. BNC is a different (twist-lock) mechanism.</td></tr>
-    <tr><td>Rack cooling types</td><td>Evacuation = fan-driven exhaust. Convection = passive, no fans.</td></tr>
-    <tr><td>"Striking" an event</td><td>Tearing down the temporary system after use — not testing audio.</td></tr>
-    <tr><td>WBS vs. logic network</td><td>WBS = nouns (deliverables, "what"). Logic network = verbs (activities: build, test, fabricate).</td></tr>
-    <tr><td>RFI → RFC → CO chain</td><td>RFI = ask a question. RFC = propose a change. Approved RFC becomes a CO (change order). CCD/field order = a separate emergency bypass of that whole chain.</td></tr>
-    <tr><td>Equipment security responsibility</td><td>Lies with whoever currently has control of the equipment — not "the AV company, always."</td></tr>
-    <tr><td>Manufacturer's warranty vs. service agreement</td><td>Manufacturer's warranty = the equipment itself, via an authorized service center. Service agreement = the AV company's broader ongoing-maintenance commitment.</td></tr>
-    <tr><td>What a manufacturer's warranty excludes</td><td>Removal/reinstallation of installed gear and shipping to the service center — typically not covered.</td></tr>
-    <tr><td>Firmware/software update timing</td><td>Only when it improves performance/security/reliability or adds required functionality — not "the moment it's released." Updates can cascade into unexpected results elsewhere.</td></tr>
-    <tr><td>Fault-localization efficiency</td><td>Divide the system in half, test, repeat — more efficient than testing backward from the output.</td></tr>
-    <tr><td>Laptop dual-display on battery</td><td>Some laptops won't drive both the built-in screen and an external output on battery alone — plug into mains.</td></tr>
-    <tr><td>Feedback-control best practices</td><td>Mic close to the source helps. Adding compression to the mic chain is not a standard feedback-prevention technique.</td></tr>
-    <tr><td>"Waterfall" hiss cause</td><td>Poor gain structure (inputs too low, later stages over-gained to compensate) — not a blown tweeter.</td></tr>
+    <tr><th>Confusion</th><th>Ch.</th><th>The distinction</th><th class="hits">Hits</th></tr>
+    <tr><td>Analog vs. digital</td><td>3</td><td>Analog = many/continuously varying states. Digital = discrete states.</td><td class="hits">1</td></tr>
+    <tr><td>Signal chain endpoint</td><td>4</td><td>The output device (e.g., loudspeaker) converts signal to acoustic energy — a processor doesn't.</td><td class="hits">1</td></tr>
+    <tr><td>Video bandwidth measurement tool</td><td>5</td><td>Spectrum analyzer ("bandwidth monitor" isn't a real instrument)</td><td class="hits">1</td></tr>
+    <tr><td>Bus vs. mesh topology</td><td>6</td><td>Bus = one linear line. Mesh = fully interconnected, redundant paths.</td><td class="hits">1</td></tr>
+    <tr><td>802.11 vs. 802.1X</td><td>6</td><td>802.11 = Wi-Fi. 802.1X = port-based access control. Similar numbers, unrelated standards.</td><td class="hits">1</td></tr>
+    <tr><td>Router vs. gateway</td><td>6</td><td>Gateway = specifically connects to an outside network.</td><td class="hits">1</td></tr>
+    <tr><td>Cable vs. wire</td><td>7</td><td>Cable = multiple conductors bundled. Shielding is unrelated to the distinction.</td><td class="hits">1</td></tr>
+    <tr><td>Function vs. program</td><td>8</td><td>Function = one action, one device. Program = coordinated multi-step/multi-device sequence.</td><td class="hits">2</td></tr>
+    <tr><td>Resistance vs. impedance</td><td>9</td><td>Impedance is the AC-circuit term (resistance + reactance); resistance alone is DC-only.</td><td class="hits">1</td></tr>
+    <tr><td>Modulate vs. demodulate</td><td>10</td><td>Transmitter modulates onto the carrier; demodulation happens at the receiver.</td><td class="hits">1</td></tr>
+    <tr><td>Reflected ceiling plan vs. elevation</td><td>12</td><td>RCP shows sprinklers/HVAC/lighting for ceiling coordination — an elevation is a flat wall-face view.</td><td class="hits">1</td></tr>
+    <tr><td>AFF vs. NTS</td><td>12</td><td>AFF = mounting height. NTS = not to scale. Different abbreviations, different jobs.</td><td class="hits">1</td></tr>
+    <tr><td>Cost terminology ladder</td><td>15</td><td>Opinion of probable cost (pre-design) → estimate → quote (enforceable).</td><td class="hits">1</td></tr>
+    <tr><td>IDC termination vs. BNC</td><td>17</td><td>8P8C/RJ-45 = insulation displacement. BNC is a different (twist-lock) mechanism.</td><td class="hits">1</td></tr>
+    <tr><td>Rack cooling types</td><td>17</td><td>Evacuation = fan-driven exhaust. Convection = passive, no fans.</td><td class="hits">1</td></tr>
+    <tr><td>Verification standard vs. design standard</td><td>18</td><td>ANSI/InfoComm 10:2013 = performance verification. ANSI/INFOCOMM 2M-2010 = the design process.</td><td class="hits">1</td></tr>
+    <tr><td>"Striking" an event</td><td>18</td><td>Tearing down the temporary system after use — not testing audio.</td><td class="hits">1</td></tr>
+    <tr><td>WBS vs. logic network</td><td>19</td><td>WBS = nouns (deliverables, "what"). Logic network = verbs (activities: build, test, fabricate). Hit backwards both times.</td><td class="hits">2</td></tr>
+    <tr><td>RFI → RFC → CO/CCD chain</td><td>19</td><td>RFI = ask a question. RFC = propose a change. Approved RFC becomes a CO. CCD/field order = a separate emergency bypass of that whole chain.</td><td class="hits">2</td></tr>
+    <tr><td>Manufacturer's warranty vs. service agreement</td><td>21</td><td>Warranty = the equipment itself, via an authorized service center. Service agreement = the AV company's broader ongoing-maintenance commitment.</td><td class="hits">1</td></tr>
   </table></div>
 
-  <div class="callout"><span class="tag">Recurring Pattern</span>
-  Two separate misses (the 1:50 drawing-scale conversion, and the inverse square law calc) were the same mistake in different clothes: <strong>multiplying when the formula calls for a ratio.</strong> Before plugging numbers into any formula question, check whether the relationship is proportional (divide) or compound (multiply).</div>
+  <h3 class="pattern" style="color:#c586ff">Conceptual Gaps <span class="pattern-count">— 12 questions</span></h3>
+  <p class="section-sub">The idea itself needs a slower re-read, not a term fix. These are worth revisiting in the study guide, not just flashcarding.</p>
+  <div class="tbl-wrap"><table>
+    <tr><th>Concept</th><th>Ch.</th><th>What was missed</th></tr>
+    <tr><td>Power distribution path</td><td>9</td><td>Main panel distributes via feeders to distribution panels — "service entrance" is the incoming side, not an output.</td></tr>
+    <tr><td>Diversity receiver purpose</td><td>10</td><td>Compares phase differences to avoid multipath cancellation — not "finds signals already in phase."</td></tr>
+    <tr><td>Parabolic antenna use case</td><td>10</td><td>Point-to-point (focused/directional) — not wide-area coverage.</td></tr>
+    <tr><td>Task parameters' purpose</td><td>11</td><td>Feed general AV needs/requirements — not exact equipment model selection.</td></tr>
+    <tr><td>Building codes' actual scope on AV</td><td>14</td><td>Dictate wiring type + mounting/structural rules — not the AV system's functional layout.</td></tr>
+    <tr><td>Audio frequency response spec</td><td>16</td><td>Match it to the application — not "widest the budget allows."</td></tr>
+    <tr><td>Equipment security responsibility</td><td>20</td><td>Lies with whoever currently has control of the equipment — not "the AV company, always."</td></tr>
+    <tr><td>What a manufacturer's warranty excludes</td><td>21</td><td>Removal/reinstallation of installed gear and shipping to the service center — typically not covered.</td></tr>
+    <tr><td>Firmware/software update timing</td><td>21</td><td>Only when it improves performance/security/reliability or adds required functionality — updates can cascade into unexpected breakage elsewhere.</td></tr>
+    <tr><td>Fault-localization efficiency</td><td>22</td><td>Divide the system in half, test, repeat — more efficient than testing backward from the output.</td></tr>
+    <tr><td>Feedback-control best practices</td><td>22</td><td>Mic close to the source helps. Compression on the mic chain is not a standard feedback-prevention technique.</td></tr>
+    <tr><td>"Waterfall" hiss cause</td><td>22</td><td>Poor gain structure (inputs too low, later stages over-gained) — not a blown tweeter.</td></tr>
+  </table></div>
+
+  <h3 class="pattern" style="color:#3fd0c9">Operation / Formula Errors <span class="pattern-count">— 4 questions</span></h3>
+  <p class="section-sub">Right formula, wrong step — three of these four are the exact same slip: <strong>multiplying when the relationship calls for a ratio.</strong> Before plugging numbers into any formula question, check whether it's proportional (divide) or compound (multiply) first.</p>
+  <div class="tbl-wrap"><table>
+    <tr><th>What happened</th><th>Ch.</th><th>The fix</th></tr>
+    <tr><td>Ohm's Law rearrangement</td><td>9</td><td>Solving for current is I = V/R, not V = I/R — algebra direction, not a concept miss.</td></tr>
+    <tr><td>Drawing scale math (1:50)</td><td>12</td><td>Multiply the drawn measurement by the scale factor: 20 cm × 50 = 10 m, not 1 m.</td></tr>
+    <tr><td>Inverse square law</td><td>16</td><td>dB = 20 log(D1/D2) — a ratio. 20 log(6×12) multiplies instead of dividing.</td></tr>
+    <tr><td>Throw distance calculation</td><td>17</td><td>Throw distance = throw ratio × image width (2.0 × 4 m = 8 m) — likely divided instead of multiplied.</td></tr>
+  </table></div>
+
+  <h3 class="pattern" style="color:var(--muted)">Reading Slips <span class="pattern-count">— 2 questions</span></h3>
+  <p class="section-sub">Not a knowledge gap — an answer that doesn't survive a second look. Worth naming so they don't get mistaken for real weak spots.</p>
+  <div class="tbl-wrap"><table>
+    <tr><th>What happened</th><th>Ch.</th><th>The takeaway</th></tr>
+    <tr><td>Ambient light "which does NOT reduce" question</td><td>14</td><td>Picked an option that actually <em>does</em> help (focused task lighting) — "which does NOT" questions invert the usual reading pattern; slow down on them specifically.</td></tr>
+    <tr><td>Laptop/projector battery question</td><td>22</td><td>Picked "the projector needs batteries" — projectors don't run on batteries, so this should've been eliminated on a second pass.</td></tr>
+  </table></div>
 
   <footer>
     Raw log with dates/chapters lives in the working project files, not published here. This page is the trimmed, review-ready version.

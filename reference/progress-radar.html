@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CTS Progress Radar</title>
+<style>
+  :root{
+    --ink:#0b0d12; --surface:#161a23; --surface2:#1d2230; --line:#262c3a;
+    --text:#e4e7ef; --muted:#8891a8; --faint:#565f75;
+    --signal:#5b9dfa; --signal-dim:rgba(91,157,250,.12);
+    --font-display: ui-serif, 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
+    --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    --font-mono: ui-monospace, 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
+    /* status — fixed, never themed */
+    --good:#0ca30c; --warning:#fab219; --critical:#d03b3b;
+  }
+  @media (prefers-color-scheme: light){
+    :root{
+      --ink:#f5f6f8; --surface:#ffffff; --surface2:#f0f2f6; --line:#dde1e8;
+      --text:#1a1e28; --muted:#5b6478; --faint:#8891a8;
+      --signal:#2f6fd6; --signal-dim:rgba(47,111,214,.08);
+    }
+  }
+  :root[data-theme="dark"]{
+    --ink:#0b0d12; --surface:#161a23; --surface2:#1d2230; --line:#262c3a;
+    --text:#e4e7ef; --muted:#8891a8; --faint:#565f75;
+    --signal:#5b9dfa; --signal-dim:rgba(91,157,250,.12);
+  }
+  :root[data-theme="light"]{
+    --ink:#f5f6f8; --surface:#ffffff; --surface2:#f0f2f6; --line:#dde1e8;
+    --text:#1a1e28; --muted:#5b6478; --faint:#8891a8;
+    --signal:#2f6fd6; --signal-dim:rgba(47,111,214,.08);
+  }
+  *{box-sizing:border-box}
+  body{margin:0; background:var(--ink); color:var(--text); font-family:var(--font-body); line-height:1.55; -webkit-font-smoothing:antialiased}
+  .page{max-width:840px; margin:0 auto; padding:2.75rem 1.4rem 5rem}
+  .back{font-family:var(--font-mono); font-size:.78rem; color:var(--muted); text-decoration:none}
+  .back:hover{color:var(--signal)}
+  header{margin:1.2rem 0 2rem}
+  .kicker{font-family:var(--font-mono); font-size:.72rem; letter-spacing:.14em; text-transform:uppercase; color:var(--signal); margin-bottom:.6rem}
+  h1{font-family:var(--font-display); font-weight:600; font-size:2rem; line-height:1.15; margin:0 0 .55rem; text-wrap:balance}
+  .lede{color:var(--muted); font-size:.98rem; max-width:60ch}
+
+  .chart-card{background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:1.4rem 1.1rem 1.1rem; position:relative}
+  .chart-wrap{position:relative; width:100%; max-width:600px; margin:0 auto}
+  svg{width:100%; height:auto; display:block; overflow:visible}
+  .axis-line{stroke:var(--line); stroke-width:1}
+  .grid-ring{fill:none; stroke:var(--line); stroke-width:1}
+  .grid-ring.target{stroke:var(--faint); stroke-width:1.75}
+  .grid-label{font-family:var(--font-mono); font-size:9px; fill:var(--faint)}
+  .target-label{font-family:var(--font-mono); font-size:10px; fill:var(--muted); font-weight:600}
+  .axis-label{font-family:var(--font-mono); font-size:10px; fill:var(--muted)}
+  .part-label{font-family:var(--font-mono); font-size:9.5px; letter-spacing:.08em; fill:var(--faint); font-weight:600}
+  .part-divider{stroke:var(--line); stroke-width:1.5}
+  .score-poly{fill:var(--signal); fill-opacity:.14; stroke:var(--signal); stroke-width:2; stroke-linejoin:round}
+  .score-dot{stroke:var(--surface); stroke-width:2; cursor:pointer}
+  .score-hit{fill:transparent; cursor:pointer}
+  .extreme-label{font-family:var(--font-mono); font-size:10.5px; font-weight:700; fill:var(--text)}
+
+  .legend{display:flex; flex-wrap:wrap; gap:1rem; justify-content:center; margin-top:1.2rem; padding-top:1rem; border-top:1px solid var(--line)}
+  .legend-item{display:flex; align-items:center; gap:.4rem; font-size:.8rem; color:var(--muted)}
+  .legend-dot{width:9px; height:9px; border-radius:50%; flex-shrink:0}
+
+  .tooltip{position:fixed; pointer-events:none; background:var(--surface2); border:1px solid var(--line); border-radius:8px; padding:.55rem .7rem; font-size:.8rem; color:var(--text); box-shadow:0 6px 20px rgba(0,0,0,.25); opacity:0; transition:opacity .1s; z-index:50; max-width:220px}
+  .tooltip.show{opacity:1}
+  .tooltip .tt-title{font-weight:600; margin-bottom:.15rem}
+  .tooltip .tt-score{font-family:var(--font-mono); font-variant-numeric:tabular-nums}
+  .tooltip .tt-meta{color:var(--muted); font-size:.75rem}
+
+  h2{font-family:var(--font-mono); font-size:.78rem; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); margin:2.4rem 0 .8rem; padding-bottom:.5rem; border-bottom:1px solid var(--line)}
+  .insight{margin:1.4rem 0 0; padding:.9rem 1.05rem; background:var(--surface2); border:1px solid var(--line); border-left:3px solid var(--signal); border-radius:0 10px 10px 0; font-size:.88rem; color:var(--text)}
+  .insight strong{color:var(--text)}
+
+  .tbl-wrap{overflow-x:auto; border:1px solid var(--line); border-radius:10px}
+  table{width:100%; border-collapse:collapse; font-size:.85rem}
+  th{background:var(--surface2); color:var(--muted); text-align:left; padding:.6rem .8rem; font-family:var(--font-mono); font-size:.68rem; letter-spacing:.06em; text-transform:uppercase; border-bottom:1px solid var(--line)}
+  td{padding:.55rem .8rem; border-bottom:1px solid var(--line); color:var(--text); vertical-align:middle}
+  tr:last-child td{border-bottom:none}
+  td.num{font-family:var(--font-mono); font-variant-numeric:tabular-nums; text-align:right}
+  .status-chip{display:inline-flex; align-items:center; gap:.35rem; font-family:var(--font-mono); font-size:.72rem; color:var(--muted)}
+  .status-chip .dot{width:8px; height:8px; border-radius:50%}
+
+  footer{margin-top:3rem; padding-top:1.4rem; border-top:1px solid var(--line); font-size:.82rem; color:var(--faint); font-family:var(--font-mono); line-height:1.7}
+  @media(max-width:520px){ .axis-label{font-size:8.5px} td:first-child{white-space:nowrap} }
+</style>
+</head>
+<body>
+<div class="page">
+  <a class="back" href="../index.html">← Study Console</a>
+
+  <header>
+    <div class="kicker">CTS Exam Prep — Progress Overview</div>
+    <h1>Strengths &amp; Weaknesses Radar</h1>
+    <p class="lede">All 20 chapters, one shape. The closer a point sits to the center, the more work that chapter needs — the amber ring marks 80%, the "exam-ready" line used everywhere else in this console.</p>
+  </header>
+
+  <div class="chart-card">
+    <div class="chart-wrap">
+      <svg id="radar" viewBox="0 0 640 640" role="img" aria-label="Radar chart of quiz scores by chapter"></svg>
+    </div>
+    <div class="legend">
+      <div class="legend-item"><span class="legend-dot" style="background:var(--good)"></span>Strong · 80%+</div>
+      <div class="legend-item"><span class="legend-dot" style="background:var(--warning)"></span>Needs review · 60-79%</div>
+      <div class="legend-item"><span class="legend-dot" style="background:var(--critical)"></span>Weak · under 60%</div>
+    </div>
+  </div>
+
+  <div class="insight">
+    <strong>Two chapters sit well outside the rest of the shape:</strong> Ch10 Wireless Radio Systems (43%) and Ch9 Electrical Systems (56%) — both Part II. Everything else clusters between 67% and 100%, which is why Part II keeps its PRIORITY flag even though its overall average (78%) looks similar to Part IV and Part V.
+  </div>
+
+  <h2>Every chapter, sorted weakest first</h2>
+  <div class="tbl-wrap">
+    <table id="tbl">
+      <thead><tr><th>Chapter</th><th>Part</th><th>Status</th><th style="text-align:right">Score</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <footer>
+    Built from your logged quiz results — see the Weak Spots &amp; Hard Numbers Log for the missed
+    questions behind these numbers. Scores are a point-in-time snapshot from each Part's first
+    full cold run, not a live rolling average.
+  </footer>
+</div>
+
+<div class="tooltip" id="tooltip"></div>
+
+<script>
+const DATA = [
+  {ch:3,  name:'Analog & Digital Signals',        part:'II',  score:86},
+  {ch:4,  name:'Audio Systems',                   part:'II',  score:93},
+  {ch:5,  name:'Video Systems',                   part:'II',  score:87},
+  {ch:6,  name:'Networks',                        part:'II',  score:73},
+  {ch:7,  name:'Signal-Management Systems',       part:'II',  score:89},
+  {ch:8,  name:'Control Systems',                 part:'II',  score:78},
+  {ch:9,  name:'Electrical Systems',              part:'II',  score:56},
+  {ch:10, name:'Wireless Radio Systems',          part:'II',  score:43},
+  {ch:11, name:'Gathering Customer Information',  part:'III', score:90},
+  {ch:12, name:'Conducting a Site Survey',        part:'III', score:70},
+  {ch:13, name:'Evaluating a Site Environment',   part:'III', score:100},
+  {ch:14, name:'Recommending Site Changes',       part:'III', score:80},
+  {ch:15, name:'Developing an AV Project Scope',  part:'III', score:70},
+  {ch:16, name:'Designing AV Solutions',          part:'III', score:80},
+  {ch:17, name:'Integrating AV Solutions',        part:'IV',  score:73},
+  {ch:18, name:'Operating AV Solutions',          part:'IV',  score:87},
+  {ch:19, name:'Managing an AV Project',          part:'IV',  score:73},
+  {ch:20, name:'Maintaining AV Operations',       part:'V',   score:92},
+  {ch:21, name:'Conducting Maintenance Activities',part:'V',  score:67},
+  {ch:22, name:'Troubleshooting & Repairing',     part:'V',   score:75},
+];
+
+const N = DATA.length;
+const CX = 320, CY = 320, R_OUT = 230, LABEL_GAP = 22;
+const svg = document.getElementById('radar');
+const SVGNS = 'http://www.w3.org/2000/svg';
+
+const ROOT_STYLE = getComputedStyle(document.documentElement);
+const STATUS_HEX = {
+  good: ROOT_STYLE.getPropertyValue('--good').trim(),
+  warning: ROOT_STYLE.getPropertyValue('--warning').trim(),
+  critical: ROOT_STYLE.getPropertyValue('--critical').trim(),
+};
+function statusColor(score){
+  if (score >= 80) return STATUS_HEX.good;
+  if (score >= 60) return STATUS_HEX.warning;
+  return STATUS_HEX.critical;
+}
+function statusWord(score){
+  if (score >= 80) return 'Strong';
+  if (score >= 60) return 'Needs review';
+  return 'Weak';
+}
+function angleFor(i){ return (-90 + i * (360 / N)) * Math.PI / 180; }
+function pointFor(i, pct){
+  const a = angleFor(i);
+  const r = (pct / 100) * R_OUT;
+  return [CX + r * Math.cos(a), CY + r * Math.sin(a)];
+}
+function el(tag, attrs){
+  const e = document.createElementNS(SVGNS, tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  return e;
+}
+
+// grid rings (20/40/60/80/100)
+[20,40,60,80,100].forEach(pct=>{
+  const r = (pct/100)*R_OUT;
+  const ring = el('circle', {cx:CX, cy:CY, r, class: pct===80 ? 'grid-ring target' : 'grid-ring'});
+  svg.appendChild(ring);
+});
+const targetLabel = el('text', {x:CX+4, y:CY-((80/100)*R_OUT)-6, class:'target-label'});
+targetLabel.textContent = '80% — exam ready';
+svg.appendChild(targetLabel);
+
+// axis spokes
+for (let i=0;i<N;i++){
+  const [x,y] = pointFor(i, 100);
+  svg.appendChild(el('line', {x1:CX, y1:CY, x2:x, y2:y, class:'axis-line'}));
+}
+
+// part group dividers + labels (boundaries between II/III, III/IV, IV/V, V/II)
+const partBounds = [];
+let prevPart = DATA[0].part, startIdx = 0;
+for (let i=1;i<=N;i++){
+  const cur = i<N ? DATA[i].part : null;
+  if (cur !== prevPart){
+    partBounds.push({part:prevPart, start:startIdx, end:i-1});
+    startIdx = i; prevPart = cur;
+  }
+}
+partBounds.forEach(b=>{
+  // divider just before the group's first axis
+  const dividerAngle = angleFor(b.start) - (Math.PI/N);
+  const dx1 = CX, dy1 = CY;
+  const dx2 = CX + R_OUT*1.06*Math.cos(dividerAngle), dy2 = CY + R_OUT*1.06*Math.sin(dividerAngle);
+  svg.appendChild(el('line', {x1:dx1,y1:dy1,x2:dx2,y2:dy2,class:'part-divider'}));
+  // label at angular midpoint of the group
+  const midIdx = (b.start + b.end)/2;
+  const midAngle = angleFor(midIdx);
+  const lr = R_OUT + 46;
+  const lx = CX + lr*Math.cos(midAngle), ly = CY + lr*Math.sin(midAngle);
+  const t = el('text', {x:lx, y:ly, class:'part-label', 'text-anchor':'middle', 'dominant-baseline':'middle'});
+  t.textContent = 'PART ' + b.part;
+  svg.appendChild(t);
+});
+
+// score polygon
+const polyPoints = DATA.map((d,i)=>pointFor(i, d.score).join(',')).join(' ');
+svg.appendChild(el('polygon', {points:polyPoints, class:'score-poly'}));
+
+// axis labels
+DATA.forEach((d,i)=>{
+  const a = angleFor(i);
+  const lx = CX + (R_OUT+LABEL_GAP)*Math.cos(a);
+  const ly = CY + (R_OUT+LABEL_GAP)*Math.sin(a);
+  const cosA = Math.cos(a);
+  const anchor = cosA > 0.15 ? 'start' : (cosA < -0.15 ? 'end' : 'middle');
+  const t = el('text', {x:lx, y:ly, class:'axis-label', 'text-anchor':anchor, 'dominant-baseline':'middle'});
+  t.textContent = 'Ch' + d.ch;
+  svg.appendChild(t);
+});
+
+// data markers (dot + larger transparent hit area) + extreme labels
+const tooltip = document.getElementById('tooltip');
+let maxD = DATA[0], minD = DATA[0];
+DATA.forEach(d=>{ if(d.score>maxD.score) maxD=d; if(d.score<minD.score) minD=d; });
+
+DATA.forEach((d,i)=>{
+  const [x,y] = pointFor(i, d.score);
+  const hit = el('circle', {cx:x, cy:y, r:13, class:'score-hit'});
+  const dot = el('circle', {cx:x, cy:y, r:5, fill:statusColor(d.score), class:'score-dot'});
+  const showTip = (evt)=>{
+    tooltip.innerHTML = '';
+    const title = document.createElement('div'); title.className='tt-title'; title.textContent = 'Ch' + d.ch + ' — ' + d.name;
+    const meta = document.createElement('div'); meta.className='tt-meta'; meta.textContent = 'Part ' + d.part + ' · ' + statusWord(d.score);
+    const score = document.createElement('div'); score.className='tt-score'; score.textContent = d.score + '%';
+    tooltip.appendChild(title); tooltip.appendChild(meta); tooltip.appendChild(score);
+    tooltip.classList.add('show');
+    const px = (evt.clientX!==undefined?evt.clientX:evt.target.getBoundingClientRect().x)+14;
+    const py = (evt.clientY!==undefined?evt.clientY:evt.target.getBoundingClientRect().y)+14;
+    tooltip.style.left = Math.min(px, window.innerWidth-230) + 'px';
+    tooltip.style.top = py + 'px';
+  };
+  const hideTip = ()=> tooltip.classList.remove('show');
+  [hit,dot].forEach(node=>{
+    node.setAttribute('tabindex','0');
+    node.addEventListener('pointermove', showTip);
+    node.addEventListener('pointerenter', showTip);
+    node.addEventListener('focus', showTip);
+    node.addEventListener('pointerleave', hideTip);
+    node.addEventListener('blur', hideTip);
+    svg.appendChild(node);
+  });
+
+  if (d.ch === maxD.ch || d.ch === minD.ch){
+    const a = angleFor(i);
+    const lx = x + 16*Math.cos(a), ly = y + 16*Math.sin(a) - 4;
+    const t = el('text', {x:lx, y:ly, class:'extreme-label', 'text-anchor':'middle'});
+    t.textContent = d.score + '%';
+    svg.appendChild(t);
+  }
+});
+
+// table view (accessibility twin), weakest first
+const tbody = document.querySelector('#tbl tbody');
+[...DATA].sort((a,b)=>a.score-b.score).forEach(d=>{
+  const tr = document.createElement('tr');
+  const c1 = document.createElement('td'); c1.textContent = 'Ch' + d.ch + ' — ' + d.name;
+  const c2 = document.createElement('td'); c2.textContent = 'Part ' + d.part;
+  const c3 = document.createElement('td');
+  const chip = document.createElement('span'); chip.className='status-chip';
+  const dot = document.createElement('span'); dot.className='dot'; dot.style.background = statusColor(d.score);
+  chip.appendChild(dot);
+  const label = document.createElement('span'); label.textContent = statusWord(d.score);
+  chip.appendChild(label);
+  c3.appendChild(chip);
+  const c4 = document.createElement('td'); c4.className='num'; c4.textContent = d.score + '%';
+  tr.append(c1,c2,c3,c4);
+  tbody.appendChild(tr);
+});
+</script>
+</body>
+</html>

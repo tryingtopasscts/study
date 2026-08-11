@@ -128,13 +128,22 @@
   <div class="tbl-wrap"><table>
     <tr><th>Date</th><th>Retake</th><th>Result</th></tr>
     <tr><td>2026-08-10</td><td>Ch6 Networks (Part II, 15 Q, chapter-filtered)</td><td>14/15 (93%) — <span style="color:var(--signal)">up from 73%</span></td></tr>
+    <tr><td>2026-08-11</td><td>Ch9 Electrical Systems (Part II, 9 Q, chapter-filtered)</td><td>8/9 (89%) — <span style="color:var(--signal)">up from 56%</span></td></tr>
   </table></div>
-  <p class="section-sub" style="margin-top:1rem">One new miss from that retake — a <strong style="color:var(--text)">Reading Slip</strong>, not a knowledge gap. Confirmed: the router/firewall distinction was already known; the question just didn't get read in full.</p>
+
+  <p class="section-sub" style="margin-top:1rem"><strong style="color:var(--text)">Ch6 retake miss</strong> — a <strong style="color:var(--text)">Reading Slip</strong>, not a knowledge gap. Confirmed: the router/firewall distinction was already known; the question just didn't get read in full.</p>
   <div class="tbl-wrap"><table>
     <tr><th>What happened</th><th>Ch.</th><th>The correct distinction (for reference — already known)</th></tr>
     <tr><td>Router vs. firewall</td><td>6</td><td>Firewall filters traffic by security rules. Router just moves packets between networks — different jobs, even though one box often does both in a small network.</td></tr>
   </table></div>
-  <div class="note" style="margin-top:1rem">Part II's blended current score (swapping in the improved Ch6 result): <strong>70/86 (81%)</strong>, up from 78%. Still carries the PRIORITY flag on the console — not because of the average, but because Ch9 (56%) and Ch10 (43%) haven't been touched yet and are far weaker than anything else across all four Parts.</div>
+
+  <p class="section-sub" style="margin-top:1.4rem"><strong style="color:var(--text)">Ch9 retake miss</strong> — expands the existing "power distribution path" <strong style="color:var(--text)">Conceptual Gap</strong> below rather than being new. Full chain, in order: Utility → <strong>service entrance</strong> (power enters the building) → <strong>main panel</strong> (main breaker, splits into large circuits) → <strong>feeders</strong> (conductors — a path, not a connection point) → <strong>subsidiary distribution panel / panelboard</strong> (houses branch-circuit breakers) → <strong>branch circuits</strong> (terminate at outlets/AV gear).</p>
+  <div class="tbl-wrap"><table>
+    <tr><th>What happened</th><th>Ch.</th><th>The distinction</th></tr>
+    <tr><td>Branch circuit connection point</td><td>9</td><td>Branch circuits connect at the subsidiary distribution panel (panelboard), not at the feeders — feeders just carry power between panels.</td></tr>
+  </table></div>
+
+  <div class="note" style="margin-top:1.4rem">Part II's blended current score (swapping in both retakes): <strong>73/86 (85%)</strong>, up from 78% — now the highest average of the four Parts. Still carries the PRIORITY flag on the console anyway: Ch10 (43%) is the single weakest chapter across the entire syllabus by a wide margin (next-worst is 67%), and it's still fully untouched.</div>
 
   <h2>Part A — Hard Numbers, Formulas &amp; Standards</h2>
   <p class="section-sub">The priority set — flagged as not studied at all until the AV Math Guide was expanded to cover it.</p>
@@ -234,7 +243,7 @@
   <p class="section-sub">The idea itself needs a slower re-read, not a term fix. These are worth revisiting in the study guide, not just flashcarding.</p>
   <div class="tbl-wrap"><table>
     <tr><th>Concept</th><th>Ch.</th><th>What was missed</th></tr>
-    <tr><td>Power distribution path</td><td>9</td><td>Main panel distributes via feeders to distribution panels — "service entrance" is the incoming side, not an output.</td></tr>
+    <tr><td>Power distribution path</td><td>9</td><td>Utility → service entrance (incoming) → main panel → feeders (a path between panels) → subsidiary distribution panel/panelboard → branch circuits (terminate here, not at the feeders). Missed twice, from two different angles.</td></tr>
     <tr><td>Diversity receiver purpose</td><td>10</td><td>Compares phase differences to avoid multipath cancellation — not "finds signals already in phase."</td></tr>
     <tr><td>Parabolic antenna use case</td><td>10</td><td>Point-to-point (focused/directional) — not wide-area coverage.</td></tr>
     <tr><td>Task parameters' purpose</td><td>11</td><td>Feed general AV needs/requirements — not exact equipment model selection.</td></tr>

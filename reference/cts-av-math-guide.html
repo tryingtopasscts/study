@@ -779,6 +779,88 @@ The <strong>Nyquist–Shannon sampling theorem</strong>: the sample rate must be
 </div>
 </section>
 
+
+<div class="divider"></div>
+<!-- ================= VIDEO BANDWIDTH ================= -->
+<section id="videobandwidth">
+<h2>Video &amp; Audio Bandwidth on the Network</h2>
+<p class="lede">Digital audio bandwidth is straightforward. Video is the one that surprises people &mdash; and the one the exam uses to make the case for compression.</p>
+
+<h3>Common Audio Bandwidth Figures</h3>
+<p>Worth recognising by sight, since a question may give you the signal type rather than the numbers:</p>
+<div class="tbl-wrap"><table>
+  <tr><th>Signal</th><th>Sampling Rate</th><th>Bit Depth</th><th>Data Rate</th><th>Channels</th></tr>
+  <tr><td>Telephone</td><td>8 kHz</td><td>8</td><td>8 KBps</td><td>1</td></tr>
+  <tr><td>AM Radio</td><td>11.025 kHz</td><td>8</td><td>11.0 KBps</td><td>1</td></tr>
+  <tr><td>FM Radio</td><td>22.05 kHz</td><td>16</td><td>88.2 KBps</td><td>2</td></tr>
+  <tr><td>CD</td><td>44.1 kHz</td><td>16</td><td>176.4 KBps</td><td>2</td></tr>
+  <tr><td>Professional Audio</td><td>48 kHz</td><td>16</td><td>192.0 KBps</td><td>2</td></tr>
+  <tr><td>DVD Audio</td><td>44.1&ndash;192 kHz</td><td>24</td><td>1,200 KBps</td><td>6</td></tr>
+</table></div>
+<div class="callout examtip"><span class="label">Exam Tip</span>
+<p>Stereo CD audio &mdash; 44,100 &times; 16 &times; 2 = <strong>1,411,200 bps, or 1.4112 Mbps</strong> &mdash; is the canonical worked example. Even DVD audio at 192 kHz and 24-bit will not stress an enterprise network. Audio bandwidth is almost never the problem; video is.</p>
+</div>
+
+<h3>Video Bandwidth</h3>
+<div class="formula-box">
+<div class="formula">Horizontal Pixels &times; Vertical Pixels &times; Frame Rate &times; Bit Depth &times; Subsampling Factor &times; Transport Overhead</div>
+</div>
+<p>Build it from the smallest component outward:</p>
+<ol>
+  <li><strong>Number of pixels</strong> &mdash; horizontal &times; vertical, the pixels on one screen.</li>
+  <li><strong>Frame rate</strong> &mdash; multiply by how many images make up the video.</li>
+  <li><strong>Bit depth</strong> &mdash; multiply by how much colour information underlies each pixel.</li>
+  <li><strong>Chroma subsampling</strong> &mdash; multiply by the factor for the subsampling level.</li>
+  <li><strong>TMDS overhead</strong> &mdash; when transporting over HDMI, add <strong>25%</strong>, i.e. factor in <strong>1.25</strong> if applicable.</li>
+</ol>
+<div class="tbl-wrap"><table>
+  <tr><th>Chroma Subsampling</th><th>Factor to use</th><th>Effect on colour data</th></tr>
+  <tr><td><strong>4:4:4</strong></td><td><strong>3</strong></td><td>No reduction</td></tr>
+  <tr><td><strong>4:2:2</strong></td><td><strong>2</strong></td><td>Halves colour data</td></tr>
+  <tr><td><strong>4:2:0</strong></td><td><strong>1.5</strong></td><td>Reduces colour data to a quarter</td></tr>
+</table></div>
+<div class="worked">
+<div class="wstep"><strong>Worked example &mdash; UHD, 60 fps, 8-bit, no subsampling</strong></div>
+<div class="wstep">3840 &times; 2160 &times; 60 &times; 8 &times; 3 = <strong>11.94 Gbps</strong></div>
+<div class="wstep">Is that reasonable? No &mdash; 11.94 Gbps is greater than any enterprise network.</div>
+<div class="wstep">At <strong>4:2:2</strong>: multiply 11.94 by two-thirds &rarr; about <strong>8 Gbps</strong>. Still very high.</div>
+<div class="wstep">At <strong>4:2:0</strong>: halve the original &rarr; <strong>5.97 Gbps</strong>. Still high.</div>
+<div class="wstep"><strong>Conclusion:</strong> every video signal you will ever encounter requires compression. Broadcast and production studios use <strong>25G networks</strong> to handle 4:4:4 signals without compression.</div>
+</div>
+<div class="callout watchout"><span class="label">Watch Out</span>
+<p>The subsampling factor is <em>not</em> the ratio in the name. 4:4:4 uses a factor of <strong>3</strong>, not 4. Getting this wrong is the single most common error on this calculation.</p>
+</div>
+
+<h3>PoE Power Budget</h3>
+<p>Determine how much power you need, and whether the switch or midspan can deliver it at <strong>no more than 80%</strong> of its power rating.</p>
+<div class="formula-box">
+<div class="formula">Device Power = Voltage &times; Current</div>
+<div class="formula">Switch Rating Required = Total Device Power &times; 1.2</div>
+</div>
+<div class="worked">
+<div class="wstep">Decoder A: 48 V &times; 140 mA = <strong>6.72 W</strong> &nbsp;&middot;&nbsp; Encoder B: 48 V &times; 185 mA = <strong>8.88 W</strong></div>
+<div class="wstep">4 encoders: 8.88 &times; 4 = <strong>35.5 W</strong></div>
+<div class="wstep">12 decoders: 6.72 &times; 12 = <strong>80.6 W</strong></div>
+<div class="wstep">Total = <strong>116.1 W</strong> across <strong>16 ports</strong></div>
+<div class="wstep">Specify a switch providing 120% &rarr; <strong>&asymp;139 W</strong> with at least 16 PoE ports</div>
+</div>
+
+<h3>The 100-Metre Channel</h3>
+<p>The 100 m (328 ft) copper maximum applies to the <strong>entire channel</strong> &mdash; permanent link plus both patch cords. TIA sets the permanent link at a maximum of <strong>90 m</strong>, leaving <strong>10 m</strong> for the two patch cords.</p>
+<div class="formula-box">
+<div class="formula">Permanent Link + Patch Cord 1 + Patch Cord 2 &le; 100 m (328 ft)</div>
+</div>
+<div class="tbl-wrap"><table>
+  <tr><th>Permanent Link</th><th>Patch #1</th><th>Patch #2</th><th>Channel Total</th></tr>
+  <tr><td>295 ft</td><td>16 ft</td><td>16 ft</td><td>328 ft</td></tr>
+  <tr><td>295 ft</td><td>6 ft</td><td>26 ft</td><td>328 ft</td></tr>
+  <tr><td>250 ft</td><td>50 ft</td><td>28 ft</td><td>328 ft</td></tr>
+</table></div>
+<div class="callout examtip"><span class="label">Exam Tip</span>
+<p>If a question hands you long patch cords, it is testing whether you subtract them from the horizontal run. Longer patch cords mean a shorter permanent link, never a longer channel.</p>
+</div>
+</section>
+
 <div class="divider"></div>
 <!-- ================= DISPLAY MATH ================= -->
 <section id="display">

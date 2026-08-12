@@ -369,12 +369,46 @@ footer{text-align:center;color:var(--text3);font-family:var(--mono);font-size:.7
     <tr><th>Utility</th><th>What it does</th></tr>
     <tr><td class="k">ping</td><td>Tests connectivity to a device by sending packets to its IP address</td></tr>
     <tr><td class="k">traceroute / tracert</td><td>Maps the network path between two devices</td></tr>
+    <tr><td class="k">netstat</td><td>Lists ingoing and outgoing connections, and which service is using them</td></tr>
     <tr><td class="k">ifconfig / ipconfig</td><td>Diagnoses IP configuration issues</td></tr>
     <tr><td class="k">arp</td><td>Lists and configures IP-address ↔ MAC-address mapping</td></tr>
+    <tr><td class="k">nslookup</td><td>Queries DNS names and servers to confirm name resolution is working</td></tr>
   </table></div>
   <p class="muted">And yes — sometimes the honest best fix for a network device is: power off, wait a minute, power on.</p>
 
-  <h3 id="ch22-records">Repair Records & Billing</h3>
+  
+  <h4>TCP/IP Utilities in Detail</h4>
+  <p>The basis of many of these diagnostic tools is <strong>Internet Control Message Protocol (ICMP)</strong>, so it is worth understanding what ICMP does before the tools that ride on it.</p>
+  <div class="callout co-key"><span class="label">&#128204; Key Term</span>
+    <p><strong>ICMP</strong> operates at <strong>Layer 3</strong> of the OSI stack. It cannot detect errors at the Transport Layer and above, but it can pinpoint issues in communication pathways. It was originally designed to report errors in processing datagrams: when a packet exceeds its TTL, ICMP generates a message back to the source; if a router fails to forward a datagram, ICMP lets that router notify the source. <strong>To prevent infinite loops, ICMP does not report on its own ICMP errors.</strong></p>
+  </div>
+  <p>ICMP messages are encapsulated within the data fields of IP packets. IPv4 and IPv6 implement ICMP slightly differently, but the header is the same:</p>
+  <div class="tbl-wrap"><table>
+    <tr><th>Field</th><th>Information provided</th></tr>
+    <tr><td class="k">Type</td><td>Identifies the basic function of the message. A <strong>type 3</strong> message means the destination was unreachable; <strong>code 11</strong> indicates a packet exceeded its time-to-live.</td></tr>
+    <tr><td class="k">Code</td><td>Expands on the type. <strong>Type 3, code 4</strong> = packet could not be delivered because it was too big. <strong>Type 3, code 13</strong> = could not be delivered because communication was administratively prohibited.</td></tr>
+    <tr><td class="k">Checksum</td><td>Results of a checksum of the entire ICMP message.</td></tr>
+    <tr><td class="k">Data</td><td>Information related to the message's function.</td></tr>
+  </table></div>
+  <p class="muted">Devices receive ICMP error messages, but it is up to the administrator to interpret them. ICMP messages will not isolate or fix a problem &mdash; they help identify symptoms.</p>
+
+  <div class="tbl-wrap"><table>
+    <tr><th>Tool</th><th>What to know</th></tr>
+    <tr><td class="k">Ping<br><span class="muted">Packet Internet Groper</span></td><td>Uses ICMP to test connectivity and response time. In IPv4 ping sends an <strong>ICMP type 8, code 0 "echo request"</strong>; a successful target replies with an <strong>ICMP type 0, code 0 "echo reply."</strong> Windows issues <strong>four</strong> echo requests by default; UNIX pings until terminated. Results show success, failure, and time in transit. There is no "normal" latency, but excessive latency may suggest congestion.</td></tr>
+    <tr><td class="k">Traceroute<br><span class="muted">tracert on Windows</span></td><td>Maps each hop from source to destination by <strong>incrementing the TTL</strong>: the first ICMP request has a TTL of 1, the next 2, and so on. Each intermediate hop decreases the TTL; when it hits zero the receiving device returns an <strong>ICMP Time Exceeded</strong> error. Traceroute sends <strong>three ICMP packets to each location</strong> along the route. A non-responding hop may simply mean an administrator blocked ICMP for privacy &mdash; if later hops respond, the packet still reaches its destination.</td></tr>
+    <tr><td class="k">Netstat</td><td>Identifies ingoing and outgoing connections on a computer, reporting which service is using them along with source and destination addresses. Identifies problems like <strong>unauthorized open ports</strong> and helps determine traffic volume. By default it displays all active TCP connections and listening ports. Note that opening a single web page does not imply a single port &mdash; one site may open several.</td></tr>
+    <tr><td class="k">Ipconfig / ifconfig</td><td>Checks and configures IP settings. Reports device IP configurations, DNS name, IP addresses, subnet mask, gateway in use, DHCP server and lease information. Adding <strong>/all</strong> switches to verbose mode, which is what surfaces the DHCP server details and lease information.</td></tr>
+    <tr><td class="k">ARP<br><span class="muted">Address Resolution Protocol</span></td><td>A <strong>Data Link Layer</strong> protocol that resolves IP addresses to Ethernet (MAC) addresses. Every time a computer talks to another on the local network a new entry is made in the <strong>ARP cache</strong>. The <code>arp</code> command displays the cache, defines static entries, and finds all functioning IP addresses on the network &mdash; showing IP, MAC, and whether the entry is static or dynamic.</td></tr>
+    <tr><td class="k">Nslookup</td><td>Queries DNS names and servers; a basic diagnostic for whether DNS is resolving properly. If it fails on a well-known name like www.google.com, assume a DNS resolution issue. Two modes: <strong>interactive</strong> (run <code>nslookup</code> alone; type "quit" to exit) and <strong>non-interactive</strong> (<code>nslookup</code> followed by a DNS name or IP).</td></tr>
+  </table></div>
+  <div class="callout co-watch"><span class="label">&#9888; Watch Out</span>
+    <p>A computer running in <strong>promiscuous mode</strong> (also called listen-only mode) will <strong>not</strong> respond to ping requests, but it <strong>will</strong> still respond to ARP requests. If a device seems dead to ping but shows up in the ARP table, it is not necessarily offline.</p>
+  </div>
+  <div class="callout co-exam"><span class="label">&#127919; Exam Tip</span>
+    <p>Two number pairs are worth memorising: <strong>ping = ICMP type 8 request, type 0 reply</strong>, and <strong>traceroute sends 3 packets per hop</strong>. Also remember ICMP is <strong>Layer 3</strong> while ARP is <strong>Layer 2</strong> &mdash; questions like to pair a tool with its OSI layer.</p>
+  </div>
+
+<h3 id="ch22-records">Repair Records & Billing</h3>
   <div class="card-grid">
     <div class="card"><span class="tag">Record</span><h5>Repair records include</h5><p>Nature of the problem and the repair actions · parts and materials used · labor required · follow-up actions · warranty info (log the new warranty period of any replacement part) · any reduced system capability while gear is out for repair.</p></div>
     <div class="card"><span class="tag">Billing</span><h5>Billing information includes</h5><p>Labor time and staff expertise level · travel time · component replacement · materials and supplies · in-house repair costs · third-party repair costs · other expenses.</p></div>

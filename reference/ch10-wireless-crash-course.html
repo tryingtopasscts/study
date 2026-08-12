@@ -1,0 +1,1193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CTS Crash Course — Ch. 10: Wireless Radio Systems</title>
+<style>
+:root{
+  --bg:#0f1117;
+  --bg-2:#161a23;
+  --bg-3:#1d222d;
+  --line:#2a3140;
+  --line-soft:#222835;
+  --tx:#e6e9ef;
+  --tx-dim:#9aa3b2;
+  --tx-faint:#6b7484;
+  --teal:#3fd0c9;
+  --amber:#f0b429;
+  --red:#f2686a;
+  --purple:#a78bfa;
+  --blue:#5aa9f7;
+  --green:#5fd68a;
+  --radius:10px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--bg);color:var(--tx);
+  font-family:'DM Sans',system-ui,sans-serif;font-size:18px;line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+  transition:transform .28s ease;
+}
+body.shifted{transform:translateX(280px)}
+@media (prefers-reduced-motion:reduce){body,*{transition:none!important;animation:none!important}}
+
+/* ---------- sidebar ---------- */
+#hamb{
+  position:fixed;top:14px;left:14px;z-index:60;
+  width:44px;height:44px;border-radius:9px;border:1px solid var(--line);
+  background:var(--bg-2);color:var(--tx);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+}
+#hamb:hover{background:var(--bg-3);border-color:var(--teal)}
+#hamb span{display:block;width:18px;height:2px;background:currentColor;position:relative}
+#hamb span::before,#hamb span::after{content:'';position:absolute;left:0;width:18px;height:2px;background:currentColor}
+#hamb span::before{top:-6px}#hamb span::after{top:6px}
+#backdrop{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:40;opacity:0;pointer-events:none;transition:opacity .28s}
+#backdrop.on{opacity:1;pointer-events:auto}
+nav#side{
+  position:fixed;top:0;left:-280px;width:280px;height:100%;z-index:50;
+  background:var(--bg-2);border-right:1px solid var(--line);
+  overflow-y:auto;padding:70px 0 40px;font-size:16px;
+  transition:left .28s ease;
+}
+nav#side.on{left:0}
+nav#side .nav-h{
+  font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--tx-faint);padding:16px 22px 6px;
+}
+nav#side a{
+  display:block;padding:8px 22px;color:var(--tx-dim);text-decoration:none;
+  border-left:2px solid transparent;line-height:1.35;
+}
+nav#side a:hover{color:var(--teal);background:var(--bg-3);border-left-color:var(--teal)}
+nav#side .num{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--tx-faint);margin-right:8px}
+
+/* ---------- layout ---------- */
+main{max-width:900px;margin:auto;padding:0 24px 120px}
+header.hero{padding:90px 0 40px;border-bottom:1px solid var(--line)}
+.eyebrow{
+  font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--teal);margin-bottom:14px;
+}
+h1{font-family:'Fraunces',serif;font-weight:600;font-size:clamp(2.1rem,5.5vw,3.3rem);line-height:1.08;margin:0 0 18px;letter-spacing:-.01em}
+.sub{font-size:1.12rem;color:var(--tx-dim);max-width:64ch;margin:0}
+h2{
+  font-family:'Fraunces',serif;font-weight:600;font-size:1.9rem;line-height:1.2;
+  margin:74px 0 6px;padding-top:26px;border-top:1px solid var(--line-soft);letter-spacing:-.01em;
+}
+h2 .sec-n{font-family:'IBM Plex Mono',monospace;font-size:.72rem;color:var(--teal);display:block;letter-spacing:.16em;margin-bottom:10px;font-weight:500}
+h3{font-family:'Fraunces',serif;font-weight:600;font-size:1.3rem;margin:38px 0 10px}
+h4{font-family:'DM Sans',sans-serif;font-weight:700;font-size:1.02rem;margin:26px 0 8px;color:var(--tx)}
+p{margin:0 0 16px}
+ul,ol{margin:0 0 18px;padding-left:22px}
+li{margin-bottom:8px}
+strong{color:#fff;font-weight:700}
+em{color:var(--tx);font-style:italic}
+code,.mono{font-family:'IBM Plex Mono',monospace;font-size:.88em}
+code{background:var(--bg-3);padding:2px 6px;border-radius:4px;color:var(--teal)}
+a.inl{color:var(--blue)}
+
+/* ---------- callouts ---------- */
+.call{border-left:3px solid;border-radius:0 var(--radius) var(--radius) 0;padding:16px 20px;margin:22px 0;background:var(--bg-2);font-size:.97rem}
+.call .lab{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;display:block;margin-bottom:7px;font-weight:600}
+.call p:last-child{margin-bottom:0}
+.k{border-color:var(--teal)} .k .lab{color:var(--teal)}
+.s{border-color:var(--amber)} .s .lab{color:var(--amber)}
+.w{border-color:var(--red)} .w .lab{color:var(--red)}
+.e{border-color:var(--purple)} .e .lab{color:var(--purple)}
+
+/* ---------- figures ---------- */
+figure{margin:32px 0;background:var(--bg-2);border:1px solid var(--line);border-radius:var(--radius);padding:22px 18px 16px;overflow:hidden}
+figure svg{display:block;width:100%;height:auto}
+figcaption{font-size:.85rem;color:var(--tx-faint);margin-top:14px;padding-top:12px;border-top:1px solid var(--line-soft);font-family:'DM Sans',sans-serif}
+figcaption b{color:var(--tx-dim)}
+
+/* ---------- tables ---------- */
+.tw{overflow-x:auto;margin:24px 0}
+table{width:100%;border-collapse:collapse;font-size:.93rem;min-width:480px}
+th{
+  text-align:left;font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--tx-faint);font-weight:600;
+  padding:9px 12px;border-bottom:1px solid var(--line);
+}
+td{padding:10px 12px;border-bottom:1px solid var(--line-soft);vertical-align:top}
+tr:hover td{background:var(--bg-2)}
+td.n{font-family:'IBM Plex Mono',monospace;color:var(--amber);white-space:nowrap}
+td.t{color:var(--teal);font-weight:500}
+
+/* ---------- calculator ---------- */
+.calc{background:var(--bg-2);border:1px solid var(--line);border-radius:var(--radius);padding:24px;margin:28px 0}
+.calc h4{margin-top:0}
+.calc-row{display:flex;flex-wrap:wrap;gap:14px;align-items:flex-end;margin-bottom:18px}
+.fld{flex:1 1 180px}
+.fld label{display:block;font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--tx-faint);margin-bottom:6px}
+.fld input,.fld select{
+  width:100%;background:var(--bg);border:1px solid var(--line);border-radius:7px;
+  color:var(--tx);font-family:'IBM Plex Mono',monospace;font-size:1rem;padding:10px 12px;
+}
+.fld input:focus,.fld select:focus{outline:2px solid var(--teal);outline-offset:1px;border-color:var(--teal)}
+.out{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.out .box{background:var(--bg-3);border-radius:8px;padding:14px 16px;border:1px solid var(--line-soft)}
+.out .box .ol{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--tx-faint);margin-bottom:5px}
+.out .box .ov{font-family:'IBM Plex Mono',monospace;font-size:1.28rem;color:var(--teal);font-weight:500;line-height:1.2}
+.out .box .ou{font-size:.8rem;color:var(--tx-faint);margin-top:3px}
+.presets{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.presets button{
+  background:var(--bg-3);border:1px solid var(--line);color:var(--tx-dim);
+  font-family:'IBM Plex Mono',monospace;font-size:.78rem;padding:6px 11px;border-radius:20px;cursor:pointer;
+}
+.presets button:hover{border-color:var(--teal);color:var(--teal)}
+.presets button:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+
+/* ---------- quiz ---------- */
+.q{background:var(--bg-2);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;margin:18px 0}
+.q .qn{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;color:var(--teal);margin-bottom:9px}
+.q .qt{font-weight:500;margin-bottom:14px}
+.opts{list-style:none;padding:0;margin:0}
+.opts li{margin:0 0 7px}
+.opts button{
+  width:100%;text-align:left;background:var(--bg-3);border:1px solid var(--line-soft);
+  color:var(--tx-dim);padding:10px 14px;border-radius:7px;cursor:pointer;
+  font-family:'DM Sans',sans-serif;font-size:.95rem;line-height:1.4;
+}
+.opts button:hover{border-color:var(--tx-faint);color:var(--tx)}
+.opts button:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+.opts button.right{border-color:var(--green);color:var(--green);background:rgba(95,214,138,.09)}
+.opts button.wrong{border-color:var(--red);color:var(--red);background:rgba(242,104,106,.09)}
+.expl{display:none;margin-top:14px;padding-top:13px;border-top:1px solid var(--line-soft);font-size:.92rem;color:var(--tx-dim)}
+.expl.on{display:block}
+.expl b{color:var(--teal)}
+#score{
+  position:sticky;bottom:16px;margin:26px auto 0;max-width:280px;text-align:center;
+  background:var(--bg-3);border:1px solid var(--line);border-radius:24px;padding:10px 18px;
+  font-family:'IBM Plex Mono',monospace;font-size:.85rem;color:var(--tx-dim);
+}
+#score b{color:var(--teal)}
+footer{margin-top:80px;padding-top:26px;border-top:1px solid var(--line);color:var(--tx-faint);font-size:.85rem}
+@media(max-width:640px){
+  body{font-size:17px}
+  body.shifted{transform:none}
+  main{padding:0 16px 90px}
+  header.hero{padding:78px 0 30px}
+  figure{padding:14px 10px 12px}
+}
+</style>
+</head>
+<body>
+<button id="hamb" aria-label="Open contents" aria-expanded="false"><span></span></button>
+<div id="backdrop"></div>
+<nav id="side" aria-label="Contents">
+  <div class="nav-h">Ch. 10 — Wireless Radio</div>
+  <a href="#s-map"><span class="num">01</span>The 60-second map</a>
+  <a href="#s-terms"><span class="num">02</span>Radio vs. RF vs. Wireless</a>
+  <a href="#s-spectrum"><span class="num">03</span>Where radio sits</a>
+  <a href="#s-wave"><span class="num">04</span>Anatomy of a radio wave</a>
+  <a href="#s-300"><span class="num">05</span>The 300 rule</a>
+  <a href="#s-bands"><span class="num">06</span>Band names</a>
+  <a href="#s-chain"><span class="num">07</span>Transmit &amp; receive</a>
+  <a href="#s-paths"><span class="num">08</span>Transmission paths</a>
+  <a href="#s-alloc"><span class="num">09</span>Frequency allocation</a>
+  <a href="#s-ant"><span class="num">10</span>Antenna orientation</a>
+  <a href="#s-parab"><span class="num">11</span>Parabolic antennas</a>
+  <a href="#s-vert"><span class="num">12</span>Vertical antennas</a>
+  <a href="#s-div"><span class="num">13</span>Multipath &amp; diversity</a>
+  <div class="nav-h">Wrap-up</div>
+  <a href="#s-links"><span class="num">14</span>Cross-chapter links</a>
+  <a href="#s-cheat"><span class="num">15</span>Exam cheat sheet</a>
+  <a href="#s-quiz"><span class="num">16</span>Self-check (14 Q)</a>
+</nav>
+
+<main>
+<header class="hero">
+  <div class="eyebrow">CTS Crash Course · Part II · Chapter 10</div>
+  <h1>Wireless Radio Systems</h1>
+  <p class="sub">Everything in this chapter comes down to four questions: what <em>is</em> a radio wave, how do you get information onto one, what happens to it on the way, and how does an antenna hand it off cleanly at both ends. Short chapter, high density of memorizable numbers.</p>
+</header>
+
+<h2 id="s-map"><span class="sec-n">SECTION 01</span>The 60-second map</h2>
+<p>Before any detail: a wireless link is always the same five moving parts. Every fact in this chapter attaches to one of them.</p>
+
+<figure>
+<svg viewBox="0 0 900 250" role="img" aria-label="Five-stage wireless link: source, transmitter, path, receiver, output">
+  <defs>
+    <marker id="ar" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 z" fill="#3fd0c9"/></marker>
+  </defs>
+  <g font-family="'DM Sans',sans-serif">
+  <!-- boxes -->
+  <rect x="14" y="72" width="136" height="72" rx="8" fill="#1d222d" stroke="#2a3140"/>
+  <text x="82" y="102" text-anchor="middle" fill="#e6e9ef" font-size="14" font-weight="700">Information</text>
+  <text x="82" y="122" text-anchor="middle" fill="#9aa3b2" font-size="11.5">audio · video · data · control</text>
+
+  <rect x="188" y="72" width="136" height="72" rx="8" fill="#1d222d" stroke="#3fd0c9"/>
+  <text x="256" y="102" text-anchor="middle" fill="#3fd0c9" font-size="14" font-weight="700">Transmitter</text>
+  <text x="256" y="122" text-anchor="middle" fill="#9aa3b2" font-size="11.5">modulates onto carrier</text>
+
+  <rect x="362" y="72" width="176" height="72" rx="8" fill="#1d222d" stroke="#f0b429" stroke-dasharray="5 4"/>
+  <text x="450" y="102" text-anchor="middle" fill="#f0b429" font-size="14" font-weight="700">Propagation path</text>
+  <text x="450" y="122" text-anchor="middle" fill="#9aa3b2" font-size="11.5">line of sight · reflection · loss</text>
+
+  <rect x="576" y="72" width="136" height="72" rx="8" fill="#1d222d" stroke="#3fd0c9"/>
+  <text x="644" y="102" text-anchor="middle" fill="#3fd0c9" font-size="14" font-weight="700">Receiver</text>
+  <text x="644" y="122" text-anchor="middle" fill="#9aa3b2" font-size="11.5">demodulates carrier off</text>
+
+  <rect x="750" y="72" width="136" height="72" rx="8" fill="#1d222d" stroke="#2a3140"/>
+  <text x="818" y="102" text-anchor="middle" fill="#e6e9ef" font-size="14" font-weight="700">Information</text>
+  <text x="818" y="122" text-anchor="middle" fill="#9aa3b2" font-size="11.5">identical to input</text>
+
+  <!-- arrows -->
+  <line x1="152" y1="108" x2="184" y2="108" stroke="#3fd0c9" stroke-width="2" marker-end="url(#ar)"/>
+  <line x1="326" y1="108" x2="358" y2="108" stroke="#3fd0c9" stroke-width="2" marker-end="url(#ar)"/>
+  <line x1="540" y1="108" x2="572" y2="108" stroke="#3fd0c9" stroke-width="2" marker-end="url(#ar)"/>
+  <line x1="714" y1="108" x2="746" y2="108" stroke="#3fd0c9" stroke-width="2" marker-end="url(#ar)"/>
+
+  <!-- antennas -->
+  <line x1="324" y1="72" x2="324" y2="38" stroke="#3fd0c9" stroke-width="2"/>
+  <circle cx="324" cy="34" r="3" fill="#3fd0c9"/>
+  <text x="324" y="24" text-anchor="middle" fill="#3fd0c9" font-size="10.5" font-family="'IBM Plex Mono',monospace">ANTENNA</text>
+  <line x1="576" y1="72" x2="576" y2="38" stroke="#3fd0c9" stroke-width="2"/>
+  <circle cx="576" cy="34" r="3" fill="#3fd0c9"/>
+  <text x="576" y="24" text-anchor="middle" fill="#3fd0c9" font-size="10.5" font-family="'IBM Plex Mono',monospace">ANTENNA</text>
+
+  <!-- radio waves -->
+  <path d="M340 48 A20 20 0 0 1 340 96" fill="none" stroke="#f0b429" stroke-width="1.6" opacity=".8"/>
+  <path d="M348 40 A32 32 0 0 1 348 104" fill="none" stroke="#f0b429" stroke-width="1.6" opacity=".55"/>
+  <path d="M356 32 A44 44 0 0 1 356 112" fill="none" stroke="#f0b429" stroke-width="1.6" opacity=".3"/>
+
+  <!-- labels below -->
+  <text x="82" y="176" text-anchor="middle" fill="#6b7484" font-size="11" font-family="'IBM Plex Mono',monospace">WHAT YOU SEND</text>
+  <text x="256" y="176" text-anchor="middle" fill="#6b7484" font-size="11" font-family="'IBM Plex Mono',monospace">MODULATION</text>
+  <text x="450" y="176" text-anchor="middle" fill="#6b7484" font-size="11" font-family="'IBM Plex Mono',monospace">WHERE IT GOES WRONG</text>
+  <text x="644" y="176" text-anchor="middle" fill="#6b7484" font-size="11" font-family="'IBM Plex Mono',monospace">DEMODULATION</text>
+  <text x="818" y="176" text-anchor="middle" fill="#6b7484" font-size="11" font-family="'IBM Plex Mono',monospace">WHAT THEY HEAR</text>
+
+  <rect x="188" y="200" width="524" height="34" rx="6" fill="#161a23" stroke="#2a3140"/>
+  <text x="450" y="222" text-anchor="middle" fill="#9aa3b2" font-size="12.5">Antennas sit at both boundaries — which is why antenna choice and orientation dominate real-world performance</text>
+  </g>
+</svg>
+<figcaption><b>Figure 1.</b> The wireless link. Modulation happens at the transmitter, demodulation at the receiver, and everything unpleasant happens in the middle.</figcaption>
+</figure>
+
+<div class="call e"><span class="lab">Exam tip</span><p>This chapter is foundational knowledge — it doesn't map to a CTS duty/task the way Parts III–V do. But its vocabulary and numbers leak into questions about wireless microphones (Ch. 4), Wi-Fi (Ch. 6), RF control (Ch. 8), and rack building (Ch. 17). Learn the numbers cold; they're cheap points.</p></div>
+
+<h2 id="s-terms"><span class="sec-n">SECTION 02</span>Radio vs. RF vs. Wireless</h2>
+<p>Three words people swap freely on job sites. AVIXA treats them as three distinct things, and a question can hinge on the distinction. The trick is that they're <strong>not</strong> three synonyms and they're <strong>not</strong> a clean hierarchy — they overlap partially.</p>
+
+<figure>
+<svg viewBox="0 0 900 430" role="img" aria-label="Venn-style relationship of radio waves, radio frequency, and wireless">
+  <g font-family="'DM Sans',sans-serif">
+  <!-- RF circle (left) -->
+  <circle cx="360" cy="205" r="160" fill="#3fd0c9" fill-opacity=".08" stroke="#3fd0c9" stroke-width="1.6"/>
+  <!-- Wireless circle (right) -->
+  <circle cx="560" cy="205" r="160" fill="#a78bfa" fill-opacity=".08" stroke="#a78bfa" stroke-width="1.6"/>
+  <!-- Radio waves = intersection -->
+  <path d="M460 66 A160 160 0 0 0 460 344 A160 160 0 0 0 460 66 Z" fill="#f0b429" fill-opacity=".13" stroke="#f0b429" stroke-width="1.6"/>
+
+  <text x="235" y="60" fill="#3fd0c9" font-size="15" font-weight="700" text-anchor="middle">RADIO FREQUENCY</text>
+  <text x="235" y="80" fill="#3fd0c9" font-size="12" text-anchor="middle" opacity=".8">any signal 3 kHz – 300 GHz</text>
+  <text x="685" y="60" fill="#a78bfa" font-size="15" font-weight="700" text-anchor="middle">WIRELESS</text>
+  <text x="685" y="80" fill="#a78bfa" font-size="12" text-anchor="middle" opacity=".8">no wire, no fiber</text>
+
+  <text x="460" y="188" fill="#f0b429" font-size="15" font-weight="700" text-anchor="middle">RADIO WAVES</text>
+  <text x="460" y="210" fill="#f0b429" font-size="12" text-anchor="middle" opacity=".85">RF, and</text>
+  <text x="460" y="228" fill="#f0b429" font-size="12" text-anchor="middle" opacity=".85">travelling through space</text>
+
+  <!-- examples left only -->
+  <text x="248" y="180" fill="#9aa3b2" font-size="12" text-anchor="middle">Coax from a</text>
+  <text x="248" y="198" fill="#9aa3b2" font-size="12" text-anchor="middle">set-top box to</text>
+  <text x="248" y="216" fill="#9aa3b2" font-size="12" text-anchor="middle">a TV antenna in</text>
+  <text x="248" y="234" fill="#9aa3b2" font-size="12" text-anchor="middle">— RF in a cable</text>
+
+  <!-- examples right only -->
+  <text x="672" y="180" fill="#9aa3b2" font-size="12" text-anchor="middle">IR projector</text>
+  <text x="672" y="198" fill="#9aa3b2" font-size="12" text-anchor="middle">remote · laser</text>
+  <text x="672" y="216" fill="#9aa3b2" font-size="12" text-anchor="middle">link — wireless,</text>
+  <text x="672" y="234" fill="#9aa3b2" font-size="12" text-anchor="middle">but not radio</text>
+
+  <text x="460" y="262" fill="#9aa3b2" font-size="12" text-anchor="middle">wireless mic · Wi-Fi</text>
+  <text x="460" y="280" fill="#9aa3b2" font-size="12" text-anchor="middle">GPS · broadcast TV</text>
+
+  <line x1="100" y1="392" x2="800" y2="392" stroke="#2a3140"/>
+  <text x="450" y="418" text-anchor="middle" fill="#6b7484" font-size="12.5" font-family="'IBM Plex Mono',monospace">RF describes THE FREQUENCY · WIRELESS describes THE DELIVERY · RADIO WAVES need BOTH</text>
+  </g>
+</svg>
+<figcaption><b>Figure 2.</b> RF is a frequency range regardless of what carries it. Wireless is a delivery method regardless of frequency. Radio waves are the overlap.</figcaption>
+</figure>
+
+<div class="call k"><span class="lab">Key term</span>
+<p><strong>Radio waves</strong> — the slice of the electromagnetic spectrum from <strong>3 kHz to 300 GHz</strong>, produced by the movement of electric charge. An oscillating current generates an electric field, a magnetic field, and electromagnetic radiation; the oscillation frequency of the current sets the frequency of the radiation.</p>
+<p><strong>Radio frequency (RF)</strong> — any signal whose frequency falls in that same 3 kHz – 300 GHz range, <em>however it travels</em>. Down a copper coax, over a fiber, on an infrared beam, on a laser — still RF.</p>
+<p><strong>Wireless</strong> — any signal carried without wire or fiber. Radio waves qualify. So do laser beams and infrared.</p></div>
+
+<div class="call w"><span class="lab">Watch out</span><p>Two traps live here, and they're mirror images of each other.<br>
+<strong>Trap 1:</strong> "RF always means through the air." No — the coax feeding your TV tuner carries RF signals that are <em>not</em> radio waves.<br>
+<strong>Trap 2:</strong> "Wireless always means radio." No — a handheld IR remote for a projector is wireless communication that uses no radio waves at all.</p></div>
+
+<h2 id="s-spectrum"><span class="sec-n">SECTION 03</span>Where radio sits on the EM spectrum</h2>
+<p>Radio waves aren't a special kind of thing. They're the low-frequency, long-wavelength end of the same electromagnetic radiation that includes the light you measured back in Chapter 5. Same physics, same straight-line travel, same inverse square falloff — just wavelengths measured in meters rather than nanometers.</p>
+
+<figure>
+<svg viewBox="0 0 900 300" role="img" aria-label="Logarithmic electromagnetic spectrum from radio to gamma rays">
+  <g font-family="'DM Sans',sans-serif">
+  <text x="40" y="26" fill="#6b7484" font-size="11" font-family="'IBM Plex Mono',monospace">FREQUENCY →  (logarithmic)</text>
+
+  <!-- bar -->
+  <rect x="62.8" y="46" width="382" height="52" fill="#f0b429" fill-opacity=".22" stroke="#f0b429" stroke-width="1.5"/>
+  <rect x="445" y="46" width="150" height="52" fill="#f2686a" fill-opacity=".16" stroke="#2a3140"/>
+  <rect x="595" y="46" width="12" height="52" fill="#5fd68a" fill-opacity=".5" stroke="#5fd68a"/>
+  <rect x="607" y="46" width="77" height="52" fill="#a78bfa" fill-opacity=".16" stroke="#2a3140"/>
+  <rect x="684" y="46" width="143" height="52" fill="#5aa9f7" fill-opacity=".16" stroke="#2a3140"/>
+  <rect x="827" y="46" width="61" height="52" fill="#e6e9ef" fill-opacity=".12" stroke="#2a3140"/>
+  <rect x="40" y="46" width="22.8" height="52" fill="#161a23" stroke="#2a3140"/>
+
+  <text x="253" y="78" text-anchor="middle" fill="#f0b429" font-size="15" font-weight="700">RADIO WAVES</text>
+  <text x="520" y="78" text-anchor="middle" fill="#f2686a" font-size="12.5">Infrared</text>
+  <text x="601" y="122" text-anchor="middle" fill="#5fd68a" font-size="11" font-family="'IBM Plex Mono',monospace">VISIBLE</text>
+  <line x1="601" y1="100" x2="601" y2="112" stroke="#5fd68a"/>
+  <text x="645" y="78" text-anchor="middle" fill="#a78bfa" font-size="12.5">UV</text>
+  <text x="755" y="78" text-anchor="middle" fill="#5aa9f7" font-size="12.5">X-rays</text>
+  <text x="857" y="78" text-anchor="middle" fill="#9aa3b2" font-size="12.5">Gamma</text>
+
+  <!-- ticks -->
+  <line x1="62.8" y1="98" x2="62.8" y2="150" stroke="#f0b429" stroke-width="1.5"/>
+  <text x="62.8" y="168" text-anchor="middle" fill="#f0b429" font-size="12" font-family="'IBM Plex Mono',monospace" font-weight="600">3 kHz</text>
+  <text x="62.8" y="185" text-anchor="middle" fill="#9aa3b2" font-size="11">λ = 100 km</text>
+
+  <line x1="445" y1="98" x2="445" y2="150" stroke="#f0b429" stroke-width="1.5"/>
+  <text x="445" y="168" text-anchor="middle" fill="#f0b429" font-size="12" font-family="'IBM Plex Mono',monospace" font-weight="600">300 GHz</text>
+  <text x="445" y="185" text-anchor="middle" fill="#9aa3b2" font-size="11">λ = 1 mm</text>
+
+  <path d="M62.8 200 L62.8 210 L445 210 L445 200" fill="none" stroke="#f0b429" stroke-width="1.5"/>
+  <text x="253" y="230" text-anchor="middle" fill="#f0b429" font-size="13" font-weight="700">the entire RF spectrum</text>
+
+  <!-- note -->
+  <rect x="40" y="248" width="848" height="42" rx="6" fill="#161a23" stroke="#2a3140"/>
+  <text x="60" y="266" fill="#9aa3b2" font-size="12.5">Longer wavelength ← → shorter wavelength. Frequency and wavelength are inverses: as one rises, the other falls.</text>
+  <text x="60" y="283" fill="#6b7484" font-size="12">Visible light looks like a sliver at this scale because it is one — roughly 430 to 750 THz, a single octave in a span of eighteen decades.</text>
+  </g>
+</svg>
+<figcaption><b>Figure 3.</b> True logarithmic placement. Radio occupies eight full decades of frequency; visible light occupies less than one.</figcaption>
+</figure>
+
+<div class="call s"><span class="lab">Spec</span><p><strong>Radio spectrum: 3 kHz (λ = 100 km) to 300 GHz (λ = 1 mm).</strong> Both ends, both units. The book's own review question uses "3 kHz to 300 GHz" as the correct answer and offers "9 kHz to 300 GHz" as the distractor — 9 kHz is a real regulatory floor in some jurisdictions, which is exactly what makes it a tempting wrong answer.</p></div>
+
+<h2 id="s-wave"><span class="sec-n">SECTION 04</span>Anatomy of a radio wave</h2>
+<p>One relationship underlies every number in this chapter: <strong>frequency and wavelength are inverses</strong>. Radio waves all travel at the same speed — the speed of light — so a wave that oscillates faster necessarily fits more cycles into the same distance, which means each cycle is shorter.</p>
+
+<figure>
+<svg viewBox="0 0 900 300" role="img" aria-label="Two radio waves of different frequency travelling the same distance">
+  <g font-family="'DM Sans',sans-serif">
+  <line x1="70" y1="90" x2="830" y2="90" stroke="#2a3140" stroke-dasharray="3 4"/>
+  <path d="M70.0,90.00 L72.0,87.75 L74.0,85.52 L76.0,83.30 L78.0,81.11 L80.0,78.96 L82.0,76.86 L84.0,74.82 L86.0,72.84 L88.0,70.94 L90.0,69.12 L92.0,67.39 L94.0,65.76 L96.0,64.24 L98.0,62.83 L100.0,61.54 L102.0,60.37 L104.0,59.33 L106.0,58.43 L108.0,57.66 L110.0,57.04 L112.0,56.56 L114.0,56.23 L116.0,56.04 L118.0,56.00 L120.0,56.12 L122.0,56.38 L124.0,56.78 L126.0,57.33 L128.0,58.03 L130.0,58.86 L132.0,59.83 L134.0,60.94 L136.0,62.17 L138.0,63.52 L140.0,64.99 L142.0,66.56 L144.0,68.24 L146.0,70.02 L148.0,71.88 L150.0,73.82 L152.0,75.83 L154.0,77.90 L156.0,80.03 L158.0,82.20 L160.0,84.40 L162.0,86.63 L164.0,88.88 L166.0,91.12 L168.0,93.37 L170.0,95.60 L172.0,97.80 L174.0,99.97 L176.0,102.10 L178.0,104.17 L180.0,106.18 L182.0,108.12 L184.0,109.98 L186.0,111.76 L188.0,113.44 L190.0,115.01 L192.0,116.48 L194.0,117.83 L196.0,119.06 L198.0,120.17 L200.0,121.14 L202.0,121.97 L204.0,122.67 L206.0,123.22 L208.0,123.62 L210.0,123.88 L212.0,124.00 L214.0,123.96 L216.0,123.77 L218.0,123.44 L220.0,122.96 L222.0,122.34 L224.0,121.57 L226.0,120.67 L228.0,119.63 L230.0,118.46 L232.0,117.17 L234.0,115.76 L236.0,114.24 L238.0,112.61 L240.0,110.88 L242.0,109.06 L244.0,107.16 L246.0,105.18 L248.0,103.14 L250.0,101.04 L252.0,98.89 L254.0,96.70 L256.0,94.48 L258.0,92.25 L260.0,90.00 L262.0,87.75 L264.0,85.52 L266.0,83.30 L268.0,81.11 L270.0,78.96 L272.0,76.86 L274.0,74.82 L276.0,72.84 L278.0,70.94 L280.0,69.12 L282.0,67.39 L284.0,65.76 L286.0,64.24 L288.0,62.83 L290.0,61.54 L292.0,60.37 L294.0,59.33 L296.0,58.43 L298.0,57.66 L300.0,57.04 L302.0,56.56 L304.0,56.23 L306.0,56.04 L308.0,56.00 L310.0,56.12 L312.0,56.38 L314.0,56.78 L316.0,57.33 L318.0,58.03 L320.0,58.86 L322.0,59.83 L324.0,60.94 L326.0,62.17 L328.0,63.52 L330.0,64.99 L332.0,66.56 L334.0,68.24 L336.0,70.02 L338.0,71.88 L340.0,73.82 L342.0,75.83 L344.0,77.90 L346.0,80.03 L348.0,82.20 L350.0,84.40 L352.0,86.63 L354.0,88.88 L356.0,91.12 L358.0,93.37 L360.0,95.60 L362.0,97.80 L364.0,99.97 L366.0,102.10 L368.0,104.17 L370.0,106.18 L372.0,108.12 L374.0,109.98 L376.0,111.76 L378.0,113.44 L380.0,115.01 L382.0,116.48 L384.0,117.83 L386.0,119.06 L388.0,120.17 L390.0,121.14 L392.0,121.97 L394.0,122.67 L396.0,123.22 L398.0,123.62 L400.0,123.88 L402.0,124.00 L404.0,123.96 L406.0,123.77 L408.0,123.44 L410.0,122.96 L412.0,122.34 L414.0,121.57 L416.0,120.67 L418.0,119.63 L420.0,118.46 L422.0,117.17 L424.0,115.76 L426.0,114.24 L428.0,112.61 L430.0,110.88 L432.0,109.06 L434.0,107.16 L436.0,105.18 L438.0,103.14 L440.0,101.04 L442.0,98.89 L444.0,96.70 L446.0,94.48 L448.0,92.25 L450.0,90.00 L452.0,87.75 L454.0,85.52 L456.0,83.30 L458.0,81.11 L460.0,78.96 L462.0,76.86 L464.0,74.82 L466.0,72.84 L468.0,70.94 L470.0,69.12 L472.0,67.39 L474.0,65.76 L476.0,64.24 L478.0,62.83 L480.0,61.54 L482.0,60.37 L484.0,59.33 L486.0,58.43 L488.0,57.66 L490.0,57.04 L492.0,56.56 L494.0,56.23 L496.0,56.04 L498.0,56.00 L500.0,56.12 L502.0,56.38 L504.0,56.78 L506.0,57.33 L508.0,58.03 L510.0,58.86 L512.0,59.83 L514.0,60.94 L516.0,62.17 L518.0,63.52 L520.0,64.99 L522.0,66.56 L524.0,68.24 L526.0,70.02 L528.0,71.88 L530.0,73.82 L532.0,75.83 L534.0,77.90 L536.0,80.03 L538.0,82.20 L540.0,84.40 L542.0,86.63 L544.0,88.88 L546.0,91.12 L548.0,93.37 L550.0,95.60 L552.0,97.80 L554.0,99.97 L556.0,102.10 L558.0,104.17 L560.0,106.18 L562.0,108.12 L564.0,109.98 L566.0,111.76 L568.0,113.44 L570.0,115.01 L572.0,116.48 L574.0,117.83 L576.0,119.06 L578.0,120.17 L580.0,121.14 L582.0,121.97 L584.0,122.67 L586.0,123.22 L588.0,123.62 L590.0,123.88 L592.0,124.00 L594.0,123.96 L596.0,123.77 L598.0,123.44 L600.0,122.96 L602.0,122.34 L604.0,121.57 L606.0,120.67 L608.0,119.63 L610.0,118.46 L612.0,117.17 L614.0,115.76 L616.0,114.24 L618.0,112.61 L620.0,110.88 L622.0,109.06 L624.0,107.16 L626.0,105.18 L628.0,103.14 L630.0,101.04 L632.0,98.89 L634.0,96.70 L636.0,94.48 L638.0,92.25 L640.0,90.00 L642.0,87.75 L644.0,85.52 L646.0,83.30 L648.0,81.11 L650.0,78.96 L652.0,76.86 L654.0,74.82 L656.0,72.84 L658.0,70.94 L660.0,69.12 L662.0,67.39 L664.0,65.76 L666.0,64.24 L668.0,62.83 L670.0,61.54 L672.0,60.37 L674.0,59.33 L676.0,58.43 L678.0,57.66 L680.0,57.04 L682.0,56.56 L684.0,56.23 L686.0,56.04 L688.0,56.00 L690.0,56.12 L692.0,56.38 L694.0,56.78 L696.0,57.33 L698.0,58.03 L700.0,58.86 L702.0,59.83 L704.0,60.94 L706.0,62.17 L708.0,63.52 L710.0,64.99 L712.0,66.56 L714.0,68.24 L716.0,70.02 L718.0,71.88 L720.0,73.82 L722.0,75.83 L724.0,77.90 L726.0,80.03 L728.0,82.20 L730.0,84.40 L732.0,86.63 L734.0,88.88 L736.0,91.12 L738.0,93.37 L740.0,95.60 L742.0,97.80 L744.0,99.97 L746.0,102.10 L748.0,104.17 L750.0,106.18 L752.0,108.12 L754.0,109.98 L756.0,111.76 L758.0,113.44 L760.0,115.01 L762.0,116.48 L764.0,117.83 L766.0,119.06 L768.0,120.17 L770.0,121.14 L772.0,121.97 L774.0,122.67 L776.0,123.22 L778.0,123.62 L780.0,123.88 L782.0,124.00 L784.0,123.96 L786.0,123.77 L788.0,123.44 L790.0,122.96 L792.0,122.34 L794.0,121.57 L796.0,120.67 L798.0,119.63 L800.0,118.46 L802.0,117.17 L804.0,115.76 L806.0,114.24 L808.0,112.61 L810.0,110.88 L812.0,109.06 L814.0,107.16 L816.0,105.18 L818.0,103.14 L820.0,101.04 L822.0,98.89 L824.0,96.70 L826.0,94.48 L828.0,92.25 L830.0,90.00" fill="none" stroke="#3fd0c9" stroke-width="2.2"/>
+  <text x="70" y="36" fill="#3fd0c9" font-size="13.5" font-weight="700">LOWER frequency</text>
+  <text x="70" y="54" fill="#9aa3b2" font-size="12">longer wavelength · penetrates buildings better · reflects off the ionosphere</text>
+  <!-- lambda bracket long -->
+  <path d="M70 140 L70 148 L260 148 L260 140" fill="none" stroke="#3fd0c9" stroke-width="1.4"/>
+  <text x="165" y="164" text-anchor="middle" fill="#3fd0c9" font-size="12.5" font-family="'IBM Plex Mono',monospace">λ</text>
+
+  <line x1="70" y1="215" x2="830" y2="215" stroke="#2a3140" stroke-dasharray="3 4"/>
+  <path d="M70.0,215.00 L72.0,210.52 L74.0,206.11 L76.0,201.86 L78.0,197.84 L80.0,194.12 L82.0,190.76 L84.0,187.83 L86.0,185.37 L88.0,183.43 L90.0,182.04 L92.0,181.23 L94.0,181.00 L96.0,181.38 L98.0,182.33 L100.0,183.86 L102.0,185.94 L104.0,188.52 L106.0,191.56 L108.0,195.02 L110.0,198.82 L112.0,202.90 L114.0,207.20 L116.0,211.63 L118.0,216.12 L120.0,220.60 L122.0,224.97 L124.0,229.17 L126.0,233.12 L128.0,236.76 L130.0,240.01 L132.0,242.83 L134.0,245.17 L136.0,246.97 L138.0,248.22 L140.0,248.88 L142.0,248.96 L144.0,248.44 L146.0,247.34 L148.0,245.67 L150.0,243.46 L152.0,240.76 L154.0,237.61 L156.0,234.06 L158.0,230.18 L160.0,226.04 L162.0,221.70 L164.0,217.25 L166.0,212.75 L168.0,208.30 L170.0,203.96 L172.0,199.82 L174.0,195.94 L176.0,192.39 L178.0,189.24 L180.0,186.54 L182.0,184.33 L184.0,182.66 L186.0,181.56 L188.0,181.04 L190.0,181.12 L192.0,181.78 L194.0,183.03 L196.0,184.83 L198.0,187.17 L200.0,189.99 L202.0,193.24 L204.0,196.88 L206.0,200.83 L208.0,205.03 L210.0,209.40 L212.0,213.88 L214.0,218.37 L216.0,222.80 L218.0,227.10 L220.0,231.18 L222.0,234.98 L224.0,238.44 L226.0,241.48 L228.0,244.06 L230.0,246.14 L232.0,247.67 L234.0,248.62 L236.0,249.00 L238.0,248.77 L240.0,247.96 L242.0,246.57 L244.0,244.63 L246.0,242.17 L248.0,239.24 L250.0,235.88 L252.0,232.16 L254.0,228.14 L256.0,223.89 L258.0,219.48 L260.0,215.00 L262.0,210.52 L264.0,206.11 L266.0,201.86 L268.0,197.84 L270.0,194.12 L272.0,190.76 L274.0,187.83 L276.0,185.37 L278.0,183.43 L280.0,182.04 L282.0,181.23 L284.0,181.00 L286.0,181.38 L288.0,182.33 L290.0,183.86 L292.0,185.94 L294.0,188.52 L296.0,191.56 L298.0,195.02 L300.0,198.82 L302.0,202.90 L304.0,207.20 L306.0,211.63 L308.0,216.12 L310.0,220.60 L312.0,224.97 L314.0,229.17 L316.0,233.12 L318.0,236.76 L320.0,240.01 L322.0,242.83 L324.0,245.17 L326.0,246.97 L328.0,248.22 L330.0,248.88 L332.0,248.96 L334.0,248.44 L336.0,247.34 L338.0,245.67 L340.0,243.46 L342.0,240.76 L344.0,237.61 L346.0,234.06 L348.0,230.18 L350.0,226.04 L352.0,221.70 L354.0,217.25 L356.0,212.75 L358.0,208.30 L360.0,203.96 L362.0,199.82 L364.0,195.94 L366.0,192.39 L368.0,189.24 L370.0,186.54 L372.0,184.33 L374.0,182.66 L376.0,181.56 L378.0,181.04 L380.0,181.12 L382.0,181.78 L384.0,183.03 L386.0,184.83 L388.0,187.17 L390.0,189.99 L392.0,193.24 L394.0,196.88 L396.0,200.83 L398.0,205.03 L400.0,209.40 L402.0,213.88 L404.0,218.37 L406.0,222.80 L408.0,227.10 L410.0,231.18 L412.0,234.98 L414.0,238.44 L416.0,241.48 L418.0,244.06 L420.0,246.14 L422.0,247.67 L424.0,248.62 L426.0,249.00 L428.0,248.77 L430.0,247.96 L432.0,246.57 L434.0,244.63 L436.0,242.17 L438.0,239.24 L440.0,235.88 L442.0,232.16 L444.0,228.14 L446.0,223.89 L448.0,219.48 L450.0,215.00 L452.0,210.52 L454.0,206.11 L456.0,201.86 L458.0,197.84 L460.0,194.12 L462.0,190.76 L464.0,187.83 L466.0,185.37 L468.0,183.43 L470.0,182.04 L472.0,181.23 L474.0,181.00 L476.0,181.38 L478.0,182.33 L480.0,183.86 L482.0,185.94 L484.0,188.52 L486.0,191.56 L488.0,195.02 L490.0,198.82 L492.0,202.90 L494.0,207.20 L496.0,211.63 L498.0,216.12 L500.0,220.60 L502.0,224.97 L504.0,229.17 L506.0,233.12 L508.0,236.76 L510.0,240.01 L512.0,242.83 L514.0,245.17 L516.0,246.97 L518.0,248.22 L520.0,248.88 L522.0,248.96 L524.0,248.44 L526.0,247.34 L528.0,245.67 L530.0,243.46 L532.0,240.76 L534.0,237.61 L536.0,234.06 L538.0,230.18 L540.0,226.04 L542.0,221.70 L544.0,217.25 L546.0,212.75 L548.0,208.30 L550.0,203.96 L552.0,199.82 L554.0,195.94 L556.0,192.39 L558.0,189.24 L560.0,186.54 L562.0,184.33 L564.0,182.66 L566.0,181.56 L568.0,181.04 L570.0,181.12 L572.0,181.78 L574.0,183.03 L576.0,184.83 L578.0,187.17 L580.0,189.99 L582.0,193.24 L584.0,196.88 L586.0,200.83 L588.0,205.03 L590.0,209.40 L592.0,213.88 L594.0,218.37 L596.0,222.80 L598.0,227.10 L600.0,231.18 L602.0,234.98 L604.0,238.44 L606.0,241.48 L608.0,244.06 L610.0,246.14 L612.0,247.67 L614.0,248.62 L616.0,249.00 L618.0,248.77 L620.0,247.96 L622.0,246.57 L624.0,244.63 L626.0,242.17 L628.0,239.24 L630.0,235.88 L632.0,232.16 L634.0,228.14 L636.0,223.89 L638.0,219.48 L640.0,215.00 L642.0,210.52 L644.0,206.11 L646.0,201.86 L648.0,197.84 L650.0,194.12 L652.0,190.76 L654.0,187.83 L656.0,185.37 L658.0,183.43 L660.0,182.04 L662.0,181.23 L664.0,181.00 L666.0,181.38 L668.0,182.33 L670.0,183.86 L672.0,185.94 L674.0,188.52 L676.0,191.56 L678.0,195.02 L680.0,198.82 L682.0,202.90 L684.0,207.20 L686.0,211.63 L688.0,216.12 L690.0,220.60 L692.0,224.97 L694.0,229.17 L696.0,233.12 L698.0,236.76 L700.0,240.01 L702.0,242.83 L704.0,245.17 L706.0,246.97 L708.0,248.22 L710.0,248.88 L712.0,248.96 L714.0,248.44 L716.0,247.34 L718.0,245.67 L720.0,243.46 L722.0,240.76 L724.0,237.61 L726.0,234.06 L728.0,230.18 L730.0,226.04 L732.0,221.70 L734.0,217.25 L736.0,212.75 L738.0,208.30 L740.0,203.96 L742.0,199.82 L744.0,195.94 L746.0,192.39 L748.0,189.24 L750.0,186.54 L752.0,184.33 L754.0,182.66 L756.0,181.56 L758.0,181.04 L760.0,181.12 L762.0,181.78 L764.0,183.03 L766.0,184.83 L768.0,187.17 L770.0,189.99 L772.0,193.24 L774.0,196.88 L776.0,200.83 L778.0,205.03 L780.0,209.40 L782.0,213.88 L784.0,218.37 L786.0,222.80 L788.0,227.10 L790.0,231.18 L792.0,234.98 L794.0,238.44 L796.0,241.48 L798.0,244.06 L800.0,246.14 L802.0,247.67 L804.0,248.62 L806.0,249.00 L808.0,248.77 L810.0,247.96 L812.0,246.57 L814.0,244.63 L816.0,242.17 L818.0,239.24 L820.0,235.88 L822.0,232.16 L824.0,228.14 L826.0,223.89 L828.0,219.48 L830.0,215.00" fill="none" stroke="#f0b429" stroke-width="2.2"/>
+  <text x="70" y="196" fill="#f0b429" font-size="13.5" font-weight="700">HIGHER frequency</text>
+  <!-- lambda bracket short -->
+  <path d="M70 262 L70 270 L165 270 L165 262" fill="none" stroke="#f0b429" stroke-width="1.4"/>
+  <text x="117" y="286" text-anchor="middle" fill="#f0b429" font-size="12.5" font-family="'IBM Plex Mono',monospace">λ</text>
+  <text x="200" y="286" fill="#9aa3b2" font-size="12">shorter wavelength · blocked more easily · passes straight through the ionosphere</text>
+
+  <text x="850" y="94" fill="#6b7484" font-size="11" font-family="'IBM Plex Mono',monospace">→</text>
+  <text x="850" y="219" fill="#6b7484" font-size="11" font-family="'IBM Plex Mono',monospace">→</text>
+  </g>
+</svg>
+<figcaption><b>Figure 4.</b> Same distance travelled, same speed, double the frequency — exactly half the wavelength. Both waves are drawn to scale.</figcaption>
+</figure>
+
+<h3>What "higher frequency" actually costs you</h3>
+<p>The book states these as scattered facts. They're all the same fact seen from different angles — <strong>shorter waves are more easily stopped by things</strong>:</p>
+
+<div class="tw"><table>
+<thead><tr><th>Obstacle</th><th>Longer wavelength / lower frequency</th><th>Shorter wavelength / higher frequency</th></tr></thead>
+<tbody>
+<tr><td class="t">Air</td><td>Passes easily</td><td>Passes easily</td></tr>
+<tr><td class="t">Building walls, windows</td><td>Better penetration</td><td>Poorer penetration</td></tr>
+<tr><td class="t">Metal (conductor)</td><td>Almost no penetration</td><td>Almost no penetration</td></tr>
+<tr><td class="t">Rain, cloud ice crystals</td><td>Unaffected</td><td>Can be blocked or attenuated</td></tr>
+<tr><td class="t">The ionosphere</td><td>Reflects back to earth</td><td>Passes straight through (below ~100 mm λ)</td></tr>
+</tbody></table></div>
+
+<div class="call k"><span class="lab">Key term</span><p><strong>Nonconducting materials</strong> (brick, timber, glass, plasterboard) attenuate radio waves. <strong>Conducting materials</strong> — metals — block them almost entirely. This is why an equipment rack, a metal ceiling grid, or foil-backed insulation is an RF problem, not just a cosmetic one.</p></div>
+
+<div class="call e"><span class="lab">Exam tip</span><p>The ionosphere fact has a practical partner: <strong>satellite communication uses very short wavelengths (under 100 mm) precisely because they pass through the ionosphere.</strong> If they reflected, you couldn't reach the satellite. Long waves bounce off it — that's how shortwave broadcasts reach beyond the horizon.</p></div>
+
+<h2 id="s-300"><span class="sec-n">SECTION 05</span>The 300 rule</h2>
+<p>This is the one piece of arithmetic in the chapter, and it's the friendliest formula on the whole exam. To convert between frequency and wavelength, divide into 300.</p>
+
+<figure>
+<svg viewBox="0 0 900 210" role="img" aria-label="The 300 formula for wavelength and frequency conversion">
+  <g font-family="'IBM Plex Mono',monospace">
+  <rect x="60" y="26" width="360" height="118" rx="10" fill="#161a23" stroke="#3fd0c9" stroke-width="1.5"/>
+  <text x="240" y="56" text-anchor="middle" fill="#6b7484" font-size="11" letter-spacing="2">FIND WAVELENGTH</text>
+  <text x="240" y="98" text-anchor="middle" fill="#3fd0c9" font-size="26">λ (m) = 300 ÷ f (MHz)</text>
+  <text x="240" y="126" text-anchor="middle" fill="#9aa3b2" font-size="12.5" font-family="'DM Sans',sans-serif">100 MHz → 3 meters</text>
+
+  <rect x="480" y="26" width="360" height="118" rx="10" fill="#161a23" stroke="#f0b429" stroke-width="1.5"/>
+  <text x="660" y="56" text-anchor="middle" fill="#6b7484" font-size="11" letter-spacing="2">FIND FREQUENCY</text>
+  <text x="660" y="98" text-anchor="middle" fill="#f0b429" font-size="26">f (MHz) = 300 ÷ λ (m)</text>
+  <text x="660" y="126" text-anchor="middle" fill="#9aa3b2" font-size="12.5" font-family="'DM Sans',sans-serif">1 meter → 300 MHz</text>
+
+  <text x="450" y="178" text-anchor="middle" fill="#e6e9ef" font-size="14" font-family="'DM Sans',sans-serif">Megahertz in, meters out. Meters in, megahertz out. The 300 never changes.</text>
+  <text x="450" y="198" text-anchor="middle" fill="#6b7484" font-size="11.5" font-family="'DM Sans',sans-serif">(It is the speed of light, 300,000,000 m/s, with the units pre-cancelled for you.)</text>
+  </g>
+</svg>
+<figcaption><b>Figure 5.</b> Both directions of the same conversion. Units are not optional — the 300 only works for MHz and meters.</figcaption>
+</figure>
+
+<div class="calc">
+  <h4>Try it — frequency, wavelength, and antenna length</h4>
+  <p style="font-size:.93rem;color:var(--tx-dim);margin-bottom:16px">Type a frequency in megahertz. The quarter-wave figure is the antenna length you'll meet in Section 12.</p>
+  <div class="calc-row">
+    <div class="fld">
+      <label for="freq">Frequency (MHz)</label>
+      <input type="number" id="freq" value="600" min="0.003" max="300000" step="any">
+    </div>
+  </div>
+  <div class="out">
+    <div class="box"><div class="ol">Wavelength</div><div class="ov" id="o-wl">0.50</div><div class="ou" id="o-wl-alt">meters · 500 mm</div></div>
+    <div class="box"><div class="ol">Band</div><div class="ov" id="o-band" style="font-size:1.1rem">UHF</div><div class="ou" id="o-band-r">300 MHz – 3 GHz</div></div>
+    <div class="box"><div class="ol">Quarter wave (λ/4)</div><div class="ov" id="o-q">125</div><div class="ou">mm — antenna element length</div></div>
+    <div class="box"><div class="ol">Ground plane min.</div><div class="ov" id="o-gp">125</div><div class="ou">mm diameter</div></div>
+  </div>
+  <div class="presets">
+    <button data-f="0.6">AM radio 600 kHz</button>
+    <button data-f="100">FM radio 100 MHz</button>
+    <button data-f="200">VHF mic 200 MHz</button>
+    <button data-f="600">UHF mic 600 MHz</button>
+    <button data-f="2400">Wi-Fi 2.4 GHz</button>
+    <button data-f="5000">Wi-Fi 5 GHz</button>
+    <button data-f="12000">Ku band 12 GHz</button>
+    <button data-f="60000">Wi-Fi 60 GHz</button>
+  </div>
+</div>
+
+<div class="call s"><span class="lab">Spec</span><p>Two conversions worth having memorized outright, because they're the ones the book uses as examples and they anchor the VHF/UHF boundary:<br>
+<strong>100 MHz = 3 m</strong> (FM radio and VHF TV territory)<br>
+<strong>300 MHz = 1 m</strong> (exactly on the VHF/UHF border)</p></div>
+
+<div class="call w"><span class="lab">Watch out</span><p>If a question hands you gigahertz or kilohertz, convert to <strong>megahertz first</strong>. 2.4 GHz becomes 2,400 MHz → 300 ÷ 2400 = 0.125 m = 125 mm. Skipping that step is the single most common way to get this arithmetic wrong under time pressure.</p></div>
+
+<h2 id="s-bands"><span class="sec-n">SECTION 06</span>Band names and what lives in them</h2>
+<p>The RF spectrum is chopped into named bands purely for description. You need <strong>two</strong> of them cold, because they're the two the book names and the two AV work actually lives in — but seeing all eight makes the pattern obvious: <strong>each band is one decade of frequency</strong>, running 3 to 30 of whatever the unit is.</p>
+
+<figure>
+<svg viewBox="0 0 900 288" role="img" aria-label="Logarithmic map of radio bands VLF through EHF with AV allocations marked">
+  <g font-family="'DM Sans',sans-serif">
+  <text x="40" y="30" fill="#6b7484" font-size="11" font-family="'IBM Plex Mono',monospace">THE RADIO SPECTRUM · EACH BLOCK = ONE DECADE OF FREQUENCY</text>
+  <rect x="40.0" y="52" width="107.5" height="46" fill="#2a3140" fill-opacity=".35" stroke="#2a3140"/>
+  <text x="93.8" y="81" text-anchor="middle" fill="#6b7484" font-size="13" font-weight="400">VLF</text>
+  <rect x="147.5" y="52" width="107.5" height="46" fill="#2a3140" fill-opacity=".35" stroke="#2a3140"/>
+  <text x="201.2" y="81" text-anchor="middle" fill="#6b7484" font-size="13" font-weight="400">LF</text>
+  <rect x="255.0" y="52" width="107.5" height="46" fill="#2a3140" fill-opacity=".35" stroke="#2a3140"/>
+  <text x="308.8" y="81" text-anchor="middle" fill="#6b7484" font-size="13" font-weight="400">MF</text>
+  <rect x="362.5" y="52" width="107.5" height="46" fill="#2a3140" fill-opacity=".35" stroke="#2a3140"/>
+  <text x="416.2" y="81" text-anchor="middle" fill="#6b7484" font-size="13" font-weight="400">HF</text>
+  <rect x="470.0" y="52" width="107.5" height="46" fill="#f0b429" fill-opacity=".26" stroke="#f0b429"/>
+  <text x="523.8" y="81" text-anchor="middle" fill="#f0b429" font-size="13" font-weight="700">VHF</text>
+  <rect x="577.5" y="52" width="107.5" height="46" fill="#f0b429" fill-opacity=".26" stroke="#f0b429"/>
+  <text x="631.2" y="81" text-anchor="middle" fill="#f0b429" font-size="13" font-weight="700">UHF</text>
+  <rect x="685.0" y="52" width="107.5" height="46" fill="#2a3140" fill-opacity=".35" stroke="#2a3140"/>
+  <text x="738.8" y="81" text-anchor="middle" fill="#6b7484" font-size="13" font-weight="400">SHF</text>
+  <rect x="792.5" y="52" width="107.5" height="46" fill="#2a3140" fill-opacity=".35" stroke="#2a3140"/>
+  <text x="846.2" y="81" text-anchor="middle" fill="#6b7484" font-size="13" font-weight="400">EHF</text>
+  <line x1="40.0" y1="98" x2="40.0" y2="105" stroke="#6b7484"/>
+  <text x="40.0" y="118" text-anchor="start" fill="#6b7484" font-size="10.5" font-family="'IBM Plex Mono',monospace">3 kHz</text>
+  <line x1="362.5" y1="98" x2="362.5" y2="105" stroke="#6b7484"/>
+  <text x="362.5" y="118" text-anchor="middle" fill="#6b7484" font-size="10.5" font-family="'IBM Plex Mono',monospace">3 MHz</text>
+  <line x1="577.5" y1="98" x2="577.5" y2="105" stroke="#6b7484"/>
+  <text x="577.5" y="118" text-anchor="middle" fill="#6b7484" font-size="10.5" font-family="'IBM Plex Mono',monospace">300 MHz</text>
+  <line x1="685.0" y1="98" x2="685.0" y2="105" stroke="#6b7484"/>
+  <text x="685.0" y="118" text-anchor="middle" fill="#6b7484" font-size="10.5" font-family="'IBM Plex Mono',monospace">3 GHz</text>
+  <line x1="900.0" y1="98" x2="900.0" y2="105" stroke="#6b7484"/>
+  <text x="900.0" y="118" text-anchor="end" fill="#6b7484" font-size="10.5" font-family="'IBM Plex Mono',monospace">300 GHz</text>
+  <text x="40" y="156" fill="#3fd0c9" font-size="11.5" font-family="'IBM Plex Mono',monospace">TERRESTRIAL TV &amp; WIRELESS MICS</text>
+  <line x1="40" y1="164" x2="860" y2="164" stroke="#2a3140" stroke-width=".8" opacity=".5"/>
+  <rect x="598.5" y="145" width="32.9" height="14" rx="3" fill="#3fd0c9" fill-opacity=".38" stroke="#3fd0c9"/>
+  <text x="614.9" y="139" text-anchor="middle" fill="#3fd0c9" font-size="10" font-family="'IBM Plex Mono',monospace">470 – 950 MHz</text>
+  <text x="40" y="196" fill="#a78bfa" font-size="11.5" font-family="'IBM Plex Mono',monospace">WI-FI</text>
+  <line x1="40" y1="204" x2="860" y2="204" stroke="#2a3140" stroke-width=".8" opacity=".5"/>
+  <circle cx="674.6" cy="192" r="4.5" fill="#a78bfa"/>
+  <text x="674.6" y="181" text-anchor="middle" fill="#a78bfa" font-size="10" font-family="'IBM Plex Mono',monospace">2.4</text>
+  <circle cx="708.8" cy="192" r="4.5" fill="#a78bfa"/>
+  <text x="708.8" y="181" text-anchor="middle" fill="#a78bfa" font-size="10" font-family="'IBM Plex Mono',monospace">5</text>
+  <circle cx="824.9" cy="192" r="4.5" fill="#a78bfa"/>
+  <text x="824.9" y="181" text-anchor="middle" fill="#a78bfa" font-size="10" font-family="'IBM Plex Mono',monospace">60 GHz</text>
+  <text x="40" y="236" fill="#5aa9f7" font-size="11.5" font-family="'IBM Plex Mono',monospace">SATELLITE TELEVISION</text>
+  <line x1="40" y1="244" x2="860" y2="244" stroke="#2a3140" stroke-width=".8" opacity=".5"/>
+  <rect x="698.4" y="225" width="32.4" height="14" rx="3" fill="#5aa9f7" fill-opacity=".38" stroke="#5aa9f7"/>
+  <text x="714.6" y="219" text-anchor="middle" fill="#5aa9f7" font-size="10" font-family="'IBM Plex Mono',monospace">C band</text>
+  <rect x="749.7" y="225" width="18.9" height="14" rx="3" fill="#5aa9f7" fill-opacity=".38" stroke="#5aa9f7"/>
+  <text x="759.2" y="219" text-anchor="middle" fill="#5aa9f7" font-size="10" font-family="'IBM Plex Mono',monospace">Ku band</text>
+  <text x="450" y="276" text-anchor="middle" fill="#6b7484" font-size="11.5">Every AV-relevant allocation sits in UHF or low SHF. That is a crowded neighbourhood, and it is why spectrum coordination matters.</text>
+  </g>
+</svg>
+<figcaption><b>Figure 6.</b> True log placement of every named radio band, with the allocations named in the chapter overlaid. VHF and UHF are highlighted because they're the two the exam names.</figcaption>
+</figure>
+
+<div class="call s"><span class="lab">Spec</span><p><strong>VHF (very high frequency): 30 MHz – 300 MHz.</strong> Wavelengths 10 m down to 1 m.<br>
+<strong>UHF (ultrahigh frequency): 300 MHz – 3 GHz.</strong> Wavelengths 1 m down to 100 mm.<br>
+These two share a boundary at 300 MHz — which, by the 300 rule, is exactly 1 meter. That's not a coincidence, and it makes the boundary easy to recall.</p></div>
+
+<div class="tw"><table>
+<thead><tr><th>Band</th><th>Frequency</th><th>Wavelength</th><th>Where you meet it</th></tr></thead>
+<tbody>
+<tr><td class="t">VLF / LF / MF</td><td class="n">3 kHz – 3 MHz</td><td class="n">100 km – 100 m</td><td>Maritime, navigation, AM broadcast</td></tr>
+<tr><td class="t">HF</td><td class="n">3 – 30 MHz</td><td class="n">100 – 10 m</td><td>Shortwave — bounces off the ionosphere</td></tr>
+<tr><td class="t"><strong>VHF</strong></td><td class="n">30 – 300 MHz</td><td class="n">10 – 1 m</td><td><strong>FM radio, VHF TV, older wireless mics</strong></td></tr>
+<tr><td class="t"><strong>UHF</strong></td><td class="n">300 MHz – 3 GHz</td><td class="n">1 m – 100 mm</td><td><strong>Digital TV, most wireless mics, 2.4 GHz Wi-Fi, Bluetooth, Zigbee</strong></td></tr>
+<tr><td class="t">SHF</td><td class="n">3 – 30 GHz</td><td class="n">100 – 10 mm</td><td>5 GHz Wi-Fi, C band and Ku band satellite</td></tr>
+<tr><td class="t">EHF</td><td class="n">30 – 300 GHz</td><td class="n">10 – 1 mm</td><td>60 GHz Wi-Fi (WiGig)</td></tr>
+</tbody></table></div>
+
+<div class="call e"><span class="lab">Exam tip</span><p>Distractors on band questions are always the <em>adjacent</em> band or the abbreviation that looks similar — VHF for UHF, VLF for VHF. Anchor yourself on the one number: <strong>300 MHz is the line.</strong> Below it, VHF. Above it, UHF, all the way to 3 GHz.</p></div>
+
+<h2 id="s-chain"><span class="sec-n">SECTION 07</span>Transmitting and receiving</h2>
+<p>Every radio system needs at least one transmitter and one receiver. The transmitter's job is to take an incoming signal stream — audio from a microphone, control data from a remote, video from a media server, packets from an Ethernet network — and convert it for radio transmission via an antenna.</p>
+
+<h3>Modulation: putting information onto a carrier</h3>
+<p>Information doesn't travel on its own. It gets <strong>modulated</strong> onto an RF <strong>carrier</strong> — the book's metaphor is that the carrier is the "envelope" that contains the information. At the far end the receiver <strong>demodulates</strong>: it strips the carrier back off and hands the original information to the rest of the AV system.</p>
+
+<figure>
+<svg viewBox="0 0 900 340" role="img" aria-label="Information signal, carrier signal, and the resulting modulated signal">
+  <g font-family="'DM Sans',sans-serif">
+  <line x1="190" y1="62" x2="850" y2="62" stroke="#2a3140" stroke-dasharray="3 4"/>
+  <path d="M190.0,62.00 L191.5,61.31 L193.0,60.63 L194.5,59.95 L196.0,59.26 L197.5,58.58 L199.0,57.91 L200.5,57.23 L202.0,56.56 L203.5,55.90 L205.0,55.24 L206.5,54.58 L208.0,53.93 L209.5,53.29 L211.0,52.66 L212.5,52.03 L214.0,51.41 L215.5,50.80 L217.0,50.20 L218.5,49.61 L220.0,49.02 L221.5,48.45 L223.0,47.89 L224.5,47.34 L226.0,46.81 L227.5,46.28 L229.0,45.77 L230.5,45.27 L232.0,44.79 L233.5,44.32 L235.0,43.86 L236.5,43.42 L238.0,42.99 L239.5,42.58 L241.0,42.19 L242.5,41.81 L244.0,41.45 L245.5,41.10 L247.0,40.77 L248.5,40.46 L250.0,40.17 L251.5,39.89 L253.0,39.64 L254.5,39.40 L256.0,39.17 L257.5,38.97 L259.0,38.79 L260.5,38.62 L262.0,38.48 L263.5,38.35 L265.0,38.24 L266.5,38.16 L268.0,38.09 L269.5,38.04 L271.0,38.01 L272.5,38.00 L274.0,38.01 L275.5,38.04 L277.0,38.09 L278.5,38.16 L280.0,38.24 L281.5,38.35 L283.0,38.48 L284.5,38.62 L286.0,38.79 L287.5,38.97 L289.0,39.17 L290.5,39.40 L292.0,39.64 L293.5,39.89 L295.0,40.17 L296.5,40.46 L298.0,40.77 L299.5,41.10 L301.0,41.45 L302.5,41.81 L304.0,42.19 L305.5,42.58 L307.0,42.99 L308.5,43.42 L310.0,43.86 L311.5,44.32 L313.0,44.79 L314.5,45.27 L316.0,45.77 L317.5,46.28 L319.0,46.81 L320.5,47.34 L322.0,47.89 L323.5,48.45 L325.0,49.02 L326.5,49.61 L328.0,50.20 L329.5,50.80 L331.0,51.41 L332.5,52.03 L334.0,52.66 L335.5,53.29 L337.0,53.93 L338.5,54.58 L340.0,55.24 L341.5,55.90 L343.0,56.56 L344.5,57.23 L346.0,57.91 L347.5,58.58 L349.0,59.26 L350.5,59.95 L352.0,60.63 L353.5,61.31 L355.0,62.00 L356.5,62.69 L358.0,63.37 L359.5,64.05 L361.0,64.74 L362.5,65.42 L364.0,66.09 L365.5,66.77 L367.0,67.44 L368.5,68.10 L370.0,68.76 L371.5,69.42 L373.0,70.07 L374.5,70.71 L376.0,71.34 L377.5,71.97 L379.0,72.59 L380.5,73.20 L382.0,73.80 L383.5,74.39 L385.0,74.98 L386.5,75.55 L388.0,76.11 L389.5,76.66 L391.0,77.19 L392.5,77.72 L394.0,78.23 L395.5,78.73 L397.0,79.21 L398.5,79.68 L400.0,80.14 L401.5,80.58 L403.0,81.01 L404.5,81.42 L406.0,81.81 L407.5,82.19 L409.0,82.55 L410.5,82.90 L412.0,83.23 L413.5,83.54 L415.0,83.83 L416.5,84.11 L418.0,84.36 L419.5,84.60 L421.0,84.83 L422.5,85.03 L424.0,85.21 L425.5,85.38 L427.0,85.52 L428.5,85.65 L430.0,85.76 L431.5,85.84 L433.0,85.91 L434.5,85.96 L436.0,85.99 L437.5,86.00 L439.0,85.99 L440.5,85.96 L442.0,85.91 L443.5,85.84 L445.0,85.76 L446.5,85.65 L448.0,85.52 L449.5,85.38 L451.0,85.21 L452.5,85.03 L454.0,84.83 L455.5,84.60 L457.0,84.36 L458.5,84.11 L460.0,83.83 L461.5,83.54 L463.0,83.23 L464.5,82.90 L466.0,82.55 L467.5,82.19 L469.0,81.81 L470.5,81.42 L472.0,81.01 L473.5,80.58 L475.0,80.14 L476.5,79.68 L478.0,79.21 L479.5,78.73 L481.0,78.23 L482.5,77.72 L484.0,77.19 L485.5,76.66 L487.0,76.11 L488.5,75.55 L490.0,74.98 L491.5,74.39 L493.0,73.80 L494.5,73.20 L496.0,72.59 L497.5,71.97 L499.0,71.34 L500.5,70.71 L502.0,70.07 L503.5,69.42 L505.0,68.76 L506.5,68.10 L508.0,67.44 L509.5,66.77 L511.0,66.09 L512.5,65.42 L514.0,64.74 L515.5,64.05 L517.0,63.37 L518.5,62.69 L520.0,62.00 L521.5,61.31 L523.0,60.63 L524.5,59.95 L526.0,59.26 L527.5,58.58 L529.0,57.91 L530.5,57.23 L532.0,56.56 L533.5,55.90 L535.0,55.24 L536.5,54.58 L538.0,53.93 L539.5,53.29 L541.0,52.66 L542.5,52.03 L544.0,51.41 L545.5,50.80 L547.0,50.20 L548.5,49.61 L550.0,49.02 L551.5,48.45 L553.0,47.89 L554.5,47.34 L556.0,46.81 L557.5,46.28 L559.0,45.77 L560.5,45.27 L562.0,44.79 L563.5,44.32 L565.0,43.86 L566.5,43.42 L568.0,42.99 L569.5,42.58 L571.0,42.19 L572.5,41.81 L574.0,41.45 L575.5,41.10 L577.0,40.77 L578.5,40.46 L580.0,40.17 L581.5,39.89 L583.0,39.64 L584.5,39.40 L586.0,39.17 L587.5,38.97 L589.0,38.79 L590.5,38.62 L592.0,38.48 L593.5,38.35 L595.0,38.24 L596.5,38.16 L598.0,38.09 L599.5,38.04 L601.0,38.01 L602.5,38.00 L604.0,38.01 L605.5,38.04 L607.0,38.09 L608.5,38.16 L610.0,38.24 L611.5,38.35 L613.0,38.48 L614.5,38.62 L616.0,38.79 L617.5,38.97 L619.0,39.17 L620.5,39.40 L622.0,39.64 L623.5,39.89 L625.0,40.17 L626.5,40.46 L628.0,40.77 L629.5,41.10 L631.0,41.45 L632.5,41.81 L634.0,42.19 L635.5,42.58 L637.0,42.99 L638.5,43.42 L640.0,43.86 L641.5,44.32 L643.0,44.79 L644.5,45.27 L646.0,45.77 L647.5,46.28 L649.0,46.81 L650.5,47.34 L652.0,47.89 L653.5,48.45 L655.0,49.02 L656.5,49.61 L658.0,50.20 L659.5,50.80 L661.0,51.41 L662.5,52.03 L664.0,52.66 L665.5,53.29 L667.0,53.93 L668.5,54.58 L670.0,55.24 L671.5,55.90 L673.0,56.56 L674.5,57.23 L676.0,57.91 L677.5,58.58 L679.0,59.26 L680.5,59.95 L682.0,60.63 L683.5,61.31 L685.0,62.00 L686.5,62.69 L688.0,63.37 L689.5,64.05 L691.0,64.74 L692.5,65.42 L694.0,66.09 L695.5,66.77 L697.0,67.44 L698.5,68.10 L700.0,68.76 L701.5,69.42 L703.0,70.07 L704.5,70.71 L706.0,71.34 L707.5,71.97 L709.0,72.59 L710.5,73.20 L712.0,73.80 L713.5,74.39 L715.0,74.98 L716.5,75.55 L718.0,76.11 L719.5,76.66 L721.0,77.19 L722.5,77.72 L724.0,78.23 L725.5,78.73 L727.0,79.21 L728.5,79.68 L730.0,80.14 L731.5,80.58 L733.0,81.01 L734.5,81.42 L736.0,81.81 L737.5,82.19 L739.0,82.55 L740.5,82.90 L742.0,83.23 L743.5,83.54 L745.0,83.83 L746.5,84.11 L748.0,84.36 L749.5,84.60 L751.0,84.83 L752.5,85.03 L754.0,85.21 L755.5,85.38 L757.0,85.52 L758.5,85.65 L760.0,85.76 L761.5,85.84 L763.0,85.91 L764.5,85.96 L766.0,85.99 L767.5,86.00 L769.0,85.99 L770.5,85.96 L772.0,85.91 L773.5,85.84 L775.0,85.76 L776.5,85.65 L778.0,85.52 L779.5,85.38 L781.0,85.21 L782.5,85.03 L784.0,84.83 L785.5,84.60 L787.0,84.36 L788.5,84.11 L790.0,83.83 L791.5,83.54 L793.0,83.23 L794.5,82.90 L796.0,82.55 L797.5,82.19 L799.0,81.81 L800.5,81.42 L802.0,81.01 L803.5,80.58 L805.0,80.14 L806.5,79.68 L808.0,79.21 L809.5,78.73 L811.0,78.23 L812.5,77.72 L814.0,77.19 L815.5,76.66 L817.0,76.11 L818.5,75.55 L820.0,74.98 L821.5,74.39 L823.0,73.80 L824.5,73.20 L826.0,72.59 L827.5,71.97 L829.0,71.34 L830.5,70.71 L832.0,70.07 L833.5,69.42 L835.0,68.76 L836.5,68.10 L838.0,67.44 L839.5,66.77 L841.0,66.09 L842.5,65.42 L844.0,64.74 L845.5,64.05 L847.0,63.37 L848.5,62.69 L850.0,62.00" fill="none" stroke="#3fd0c9" stroke-width="2.2"/>
+  <text x="20" y="52" fill="#3fd0c9" font-size="13.5" font-weight="700">INFORMATION</text>
+  <text x="20" y="70" fill="#9aa3b2" font-size="11.5">the audio, video,</text>
+  <text x="20" y="86" fill="#9aa3b2" font-size="11.5">data or control</text>
+
+  <line x1="190" y1="165" x2="850" y2="165" stroke="#2a3140" stroke-dasharray="3 4"/>
+  <path d="M190.0,165.00 L191.5,157.67 L193.0,150.94 L194.5,145.35 L196.0,141.35 L197.5,139.26 L199.0,139.26 L200.5,141.35 L202.0,145.35 L203.5,150.94 L205.0,157.67 L206.5,165.00 L208.0,172.33 L209.5,179.06 L211.0,184.65 L212.5,188.65 L214.0,190.74 L215.5,190.74 L217.0,188.65 L218.5,184.65 L220.0,179.06 L221.5,172.33 L223.0,165.00 L224.5,157.67 L226.0,150.94 L227.5,145.35 L229.0,141.35 L230.5,139.26 L232.0,139.26 L233.5,141.35 L235.0,145.35 L236.5,150.94 L238.0,157.67 L239.5,165.00 L241.0,172.33 L242.5,179.06 L244.0,184.65 L245.5,188.65 L247.0,190.74 L248.5,190.74 L250.0,188.65 L251.5,184.65 L253.0,179.06 L254.5,172.33 L256.0,165.00 L257.5,157.67 L259.0,150.94 L260.5,145.35 L262.0,141.35 L263.5,139.26 L265.0,139.26 L266.5,141.35 L268.0,145.35 L269.5,150.94 L271.0,157.67 L272.5,165.00 L274.0,172.33 L275.5,179.06 L277.0,184.65 L278.5,188.65 L280.0,190.74 L281.5,190.74 L283.0,188.65 L284.5,184.65 L286.0,179.06 L287.5,172.33 L289.0,165.00 L290.5,157.67 L292.0,150.94 L293.5,145.35 L295.0,141.35 L296.5,139.26 L298.0,139.26 L299.5,141.35 L301.0,145.35 L302.5,150.94 L304.0,157.67 L305.5,165.00 L307.0,172.33 L308.5,179.06 L310.0,184.65 L311.5,188.65 L313.0,190.74 L314.5,190.74 L316.0,188.65 L317.5,184.65 L319.0,179.06 L320.5,172.33 L322.0,165.00 L323.5,157.67 L325.0,150.94 L326.5,145.35 L328.0,141.35 L329.5,139.26 L331.0,139.26 L332.5,141.35 L334.0,145.35 L335.5,150.94 L337.0,157.67 L338.5,165.00 L340.0,172.33 L341.5,179.06 L343.0,184.65 L344.5,188.65 L346.0,190.74 L347.5,190.74 L349.0,188.65 L350.5,184.65 L352.0,179.06 L353.5,172.33 L355.0,165.00 L356.5,157.67 L358.0,150.94 L359.5,145.35 L361.0,141.35 L362.5,139.26 L364.0,139.26 L365.5,141.35 L367.0,145.35 L368.5,150.94 L370.0,157.67 L371.5,165.00 L373.0,172.33 L374.5,179.06 L376.0,184.65 L377.5,188.65 L379.0,190.74 L380.5,190.74 L382.0,188.65 L383.5,184.65 L385.0,179.06 L386.5,172.33 L388.0,165.00 L389.5,157.67 L391.0,150.94 L392.5,145.35 L394.0,141.35 L395.5,139.26 L397.0,139.26 L398.5,141.35 L400.0,145.35 L401.5,150.94 L403.0,157.67 L404.5,165.00 L406.0,172.33 L407.5,179.06 L409.0,184.65 L410.5,188.65 L412.0,190.74 L413.5,190.74 L415.0,188.65 L416.5,184.65 L418.0,179.06 L419.5,172.33 L421.0,165.00 L422.5,157.67 L424.0,150.94 L425.5,145.35 L427.0,141.35 L428.5,139.26 L430.0,139.26 L431.5,141.35 L433.0,145.35 L434.5,150.94 L436.0,157.67 L437.5,165.00 L439.0,172.33 L440.5,179.06 L442.0,184.65 L443.5,188.65 L445.0,190.74 L446.5,190.74 L448.0,188.65 L449.5,184.65 L451.0,179.06 L452.5,172.33 L454.0,165.00 L455.5,157.67 L457.0,150.94 L458.5,145.35 L460.0,141.35 L461.5,139.26 L463.0,139.26 L464.5,141.35 L466.0,145.35 L467.5,150.94 L469.0,157.67 L470.5,165.00 L472.0,172.33 L473.5,179.06 L475.0,184.65 L476.5,188.65 L478.0,190.74 L479.5,190.74 L481.0,188.65 L482.5,184.65 L484.0,179.06 L485.5,172.33 L487.0,165.00 L488.5,157.67 L490.0,150.94 L491.5,145.35 L493.0,141.35 L494.5,139.26 L496.0,139.26 L497.5,141.35 L499.0,145.35 L500.5,150.94 L502.0,157.67 L503.5,165.00 L505.0,172.33 L506.5,179.06 L508.0,184.65 L509.5,188.65 L511.0,190.74 L512.5,190.74 L514.0,188.65 L515.5,184.65 L517.0,179.06 L518.5,172.33 L520.0,165.00 L521.5,157.67 L523.0,150.94 L524.5,145.35 L526.0,141.35 L527.5,139.26 L529.0,139.26 L530.5,141.35 L532.0,145.35 L533.5,150.94 L535.0,157.67 L536.5,165.00 L538.0,172.33 L539.5,179.06 L541.0,184.65 L542.5,188.65 L544.0,190.74 L545.5,190.74 L547.0,188.65 L548.5,184.65 L550.0,179.06 L551.5,172.33 L553.0,165.00 L554.5,157.67 L556.0,150.94 L557.5,145.35 L559.0,141.35 L560.5,139.26 L562.0,139.26 L563.5,141.35 L565.0,145.35 L566.5,150.94 L568.0,157.67 L569.5,165.00 L571.0,172.33 L572.5,179.06 L574.0,184.65 L575.5,188.65 L577.0,190.74 L578.5,190.74 L580.0,188.65 L581.5,184.65 L583.0,179.06 L584.5,172.33 L586.0,165.00 L587.5,157.67 L589.0,150.94 L590.5,145.35 L592.0,141.35 L593.5,139.26 L595.0,139.26 L596.5,141.35 L598.0,145.35 L599.5,150.94 L601.0,157.67 L602.5,165.00 L604.0,172.33 L605.5,179.06 L607.0,184.65 L608.5,188.65 L610.0,190.74 L611.5,190.74 L613.0,188.65 L614.5,184.65 L616.0,179.06 L617.5,172.33 L619.0,165.00 L620.5,157.67 L622.0,150.94 L623.5,145.35 L625.0,141.35 L626.5,139.26 L628.0,139.26 L629.5,141.35 L631.0,145.35 L632.5,150.94 L634.0,157.67 L635.5,165.00 L637.0,172.33 L638.5,179.06 L640.0,184.65 L641.5,188.65 L643.0,190.74 L644.5,190.74 L646.0,188.65 L647.5,184.65 L649.0,179.06 L650.5,172.33 L652.0,165.00 L653.5,157.67 L655.0,150.94 L656.5,145.35 L658.0,141.35 L659.5,139.26 L661.0,139.26 L662.5,141.35 L664.0,145.35 L665.5,150.94 L667.0,157.67 L668.5,165.00 L670.0,172.33 L671.5,179.06 L673.0,184.65 L674.5,188.65 L676.0,190.74 L677.5,190.74 L679.0,188.65 L680.5,184.65 L682.0,179.06 L683.5,172.33 L685.0,165.00 L686.5,157.67 L688.0,150.94 L689.5,145.35 L691.0,141.35 L692.5,139.26 L694.0,139.26 L695.5,141.35 L697.0,145.35 L698.5,150.94 L700.0,157.67 L701.5,165.00 L703.0,172.33 L704.5,179.06 L706.0,184.65 L707.5,188.65 L709.0,190.74 L710.5,190.74 L712.0,188.65 L713.5,184.65 L715.0,179.06 L716.5,172.33 L718.0,165.00 L719.5,157.67 L721.0,150.94 L722.5,145.35 L724.0,141.35 L725.5,139.26 L727.0,139.26 L728.5,141.35 L730.0,145.35 L731.5,150.94 L733.0,157.67 L734.5,165.00 L736.0,172.33 L737.5,179.06 L739.0,184.65 L740.5,188.65 L742.0,190.74 L743.5,190.74 L745.0,188.65 L746.5,184.65 L748.0,179.06 L749.5,172.33 L751.0,165.00 L752.5,157.67 L754.0,150.94 L755.5,145.35 L757.0,141.35 L758.5,139.26 L760.0,139.26 L761.5,141.35 L763.0,145.35 L764.5,150.94 L766.0,157.67 L767.5,165.00 L769.0,172.33 L770.5,179.06 L772.0,184.65 L773.5,188.65 L775.0,190.74 L776.5,190.74 L778.0,188.65 L779.5,184.65 L781.0,179.06 L782.5,172.33 L784.0,165.00 L785.5,157.67 L787.0,150.94 L788.5,145.35 L790.0,141.35 L791.5,139.26 L793.0,139.26 L794.5,141.35 L796.0,145.35 L797.5,150.94 L799.0,157.67 L800.5,165.00 L802.0,172.33 L803.5,179.06 L805.0,184.65 L806.5,188.65 L808.0,190.74 L809.5,190.74 L811.0,188.65 L812.5,184.65 L814.0,179.06 L815.5,172.33 L817.0,165.00 L818.5,157.67 L820.0,150.94 L821.5,145.35 L823.0,141.35 L824.5,139.26 L826.0,139.26 L827.5,141.35 L829.0,145.35 L830.5,150.94 L832.0,157.67 L833.5,165.00 L835.0,172.33 L836.5,179.06 L838.0,184.65 L839.5,188.65 L841.0,190.74 L842.5,190.74 L844.0,188.65 L845.5,184.65 L847.0,179.06 L848.5,172.33 L850.0,165.00" fill="none" stroke="#f0b429" stroke-width="1.8"/>
+  <text x="20" y="155" fill="#f0b429" font-size="13.5" font-weight="700">CARRIER</text>
+  <text x="20" y="173" fill="#9aa3b2" font-size="11.5">a steady RF wave at</text>
+  <text x="20" y="189" fill="#9aa3b2" font-size="11.5">the tuned frequency</text>
+
+  <line x1="190" y1="278" x2="850" y2="278" stroke="#2a3140" stroke-dasharray="3 4"/>
+  <path d="M190.0,278.00 L191.2,274.29 L192.4,270.62 L193.6,267.18 L194.8,264.17 L196.0,261.79 L197.2,260.18 L198.4,259.46 L199.6,259.71 L200.8,260.96 L202.0,263.17 L203.2,266.26 L204.4,270.09 L205.6,274.47 L206.8,279.20 L208.0,284.02 L209.2,288.68 L210.4,292.92 L211.6,296.49 L212.8,299.18 L214.0,300.82 L215.2,301.30 L216.4,300.55 L217.6,298.57 L218.8,295.46 L220.0,291.33 L221.2,286.39 L222.4,280.88 L223.6,275.09 L224.8,269.32 L226.0,263.87 L227.2,259.06 L228.4,255.15 L229.6,252.37 L230.8,250.88 L232.0,250.81 L233.2,252.16 L234.4,254.91 L235.6,258.92 L236.8,264.01 L238.0,269.92 L239.2,276.35 L240.4,282.96 L241.6,289.41 L242.8,295.35 L244.0,300.45 L245.2,304.43 L246.4,307.08 L247.6,308.22 L248.8,307.79 L250.0,305.79 L251.2,302.31 L252.4,297.52 L253.6,291.67 L254.8,285.04 L256.0,278.00 L257.2,270.90 L258.4,264.13 L259.6,258.05 L260.8,252.97 L262.0,249.18 L263.2,246.88 L264.4,246.20 L265.6,247.18 L266.8,249.78 L268.0,253.86 L269.2,259.21 L270.4,265.55 L271.6,272.54 L272.8,279.83 L274.0,287.01 L275.2,293.73 L276.4,299.61 L277.6,304.35 L278.8,307.71 L280.0,309.51 L281.2,309.66 L282.4,308.16 L283.6,305.10 L284.8,300.64 L286.0,295.02 L287.2,288.54 L288.4,281.56 L289.6,274.45 L290.8,267.57 L292.0,261.29 L293.2,255.93 L294.4,251.77 L295.6,249.01 L296.8,247.79 L298.0,248.16 L299.2,250.07 L300.4,253.41 L301.6,257.98 L302.8,263.54 L304.0,269.77 L305.2,276.34 L306.4,282.91 L307.6,289.12 L308.8,294.65 L310.0,299.23 L311.2,302.63 L312.4,304.69 L313.6,305.33 L314.8,304.55 L316.0,302.40 L317.2,299.02 L318.4,294.63 L319.6,289.47 L320.8,283.82 L322.0,278.00 L323.2,272.31 L324.4,267.06 L325.6,262.49 L326.8,258.85 L328.0,256.29 L329.2,254.92 L330.4,254.79 L331.6,255.86 L332.8,258.04 L334.0,261.20 L335.2,265.13 L336.4,269.61 L337.6,274.38 L338.8,279.19 L340.0,283.78 L341.2,287.91 L342.4,291.39 L343.6,294.05 L344.8,295.79 L346.0,296.54 L347.2,296.30 L348.4,295.12 L349.6,293.11 L350.8,290.39 L352.0,287.14 L353.2,283.56 L354.4,279.84 L355.6,276.20 L356.8,272.81 L358.0,269.84 L359.2,267.44 L360.4,265.70 L361.6,264.69 L362.8,264.42 L364.0,264.86 L365.2,265.97 L366.4,267.64 L367.6,269.75 L368.8,272.18 L370.0,274.76 L371.2,277.36 L372.4,279.84 L373.6,282.07 L374.8,283.94 L376.0,285.38 L377.2,286.35 L378.4,286.81 L379.6,286.77 L380.8,286.28 L382.0,285.40 L383.2,284.19 L384.4,282.75 L385.6,281.18 L386.8,279.56 L388.0,278.00 L389.2,276.57 L390.4,275.35 L391.6,274.37 L392.8,273.68 L394.0,273.29 L395.2,273.18 L396.4,273.35 L397.6,273.75 L398.8,274.33 L400.0,275.05 L401.2,275.84 L402.4,276.66 L403.6,277.45 L404.8,278.17 L406.0,278.79 L407.2,279.27 L408.4,279.62 L409.6,279.82 L410.8,279.89 L412.0,279.83 L413.2,279.68 L414.4,279.45 L415.6,279.17 L416.8,278.88 L418.0,278.59 L419.2,278.32 L420.4,278.10 L421.6,277.92 L422.8,277.79 L424.0,277.72 L425.2,277.69 L426.4,277.70 L427.6,277.73 L428.8,277.78 L430.0,277.84 L431.2,277.89 L432.4,277.94 L433.6,277.97 L434.8,277.99 L436.0,278.00 L437.2,278.00 L438.4,278.00 L439.6,278.00 L440.8,278.02 L442.0,278.04 L443.2,278.08 L444.4,278.13 L445.6,278.19 L446.8,278.25 L448.0,278.29 L449.2,278.31 L450.4,278.30 L451.6,278.25 L452.8,278.15 L454.0,278.00 L455.2,277.80 L456.4,277.55 L457.6,277.27 L458.8,276.97 L460.0,276.68 L461.2,276.43 L462.4,276.24 L463.6,276.13 L464.8,276.13 L466.0,276.26 L467.2,276.54 L468.4,276.95 L469.6,277.51 L470.8,278.18 L472.0,278.94 L473.2,279.75 L474.4,280.56 L475.6,281.33 L476.8,281.98 L478.0,282.48 L479.2,282.77 L480.4,282.80 L481.6,282.55 L482.8,282.01 L484.0,281.17 L485.2,280.07 L486.4,278.74 L487.6,277.23 L488.8,275.63 L490.0,274.03 L491.2,272.51 L492.4,271.17 L493.6,270.11 L494.8,269.42 L496.0,269.15 L497.2,269.36 L498.4,270.07 L499.6,271.28 L500.8,272.94 L502.0,275.01 L503.2,277.37 L504.4,279.93 L505.6,282.54 L506.8,285.07 L508.0,287.35 L509.2,289.26 L510.4,290.66 L511.6,291.45 L512.8,291.54 L514.0,290.90 L515.2,289.51 L516.4,287.43 L517.6,284.74 L518.8,281.54 L520.0,278.00 L521.2,274.29 L522.4,270.62 L523.6,267.18 L524.8,264.17 L526.0,261.79 L527.2,260.18 L528.4,259.46 L529.6,259.71 L530.8,260.96 L532.0,263.17 L533.2,266.26 L534.4,270.09 L535.6,274.47 L536.8,279.20 L538.0,284.02 L539.2,288.68 L540.4,292.92 L541.6,296.49 L542.8,299.18 L544.0,300.82 L545.2,301.30 L546.4,300.55 L547.6,298.57 L548.8,295.46 L550.0,291.33 L551.2,286.39 L552.4,280.88 L553.6,275.09 L554.8,269.32 L556.0,263.87 L557.2,259.06 L558.4,255.15 L559.6,252.37 L560.8,250.88 L562.0,250.81 L563.2,252.16 L564.4,254.91 L565.6,258.92 L566.8,264.01 L568.0,269.92 L569.2,276.35 L570.4,282.96 L571.6,289.41 L572.8,295.35 L574.0,300.45 L575.2,304.43 L576.4,307.08 L577.6,308.22 L578.8,307.79 L580.0,305.79 L581.2,302.31 L582.4,297.52 L583.6,291.67 L584.8,285.04 L586.0,278.00 L587.2,270.90 L588.4,264.13 L589.6,258.05 L590.8,252.97 L592.0,249.18 L593.2,246.88 L594.4,246.20 L595.6,247.18 L596.8,249.78 L598.0,253.86 L599.2,259.21 L600.4,265.55 L601.6,272.54 L602.8,279.83 L604.0,287.01 L605.2,293.73 L606.4,299.61 L607.6,304.35 L608.8,307.71 L610.0,309.51 L611.2,309.66 L612.4,308.16 L613.6,305.10 L614.8,300.64 L616.0,295.02 L617.2,288.54 L618.4,281.56 L619.6,274.45 L620.8,267.57 L622.0,261.29 L623.2,255.93 L624.4,251.77 L625.6,249.01 L626.8,247.79 L628.0,248.16 L629.2,250.07 L630.4,253.41 L631.6,257.98 L632.8,263.54 L634.0,269.77 L635.2,276.34 L636.4,282.91 L637.6,289.12 L638.8,294.65 L640.0,299.23 L641.2,302.63 L642.4,304.69 L643.6,305.33 L644.8,304.55 L646.0,302.40 L647.2,299.02 L648.4,294.63 L649.6,289.47 L650.8,283.82 L652.0,278.00 L653.2,272.31 L654.4,267.06 L655.6,262.49 L656.8,258.85 L658.0,256.29 L659.2,254.92 L660.4,254.79 L661.6,255.86 L662.8,258.04 L664.0,261.20 L665.2,265.13 L666.4,269.61 L667.6,274.38 L668.8,279.19 L670.0,283.78 L671.2,287.91 L672.4,291.39 L673.6,294.05 L674.8,295.79 L676.0,296.54 L677.2,296.30 L678.4,295.12 L679.6,293.11 L680.8,290.39 L682.0,287.14 L683.2,283.56 L684.4,279.84 L685.6,276.20 L686.8,272.81 L688.0,269.84 L689.2,267.44 L690.4,265.70 L691.6,264.69 L692.8,264.42 L694.0,264.86 L695.2,265.97 L696.4,267.64 L697.6,269.75 L698.8,272.18 L700.0,274.76 L701.2,277.36 L702.4,279.84 L703.6,282.07 L704.8,283.94 L706.0,285.38 L707.2,286.35 L708.4,286.81 L709.6,286.77 L710.8,286.28 L712.0,285.40 L713.2,284.19 L714.4,282.75 L715.6,281.18 L716.8,279.56 L718.0,278.00 L719.2,276.57 L720.4,275.35 L721.6,274.37 L722.8,273.68 L724.0,273.29 L725.2,273.18 L726.4,273.35 L727.6,273.75 L728.8,274.33 L730.0,275.05 L731.2,275.84 L732.4,276.66 L733.6,277.45 L734.8,278.17 L736.0,278.79 L737.2,279.27 L738.4,279.62 L739.6,279.82 L740.8,279.89 L742.0,279.83 L743.2,279.68 L744.4,279.45 L745.6,279.17 L746.8,278.88 L748.0,278.59 L749.2,278.32 L750.4,278.10 L751.6,277.92 L752.8,277.79 L754.0,277.72 L755.2,277.69 L756.4,277.70 L757.6,277.73 L758.8,277.78 L760.0,277.84 L761.2,277.89 L762.4,277.94 L763.6,277.97 L764.8,277.99 L766.0,278.00 L767.2,278.00 L768.4,278.00 L769.6,278.00 L770.8,278.02 L772.0,278.04 L773.2,278.08 L774.4,278.13 L775.6,278.19 L776.8,278.25 L778.0,278.29 L779.2,278.31 L780.4,278.30 L781.6,278.25 L782.8,278.15 L784.0,278.00 L785.2,277.80 L786.4,277.55 L787.6,277.27 L788.8,276.97 L790.0,276.68 L791.2,276.43 L792.4,276.24 L793.6,276.13 L794.8,276.13 L796.0,276.26 L797.2,276.54 L798.4,276.95 L799.6,277.51 L800.8,278.18 L802.0,278.94 L803.2,279.75 L804.4,280.56 L805.6,281.33 L806.8,281.98 L808.0,282.48 L809.2,282.77 L810.4,282.80 L811.6,282.55 L812.8,282.01 L814.0,281.17 L815.2,280.07 L816.4,278.74 L817.6,277.23 L818.8,275.63 L820.0,274.03 L821.2,272.51 L822.4,271.17 L823.6,270.11 L824.8,269.42 L826.0,269.15 L827.2,269.36 L828.4,270.07 L829.6,271.28 L830.8,272.94 L832.0,275.01 L833.2,277.37 L834.4,279.93 L835.6,282.54 L836.8,285.07 L838.0,287.35 L839.2,289.26 L840.4,290.66 L841.6,291.45 L842.8,291.54 L844.0,290.90 L845.2,289.51 L846.4,287.43 L847.6,284.74 L848.8,281.54" fill="none" stroke="#a78bfa" stroke-width="1.6"/>
+  <path d="M190.0,262.00 L192.0,261.39 L194.0,260.78 L196.0,260.18 L198.0,259.57 L200.0,258.97 L202.0,258.38 L204.0,257.79 L206.0,257.20 L208.0,256.62 L210.0,256.05 L212.0,255.49 L214.0,254.94 L216.0,254.40 L218.0,253.87 L220.0,253.35 L222.0,252.84 L224.0,252.35 L226.0,251.87 L228.0,251.41 L230.0,250.96 L232.0,250.53 L234.0,250.11 L236.0,249.71 L238.0,249.33 L240.0,248.97 L242.0,248.62 L244.0,248.30 L246.0,247.99 L248.0,247.71 L250.0,247.45 L252.0,247.20 L254.0,246.98 L256.0,246.78 L258.0,246.61 L260.0,246.45 L262.0,246.32 L264.0,246.21 L266.0,246.12 L268.0,246.06 L270.0,246.02 L272.0,246.00 L274.0,246.01 L276.0,246.04 L278.0,246.09 L280.0,246.16 L282.0,246.26 L284.0,246.38 L286.0,246.53 L288.0,246.69 L290.0,246.88 L292.0,247.09 L294.0,247.32 L296.0,247.58 L298.0,247.85 L300.0,248.14 L302.0,248.46 L304.0,248.79 L306.0,249.15 L308.0,249.52 L310.0,249.91 L312.0,250.32 L314.0,250.74 L316.0,251.18 L318.0,251.64 L320.0,252.11 L322.0,252.60 L324.0,253.10 L326.0,253.61 L328.0,254.13 L330.0,254.67 L332.0,255.22 L334.0,255.77 L336.0,256.34 L338.0,256.91 L340.0,257.49 L342.0,258.08 L344.0,258.67 L346.0,259.27 L348.0,259.87 L350.0,260.48 L352.0,261.09 L354.0,261.70 L356.0,262.30 L358.0,262.91 L360.0,263.52 L362.0,264.13 L364.0,264.73 L366.0,265.33 L368.0,265.92 L370.0,266.51 L372.0,267.09 L374.0,267.66 L376.0,268.23 L378.0,268.78 L380.0,269.33 L382.0,269.87 L384.0,270.39 L386.0,270.90 L388.0,271.40 L390.0,271.89 L392.0,272.36 L394.0,272.82 L396.0,273.26 L398.0,273.68 L400.0,274.09 L402.0,274.48 L404.0,274.85 L406.0,275.21 L408.0,275.54 L410.0,275.86 L412.0,276.15 L414.0,276.42 L416.0,276.68 L418.0,276.91 L420.0,277.12 L422.0,277.31 L424.0,277.47 L426.0,277.62 L428.0,277.74 L430.0,277.84 L432.0,277.91 L434.0,277.96 L436.0,277.99 L438.0,278.00 L440.0,277.98 L442.0,277.94 L444.0,277.88 L446.0,277.79 L448.0,277.68 L450.0,277.55 L452.0,277.39 L454.0,277.22 L456.0,277.02 L458.0,276.80 L460.0,276.55 L462.0,276.29 L464.0,276.01 L466.0,275.70 L468.0,275.38 L470.0,275.03 L472.0,274.67 L474.0,274.29 L476.0,273.89 L478.0,273.47 L480.0,273.04 L482.0,272.59 L484.0,272.13 L486.0,271.65 L488.0,271.16 L490.0,270.65 L492.0,270.13 L494.0,269.60 L496.0,269.06 L498.0,268.51 L500.0,267.95 L502.0,267.38 L504.0,266.80 L506.0,266.21 L508.0,265.62 L510.0,265.03 L512.0,264.43 L514.0,263.82 L516.0,263.22 L518.0,262.61 L520.0,262.00 L522.0,261.39 L524.0,260.78 L526.0,260.18 L528.0,259.57 L530.0,258.97 L532.0,258.38 L534.0,257.79 L536.0,257.20 L538.0,256.62 L540.0,256.05 L542.0,255.49 L544.0,254.94 L546.0,254.40 L548.0,253.87 L550.0,253.35 L552.0,252.84 L554.0,252.35 L556.0,251.87 L558.0,251.41 L560.0,250.96 L562.0,250.53 L564.0,250.11 L566.0,249.71 L568.0,249.33 L570.0,248.97 L572.0,248.62 L574.0,248.30 L576.0,247.99 L578.0,247.71 L580.0,247.45 L582.0,247.20 L584.0,246.98 L586.0,246.78 L588.0,246.61 L590.0,246.45 L592.0,246.32 L594.0,246.21 L596.0,246.12 L598.0,246.06 L600.0,246.02 L602.0,246.00 L604.0,246.01 L606.0,246.04 L608.0,246.09 L610.0,246.16 L612.0,246.26 L614.0,246.38 L616.0,246.53 L618.0,246.69 L620.0,246.88 L622.0,247.09 L624.0,247.32 L626.0,247.58 L628.0,247.85 L630.0,248.14 L632.0,248.46 L634.0,248.79 L636.0,249.15 L638.0,249.52 L640.0,249.91 L642.0,250.32 L644.0,250.74 L646.0,251.18 L648.0,251.64 L650.0,252.11 L652.0,252.60 L654.0,253.10 L656.0,253.61 L658.0,254.13 L660.0,254.67 L662.0,255.22 L664.0,255.77 L666.0,256.34 L668.0,256.91 L670.0,257.49 L672.0,258.08 L674.0,258.67 L676.0,259.27 L678.0,259.87 L680.0,260.48 L682.0,261.09 L684.0,261.70 L686.0,262.30 L688.0,262.91 L690.0,263.52 L692.0,264.13 L694.0,264.73 L696.0,265.33 L698.0,265.92 L700.0,266.51 L702.0,267.09 L704.0,267.66 L706.0,268.23 L708.0,268.78 L710.0,269.33 L712.0,269.87 L714.0,270.39 L716.0,270.90 L718.0,271.40 L720.0,271.89 L722.0,272.36 L724.0,272.82 L726.0,273.26 L728.0,273.68 L730.0,274.09 L732.0,274.48 L734.0,274.85 L736.0,275.21 L738.0,275.54 L740.0,275.86 L742.0,276.15 L744.0,276.42 L746.0,276.68 L748.0,276.91 L750.0,277.12 L752.0,277.31 L754.0,277.47 L756.0,277.62 L758.0,277.74 L760.0,277.84 L762.0,277.91 L764.0,277.96 L766.0,277.99 L768.0,278.00 L770.0,277.98 L772.0,277.94 L774.0,277.88 L776.0,277.79 L778.0,277.68 L780.0,277.55 L782.0,277.39 L784.0,277.22 L786.0,277.02 L788.0,276.80 L790.0,276.55 L792.0,276.29 L794.0,276.01 L796.0,275.70 L798.0,275.38 L800.0,275.03 L802.0,274.67 L804.0,274.29 L806.0,273.89 L808.0,273.47 L810.0,273.04 L812.0,272.59 L814.0,272.13 L816.0,271.65 L818.0,271.16 L820.0,270.65 L822.0,270.13 L824.0,269.60 L826.0,269.06 L828.0,268.51 L830.0,267.95 L832.0,267.38 L834.0,266.80 L836.0,266.21 L838.0,265.62 L840.0,265.03 L842.0,264.43 L844.0,263.82 L846.0,263.22 L848.0,262.61 L850.0,262.00" fill="none" stroke="#3fd0c9" stroke-width="1.4" stroke-dasharray="4 3" opacity=".8"/>
+  <path d="M190.0,294.00 L192.0,294.61 L194.0,295.22 L196.0,295.82 L198.0,296.43 L200.0,297.03 L202.0,297.62 L204.0,298.21 L206.0,298.80 L208.0,299.38 L210.0,299.95 L212.0,300.51 L214.0,301.06 L216.0,301.60 L218.0,302.13 L220.0,302.65 L222.0,303.16 L224.0,303.65 L226.0,304.13 L228.0,304.59 L230.0,305.04 L232.0,305.47 L234.0,305.89 L236.0,306.29 L238.0,306.67 L240.0,307.03 L242.0,307.38 L244.0,307.70 L246.0,308.01 L248.0,308.29 L250.0,308.55 L252.0,308.80 L254.0,309.02 L256.0,309.22 L258.0,309.39 L260.0,309.55 L262.0,309.68 L264.0,309.79 L266.0,309.88 L268.0,309.94 L270.0,309.98 L272.0,310.00 L274.0,309.99 L276.0,309.96 L278.0,309.91 L280.0,309.84 L282.0,309.74 L284.0,309.62 L286.0,309.47 L288.0,309.31 L290.0,309.12 L292.0,308.91 L294.0,308.68 L296.0,308.42 L298.0,308.15 L300.0,307.86 L302.0,307.54 L304.0,307.21 L306.0,306.85 L308.0,306.48 L310.0,306.09 L312.0,305.68 L314.0,305.26 L316.0,304.82 L318.0,304.36 L320.0,303.89 L322.0,303.40 L324.0,302.90 L326.0,302.39 L328.0,301.87 L330.0,301.33 L332.0,300.78 L334.0,300.23 L336.0,299.66 L338.0,299.09 L340.0,298.51 L342.0,297.92 L344.0,297.33 L346.0,296.73 L348.0,296.13 L350.0,295.52 L352.0,294.91 L354.0,294.30 L356.0,293.70 L358.0,293.09 L360.0,292.48 L362.0,291.87 L364.0,291.27 L366.0,290.67 L368.0,290.08 L370.0,289.49 L372.0,288.91 L374.0,288.34 L376.0,287.77 L378.0,287.22 L380.0,286.67 L382.0,286.13 L384.0,285.61 L386.0,285.10 L388.0,284.60 L390.0,284.11 L392.0,283.64 L394.0,283.18 L396.0,282.74 L398.0,282.32 L400.0,281.91 L402.0,281.52 L404.0,281.15 L406.0,280.79 L408.0,280.46 L410.0,280.14 L412.0,279.85 L414.0,279.58 L416.0,279.32 L418.0,279.09 L420.0,278.88 L422.0,278.69 L424.0,278.53 L426.0,278.38 L428.0,278.26 L430.0,278.16 L432.0,278.09 L434.0,278.04 L436.0,278.01 L438.0,278.00 L440.0,278.02 L442.0,278.06 L444.0,278.12 L446.0,278.21 L448.0,278.32 L450.0,278.45 L452.0,278.61 L454.0,278.78 L456.0,278.98 L458.0,279.20 L460.0,279.45 L462.0,279.71 L464.0,279.99 L466.0,280.30 L468.0,280.62 L470.0,280.97 L472.0,281.33 L474.0,281.71 L476.0,282.11 L478.0,282.53 L480.0,282.96 L482.0,283.41 L484.0,283.87 L486.0,284.35 L488.0,284.84 L490.0,285.35 L492.0,285.87 L494.0,286.40 L496.0,286.94 L498.0,287.49 L500.0,288.05 L502.0,288.62 L504.0,289.20 L506.0,289.79 L508.0,290.38 L510.0,290.97 L512.0,291.57 L514.0,292.18 L516.0,292.78 L518.0,293.39 L520.0,294.00 L522.0,294.61 L524.0,295.22 L526.0,295.82 L528.0,296.43 L530.0,297.03 L532.0,297.62 L534.0,298.21 L536.0,298.80 L538.0,299.38 L540.0,299.95 L542.0,300.51 L544.0,301.06 L546.0,301.60 L548.0,302.13 L550.0,302.65 L552.0,303.16 L554.0,303.65 L556.0,304.13 L558.0,304.59 L560.0,305.04 L562.0,305.47 L564.0,305.89 L566.0,306.29 L568.0,306.67 L570.0,307.03 L572.0,307.38 L574.0,307.70 L576.0,308.01 L578.0,308.29 L580.0,308.55 L582.0,308.80 L584.0,309.02 L586.0,309.22 L588.0,309.39 L590.0,309.55 L592.0,309.68 L594.0,309.79 L596.0,309.88 L598.0,309.94 L600.0,309.98 L602.0,310.00 L604.0,309.99 L606.0,309.96 L608.0,309.91 L610.0,309.84 L612.0,309.74 L614.0,309.62 L616.0,309.47 L618.0,309.31 L620.0,309.12 L622.0,308.91 L624.0,308.68 L626.0,308.42 L628.0,308.15 L630.0,307.86 L632.0,307.54 L634.0,307.21 L636.0,306.85 L638.0,306.48 L640.0,306.09 L642.0,305.68 L644.0,305.26 L646.0,304.82 L648.0,304.36 L650.0,303.89 L652.0,303.40 L654.0,302.90 L656.0,302.39 L658.0,301.87 L660.0,301.33 L662.0,300.78 L664.0,300.23 L666.0,299.66 L668.0,299.09 L670.0,298.51 L672.0,297.92 L674.0,297.33 L676.0,296.73 L678.0,296.13 L680.0,295.52 L682.0,294.91 L684.0,294.30 L686.0,293.70 L688.0,293.09 L690.0,292.48 L692.0,291.87 L694.0,291.27 L696.0,290.67 L698.0,290.08 L700.0,289.49 L702.0,288.91 L704.0,288.34 L706.0,287.77 L708.0,287.22 L710.0,286.67 L712.0,286.13 L714.0,285.61 L716.0,285.10 L718.0,284.60 L720.0,284.11 L722.0,283.64 L724.0,283.18 L726.0,282.74 L728.0,282.32 L730.0,281.91 L732.0,281.52 L734.0,281.15 L736.0,280.79 L738.0,280.46 L740.0,280.14 L742.0,279.85 L744.0,279.58 L746.0,279.32 L748.0,279.09 L750.0,278.88 L752.0,278.69 L754.0,278.53 L756.0,278.38 L758.0,278.26 L760.0,278.16 L762.0,278.09 L764.0,278.04 L766.0,278.01 L768.0,278.00 L770.0,278.02 L772.0,278.06 L774.0,278.12 L776.0,278.21 L778.0,278.32 L780.0,278.45 L782.0,278.61 L784.0,278.78 L786.0,278.98 L788.0,279.20 L790.0,279.45 L792.0,279.71 L794.0,279.99 L796.0,280.30 L798.0,280.62 L800.0,280.97 L802.0,281.33 L804.0,281.71 L806.0,282.11 L808.0,282.53 L810.0,282.96 L812.0,283.41 L814.0,283.87 L816.0,284.35 L818.0,284.84 L820.0,285.35 L822.0,285.87 L824.0,286.40 L826.0,286.94 L828.0,287.49 L830.0,288.05 L832.0,288.62 L834.0,289.20 L836.0,289.79 L838.0,290.38 L840.0,290.97 L842.0,291.57 L844.0,292.18 L846.0,292.78 L848.0,293.39 L850.0,294.00" fill="none" stroke="#3fd0c9" stroke-width="1.4" stroke-dasharray="4 3" opacity=".8"/>
+  <text x="20" y="268" fill="#a78bfa" font-size="13.5" font-weight="700">MODULATED</text>
+  <text x="20" y="286" fill="#9aa3b2" font-size="11.5">what the antenna</text>
+  <text x="20" y="302" fill="#9aa3b2" font-size="11.5">actually radiates</text>
+
+  <text x="520" y="330" text-anchor="middle" fill="#6b7484" font-size="12">Dashed teal outline = the information, still recognisable in the shape of the transmitted wave. Demodulation recovers it.</text>
+
+  <path d="M868 62 L868 278" stroke="#2a3140" stroke-width="1"/>
+  </g>
+</svg>
+<figcaption><b>Figure 7.</b> Amplitude modulation shown for clarity — real AV systems mostly use frequency or digital modulation, but the principle the exam tests is identical: information rides on a carrier, and the carrier is removed at the far end.</figcaption>
+</figure>
+
+<div class="call s"><span class="lab">Spec</span><p><strong>The carrier frequency must be at least double the frequency of the information it carries.</strong> This is the one hard number in the transmit/receive section, and it's easy to skip past on a first read.</p></div>
+
+<div class="call k"><span class="lab">Key term</span>
+<p><strong>Modulation</strong> — the transmitter impressing the information onto the RF carrier. The book calls this the most important step in converting data at the transmitter.</p>
+<p><strong>Demodulation</strong> — the receiver separating the information back off the carrier so it can be used elsewhere in the AV system.</p></div>
+
+<div class="call w"><span class="lab">Watch out</span><p>Transmitter <em>modulates</em>. Receiver <em>demodulates</em>. Options that swap these are the standard distractor pair, and under time pressure the two words look nearly identical. Read the stem for which end of the link it's describing before you look at the answers.</p></div>
+
+<h2 id="s-paths"><span class="sec-n">SECTION 08</span>Transmission paths</h2>
+<p>Radio waves are electromagnetic radiation, so they behave like light: <strong>they radiate in straight lines from their point of origin.</strong> That single sentence generates the whole rest of this section.</p>
+
+<figure>
+<svg viewBox="0 0 900 430" role="img" aria-label="Radio propagation: line of sight, wall penetration, ground reflection, ionospheric reflection, satellite pass-through">
+  <defs>
+    <marker id="arB" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="#3fd0c9"/></marker>
+    <marker id="arC" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="#f0b429"/></marker>
+  </defs>
+  <g font-family="'DM Sans',sans-serif">
+  <path d="M20 52 Q450 26 880 52" fill="none" stroke="#a78bfa" stroke-width="2" stroke-dasharray="7 5" opacity=".75"/>
+  <text x="34" y="44" fill="#a78bfa" font-size="11.5" font-family="'IBM Plex Mono',monospace">IONOSPHERE</text>
+
+  <rect x="676" y="20" width="26" height="16" rx="3" fill="#5aa9f7" fill-opacity=".4" stroke="#5aa9f7"/>
+  <line x1="668" y1="28" x2="676" y2="28" stroke="#5aa9f7" stroke-width="2"/>
+  <line x1="702" y1="28" x2="710" y2="28" stroke="#5aa9f7" stroke-width="2"/>
+  <text x="689" y="15" text-anchor="middle" fill="#5aa9f7" font-size="10" font-family="'IBM Plex Mono',monospace">SATELLITE</text>
+
+  <line x1="20" y1="322" x2="880" y2="322" stroke="#2a3140" stroke-width="2"/>
+  <rect x="20" y="322" width="860" height="18" fill="#1d222d"/>
+  <text x="30" y="336" fill="#6b7484" font-size="10.5" font-family="'IBM Plex Mono',monospace">GROUND</text>
+
+  <line x1="120" y1="322" x2="120" y2="206" stroke="#3fd0c9" stroke-width="2.5"/>
+  <path d="M112 322 L120 206 L128 322" fill="none" stroke="#3fd0c9" stroke-width="1" opacity=".5"/>
+  <circle cx="120" cy="202" r="4" fill="#3fd0c9"/>
+  <text x="120" y="192" text-anchor="middle" fill="#3fd0c9" font-size="12" font-weight="700">TX</text>
+
+  <line x1="812" y1="322" x2="812" y2="246" stroke="#3fd0c9" stroke-width="2.5"/>
+  <circle cx="812" cy="242" r="4" fill="#3fd0c9"/>
+  <text x="812" y="232" text-anchor="middle" fill="#3fd0c9" font-size="12" font-weight="700">RX</text>
+
+  <rect x="392" y="216" width="84" height="106" fill="#1d222d" stroke="#2a3140" stroke-width="1.5"/>
+  <line x1="392" y1="246" x2="476" y2="246" stroke="#2a3140"/>
+  <line x1="392" y1="276" x2="476" y2="276" stroke="#2a3140"/>
+  <text x="434" y="314" text-anchor="middle" fill="#6b7484" font-size="10" font-family="'IBM Plex Mono',monospace">BUILDING</text>
+
+  <rect x="554" y="234" width="10" height="70" fill="#f2686a" fill-opacity=".3" stroke="#f2686a"/>
+  <text x="559" y="318" text-anchor="middle" fill="#f2686a" font-size="10" font-family="'IBM Plex Mono',monospace">METAL</text>
+
+  <line x1="126" y1="206" x2="388" y2="222" stroke="#3fd0c9" stroke-width="2" marker-end="url(#arB)"/>
+  <line x1="478" y1="228" x2="550" y2="238" stroke="#3fd0c9" stroke-width="2" opacity=".4" stroke-dasharray="5 4"/>
+  <circle cx="262" cy="197" r="12" fill="#0f1117" stroke="#3fd0c9" stroke-width="1.6"/>
+  <text x="262" y="202" text-anchor="middle" fill="#3fd0c9" font-size="12" font-weight="700">1</text>
+  <text x="484" y="212" fill="#f2686a" font-size="10.5">attenuated,</text>
+  <text x="484" y="225" fill="#f2686a" font-size="10.5">then blocked</text>
+
+  <path d="M124 212 L322 322 L550 228" fill="none" stroke="#f0b429" stroke-width="1.8" opacity=".9"/>
+  <circle cx="322" cy="322" r="3.5" fill="#f0b429"/>
+  <circle cx="222" cy="268" r="12" fill="#0f1117" stroke="#f0b429" stroke-width="1.6"/>
+  <text x="222" y="273" text-anchor="middle" fill="#f0b429" font-size="12" font-weight="700">2</text>
+
+  <path d="M124 198 Q300 66 452 52" fill="none" stroke="#a78bfa" stroke-width="1.8"/>
+  <path d="M452 52 Q640 78 808 240" fill="none" stroke="#a78bfa" stroke-width="1.8" marker-end="url(#arB)"/>
+  <circle cx="452" cy="52" r="4" fill="#a78bfa"/>
+  <circle cx="286" cy="86" r="12" fill="#0f1117" stroke="#a78bfa" stroke-width="1.6"/>
+  <text x="286" y="91" text-anchor="middle" fill="#a78bfa" font-size="12" font-weight="700">3</text>
+
+  <line x1="682" y1="38" x2="646" y2="86" stroke="#5aa9f7" stroke-width="1.8"/>
+  <circle cx="664" cy="62" r="12" fill="#0f1117" stroke="#5aa9f7" stroke-width="1.6"/>
+  <text x="664" y="67" text-anchor="middle" fill="#5aa9f7" font-size="12" font-weight="700">4</text>
+
+  <g opacity=".6" stroke="#5aa9f7" stroke-width="1.3">
+  <line x1="596" y1="128" x2="590" y2="146"/><line x1="612" y1="136" x2="606" y2="154"/>
+  <line x1="628" y1="126" x2="622" y2="144"/><line x1="604" y1="158" x2="598" y2="176"/>
+  </g>
+  <text x="588" y="196" text-anchor="middle" fill="#5aa9f7" font-size="10.5">rain &amp; cloud ice</text>
+  <text x="588" y="209" text-anchor="middle" fill="#5aa9f7" font-size="10.5">attenuate short λ</text>
+
+  <rect x="20" y="356" width="860" height="66" rx="7" fill="#161a23" stroke="#2a3140"/>
+  <circle cx="44" cy="376" r="9" fill="none" stroke="#3fd0c9" stroke-width="1.4"/><text x="44" y="380" text-anchor="middle" fill="#3fd0c9" font-size="10.5" font-weight="700">1</text>
+  <text x="60" y="373" fill="#e6e9ef" font-size="12" font-weight="700">LINE OF SIGHT</text>
+  <text x="60" y="388" fill="#9aa3b2" font-size="11">the ideal — direct and unobstructed</text>
+  <circle cx="470" cy="376" r="9" fill="none" stroke="#f0b429" stroke-width="1.4"/><text x="470" y="380" text-anchor="middle" fill="#f0b429" font-size="10.5" font-weight="700">2</text>
+  <text x="486" y="373" fill="#e6e9ef" font-size="12" font-weight="700">REFLECTION</text>
+  <text x="486" y="388" fill="#9aa3b2" font-size="11">off ground, water and walls — reaches non-line-of-sight receivers</text>
+  <circle cx="44" cy="404" r="9" fill="none" stroke="#a78bfa" stroke-width="1.4"/><text x="44" y="408" text-anchor="middle" fill="#a78bfa" font-size="10.5" font-weight="700">3</text>
+  <text x="60" y="408" fill="#9aa3b2" font-size="11"><tspan fill="#e6e9ef" font-weight="700">IONOSPHERIC SKIP</tspan> — LONG wavelengths bounce back to earth</text>
+  <circle cx="470" cy="404" r="9" fill="none" stroke="#5aa9f7" stroke-width="1.4"/><text x="470" y="408" text-anchor="middle" fill="#5aa9f7" font-size="10.5" font-weight="700">4</text>
+  <text x="486" y="408" fill="#9aa3b2" font-size="11"><tspan fill="#e6e9ef" font-weight="700">PASS-THROUGH</tspan> — λ under 100 mm goes straight through to satellites</text>
+  </g>
+</svg>
+<figcaption><b>Figure 8.</b> Four propagation behaviours. Reflection is what lets you receive a transmitter you can't see — and, as Section 13 shows, it's also what wrecks your signal.</figcaption>
+</figure>
+
+<div class="call k"><span class="lab">Key term</span><p><strong>Line of sight</strong> — an unobstructed straight path between transmitting and receiving antennas. It's the ideal, not a requirement; reflection can fill in when it's absent, at a cost.</p></div>
+
+<div class="call e"><span class="lab">Exam tip</span><p>The AVIXA way here: when a question asks where to <em>put</em> an antenna, the answer that wins is the one that establishes direct line of sight and keeps conducting materials out of the path. Not "turn the transmitter power up," not "add an amplifier." Position first.</p></div>
+
+<h2 id="s-alloc"><span class="sec-n">SECTION 09</span>Allocation of radio frequencies</h2>
+<p>Spectrum is finite and heavily demanded, so its use is regulated in every jurisdiction and coordinated globally through the <strong>International Telecommunication Union (ITU)</strong>, an agency of the United Nations. The critical practical point: <strong>allocations vary depending on where you are.</strong></p>
+
+<div class="call w"><span class="lab">Watch out</span><p>Any question that offers a single worldwide answer for wireless microphone frequencies is offering you a wrong answer. Allocated frequencies and channels vary substantially between countries — and may even vary between cities within one country, because they depend on which bands local terrestrial television broadcasts are using.</p></div>
+
+<h3>The allocations named in this chapter</h3>
+<div class="tw"><table>
+<thead><tr><th>Service</th><th>Allocation</th><th>Notes</th></tr></thead>
+<tbody>
+<tr><td class="t">Terrestrial digital TV</td><td class="n">470 – 950 MHz</td><td>Channel slots within this range; actual channels and bandwidths vary substantially by country — always check the local communications administration</td></tr>
+<tr><td class="t">Wi-Fi</td><td class="n">2.5 GHz · 5 GHz · 60 GHz</td><td>Mostly uniform throughout the ITU — the one allocation that <em>doesn't</em> vary much (covered in Ch. 6)</td></tr>
+<tr><td class="t">Satellite TV — C band</td><td class="n">4 – 8 GHz</td><td>Direct-to-home</td></tr>
+<tr><td class="t">Satellite TV — Ku band</td><td class="n">12 – 18 GHz</td><td>Regional differences are most pronounced here; higher Ku frequencies are attenuated by cloud and rain</td></tr>
+<tr><td class="t">Wireless mics, IEM, talkback</td><td class="n">varies by country</td><td>A range of bands is available for AV and production, but there is no universal answer</td></tr>
+</tbody></table></div>
+
+<div class="call k"><span class="lab">Key term</span><p><strong>APWPT</strong> — the Association of Professional Wireless Production Technologies, an international body that tracks changing spectrum allocations and points to current regulatory sources for event production. It maintains information on at least 30 countries across the Americas, Europe, Asia, and Oceania. Your equipment manufacturer is usually also a good source of local spectrum information.</p></div>
+
+<div class="call e"><span class="lab">Exam tip</span><p>Chapter 4 pairs with this section: a <strong>full-spectrum frequency allocation plan</strong> is described there as an important component of any AV installation or production, and it must account for local frequency allocation regulations. If a scenario question involves multiple wireless systems in one space, the AVIXA-correct move is to produce and coordinate that plan — not to hunt for a clear channel on site.</p></div>
+
+<h2 id="s-ant"><span class="sec-n">SECTION 10</span>Antennas and orientation</h2>
+<p>Antennas do the transmitting and receiving. The book is blunt about the stakes: if antennas are <strong>incorrectly matched</strong> to the equipment, or set up in the <strong>wrong position or orientation</strong>, overall RF performance degrades. Both failure modes are free to avoid and expensive to diagnose later.</p>
+
+<h3>Polarization</h3>
+<p>Aligning transmit and receive antennas is called <strong>polarizing</strong> them. <strong>Parallel orientation maximizes transmission and reception.</strong> A vertically polarized (upright) antenna radiates electromagnetic waves from the <em>sides</em> of the radiating element, in a plane parallel to the floor. Point the receiving antenna the same way and it collects the maximum available radiation.</p>
+
+<figure>
+<svg viewBox="0 0 900 320" role="img" aria-label="Co-polarized versus cross-polarized antenna pairs">
+  <g font-family="'DM Sans',sans-serif">
+  <!-- LEFT: co-polarized -->
+  <rect x="20" y="26" width="420" height="266" rx="10" fill="#161a23" stroke="#5fd68a" stroke-width="1.4"/>
+  <text x="230" y="54" text-anchor="middle" fill="#5fd68a" font-size="14" font-weight="700">CO-POLARIZED · both vertical</text>
+
+  <line x1="110" y1="230" x2="110" y2="130" stroke="#3fd0c9" stroke-width="3.5"/>
+  <circle cx="110" cy="126" r="4" fill="#3fd0c9"/>
+  <rect x="80" y="230" width="60" height="26" rx="4" fill="#1d222d" stroke="#2a3140"/>
+  <text x="110" y="248" text-anchor="middle" fill="#9aa3b2" font-size="11">TX</text>
+
+  <line x1="350" y1="230" x2="350" y2="130" stroke="#3fd0c9" stroke-width="3.5"/>
+  <circle cx="350" cy="126" r="4" fill="#3fd0c9"/>
+  <rect x="320" y="230" width="60" height="26" rx="4" fill="#1d222d" stroke="#2a3140"/>
+  <text x="350" y="248" text-anchor="middle" fill="#9aa3b2" font-size="11">RX</text>
+
+  <!-- waves: vertical E-field arrows travelling horizontally -->
+  <g stroke="#5fd68a" stroke-width="2">
+  <line x1="150" y1="150" x2="150" y2="200"/><line x1="190" y1="158" x2="190" y2="192"/>
+  <line x1="230" y1="146" x2="230" y2="204"/><line x1="270" y1="158" x2="270" y2="192"/>
+  <line x1="310" y1="150" x2="310" y2="200"/>
+  </g>
+  <line x1="140" y1="175" x2="322" y2="175" stroke="#5fd68a" stroke-width="1" stroke-dasharray="4 4" opacity=".6"/>
+  <text x="230" y="284" text-anchor="middle" fill="#5fd68a" font-size="13" font-weight="700">MAXIMUM signal transferred</text>
+  <text x="230" y="112" text-anchor="middle" fill="#9aa3b2" font-size="11.5">radiating element planes are parallel</text>
+
+  <!-- RIGHT: cross-polarized -->
+  <rect x="460" y="26" width="420" height="266" rx="10" fill="#161a23" stroke="#f2686a" stroke-width="1.4"/>
+  <text x="670" y="54" text-anchor="middle" fill="#f2686a" font-size="14" font-weight="700">CROSS-POLARIZED · 90° apart</text>
+
+  <line x1="550" y1="230" x2="550" y2="130" stroke="#3fd0c9" stroke-width="3.5"/>
+  <circle cx="550" cy="126" r="4" fill="#3fd0c9"/>
+  <rect x="520" y="230" width="60" height="26" rx="4" fill="#1d222d" stroke="#2a3140"/>
+  <text x="550" y="248" text-anchor="middle" fill="#9aa3b2" font-size="11">TX</text>
+
+  <line x1="748" y1="216" x2="848" y2="216" stroke="#3fd0c9" stroke-width="3.5"/>
+  <circle cx="848" cy="216" r="4" fill="#3fd0c9"/>
+  <rect x="718" y="230" width="60" height="26" rx="4" fill="#1d222d" stroke="#2a3140"/>
+  <text x="748" y="248" text-anchor="middle" fill="#9aa3b2" font-size="11">RX</text>
+
+  <g stroke="#f2686a" stroke-width="2" opacity=".85">
+  <line x1="590" y1="150" x2="590" y2="200"/><line x1="630" y1="158" x2="630" y2="192"/>
+  <line x1="670" y1="146" x2="670" y2="204"/><line x1="710" y1="158" x2="710" y2="192"/>
+  </g>
+  <line x1="580" y1="175" x2="740" y2="175" stroke="#f2686a" stroke-width="1" stroke-dasharray="4 4" opacity=".5"/>
+  <text x="670" y="284" text-anchor="middle" fill="#f2686a" font-size="13" font-weight="700">Signal MUCH weaker</text>
+  <text x="670" y="112" text-anchor="middle" fill="#9aa3b2" font-size="11.5">element planes are perpendicular — mismatch</text>
+  </g>
+</svg>
+<figcaption><b>Figure 9.</b> The receiving element has to lie in the same plane as the radiated field. Turn it 90° and most of the available signal is simply not collected.</figcaption>
+</figure>
+
+<div class="call k"><span class="lab">Key term</span>
+<p><strong>Vertically polarized</strong> — antenna element upright; radiates from the sides of the element, in a plane parallel to the floor. This is the most common orientation for handheld, body-worn, portable, and installed wireless systems.</p>
+<p><strong>Cross-polarized</strong> — transmit and receive antennas not oriented in the same direction. The received signal is much weaker and system performance degrades.</p></div>
+
+<div class="call w"><span class="lab">Watch out</span><p>Cross-polarization is a silent fault. Nothing is broken, nothing reads as an error — the link just has far less margin than it should, and it drops out when someone walks in front of it. On a troubleshooting question, "the receiver antennas were folded down flat while the transmitter is upright" is a complete diagnosis.</p></div>
+
+<h2 id="s-parab"><span class="sec-n">SECTION 11</span>Parabolic antennas</h2>
+<p>A parabolic antenna has a central radiating element feeding into a <strong>passive parabolic reflector</strong>. The geometry of a parabola does something specific and useful: every ray arriving parallel to the axis reflects to a single point, the focus. That's where the radiating element sits.</p>
+
+<figure>
+<svg viewBox="0 0 900 320" role="img" aria-label="Parabolic dish antenna geometry showing parallel rays converging on the focus">
+  <defs><marker id="arA" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="#f0b429"/></marker></defs>
+  <g font-family="'DM Sans',sans-serif">
+  <path d="M297.23,35.00 L295.60,37.00 L294.00,39.00 L292.43,41.00 L290.89,43.00 L289.38,45.00 L287.89,47.00 L286.43,49.00 L285.00,51.00 L283.60,53.00 L282.23,55.00 L280.89,57.00 L279.57,59.00 L278.29,61.00 L277.03,63.00 L275.80,65.00 L274.60,67.00 L273.43,69.00 L272.29,71.00 L271.18,73.00 L270.09,75.00 L269.03,77.00 L268.00,79.00 L267.00,81.00 L266.03,83.00 L265.09,85.00 L264.18,87.00 L263.29,89.00 L262.43,91.00 L261.60,93.00 L260.80,95.00 L260.03,97.00 L259.29,99.00 L258.57,101.00 L257.89,103.00 L257.23,105.00 L256.60,107.00 L256.00,109.00 L255.43,111.00 L254.89,113.00 L254.38,115.00 L253.89,117.00 L253.43,119.00 L253.00,121.00 L252.60,123.00 L252.23,125.00 L251.89,127.00 L251.57,129.00 L251.29,131.00 L251.03,133.00 L250.80,135.00 L250.60,137.00 L250.43,139.00 L250.29,141.00 L250.18,143.00 L250.09,145.00 L250.03,147.00 L250.00,149.00 L250.00,151.00 L250.03,153.00 L250.09,155.00 L250.18,157.00 L250.29,159.00 L250.43,161.00 L250.60,163.00 L250.80,165.00 L251.03,167.00 L251.29,169.00 L251.57,171.00 L251.89,173.00 L252.23,175.00 L252.60,177.00 L253.00,179.00 L253.43,181.00 L253.89,183.00 L254.38,185.00 L254.89,187.00 L255.43,189.00 L256.00,191.00 L256.60,193.00 L257.23,195.00 L257.89,197.00 L258.57,199.00 L259.29,201.00 L260.03,203.00 L260.80,205.00 L261.60,207.00 L262.43,209.00 L263.29,211.00 L264.18,213.00 L265.09,215.00 L266.03,217.00 L267.00,219.00 L268.00,221.00 L269.03,223.00 L270.09,225.00 L271.18,227.00 L272.29,229.00 L273.43,231.00 L274.60,233.00 L275.80,235.00 L277.03,237.00 L278.29,239.00 L279.57,241.00 L280.89,243.00 L282.23,245.00 L283.60,247.00 L285.00,249.00 L286.43,251.00 L287.89,253.00 L289.38,255.00 L290.89,257.00 L292.43,259.00 L294.00,261.00 L295.60,263.00 L297.23,265.00" fill="none" stroke="#9aa3b2" stroke-width="4" stroke-linecap="round"/>
+  <line x1="700" y1="54.0" x2="282.9" y2="54.0" stroke="#f0b429" stroke-width="1.6" opacity=".85" marker-end="url(#arA)"/>
+  <line x1="282.9" y1="54.0" x2="320.0" y2="150.0" stroke="#3fd0c9" stroke-width="1.6" opacity=".9"/>
+  <line x1="700" y1="86.0" x2="264.6" y2="86.0" stroke="#f0b429" stroke-width="1.6" opacity=".85" marker-end="url(#arA)"/>
+  <line x1="264.6" y1="86.0" x2="320.0" y2="150.0" stroke="#3fd0c9" stroke-width="1.6" opacity=".9"/>
+  <line x1="700" y1="118.0" x2="253.7" y2="118.0" stroke="#f0b429" stroke-width="1.6" opacity=".85" marker-end="url(#arA)"/>
+  <line x1="253.7" y1="118.0" x2="320.0" y2="150.0" stroke="#3fd0c9" stroke-width="1.6" opacity=".9"/>
+  <line x1="700" y1="182.0" x2="253.7" y2="182.0" stroke="#f0b429" stroke-width="1.6" opacity=".85" marker-end="url(#arA)"/>
+  <line x1="253.7" y1="182.0" x2="320.0" y2="150.0" stroke="#3fd0c9" stroke-width="1.6" opacity=".9"/>
+  <line x1="700" y1="214.0" x2="264.6" y2="214.0" stroke="#f0b429" stroke-width="1.6" opacity=".85" marker-end="url(#arA)"/>
+  <line x1="264.6" y1="214.0" x2="320.0" y2="150.0" stroke="#3fd0c9" stroke-width="1.6" opacity=".9"/>
+  <line x1="700" y1="246.0" x2="282.9" y2="246.0" stroke="#f0b429" stroke-width="1.6" opacity=".85" marker-end="url(#arA)"/>
+  <line x1="282.9" y1="246.0" x2="320.0" y2="150.0" stroke="#3fd0c9" stroke-width="1.6" opacity=".9"/>
+  <line x1="250.0" y1="150.0" x2="760" y2="150.0" stroke="#2a3140" stroke-dasharray="4 4"/>
+  <circle cx="320.0" cy="150.0" r="7" fill="#3fd0c9"/>
+  <circle cx="320.0" cy="150.0" r="13" fill="none" stroke="#3fd0c9" stroke-width="1.2" opacity=".5"/>
+  <line x1="333" y1="150" x2="392" y2="150" stroke="#3fd0c9" stroke-width="1"/>
+  <text x="400" y="146" fill="#3fd0c9" font-size="12.5" font-weight="700">FOCUS</text>
+  <text x="400" y="163" fill="#9aa3b2" font-size="11.5">radiating element sits here</text>
+
+  <text x="620" y="42" fill="#f0b429" font-size="12.5" font-weight="700">parallel rays in</text>
+  <text x="620" y="290" fill="#3fd0c9" font-size="12.5" font-weight="700">all converge on one point</text>
+
+  <text x="150" y="60" fill="#e6e9ef" font-size="13" font-weight="700">HIGH GAIN</text>
+  <text x="150" y="78" fill="#9aa3b2" font-size="11.5">in the direction</text>
+  <text x="150" y="94" fill="#9aa3b2" font-size="11.5">of focus</text>
+
+  <text x="150" y="228" fill="#e6e9ef" font-size="13" font-weight="700">HIGH REJECTION</text>
+  <text x="150" y="246" fill="#9aa3b2" font-size="11.5">of everything</text>
+  <text x="150" y="262" fill="#9aa3b2" font-size="11.5">from elsewhere</text>
+  </g>
+</svg>
+<figcaption><b>Figure 10.</b> A true parabola (x = y²/4f), with the focus plotted at its computed position. Reversed, the same geometry turns a point source into a tight parallel beam.</figcaption>
+</figure>
+
+<div class="tw"><table>
+<thead><tr><th>Parabolic antennas</th><th></th></tr></thead>
+<tbody>
+<tr><td class="t">Ideal for</td><td><strong>Point-to-point communications</strong> — high gain toward the focus, high rejection of everything else</td></tr>
+<tr><td class="t">Unsuitable where</td><td>Transmitters or receivers are <strong>in motion</strong>, or <strong>wide-area coverage</strong> is needed</td></tr>
+<tr><td class="t">Practical frequency floor</td><td class="n">above about 1 GHz — below that the physical dish gets impractically large</td></tr>
+<tr><td class="t">Typical AV sighting</td><td>Satellite television reception</td></tr>
+</tbody></table></div>
+
+<div class="call e"><span class="lab">Exam tip</span><p>Parabolic questions are almost always testing the same trade-off: <strong>directivity is a feature and a limitation at once.</strong> If the question mentions movement, roaming presenters, or covering a whole room, parabolic is the wrong answer. If it mentions a fixed link between two known points, it's the right one.</p></div>
+
+<h2 id="s-vert"><span class="sec-n">SECTION 12</span>Vertical antennas and the ground plane</h2>
+<p>Vertical antennas are everywhere in AV for a stack of practical reasons: physically compact, small footprint, easy to mount, <strong>omnidirectional in the horizontal plane</strong>, and <strong>vertically polarized</strong> — which matches the most common orientation of handheld, body-worn, portable, and installed wireless gear.</p>
+
+<figure>
+<svg viewBox="0 0 900 400" role="img" aria-label="Quarter-wave vertical antenna showing element length, ground plane diameter, and omnidirectional pattern">
+  <g font-family="'DM Sans',sans-serif">
+  <text x="34" y="30" fill="#6b7484" font-size="11" font-family="'IBM Plex Mono',monospace">ELEVATION — SIDE VIEW</text>
+
+  <!-- full wavelength reference: y 60 to 300 = 240px -->
+  <line x1="60" y1="60" x2="60" y2="300" stroke="#6b7484" stroke-width="1.4"/>
+  <line x1="52" y1="60" x2="68" y2="60" stroke="#6b7484" stroke-width="1.4"/>
+  <line x1="52" y1="300" x2="68" y2="300" stroke="#6b7484" stroke-width="1.4"/>
+  <text x="44" y="176" text-anchor="end" fill="#6b7484" font-size="14" font-family="'IBM Plex Mono',monospace">λ</text>
+  <text x="44" y="193" text-anchor="end" fill="#6b7484" font-size="10.5">full</text>
+  <text x="44" y="206" text-anchor="end" fill="#6b7484" font-size="10.5">wave</text>
+  <line x1="60" y1="120" x2="300" y2="120" stroke="#2a3140" stroke-dasharray="3 4"/>
+  <line x1="60" y1="180" x2="300" y2="180" stroke="#2a3140" stroke-dasharray="3 4"/>
+  <line x1="60" y1="240" x2="300" y2="240" stroke="#2a3140" stroke-dasharray="3 4"/>
+  <text x="306" y="124" fill="#6b7484" font-size="10.5" font-family="'IBM Plex Mono',monospace">¾λ</text>
+  <text x="306" y="184" fill="#6b7484" font-size="10.5" font-family="'IBM Plex Mono',monospace">½λ</text>
+  <text x="306" y="244" fill="#6b7484" font-size="10.5" font-family="'IBM Plex Mono',monospace">¼λ</text>
+
+  <!-- radiation lobes (donut cross-section) behind element -->
+  <ellipse cx="130" cy="278" rx="42" ry="26" fill="none" stroke="#a78bfa" stroke-width="1.4" opacity=".55"/>
+  <ellipse cx="230" cy="278" rx="42" ry="26" fill="none" stroke="#a78bfa" stroke-width="1.4" opacity=".55"/>
+
+  <!-- element: 60px tall = exactly λ/4 -->
+  <line x1="180" y1="300" x2="180" y2="240" stroke="#3fd0c9" stroke-width="5.5" stroke-linecap="round"/>
+  <line x1="196" y1="240" x2="196" y2="300" stroke="#3fd0c9" stroke-width="1.3"/>
+  <line x1="190" y1="240" x2="202" y2="240" stroke="#3fd0c9" stroke-width="1.3"/>
+  <line x1="190" y1="300" x2="202" y2="300" stroke="#3fd0c9" stroke-width="1.3"/>
+  <text x="210" y="264" fill="#3fd0c9" font-size="14" font-weight="700" font-family="'IBM Plex Mono',monospace">λ/4</text>
+  <text x="210" y="280" fill="#9aa3b2" font-size="11">element length</text>
+
+  <!-- ground plane: 60px wide = exactly λ/4, centred on element -->
+  <line x1="150" y1="302" x2="210" y2="302" stroke="#f0b429" stroke-width="5"/>
+  <line x1="150" y1="322" x2="210" y2="322" stroke="#f0b429" stroke-width="1.3"/>
+  <line x1="150" y1="316" x2="150" y2="328" stroke="#f0b429" stroke-width="1.3"/>
+  <line x1="210" y1="316" x2="210" y2="328" stroke="#f0b429" stroke-width="1.3"/>
+  <text x="180" y="346" text-anchor="middle" fill="#f0b429" font-size="14" font-weight="700" font-family="'IBM Plex Mono',monospace">λ/4</text>
+  <text x="180" y="364" text-anchor="middle" fill="#f0b429" font-size="11.5">GROUND PLANE diameter</text>
+  <text x="180" y="380" text-anchor="middle" fill="#9aa3b2" font-size="11">minimum for full efficiency</text>
+
+  <!-- divider -->
+  <line x1="420" y1="30" x2="420" y2="386" stroke="#2a3140"/>
+  <text x="452" y="30" fill="#6b7484" font-size="11" font-family="'IBM Plex Mono',monospace">PLAN — VIEWED FROM ABOVE</text>
+
+  <circle cx="668" cy="196" r="128" fill="#a78bfa" fill-opacity=".07" stroke="#a78bfa" stroke-width="1.6"/>
+  <circle cx="668" cy="196" r="92" fill="#a78bfa" fill-opacity=".07" stroke="#a78bfa" stroke-width="1.1" opacity=".55"/>
+  <circle cx="668" cy="196" r="56" fill="#a78bfa" fill-opacity=".07" stroke="#a78bfa" stroke-width="1.1" opacity=".4"/>
+  <g stroke="#a78bfa" stroke-width="1.3" opacity=".65">
+  <line x1="668" y1="188" x2="668" y2="76"/><line x1="668" y1="204" x2="668" y2="316"/>
+  <line x1="660" y1="196" x2="548" y2="196"/><line x1="676" y1="196" x2="788" y2="196"/>
+  <line x1="674" y1="190" x2="753" y2="111"/><line x1="662" y1="202" x2="583" y2="281"/>
+  <line x1="674" y1="202" x2="753" y2="281"/><line x1="662" y1="190" x2="583" y2="111"/>
+  </g>
+  <circle cx="668" cy="196" r="7" fill="#3fd0c9"/>
+  <line x1="668" y1="196" x2="716" y2="148" stroke="#3fd0c9" stroke-width="1"/>
+  <text x="722" y="145" fill="#3fd0c9" font-size="11" font-family="'IBM Plex Mono',monospace">ANTENNA</text>
+  <text x="668" y="352" text-anchor="middle" fill="#a78bfa" font-size="14" font-weight="700">OMNIDIRECTIONAL</text>
+  <text x="668" y="370" text-anchor="middle" fill="#9aa3b2" font-size="11.5">equal coverage in every horizontal direction</text>
+  </g>
+</svg>
+<figcaption><b>Figure 11.</b> Element length and ground plane diameter drawn to the same λ reference. The pattern is a donut around the element — strong sideways, null straight up.</figcaption>
+</figure>
+
+<div class="call s"><span class="lab">Spec</span>
+<p><strong>Quarter-wave element:</strong> one of the most efficient configurations for propagating RF from a vertical antenna is a physical length of <strong>one quarter of the carrier's wavelength</strong>. The book's memory hook: think "Rubber Ducky" antenna.</p>
+<p><strong>Ground plane:</strong> most vertical antennas are <em>monopoles</em> and need a wide-area connection to ground to radiate efficiently. A quarter-wave vertical needs a ground-plane area about <strong>one quarter of a wavelength in diameter</strong>.</p></div>
+
+<div class="call w"><span class="lab">Watch out</span><p>The ground plane relationship is asymmetric, and the exam likes asymmetries.<br>
+<strong>Bigger than λ/4 → minimal further effect.</strong> You gain nothing meaningful by oversizing it.<br>
+<strong>Smaller than λ/4 → reduced antenna gain and performance.</strong> You lose real signal.<br>
+So "make the ground plane as large as possible" is not the right answer; "at least a quarter wavelength in diameter" is.</p></div>
+
+<div class="call k"><span class="lab">Key term</span><p><strong>Ground plane</strong> — the conductive surface a monopole antenna radiates against. Easy on a fixed broadcast tower, awkward on anything portable. For many moveable AV systems, the ground plane <em>is</em> the equipment case or the metal mounting rack.</p></div>
+
+<div class="call e"><span class="lab">Exam tip</span><p>Run the numbers once and the quarter-wave figure stops feeling abstract. A 600 MHz UHF mic has λ = 500 mm, so its element is <strong>125 mm</strong> — about the length of the stub on the back of a receiver. A 2.4 GHz Wi-Fi antenna is <strong>31 mm</strong>. A 200 MHz VHF system needs <strong>375 mm</strong>, which is why VHF antennas are conspicuously long. Use the calculator in Section 5 to check any of these.</p></div>
+
+<h2 id="s-div"><span class="sec-n">SECTION 13</span>Multipath and diversity systems</h2>
+<p>This section is where the chapter's two halves collide. Omnidirectional antennas radiate in all directions (Section 12). Radio waves reflect off surfaces (Section 8). Put those together in a real room and the receiving antenna gets the same signal <em>more than once</em>, at slightly different times.</p>
+
+<figure>
+<svg viewBox="0 0 900 380" role="img" aria-label="Multipath: direct and reflected signals cancelling at one antenna while a second antenna receives cleanly">
+  <defs><marker id="arE" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="#3fd0c9"/></marker>
+  <marker id="arF" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 z" fill="#f0b429"/></marker></defs>
+  <g font-family="'DM Sans',sans-serif">
+  <!-- room -->
+  <rect x="40" y="46" width="820" height="256" fill="none" stroke="#2a3140" stroke-width="2"/>
+  <text x="54" y="68" fill="#6b7484" font-size="11" font-family="'IBM Plex Mono',monospace">ROOM · PLAN VIEW</text>
+  <text x="846" y="180" text-anchor="middle" fill="#6b7484" font-size="10.5" transform="rotate(90 846 180)">REFLECTIVE WALL</text>
+
+  <!-- transmitter -->
+  <circle cx="150" cy="174" r="11" fill="#1d222d" stroke="#3fd0c9" stroke-width="2"/>
+  <line x1="150" y1="163" x2="150" y2="138" stroke="#3fd0c9" stroke-width="2.5"/>
+  <text x="150" y="128" text-anchor="middle" fill="#3fd0c9" font-size="12" font-weight="700">TX</text>
+  <text x="150" y="206" text-anchor="middle" fill="#9aa3b2" font-size="11">wireless mic</text>
+
+  <!-- direct path to antenna A -->
+  <line x1="162" y1="172" x2="588" y2="120" stroke="#3fd0c9" stroke-width="2" marker-end="url(#arE)"/>
+  <text x="360" y="132" text-anchor="middle" fill="#3fd0c9" font-size="11.5" font-weight="700">DIRECT — line of sight</text>
+
+  <!-- reflected path off right wall to antenna A -->
+  <path d="M162 180 L852 250 L604 128" fill="none" stroke="#f0b429" stroke-width="2" marker-end="url(#arF)"/>
+  <circle cx="852" cy="250" r="4" fill="#f0b429"/>
+  <line x1="300" y1="238" x2="300" y2="198" stroke="#f0b429" stroke-width="1" stroke-dasharray="3 3" opacity=".7"/>
+  <text x="300" y="254" text-anchor="middle" fill="#f0b429" font-size="11.5" font-weight="700">REFLECTED — longer path, arrives late</text>
+
+  <!-- antenna A -->
+  <line x1="600" y1="118" x2="600" y2="70" stroke="#f2686a" stroke-width="3"/>
+  <circle cx="600" cy="66" r="4" fill="#f2686a"/>
+  <text x="600" y="56" text-anchor="middle" fill="#f2686a" font-size="12" font-weight="700">ANTENNA A</text>
+  <line x1="600" y1="120" x2="600" y2="150" stroke="#f2686a" stroke-width="1" stroke-dasharray="3 3" opacity=".7"/>
+  <rect x="452" y="150" width="152" height="30" rx="5" fill="rgba(242,104,106,.12)" stroke="#f2686a"/>
+  <text x="528" y="170" text-anchor="middle" fill="#f2686a" font-size="11.5" font-weight="700">out of phase → NULL</text>
+
+  <!-- antenna B -->
+  <line x1="700" y1="286" x2="700" y2="238" stroke="#5fd68a" stroke-width="3"/>
+  <circle cx="700" cy="234" r="4" fill="#5fd68a"/>
+  <text x="700" y="224" text-anchor="middle" fill="#5fd68a" font-size="12" font-weight="700">ANTENNA B</text>
+  <line x1="162" y1="182" x2="688" y2="284" stroke="#5fd68a" stroke-width="2" marker-end="url(#arE)" opacity=".9"/>
+  <rect x="640" y="294" width="120" height="26" rx="5" fill="rgba(95,214,138,.12)" stroke="#5fd68a"/>
+  <text x="700" y="312" text-anchor="middle" fill="#5fd68a" font-size="11.5" font-weight="700">clean signal</text>
+
+  <rect x="40" y="336" width="820" height="34" rx="6" fill="#161a23" stroke="#2a3140"/>
+  <text x="450" y="358" text-anchor="middle" fill="#9aa3b2" font-size="12.5">Two antennas in different places cannot both sit in a null. The receiver compares them and takes the usable one.</text>
+  </g>
+</svg>
+<figcaption><b>Figure 12.</b> Multipath cancellation is location-specific. That's the entire insight diversity exploits — move the second antenna and the null doesn't follow it.</figcaption>
+</figure>
+
+<h3>Why the signals cancel</h3>
+<p>The direct wave and the reflected wave travel different distances, so they arrive at different times. Arriving at different times means arriving at different points in their cycle — and if they land roughly opposite, they subtract instead of add.</p>
+
+<figure>
+<svg viewBox="0 0 900 280" role="img" aria-label="Two identical waves 180 degrees out of phase summing to zero">
+  <g font-family="'DM Sans',sans-serif">
+  <line x1="200" y1="58" x2="760" y2="58" stroke="#2a3140" stroke-dasharray="3 4"/>
+  <path d="M200.0,58.00 L201.5,56.25 L203.0,54.51 L204.5,52.78 L206.0,51.08 L207.5,49.41 L209.0,47.78 L210.5,46.20 L212.0,44.66 L213.5,43.19 L215.0,41.79 L216.5,40.46 L218.0,39.21 L219.5,38.04 L221.0,36.97 L222.5,35.99 L224.0,35.10 L225.5,34.33 L227.0,33.66 L228.5,33.10 L230.0,32.65 L231.5,32.32 L233.0,32.10 L234.5,32.01 L236.0,32.03 L237.5,32.16 L239.0,32.42 L240.5,32.79 L242.0,33.27 L243.5,33.87 L245.0,34.57 L246.5,35.39 L248.0,36.30 L249.5,37.31 L251.0,38.42 L252.5,39.62 L254.0,40.89 L255.5,42.25 L257.0,43.68 L258.5,45.17 L260.0,46.72 L261.5,48.32 L263.0,49.97 L264.5,51.65 L266.0,53.36 L267.5,55.09 L269.0,56.83 L270.5,58.58 L272.0,60.33 L273.5,62.07 L275.0,63.79 L276.5,65.48 L278.0,67.14 L279.5,68.75 L281.0,70.32 L282.5,71.83 L284.0,73.28 L285.5,74.66 L287.0,75.97 L288.5,77.19 L290.0,78.33 L291.5,79.37 L293.0,80.32 L294.5,81.17 L296.0,81.91 L297.5,82.54 L299.0,83.06 L300.5,83.47 L302.0,83.76 L303.5,83.94 L305.0,84.00 L306.5,83.94 L308.0,83.76 L309.5,83.47 L311.0,83.06 L312.5,82.54 L314.0,81.91 L315.5,81.17 L317.0,80.32 L318.5,79.37 L320.0,78.33 L321.5,77.19 L323.0,75.97 L324.5,74.66 L326.0,73.28 L327.5,71.83 L329.0,70.32 L330.5,68.75 L332.0,67.14 L333.5,65.48 L335.0,63.79 L336.5,62.07 L338.0,60.33 L339.5,58.58 L341.0,56.83 L342.5,55.09 L344.0,53.36 L345.5,51.65 L347.0,49.97 L348.5,48.32 L350.0,46.72 L351.5,45.17 L353.0,43.68 L354.5,42.25 L356.0,40.89 L357.5,39.62 L359.0,38.42 L360.5,37.31 L362.0,36.30 L363.5,35.39 L365.0,34.57 L366.5,33.87 L368.0,33.27 L369.5,32.79 L371.0,32.42 L372.5,32.16 L374.0,32.03 L375.5,32.01 L377.0,32.10 L378.5,32.32 L380.0,32.65 L381.5,33.10 L383.0,33.66 L384.5,34.33 L386.0,35.10 L387.5,35.99 L389.0,36.97 L390.5,38.04 L392.0,39.21 L393.5,40.46 L395.0,41.79 L396.5,43.19 L398.0,44.66 L399.5,46.20 L401.0,47.78 L402.5,49.41 L404.0,51.08 L405.5,52.78 L407.0,54.51 L408.5,56.25 L410.0,58.00 L411.5,59.75 L413.0,61.49 L414.5,63.22 L416.0,64.92 L417.5,66.59 L419.0,68.22 L420.5,69.80 L422.0,71.34 L423.5,72.81 L425.0,74.21 L426.5,75.54 L428.0,76.79 L429.5,77.96 L431.0,79.03 L432.5,80.01 L434.0,80.90 L435.5,81.67 L437.0,82.34 L438.5,82.90 L440.0,83.35 L441.5,83.68 L443.0,83.90 L444.5,83.99 L446.0,83.97 L447.5,83.84 L449.0,83.58 L450.5,83.21 L452.0,82.73 L453.5,82.13 L455.0,81.43 L456.5,80.61 L458.0,79.70 L459.5,78.69 L461.0,77.58 L462.5,76.38 L464.0,75.11 L465.5,73.75 L467.0,72.32 L468.5,70.83 L470.0,69.28 L471.5,67.68 L473.0,66.03 L474.5,64.35 L476.0,62.64 L477.5,60.91 L479.0,59.17 L480.5,57.42 L482.0,55.67 L483.5,53.93 L485.0,52.21 L486.5,50.52 L488.0,48.86 L489.5,47.25 L491.0,45.68 L492.5,44.17 L494.0,42.72 L495.5,41.34 L497.0,40.03 L498.5,38.81 L500.0,37.67 L501.5,36.63 L503.0,35.68 L504.5,34.83 L506.0,34.09 L507.5,33.46 L509.0,32.94 L510.5,32.53 L512.0,32.24 L513.5,32.06 L515.0,32.00 L516.5,32.06 L518.0,32.24 L519.5,32.53 L521.0,32.94 L522.5,33.46 L524.0,34.09 L525.5,34.83 L527.0,35.68 L528.5,36.63 L530.0,37.67 L531.5,38.81 L533.0,40.03 L534.5,41.34 L536.0,42.72 L537.5,44.17 L539.0,45.68 L540.5,47.25 L542.0,48.86 L543.5,50.52 L545.0,52.21 L546.5,53.93 L548.0,55.67 L549.5,57.42 L551.0,59.17 L552.5,60.91 L554.0,62.64 L555.5,64.35 L557.0,66.03 L558.5,67.68 L560.0,69.28 L561.5,70.83 L563.0,72.32 L564.5,73.75 L566.0,75.11 L567.5,76.38 L569.0,77.58 L570.5,78.69 L572.0,79.70 L573.5,80.61 L575.0,81.43 L576.5,82.13 L578.0,82.73 L579.5,83.21 L581.0,83.58 L582.5,83.84 L584.0,83.97 L585.5,83.99 L587.0,83.90 L588.5,83.68 L590.0,83.35 L591.5,82.90 L593.0,82.34 L594.5,81.67 L596.0,80.90 L597.5,80.01 L599.0,79.03 L600.5,77.96 L602.0,76.79 L603.5,75.54 L605.0,74.21 L606.5,72.81 L608.0,71.34 L609.5,69.80 L611.0,68.22 L612.5,66.59 L614.0,64.92 L615.5,63.22 L617.0,61.49 L618.5,59.75 L620.0,58.00 L621.5,56.25 L623.0,54.51 L624.5,52.78 L626.0,51.08 L627.5,49.41 L629.0,47.78 L630.5,46.20 L632.0,44.66 L633.5,43.19 L635.0,41.79 L636.5,40.46 L638.0,39.21 L639.5,38.04 L641.0,36.97 L642.5,35.99 L644.0,35.10 L645.5,34.33 L647.0,33.66 L648.5,33.10 L650.0,32.65 L651.5,32.32 L653.0,32.10 L654.5,32.01 L656.0,32.03 L657.5,32.16 L659.0,32.42 L660.5,32.79 L662.0,33.27 L663.5,33.87 L665.0,34.57 L666.5,35.39 L668.0,36.30 L669.5,37.31 L671.0,38.42 L672.5,39.62 L674.0,40.89 L675.5,42.25 L677.0,43.68 L678.5,45.17 L680.0,46.72 L681.5,48.32 L683.0,49.97 L684.5,51.65 L686.0,53.36 L687.5,55.09 L689.0,56.83 L690.5,58.58 L692.0,60.33 L693.5,62.07 L695.0,63.79 L696.5,65.48 L698.0,67.14 L699.5,68.75 L701.0,70.32 L702.5,71.83 L704.0,73.28 L705.5,74.66 L707.0,75.97 L708.5,77.19 L710.0,78.33 L711.5,79.37 L713.0,80.32 L714.5,81.17 L716.0,81.91 L717.5,82.54 L719.0,83.06 L720.5,83.47 L722.0,83.76 L723.5,83.94 L725.0,84.00 L726.5,83.94 L728.0,83.76 L729.5,83.47 L731.0,83.06 L732.5,82.54 L734.0,81.91 L735.5,81.17 L737.0,80.32 L738.5,79.37 L740.0,78.33 L741.5,77.19 L743.0,75.97 L744.5,74.66 L746.0,73.28 L747.5,71.83 L749.0,70.32 L750.5,68.75 L752.0,67.14 L753.5,65.48 L755.0,63.79 L756.5,62.07 L758.0,60.33 L759.5,58.58" fill="none" stroke="#3fd0c9" stroke-width="2.2"/>
+  <text x="30" y="54" fill="#3fd0c9" font-size="12.5" font-weight="700">DIRECT</text>
+  <text x="30" y="72" fill="#9aa3b2" font-size="11">shorter path</text>
+
+  <line x1="200" y1="138" x2="760" y2="138" stroke="#2a3140" stroke-dasharray="3 4"/>
+  <path d="M200.0,138.00 L201.5,139.75 L203.0,141.49 L204.5,143.22 L206.0,144.92 L207.5,146.59 L209.0,148.22 L210.5,149.80 L212.0,151.34 L213.5,152.81 L215.0,154.21 L216.5,155.54 L218.0,156.79 L219.5,157.96 L221.0,159.03 L222.5,160.01 L224.0,160.90 L225.5,161.67 L227.0,162.34 L228.5,162.90 L230.0,163.35 L231.5,163.68 L233.0,163.90 L234.5,163.99 L236.0,163.97 L237.5,163.84 L239.0,163.58 L240.5,163.21 L242.0,162.73 L243.5,162.13 L245.0,161.43 L246.5,160.61 L248.0,159.70 L249.5,158.69 L251.0,157.58 L252.5,156.38 L254.0,155.11 L255.5,153.75 L257.0,152.32 L258.5,150.83 L260.0,149.28 L261.5,147.68 L263.0,146.03 L264.5,144.35 L266.0,142.64 L267.5,140.91 L269.0,139.17 L270.5,137.42 L272.0,135.67 L273.5,133.93 L275.0,132.21 L276.5,130.52 L278.0,128.86 L279.5,127.25 L281.0,125.68 L282.5,124.17 L284.0,122.72 L285.5,121.34 L287.0,120.03 L288.5,118.81 L290.0,117.67 L291.5,116.63 L293.0,115.68 L294.5,114.83 L296.0,114.09 L297.5,113.46 L299.0,112.94 L300.5,112.53 L302.0,112.24 L303.5,112.06 L305.0,112.00 L306.5,112.06 L308.0,112.24 L309.5,112.53 L311.0,112.94 L312.5,113.46 L314.0,114.09 L315.5,114.83 L317.0,115.68 L318.5,116.63 L320.0,117.67 L321.5,118.81 L323.0,120.03 L324.5,121.34 L326.0,122.72 L327.5,124.17 L329.0,125.68 L330.5,127.25 L332.0,128.86 L333.5,130.52 L335.0,132.21 L336.5,133.93 L338.0,135.67 L339.5,137.42 L341.0,139.17 L342.5,140.91 L344.0,142.64 L345.5,144.35 L347.0,146.03 L348.5,147.68 L350.0,149.28 L351.5,150.83 L353.0,152.32 L354.5,153.75 L356.0,155.11 L357.5,156.38 L359.0,157.58 L360.5,158.69 L362.0,159.70 L363.5,160.61 L365.0,161.43 L366.5,162.13 L368.0,162.73 L369.5,163.21 L371.0,163.58 L372.5,163.84 L374.0,163.97 L375.5,163.99 L377.0,163.90 L378.5,163.68 L380.0,163.35 L381.5,162.90 L383.0,162.34 L384.5,161.67 L386.0,160.90 L387.5,160.01 L389.0,159.03 L390.5,157.96 L392.0,156.79 L393.5,155.54 L395.0,154.21 L396.5,152.81 L398.0,151.34 L399.5,149.80 L401.0,148.22 L402.5,146.59 L404.0,144.92 L405.5,143.22 L407.0,141.49 L408.5,139.75 L410.0,138.00 L411.5,136.25 L413.0,134.51 L414.5,132.78 L416.0,131.08 L417.5,129.41 L419.0,127.78 L420.5,126.20 L422.0,124.66 L423.5,123.19 L425.0,121.79 L426.5,120.46 L428.0,119.21 L429.5,118.04 L431.0,116.97 L432.5,115.99 L434.0,115.10 L435.5,114.33 L437.0,113.66 L438.5,113.10 L440.0,112.65 L441.5,112.32 L443.0,112.10 L444.5,112.01 L446.0,112.03 L447.5,112.16 L449.0,112.42 L450.5,112.79 L452.0,113.27 L453.5,113.87 L455.0,114.57 L456.5,115.39 L458.0,116.30 L459.5,117.31 L461.0,118.42 L462.5,119.62 L464.0,120.89 L465.5,122.25 L467.0,123.68 L468.5,125.17 L470.0,126.72 L471.5,128.32 L473.0,129.97 L474.5,131.65 L476.0,133.36 L477.5,135.09 L479.0,136.83 L480.5,138.58 L482.0,140.33 L483.5,142.07 L485.0,143.79 L486.5,145.48 L488.0,147.14 L489.5,148.75 L491.0,150.32 L492.5,151.83 L494.0,153.28 L495.5,154.66 L497.0,155.97 L498.5,157.19 L500.0,158.33 L501.5,159.37 L503.0,160.32 L504.5,161.17 L506.0,161.91 L507.5,162.54 L509.0,163.06 L510.5,163.47 L512.0,163.76 L513.5,163.94 L515.0,164.00 L516.5,163.94 L518.0,163.76 L519.5,163.47 L521.0,163.06 L522.5,162.54 L524.0,161.91 L525.5,161.17 L527.0,160.32 L528.5,159.37 L530.0,158.33 L531.5,157.19 L533.0,155.97 L534.5,154.66 L536.0,153.28 L537.5,151.83 L539.0,150.32 L540.5,148.75 L542.0,147.14 L543.5,145.48 L545.0,143.79 L546.5,142.07 L548.0,140.33 L549.5,138.58 L551.0,136.83 L552.5,135.09 L554.0,133.36 L555.5,131.65 L557.0,129.97 L558.5,128.32 L560.0,126.72 L561.5,125.17 L563.0,123.68 L564.5,122.25 L566.0,120.89 L567.5,119.62 L569.0,118.42 L570.5,117.31 L572.0,116.30 L573.5,115.39 L575.0,114.57 L576.5,113.87 L578.0,113.27 L579.5,112.79 L581.0,112.42 L582.5,112.16 L584.0,112.03 L585.5,112.01 L587.0,112.10 L588.5,112.32 L590.0,112.65 L591.5,113.10 L593.0,113.66 L594.5,114.33 L596.0,115.10 L597.5,115.99 L599.0,116.97 L600.5,118.04 L602.0,119.21 L603.5,120.46 L605.0,121.79 L606.5,123.19 L608.0,124.66 L609.5,126.20 L611.0,127.78 L612.5,129.41 L614.0,131.08 L615.5,132.78 L617.0,134.51 L618.5,136.25 L620.0,138.00 L621.5,139.75 L623.0,141.49 L624.5,143.22 L626.0,144.92 L627.5,146.59 L629.0,148.22 L630.5,149.80 L632.0,151.34 L633.5,152.81 L635.0,154.21 L636.5,155.54 L638.0,156.79 L639.5,157.96 L641.0,159.03 L642.5,160.01 L644.0,160.90 L645.5,161.67 L647.0,162.34 L648.5,162.90 L650.0,163.35 L651.5,163.68 L653.0,163.90 L654.5,163.99 L656.0,163.97 L657.5,163.84 L659.0,163.58 L660.5,163.21 L662.0,162.73 L663.5,162.13 L665.0,161.43 L666.5,160.61 L668.0,159.70 L669.5,158.69 L671.0,157.58 L672.5,156.38 L674.0,155.11 L675.5,153.75 L677.0,152.32 L678.5,150.83 L680.0,149.28 L681.5,147.68 L683.0,146.03 L684.5,144.35 L686.0,142.64 L687.5,140.91 L689.0,139.17 L690.5,137.42 L692.0,135.67 L693.5,133.93 L695.0,132.21 L696.5,130.52 L698.0,128.86 L699.5,127.25 L701.0,125.68 L702.5,124.17 L704.0,122.72 L705.5,121.34 L707.0,120.03 L708.5,118.81 L710.0,117.67 L711.5,116.63 L713.0,115.68 L714.5,114.83 L716.0,114.09 L717.5,113.46 L719.0,112.94 L720.5,112.53 L722.0,112.24 L723.5,112.06 L725.0,112.00 L726.5,112.06 L728.0,112.24 L729.5,112.53 L731.0,112.94 L732.5,113.46 L734.0,114.09 L735.5,114.83 L737.0,115.68 L738.5,116.63 L740.0,117.67 L741.5,118.81 L743.0,120.03 L744.5,121.34 L746.0,122.72 L747.5,124.17 L749.0,125.68 L750.5,127.25 L752.0,128.86 L753.5,130.52 L755.0,132.21 L756.5,133.93 L758.0,135.67 L759.5,137.42" fill="none" stroke="#f0b429" stroke-width="2.2"/>
+  <text x="30" y="134" fill="#f0b429" font-size="12.5" font-weight="700">REFLECTED</text>
+  <text x="30" y="152" fill="#9aa3b2" font-size="11">arrives 180° late</text>
+
+  <line x1="200" y1="218" x2="760" y2="218" stroke="#2a3140" stroke-dasharray="3 4"/>
+  <path d="M200,218 L760,218" fill="none" stroke="#f2686a" stroke-width="3"/>
+  <text x="30" y="214" fill="#f2686a" font-size="12.5" font-weight="700">SUM</text>
+  <text x="30" y="232" fill="#9aa3b2" font-size="11">nothing left</text>
+
+  <text x="480" y="264" text-anchor="middle" fill="#6b7484" font-size="12">Perfect cancellation is the worst case; partial cancellation — a weak, noisy, dropout-prone link — is the common one.</text>
+  </g>
+</svg>
+<figcaption><b>Figure 13.</b> Equal amplitude, opposite phase, complete null. In practice the reflected path is weaker, so you get partial cancellation instead of silence — harder to diagnose, just as annoying.</figcaption>
+</figure>
+
+<div class="call k"><span class="lab">Key term</span><p><strong>Diversity receiver</strong> — a receiver using an <em>array of antennas in different places</em> to receive one transmitted signal. It constantly compares the phase differences between the received signals and dynamically selects the best antennas to avoid signal cancellation.</p></div>
+
+<h4>What the receiver does with two good signals</h4>
+<p>If signals arrive <strong>in phase</strong> at more than one antenna, the receiver has a choice: it may select the <strong>highest-amplitude</strong> signal, or it may <strong>combine the signals additively</strong>. Both behaviours are named in the book, and a question can test either.</p>
+
+<div class="call w"><span class="lab">Watch out</span><p>The classic wrong answer is that a diversity receiver <em>eliminates</em> multipath, or <em>amplifies echoes to strengthen the main signal</em>. It does neither. Multipath is still there; the receiver just has a second vantage point and picks the better one. The correct framing is always <strong>compare phase differences → select to avoid cancellation.</strong></p></div>
+
+<div class="call e"><span class="lab">Exam tip</span><p>Notice the chain of reasoning the chapter builds, because scenario questions walk it in order: omnidirectional radiation → reflections off walls and floors → different arrival times → phase difference → partial cancellation → dropouts. The fix isn't more power. It's a second antenna somewhere else.</p></div>
+
+<h2 id="s-links"><span class="sec-n">SECTION 14</span>Where this chapter shows up elsewhere</h2>
+<p>Chapter 10 is foundational, so its content is really tested through other chapters. These are the four live connections.</p>
+
+<div class="tw"><table>
+<thead><tr><th>Chapter</th><th>Connection</th><th>What carries over</th></tr></thead>
+<tbody>
+<tr><td class="t">Ch. 4 — Audio</td><td>Wireless microphones</td><td>Radio mics use RF in place of a mic cable; some use IR instead. Most allow selecting from a range of frequencies to dodge interference, cross-talk, and intermodulation distortion. Some use spread-spectrum frequency hopping. <strong>Even the best wireless link is less reliable and less noise-immune than a mic cable.</strong></td></tr>
+<tr><td class="t">Ch. 4 — Audio</td><td>Spectrum management</td><td>A <strong>full-spectrum frequency allocation plan</strong> is an important component of any AV installation or production, and must account for local allocation regulations per this chapter</td></tr>
+<tr><td class="t">Ch. 6 — Networking</td><td>Wi-Fi / 802.11</td><td>Real range depends on transmit antenna, receive antenna, obstructions, and transmitter power on both ends — not the manufacturer's headline distance. Speed falls as RF signal strength weakens.</td></tr>
+<tr><td class="t">Ch. 8 — Control</td><td>RF control</td><td>Zigbee (ISM 2.4 GHz, ~30 m LOS, mesh-capable), Wi-Fi, and Bluetooth (ISM 2.4 GHz, ~10 m LOS). <strong>Verify which frequencies are already in use before deploying RF control</strong> — with universal Wi-Fi and Bluetooth on personal devices, a clear channel can't be guaranteed, and it gets worst when the room is full.</td></tr>
+<tr><td class="t">Ch. 17 — Installation</td><td>Rack building</td><td>RF is a rack-layout consideration; a metal rack can also serve as the ground plane for a portable system's vertical antenna</td></tr>
+</tbody></table></div>
+
+<div class="call e"><span class="lab">Exam tip</span><p>The AVIXA way threads through all of these: <strong>plan the spectrum before you deploy, verify what's already in the air, document the allocation, and prefer a wired path when reliability matters more than flexibility.</strong> Answers that reach for a field workaround — swapping to a random open channel, cranking transmitter power, adding an amplifier — are almost always the distractors.</p></div>
+
+<h2 id="s-cheat"><span class="sec-n">SECTION 15</span>Exam cheat sheet</h2>
+<p>Everything in the chapter worth memorizing outright, on one screen.</p>
+
+<h4>Numbers</h4>
+<div class="tw"><table>
+<thead><tr><th>Value</th><th>What it is</th></tr></thead>
+<tbody>
+<tr><td class="n">3 kHz – 300 GHz</td><td>The RF spectrum / radio wave band</td></tr>
+<tr><td class="n">100 km / 1 mm</td><td>Wavelengths at those two limits</td></tr>
+<tr><td class="n">30 – 300 MHz</td><td>VHF</td></tr>
+<tr><td class="n">300 MHz – 3 GHz</td><td>UHF</td></tr>
+<tr><td class="n">λ = 300 ÷ f(MHz)</td><td>Wavelength in meters</td></tr>
+<tr><td class="n">f = 300 ÷ λ(m)</td><td>Frequency in megahertz</td></tr>
+<tr><td class="n">× 2</td><td>Carrier must be at least double the information frequency</td></tr>
+<tr><td class="n">λ / 4</td><td>Efficient vertical antenna element length</td></tr>
+<tr><td class="n">λ / 4</td><td>Minimum ground plane <em>diameter</em> for that element</td></tr>
+<tr><td class="n">~1 GHz</td><td>Practical lower frequency limit for parabolic antennas</td></tr>
+<tr><td class="n">100 mm</td><td>Below this wavelength, signals pass through the ionosphere</td></tr>
+<tr><td class="n">470 – 950 MHz</td><td>Terrestrial digital TV channel slots</td></tr>
+<tr><td class="n">2.5 / 5 / 60 GHz</td><td>Wi-Fi allocations across the ITU</td></tr>
+<tr><td class="n">4 – 8 GHz</td><td>C band satellite TV</td></tr>
+<tr><td class="n">12 – 18 GHz</td><td>Ku band satellite TV</td></tr>
+</tbody></table></div>
+
+<h4>Distinctions</h4>
+<div class="tw"><table>
+<thead><tr><th>This</th><th>Not this</th></tr></thead>
+<tbody>
+<tr><td class="t">Transmitter <strong>modulates</strong></td><td>Transmitter demodulates</td></tr>
+<tr><td class="t">Receiver <strong>demodulates</strong></td><td>Receiver modulates</td></tr>
+<tr><td class="t">RF = a frequency range, any medium</td><td>RF = through the air only</td></tr>
+<tr><td class="t">Wireless = no wire or fiber</td><td>Wireless = radio only</td></tr>
+<tr><td class="t">Co-polarized = maximum signal</td><td>Cross-polarized = maximum signal</td></tr>
+<tr><td class="t">Parabolic = point-to-point, fixed</td><td>Parabolic = wide coverage or moving endpoints</td></tr>
+<tr><td class="t">Diversity = compare phase, select best</td><td>Diversity = eliminate multipath or amplify echoes</td></tr>
+<tr><td class="t">Ground plane under λ/4 = worse</td><td>Ground plane over λ/4 = better</td></tr>
+<tr><td class="t">Long λ reflects off the ionosphere</td><td>Short λ reflects off the ionosphere</td></tr>
+<tr><td class="t">Allocations vary by jurisdiction</td><td>One global mic frequency plan</td></tr>
+</tbody></table></div>
+
+<h2 id="s-quiz"><span class="sec-n">SECTION 16</span>Self-check</h2>
+<p>Fourteen questions, original wording, covering everything above. Explanations appear after you answer.</p>
+<div id="quiz"></div>
+<div id="score">Answered <b><span id="s-done">0</span></b> of 14 · Correct <b><span id="s-right">0</span></b></div>
+
+<footer>
+<p><strong>CTS Crash Course — Chapter 10: Wireless Radio Systems.</strong> Built from the <em>AVIXA CTS Exam Guide</em>, 3rd ed. (Ciddor). All wording, diagrams, and questions are original; nothing here reproduces book text or official review questions.</p>
+</footer>
+</main>
+
+<script>
+(function(){
+  // ---- sidebar ----
+  var h=document.getElementById('hamb'),s=document.getElementById('side'),b=document.getElementById('backdrop');
+  function tog(on){
+    s.classList.toggle('on',on); b.classList.toggle('on',on);
+    document.body.classList.toggle('shifted',on);
+    h.setAttribute('aria-expanded',on?'true':'false');
+  }
+  h.addEventListener('click',function(){tog(!s.classList.contains('on'));});
+  b.addEventListener('click',function(){tog(false);});
+  s.addEventListener('click',function(e){if(e.target.tagName==='A')tog(false);});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')tog(false);});
+
+  // ---- calculator ----
+  var f=document.getElementById('freq');
+  function fmt(n){
+    if(n>=1000) return n.toFixed(0);
+    if(n>=100) return n.toFixed(1);
+    if(n>=1) return n.toFixed(2);
+    if(n>=0.01) return n.toFixed(3);
+    return n.toFixed(4);
+  }
+  function band(mhz){
+    var hz=mhz*1e6;
+    if(hz<3e3) return ['below RF','under 3 kHz'];
+    if(hz<3e4) return ['VLF','3 – 30 kHz'];
+    if(hz<3e5) return ['LF','30 – 300 kHz'];
+    if(hz<3e6) return ['MF','300 kHz – 3 MHz'];
+    if(hz<3e7) return ['HF','3 – 30 MHz'];
+    if(hz<3e8) return ['VHF','30 – 300 MHz'];
+    if(hz<3e9) return ['UHF','300 MHz – 3 GHz'];
+    if(hz<3e10) return ['SHF','3 – 30 GHz'];
+    if(hz<=3e11) return ['EHF','30 – 300 GHz'];
+    return ['above RF','over 300 GHz'];
+  }
+  function calc(){
+    var mhz=parseFloat(f.value);
+    if(!(mhz>0)){document.getElementById('o-wl').textContent='—';return;}
+    var wl=300/mhz, q=wl/4;
+    document.getElementById('o-wl').textContent = wl>=1?fmt(wl):fmt(wl);
+    document.getElementById('o-wl-alt').textContent = 'meters · ' + (wl*1000>=1?fmt(wl*1000)+' mm':(wl*1e6).toFixed(1)+' µm');
+    var bd=band(mhz);
+    document.getElementById('o-band').textContent=bd[0];
+    document.getElementById('o-band-r').textContent=bd[1];
+    document.getElementById('o-q').textContent = fmt(q*1000);
+    document.getElementById('o-gp').textContent = fmt(q*1000);
+  }
+  f.addEventListener('input',calc);
+  Array.prototype.forEach.call(document.querySelectorAll('.presets button'),function(btn){
+    btn.addEventListener('click',function(){f.value=btn.getAttribute('data-f');calc();});
+  });
+  calc();
+
+  // ---- quiz ----
+  var QS=[
+   {q:"An alternating-current signal is classified as radio frequency when its frequency falls within which range?",
+    o:["9 kHz to 300 GHz","3 kHz to 300 GHz","3 kHz to 30 GHz","300 Hz to 300 GHz"],a:1,
+    e:"The RF spectrum runs from <b>3 kHz to 300 GHz</b> — wavelengths of 100 km down to 1 mm. 9 kHz is a regulatory floor used in some jurisdictions, which makes it the most convincing distractor."},
+
+   {q:"A projector's handheld infrared remote is best described as which of the following?",
+    o:["A radio wave device, because it is wireless","An RF device operating below 3 kHz","Wireless communication that uses no radio waves","Neither wireless nor RF"],a:2,
+    e:"<b>Wireless</b> means carried without wire or fiber — infrared and laser links qualify alongside radio. But IR is not in the radio portion of the spectrum, so no radio waves are involved."},
+
+   {q:"The coaxial cable running from a set-top box to a television's antenna input is carrying what?",
+    o:["Radio waves, since the frequency is in the RF range","RF signals that are not radio waves","Neither RF nor radio waves","Radio waves only while the tuner is active"],a:1,
+    e:"RF describes the <b>frequency</b>, not the delivery method. A signal in the 3 kHz – 300 GHz range travelling down copper, fiber, or an IR link is still RF — but it isn't a radio wave, because it isn't propagating through space."},
+
+   {q:"A wireless system operates at 150 MHz. What is its wavelength, and which band is it in?",
+    o:["1.5 m, UHF","2 m, VHF","3 m, VHF","0.5 m, UHF"],a:1,
+    e:"Divide into 300: 300 ÷ 150 = <b>2 meters</b>. At 150 MHz the signal sits between 30 and 300 MHz, so it's <b>VHF</b>. Remember the boundary sits at 300 MHz, which is exactly 1 meter."},
+
+   {q:"Which frequency marks the boundary between the VHF and UHF bands?",
+    o:["30 MHz","300 MHz","3 GHz","30 GHz"],a:1,
+    e:"<b>300 MHz.</b> VHF runs 30 – 300 MHz; UHF picks up at 300 MHz and runs to 3 GHz. Useful cross-check: 300 MHz is a wavelength of exactly 1 meter by the 300 rule."},
+
+   {q:"An RF carrier's frequency must be at least how great, relative to the information it carries?",
+    o:["Equal to the information frequency","Double the information frequency","Ten times the information frequency","Half the information frequency"],a:1,
+    e:"The carrier must be <b>at least double</b> the frequency of the information being carried. This is the one hard ratio in the transmit/receive section and it's easy to read past."},
+
+   {q:"Which pair correctly describes what happens at each end of a radio link?",
+    o:["Transmitter demodulates; receiver modulates","Transmitter modulates; receiver demodulates","Both modulate; the antenna demodulates","Transmitter modulates; receiver amplifies only"],a:1,
+    e:"The <b>transmitter modulates</b> the information onto the carrier — the book calls modulation the most important step in converting data at the transmitter. The <b>receiver demodulates</b>, separating the information back off the carrier for use elsewhere in the system."},
+
+   {q:"Why do signals used to communicate with satellites pass through the ionosphere rather than reflecting off it?",
+    o:["They are transmitted at much higher power","Their wavelengths are very short — under about 100 mm","They are vertically polarized","They use parabolic rather than vertical antennas"],a:1,
+    e:"<b>Very short wavelengths (less than about 100 mm) pass straight through the ionosphere.</b> Longer wavelengths reflect off it, which is what lets some transmissions reach receivers far beyond line of sight."},
+
+   {q:"A transmitting antenna is mounted upright while the receiving antenna has been folded down horizontally. What is the result?",
+    o:["Maximum signal transfer, since coverage is broadened","A much weaker received signal and degraded performance","No change — orientation affects only parabolic antennas","Improved rejection of reflected signals"],a:1,
+    e:"The antennas are <b>cross-polarized</b>. Parallel orientation maximizes transmission and reception; when the elements aren't in the same plane, the received signal is much weaker and system performance degrades. Nothing reports as faulty — the link just runs with far less margin."},
+
+   {q:"For which application is a parabolic antenna the best choice?",
+    o:["A roaming presenter with a body-pack transmitter","A fixed point-to-point link between two known locations","Whole-room coverage for several wireless microphones","A 100 MHz VHF receiving installation"],a:1,
+    e:"Parabolic antennas focus the signal into a tight beam — <b>high gain toward the focus and high rejection of everything else</b>. That makes them ideal for point-to-point work and unsuitable where endpoints move or wide-area coverage is needed. They're also impractical below about 1 GHz, which rules out the VHF option on size alone."},
+
+   {q:"Below roughly what frequency do parabolic antennas become impractical for general use?",
+    o:["100 MHz","300 MHz","1 GHz","3 GHz"],a:2,
+    e:"<b>About 1 GHz.</b> Below that the wavelength — and therefore the dish needed to work with it — grows to an unmanageable physical size."},
+
+   {q:"What element length makes a vertical antenna one of the most efficient configurations for radiating an RF signal?",
+    o:["One quarter of the carrier's wavelength","One half of the carrier's wavelength","Equal to the carrier's full wavelength","Twice the carrier's wavelength"],a:0,
+    e:"A <b>quarter-wave</b> element. This keeps antennas compact at VHF and above — the familiar 'rubber ducky' stub. At 600 MHz (λ = 500 mm), the element is just 125 mm."},
+
+   {q:"A portable receiver's ground plane is smaller than a quarter of the operating wavelength. What is the effect?",
+    o:["No effect — ground plane size is not critical","Reduced antenna gain and performance","Improved rejection of reflected signals","The antenna becomes omnidirectional"],a:1,
+    e:"<b>Reduced gain and performance.</b> The relationship is asymmetric and the exam likes that: going larger than λ/4 in diameter gains you very little, but going smaller costs you real signal. On moveable systems the equipment case or metal rack often serves as the ground plane."},
+
+   {q:"What does a diversity receiver actually do?",
+    o:["Amplifies reflected signals to reinforce the direct signal","Eliminates multipath reflections in the room","Compares phase differences between received signals and selects the best antennas","Transmits on two frequencies at once for redundancy"],a:2,
+    e:"It uses <b>an array of antennas in different places</b> and constantly compares the phase differences between the signals they receive, dynamically selecting the best ones to avoid cancellation. When signals arrive in phase at more than one antenna, it may select the highest-amplitude one or combine them additively. It never removes the reflections — it just gains a second vantage point."}
+  ];
+
+  var wrap=document.getElementById('quiz'), done=0, right=0;
+  QS.forEach(function(item,i){
+    var d=document.createElement('div'); d.className='q';
+    var ol=item.o.map(function(t,j){return '<li><button type="button" data-j="'+j+'">'+String.fromCharCode(65+j)+' &nbsp; '+t+'</button></li>';}).join('');
+    d.innerHTML='<div class="qn">QUESTION '+(i+1)+' / '+QS.length+'</div>'+
+      '<div class="qt">'+item.q+'</div><ul class="opts">'+ol+'</ul>'+
+      '<div class="expl"><b>Answer: '+String.fromCharCode(65+item.a)+'.</b> '+item.e+'</div>';
+    var locked=false;
+    d.querySelectorAll('.opts button').forEach(function(btn){
+      btn.addEventListener('click',function(){
+        if(locked) return; locked=true;
+        var j=parseInt(btn.getAttribute('data-j'),10);
+        if(j===item.a){btn.classList.add('right');right++;}
+        else{btn.classList.add('wrong');
+             d.querySelector('.opts button[data-j="'+item.a+'"]').classList.add('right');}
+        d.querySelector('.expl').classList.add('on');
+        done++;
+        document.getElementById('s-done').textContent=done;
+        document.getElementById('s-right').textContent=right;
+      });
+    });
+    wrap.appendChild(d);
+  });
+})();
+</script>
+</body>
+</html>

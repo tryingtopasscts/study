@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CTS Practice Exam Bank</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=DM+Sans:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0f1117; --panel:#161923; --panel2:#1c2030; --line:#272c3d;
+  --ink:#e7e9f0; --ink-dim:#a2a8bd; --ink-faint:#6f7690;
+  --teal:#4ecdc4; --amber:#f5b642; --red:#e5646b; --purple:#a78bfa;
+  --radius:14px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--bg); color:var(--ink);
+  font-family:'DM Sans',system-ui,sans-serif; font-size:18px; line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3{font-family:'Fraunces',Georgia,serif; font-weight:600; line-height:1.2; margin:0}
+.mono{font-family:'IBM Plex Mono',monospace}
+
+/* ---------- hamburger + sidebar ---------- */
+#burger{
+  position:fixed; top:16px; left:16px; z-index:60;
+  width:46px; height:46px; border-radius:12px; cursor:pointer;
+  background:var(--panel2); border:1px solid var(--line); color:var(--ink);
+  display:flex; align-items:center; justify-content:center; gap:0; padding:0;
+}
+#burger:hover{border-color:var(--teal)}
+#burger span{display:block; width:18px; height:2px; background:currentColor; position:relative}
+#burger span::before,#burger span::after{content:''; position:absolute; left:0; width:18px; height:2px; background:currentColor}
+#burger span::before{top:-6px} #burger span::after{top:6px}
+
+#scrim{position:fixed; inset:0; background:rgba(6,8,14,.66); opacity:0; pointer-events:none; transition:opacity .22s; z-index:55}
+body.nav-open #scrim{opacity:1; pointer-events:auto}
+
+#sidebar{
+  position:fixed; top:0; left:0; bottom:0; width:330px; max-width:88vw; z-index:58;
+  background:var(--panel); border-right:1px solid var(--line);
+  transform:translateX(-102%); transition:transform .24s cubic-bezier(.4,0,.2,1);
+  overflow-y:auto; padding:22px 20px 40px;
+}
+body.nav-open #sidebar{transform:none}
+#sidebar h2{font-size:20px; margin:0 0 4px; padding-left:58px; min-height:30px}
+.side-sub{font-size:13px; color:var(--ink-faint); margin-bottom:20px; padding-left:58px}
+.side-block{margin-bottom:24px}
+.side-label{
+  font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:.14em;
+  text-transform:uppercase; color:var(--ink-faint); margin-bottom:10px;
+}
+.topic{
+  display:flex; align-items:center; gap:10px; padding:7px 9px; border-radius:9px;
+  cursor:pointer; font-size:14.5px; color:var(--ink-dim); user-select:none;
+}
+.topic:hover{background:var(--panel2); color:var(--ink)}
+.topic input{accent-color:var(--teal); width:15px; height:15px; flex:none; margin:0}
+.topic .tn{flex:1; line-height:1.3}
+.topic .tc{font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:var(--ink-faint)}
+.part-head{
+  font-family:'IBM Plex Mono',monospace; font-size:10.5px; letter-spacing:.13em;
+  text-transform:uppercase; color:var(--amber); margin:16px 0 7px; padding-left:9px;
+}
+.part-head:first-child{margin-top:4px}
+.brk-part{padding-left:0; margin:20px 0 10px}
+.brk-part:first-child{margin-top:0}
+.topic.void{opacity:.42; cursor:default}
+.topic.void:hover{background:transparent; color:var(--ink-dim)}
+.minibtns{display:flex; gap:8px; margin:10px 0 0}
+.minibtn{
+  flex:1; font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:.08em;
+  text-transform:uppercase; padding:7px; border-radius:8px; cursor:pointer;
+  background:transparent; border:1px solid var(--line); color:var(--ink-dim);
+}
+.minibtn:hover{border-color:var(--teal); color:var(--teal)}
+.toggle{display:flex; align-items:center; gap:10px; padding:7px 9px; border-radius:9px; cursor:pointer; font-size:14.5px; color:var(--ink-dim)}
+.toggle:hover{background:var(--panel2)}
+.toggle input{accent-color:var(--teal); width:15px; height:15px; margin:0}
+.seg{display:flex; border:1px solid var(--line); border-radius:10px; overflow:hidden}
+.seg button{
+  flex:1; background:transparent; border:0; color:var(--ink-dim); cursor:pointer;
+  padding:9px 4px; font-family:'IBM Plex Mono',monospace; font-size:11.5px;
+  letter-spacing:.1em; text-transform:uppercase;
+}
+.seg button.on{background:var(--teal); color:#0d1116; font-weight:600}
+.btn{
+  display:block; width:100%; padding:12px; border-radius:11px; cursor:pointer;
+  background:var(--teal); color:#0d1116; border:0; font-family:'DM Sans',sans-serif;
+  font-size:15px; font-weight:700;
+}
+.btn:hover{filter:brightness(1.08)}
+.btn.ghost{background:transparent; border:1px solid var(--line); color:var(--ink-dim); font-weight:500}
+.btn.ghost:hover{border-color:var(--teal); color:var(--teal)}
+
+/* ---------- main ---------- */
+main{max-width:820px; margin:0 auto; padding:84px 22px 120px}
+.hero{margin-bottom:30px}
+.eyebrow{
+  font-family:'IBM Plex Mono',monospace; font-size:11.5px; letter-spacing:.18em;
+  text-transform:uppercase; color:var(--teal); margin-bottom:10px;
+}
+.hero h1{font-size:clamp(30px,5.4vw,44px); letter-spacing:-.01em}
+.hero p{color:var(--ink-dim); font-size:16.5px; margin:12px 0 0; max-width:60ch}
+
+/* progress */
+#bar-wrap{position:sticky; top:0; z-index:40; background:var(--bg); padding:10px 0 14px; margin:0 0 18px}
+#bar-meta{display:flex; justify-content:space-between; align-items:baseline; font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--ink-faint); margin-bottom:8px; gap:12px}
+#bar-meta b{color:var(--teal); font-weight:500}
+#bar{height:4px; background:var(--line); border-radius:99px; overflow:hidden}
+#bar i{display:block; height:100%; width:0; background:var(--teal); transition:width .3s}
+
+/* card */
+.card{background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); padding:26px 24px}
+.chip{
+  display:inline-block; font-family:'IBM Plex Mono',monospace; font-size:10.5px;
+  letter-spacing:.13em; text-transform:uppercase; color:var(--purple);
+  border:1px solid rgba(167,139,250,.32); background:rgba(167,139,250,.08);
+  padding:4px 9px; border-radius:99px; margin-bottom:16px;
+}
+.qtext{font-size:19px; line-height:1.5; margin:0 0 20px}
+.opts{display:flex; flex-direction:column; gap:9px}
+.opt{
+  display:flex; gap:13px; align-items:flex-start; text-align:left; width:100%;
+  background:var(--panel2); border:1px solid var(--line); border-radius:11px;
+  padding:13px 15px; cursor:pointer; color:var(--ink);
+  font-family:'DM Sans',sans-serif; font-size:16px; line-height:1.45;
+}
+.opt:hover:not(.locked){border-color:var(--teal)}
+.opt .k{
+  font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--ink-faint);
+  flex:none; width:20px; height:20px; border:1px solid var(--line); border-radius:6px;
+  display:flex; align-items:center; justify-content:center; margin-top:2px;
+}
+.opt.locked{cursor:default}
+.opt.right{border-color:var(--teal); background:rgba(78,205,196,.10)}
+.opt.right .k{border-color:var(--teal); color:var(--teal)}
+.opt.wrong{border-color:var(--red); background:rgba(229,100,107,.10)}
+.opt.wrong .k{border-color:var(--red); color:var(--red)}
+.opt.dim{opacity:.5}
+
+.fb{margin-top:18px; border-radius:11px; padding:15px 17px; border:1px solid; font-size:15.5px; line-height:1.55}
+.fb .hd{font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:.14em; text-transform:uppercase; margin-bottom:7px}
+.fb.ok{border-color:rgba(78,205,196,.35); background:rgba(78,205,196,.07)}
+.fb.ok .hd{color:var(--teal)}
+.fb.no{border-color:rgba(229,100,107,.35); background:rgba(229,100,107,.07)}
+.fb.no .hd{color:var(--red)}
+.fb.tip{border-color:rgba(167,139,250,.32); background:rgba(167,139,250,.07)}
+.fb.tip .hd{color:var(--purple)}
+.fb .ans{color:var(--ink-dim); margin-bottom:8px}
+.fb .ans b{color:var(--ink); font-weight:500}
+
+.nav{display:flex; gap:12px; margin-top:22px}
+.nav .btn{width:auto; flex:1}
+
+/* flashcard */
+.flip{
+  min-height:150px; display:flex; align-items:center; justify-content:center;
+  border:1px dashed var(--line); border-radius:11px; padding:22px; cursor:pointer;
+  color:var(--ink-faint); font-family:'IBM Plex Mono',monospace; font-size:12.5px;
+  letter-spacing:.1em; text-transform:uppercase; text-align:center;
+}
+.flip:hover{border-color:var(--teal); color:var(--teal)}
+
+/* results */
+.score-hero{text-align:center; padding:14px 0 26px}
+.score-hero .big{font-family:'Fraunces',serif; font-size:68px; line-height:1; color:var(--teal)}
+.score-hero .sub{font-family:'IBM Plex Mono',monospace; font-size:12.5px; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-faint); margin-top:10px}
+.brk{margin-top:8px}
+.brk-row{margin-bottom:15px}
+.brk-top{display:flex; justify-content:space-between; font-size:14.5px; margin-bottom:6px; gap:12px}
+.brk-top .pc{font-family:'IBM Plex Mono',monospace; font-size:13px; color:var(--ink-faint); flex:none}
+.brk-bar{height:6px; background:var(--panel2); border-radius:99px; overflow:hidden}
+.brk-bar i{display:block; height:100%; border-radius:99px}
+.miss{border-top:1px solid var(--line); padding-top:16px; margin-top:24px}
+.miss-item{padding:13px 0; border-bottom:1px solid var(--line); font-size:15.5px}
+.miss-item:last-child{border-bottom:0}
+.miss-item .mq{margin-bottom:6px}
+.miss-item .ma{color:var(--teal); font-size:14.5px}
+.miss-item .mt{font-family:'IBM Plex Mono',monospace; font-size:10.5px; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-faint); margin-bottom:6px}
+
+.empty{color:var(--ink-dim); text-align:center; padding:40px 10px}
+@media (max-width:600px){
+  body{font-size:17px}
+  main{padding:76px 15px 100px}
+  .card{padding:20px 17px}
+  .qtext{font-size:17.5px}
+  .opt{font-size:15.5px; padding:12px 13px}
+  #bar-meta .detail{display:none}
+  #bar-meta{font-size:11.5px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+:focus-visible{outline:2px solid var(--teal); outline-offset:2px}
+</style>
+</head>
+<body>
+
+<button id="burger" aria-label="Open study controls"><span></span></button>
+<div id="scrim"></div>
+
+<aside id="sidebar" aria-label="Study controls">
+  <h2>Question bank</h2>
+  <div class="side-sub mono" id="side-count"></div>
+
+  <div class="side-block">
+    <div class="side-label">Mode</div>
+    <div class="seg" id="mode-seg">
+      <button data-mode="quiz" class="on">Quiz</button>
+      <button data-mode="card">Flashcards</button>
+    </div>
+  </div>
+
+  <div class="side-block">
+    <div class="side-label">Chapters</div>
+    <div id="topics"></div>
+    <div class="minibtns">
+      <button class="minibtn" id="all">All</button>
+      <button class="minibtn" id="none">None</button>
+    </div>
+  </div>
+
+  <div class="side-block">
+    <div class="side-label">Options</div>
+    <label class="toggle"><input type="checkbox" id="shuffleQ" checked><span>Shuffle questions</span></label>
+    <label class="toggle"><input type="checkbox" id="shuffleA" checked><span>Shuffle answers</span></label>
+    <label class="toggle"><input type="checkbox" id="instant" checked><span>Show answer immediately</span></label>
+  </div>
+
+  <div class="side-block">
+    <button class="btn" id="start">Start session</button>
+    <div style="height:9px"></div>
+    <button class="btn ghost" id="end">End &amp; see results</button>
+  </div>
+</aside>
+
+<main>
+  <div id="view"></div>
+</main>
+
+<script id="bank" type="application/json">{"topics":[{"k":3,"n":"Ch 3 - Analog and Digital Signals","short":"Ch 3","part":"Part II - Essentials of AV Technology"},{"k":4,"n":"Ch 4 - Audio Systems","short":"Ch 4","part":"Part II - Essentials of AV Technology"},{"k":5,"n":"Ch 5 - Video Systems","short":"Ch 5","part":"Part II - Essentials of AV Technology"},{"k":6,"n":"Ch 6 - Networks","short":"Ch 6","part":"Part II - Essentials of AV Technology"},{"k":7,"n":"Ch 7 - Signal-Management Systems","short":"Ch 7","part":"Part II - Essentials of AV Technology"},{"k":8,"n":"Ch 8 - Control Systems","short":"Ch 8","part":"Part II - Essentials of AV Technology"},{"k":9,"n":"Ch 9 - Electrical Systems","short":"Ch 9","part":"Part II - Essentials of AV Technology"},{"k":10,"n":"Ch 10 - Wireless Radio Systems","short":"Ch 10","part":"Part II - Essentials of AV Technology"},{"k":11,"n":"Ch 11 - Gathering Customer Information","short":"Ch 11","part":"Part III - Creating AV Solutions"},{"k":12,"n":"Ch 12 - Conducting a Site Survey","short":"Ch 12","part":"Part III - Creating AV Solutions"},{"k":13,"n":"Ch 13 - Evaluating a Site Environment","short":"Ch 13","part":"Part III - Creating AV Solutions"},{"k":14,"n":"Ch 14 - Recommending Changes to the Site Environment","short":"Ch 14","part":"Part III - Creating AV Solutions"},{"k":15,"n":"Ch 15 - Developing an AV Project Scope","short":"Ch 15","part":"Part III - Creating AV Solutions"},{"k":16,"n":"Ch 16 - Designing AV Solutions","short":"Ch 16","part":"Part III - Creating AV Solutions"},{"k":17,"n":"Ch 17 - Integrating AV Solutions","short":"Ch 17","part":"Part IV - Implementing AV Solutions"},{"k":18,"n":"Ch 18 - Operating AV Solutions","short":"Ch 18","part":"Part IV - Implementing AV Solutions"},{"k":19,"n":"Ch 19 - Managing an AV Project","short":"Ch 19","part":"Part IV - Implementing AV Solutions"},{"k":20,"n":"Ch 20 - Maintaining AV Operations","short":"Ch 20","part":"Part V - Servicing AV Solutions"},{"k":21,"n":"Ch 21 - Conducting Maintenance Activities","short":"Ch 21","part":"Part V - Servicing AV Solutions"},{"k":22,"n":"Ch 22 - Troubleshooting and Repairing AV Solutions","short":"Ch 22","part":"Part V - Servicing AV Solutions"}],"q":[{"t":11,"q":"AV professionals determine the end user's needs by examining three things: the required applications, the tasks, and the _____.","o":["overall design concept","budget","technologies","functions to support the applications"],"a":3,"e":"Needs analysis builds a general understanding of the customer's needs: the applications they run, the tasks they perform, and the functions the system must provide to support those applications.","id":0},{"t":11,"q":"Which of the following accurately describes the role of a needs analysis in the AV design process?","o":["Needs analysis determines the type of AV equipment to be installed based on the technician's preferences.","Needs analysis focuses solely on evaluating the physical layout of the site.","Needs analysis identifies end-users' requirements and forms the basis for developing functional descriptions of AV systems.","Needs analysis is conducted after the installation of AV equipment to assess its performance."],"a":2,"e":"The needs analysis produces the program report (scope of work). Once that document is agreed upon and signed off, it becomes the foundation of the design process.","id":1},{"t":11,"q":"What role does the AV professional typically play in conducting a needs analysis?","o":["Facilitator of design collaboration.","Primary equipment supplier.","Sole decision-maker in system design.","Exclusive project manager."],"a":0,"e":"The AV professional leads the discussion when an AV solution is being considered. Other trades and stakeholders are encouraged to join, but having the AV professional facilitate keeps the meeting focused on the end-user's AV needs.","id":2},{"t":11,"q":"Which skill is the MOST critical for documenting findings accurately during a needs analysis for an AV project?","o":["Technical writing skills","IT and networking expertise","Interviewing techniques","Professional communication skills"],"a":0,"e":"Technical writing is the ability to describe physical dimensions and specific user requirements clearly and accurately. A good technical writer can relate each proposed solution directly to the user need it addresses.","id":3},{"t":11,"q":"A large corporation is renovating its meeting rooms with advanced AV systems. The project manager, AV consultant, and representatives from IT, HR, and facilities are involved in the needs analysis, and each department has its own requirements. How should the AV consultant manage the diverse stakeholder inputs?","o":["Ignore departmental preferences to streamline the analysis process.","Prioritize the preferences of the IT department, as they often have the most technical expertise.","Facilitate open communication and collaboration among stakeholders to ensure all requirements are considered.","Rely solely on the project manager's decisions to avoid conflicts among stakeholders."],"a":2,"e":"An open discussion surfaces needs plus conflicts and priorities early. Afterward, notes are compiled and distributed, and a follow-up meeting can explore the specific conflicts and priorities.","id":4},{"t":11,"q":"Which statement accurately reflects the relationship between needs analysis and AV system design?","o":["Needs analysis precedes system design.","Needs analysis follows system installation.","Needs analysis is interchangeable with system design.","Needs analysis is unrelated to system design."],"a":0,"e":"The needs analysis produces the program report or scope of work. Once signed off, it becomes the foundation of the design process — so it must come first.","id":5},{"t":11,"q":"Why is the needs analysis considered crucial in the AV project process?","o":["To determine equipment cost.","To define infrastructure requirements.","To assess end-users' requirements.","To compile a list of compatible systems."],"a":2,"e":"Without a needs analysis the end user might not get an appropriate solution, which leads to poor results in function, customer satisfaction, and the ongoing relationship.","id":6},{"t":11,"q":"When designing a client's new training room, the MOST important information would come from the:","o":["Client's checklist of preferred equipment.","End-user descriptions of how the room will be utilized.","Architectural drawings of the building.","Feedback from the benchmarking site visit."],"a":1,"e":"Focus on functionality. How the room will actually be used drives every design decision that follows.","id":7},{"t":11,"q":"When interviewing a client to discover their requirements for a project, what item is the MOST important to have?","o":["An incident light meter","A sound pressure meter","An interview checklist","A tape measure"],"a":2,"e":"A checklist ensures the AV professional won't forget to ask about important details during the interview.","id":8},{"t":11,"q":"When working with a client, what should be done to ensure effective communication?","o":["Using rough sketches as a reference.","Avoid using industry slang terms and jargon.","Not using simple and clear language.","Demonstrating abstract concepts."],"a":1,"e":"Many customers are not familiar with industry terms, acronyms, and jargon. Use common terms.","id":9},{"t":11,"q":"Prior to performing a site assessment and new system design, the _____ should be identified.","o":["client's needs and intended uses","supplier's equipment recommendations","programmer's fee requirements","manufacturer's training offerings"],"a":0,"e":"Needs come first. The site assessment validates and refines what the client has told you they need to do in the space — it doesn't replace that conversation.","id":10},{"t":12,"q":"During an initial site survey, what type of information should be documented regarding the project room's ceiling?","o":["Type of ceiling material and structure.","Color of the ceiling paint.","Number of tiles in the ceiling.","The presence of furniture on the ceiling."],"a":0,"e":"AV gear and cable will very likely be mounted in the ceiling. Knowing the ceiling material and construction tells you what type of mounts will be necessary.","id":11},{"t":14,"q":"While surveying a conference room for a system upgrade, an engineer measures 55 dB SPL A-wtd of ambient noise when the room is empty. How should they proceed?","o":["Add voice lift to the system proposal.","Add more loudspeakers to the system proposal.","Speak with the client about getting more information on how to address the noise source.","Do nothing, this level of ambient noise is well within system tolerance."],"a":2,"e":"The AV professional may not be able to fix the problem, but it must be addressed. Best resolution is to reduce or remove the noise source; failing that, isolate or absorb as much as possible. Often other trades must be brought in.","id":12},{"t":12,"q":"The correct time to discuss visible finishes for wall plates, surface mount speakers, and wall mounted screen casings is during the:","o":["Ordering","Installation","Initial site survey","Contract award"],"a":2,"e":"The site survey is part of developing the AV scope. The other options all happen post-proposal, which is too late to be negotiating finishes.","id":13},{"t":12,"q":"Of the items below, which is an example of typical safety equipment that is LEAST often required for a site visit?","o":["Hard hat","Safety glasses","Reflective vest","Tools with nonslip handles"],"a":3,"e":"In most AV projects nonslip tools are not needed for safety purposes. PPE like hard hats, safety glasses, and reflective vests are commonly required on active sites.","id":14},{"t":14,"q":"During an initial site survey, it is noted that there are no window treatments on the windows of the planned project room, potentially causing excessive glare. What should be done?","o":["Proceed with the survey and note the issue in the survey report without taking any further action.","Recommend installing window treatments to the client to mitigate glare issues.","Ignore the glare issue as it falls outside the scope of the AV project.","Cancel the survey and reschedule for a time when window treatments are installed."],"a":1,"e":"Direct and reflected sunlight irritates participants, degrades the contrast ratio of any projected image, and affects camera images. Shades or blinds should be considered in such a space.","id":15},{"t":13,"q":"A client needs to add videoconferencing functionality for high-level, private meetings. Which of the following planned space types might need additional considerations for this functionality?","o":["Divisible room","Boardroom","Conference room","Classroom"],"a":0,"e":"A divisible space needs a movable wall. Those walls have gaps that let conversations pass between rooms. Solutions exist but may be difficult or expensive — the customer needs to understand the issue as early as possible.","id":16},{"t":14,"q":"During an initial site survey for an AV installation in a newly constructed office building, the electrical outlets are positioned unusually high on the walls, roughly 6 ft (1.83 m) above the floor. What should be considered when planning AV equipment placement?","o":["Use extension cords to reach the high-mounted electrical outlets for powering AV equipment.","Recommend relocating the electrical outlets to a standard height to facilitate easier access for AV installation and maintenance.","Adjust the mounting height of the AV equipment to align with the position of the electrical outlets.","Install additional power strips at lower heights to accommodate the placement of AV equipment."],"a":1,"e":"Outlets placed unusually high create challenges for installation and maintenance, especially with heavy or bulky equipment. Extension cords or re-heighting the gear are workarounds that don't fix the underlying problem — relocating the outlets does.","id":17},{"t":13,"q":"What is one of the objectives of evaluating the site environment in an AV project?","o":["Designing the AV solution.","Identifying the project budget.","Validating previously gathered information.","Conducting interviews with stakeholders."],"a":2,"e":"One objective of evaluating the site environment is to validate all information captured from gathering customer information and conducting the initial site survey, ensuring accuracy and completeness.","id":18},{"t":15,"q":"Why is organizational documentation important in AV project scope development?","o":["It provides information on architectural requirements.","It outlines the technical specifications of AV systems.","It helps determine the scope based on budget constraints.","It offers background information crucial for determining project scope."],"a":3,"e":"An organizational document shows which departments are involved and to whom each person reports. It also helps identify who the decision makers are and which personnel are information-only participants.","id":19},{"t":15,"q":"In the executive summary of the program report, the project team includes details about the project overview, programming process, systems overview, special issues, and overall budget. Who are the primary audiences for this executive summary?","o":["End-users and technology managers.","AV integrators and architects.","Facilities managers and project managers.","CEO, CIO, and various stakeholders."],"a":3,"e":"The executive summary gives a quick overview of the project. Not everyone needs to read the entire program report — executives such as the CEO and CIO are its typical readers.","id":20},{"t":15,"q":"Which phase of an AV project comes immediately AFTER the program phase?","o":["The design phase","Project planning and coordination phase","The verification phase","The documentation phase"],"a":0,"e":"After the customer's needs and expectations are collected and the program report is presented, the design team begins creating the solution that fits the stakeholder's application.","id":21},{"t":15,"q":"When creating a preliminary work schedule, what dates are MOST important?","o":["AV contract acceptance; Building groundbreaking","Rough in date; Occupancy date","Equipment acceptance; Substantial completion","Procurement ordering; Third fix commencement"],"a":1,"e":"Rough-in through occupancy tells the AV installer how much time exists to complete the project. Rough-in is the earliest date to start pulling cable and blocking walls; occupancy is when the client starts using the space and work must be finished.","id":22},{"t":15,"q":"Which is NOT presented in the program report?","o":["Executive summary","Detailed list of equipment","Budgets","Infrastructure considerations"],"a":1,"e":"A detailed equipment list is produced during the design phase. The program report is presented during the programming phase of an AV project.","id":23},{"t":19,"q":"Which form is typically used in AV projects to order changes needed in contractual obligations, equipment specifications, or system design?","o":["Letter of Transmittal","Construction Change Directive (CCD)","Request for Change (RFC)","Change Orders (CO)"],"a":3,"e":"Change Orders are issued to advise changes needed in contractual obligations, equipment specifications, or system design — after approval of an RFC.","id":24},{"t":11,"q":"What is a primary objective of a benchmarking session with a client?","o":["Creating a bill of materials for the design.","Create a detailed audiovisual system design.","Review finishes for racks, wall plates, etc.","Establish a vision for the audiovisual design."],"a":3,"e":"Benchmarking establishes a vision for the AV design. It aligns the project's goals with the client's expectations by clarifying desired outcomes and setting a clear direction.","id":25},{"t":19,"q":"Using the Project Management Professional definition, what are the phases of a project?","o":["Planning, Processing, Procuring, and Performance","Initiation, Planning, Execution, Monitoring and Controlling, and Closing","Program, Design, Installation, and Verification","Needs, Application, Tasks, and Functions"],"a":1,"e":"PMP phases are Initiation, Planning, Execution, Monitoring and Controlling, and Closing. Watch the trap: Program / Design / Installation / Verification is the AVIXA project lifecycle, not the PMP one.","id":26},{"t":16,"q":"The architect, engineers, and consultants are all members of the ________.","o":["facilities group","design team","installation firm","management team"],"a":1,"e":"Each of these professionals brings specialized expertise necessary for a successful project — collectively they form the design team.","id":27},{"t":15,"q":"A large AV installation in a corporate boardroom is now complete. The client wants to verify that the project aligns with the original plan. What document would be used to confirm the final configuration?","o":["The program report.","The bill of materials list.","The redline drawing set.","The as-built record set."],"a":0,"e":"The program report contains the original scope of work for the project, so it's the reference for confirming the delivered system matches what was agreed.","id":28},{"t":19,"q":"What is the primary objective of a Work Breakdown Structure (WBS) in project management?","o":["To track project progress and milestones.","To ensure consistent and accurate communications.","To provide a visual representation of project dependencies.","To organize and define the total scope of the project."],"a":3,"e":"A WBS organizes and defines the total scope of the project by breaking it down into deliverable-oriented components.","id":29},{"t":19,"q":"What is the main difference between a Gantt chart and a Logic Network Diagram?","o":["A Gantt chart offers a visual representation of project dependencies, while a Logic Network Diagram tracks project milestones.","A Gantt chart provides a timeline for project activities, while a Logic Network Diagram shows the hierarchical breakdown of project elements.","A Gantt chart depicts project activities as horizontal bars, while a Logic Network Diagram shows the sequence of tasks and subtasks.","A Gantt chart presents project activities in a graphical format, while a Logic Network Diagram offers the same information in a different layout."],"a":3,"e":"Both tools track project activities. A Gantt chart presents them graphically with horizontal bars indicating progress over time; a Logic Network Diagram presents the same information in a different layout, often showing task dependencies more explicitly.","id":30},{"t":12,"q":"A drawing that represents a top-down perspective of a space or object, showing the layout and arrangement of features as seen from above, is also known as a _____.","o":["Plan view","Elevation","Title block","Detail drawing"],"a":0,"e":"A plan view shows how a room or space is 'planned' to be set up. It commonly shows objects that will be in the space, such as tables, chairs, and lecterns.","id":31},{"t":12,"q":"What distinguishes a section cut drawing from an elevation drawing?","o":["A section cut only shows a portion of the wall; an elevation shows a top-down view with symbols for any relevant equipment.","A section cut zooms into details of a specific element; an elevation shows the entire wall with details of important elements.","A section cut shows the ceiling above and floor below; an elevation shows the entire wall with details of important elements.","A section cut shows the ceiling above and the floor below; an elevation provides a top-down view of the room."],"a":2,"e":"A section cut shows the ceiling above the drop ceiling and also cuts into the floor. An elevation only shows what you see within the room.","id":32},{"t":19,"q":"A design firm is working on an international project; what formatting conventions should be used in their documentation?","o":["2/11/2025; 11:30","11/Feb/2025; 11:30am","11/Feb/2025; half 11","20250211; 23:30"],"a":1,"e":"Avoid using a number for the month — always use the month name to avoid confusion. 24-hour time is acceptable; anything that makes the format easier to understand is good.","id":33},{"t":17,"q":"During the installation it becomes apparent that the designer's drawing shows a signal going into input 1; for technical reasons, input 2 makes more sense. You make the change. What is the MOST appropriate thing to do next?","o":["Update the labels on the cables for future action with the support crew.","Nothing further is needed. The system will work properly from now on.","Mark up the drawings and post on the wall for future service reference.","Red line the drawing showing your change. Submit back to the designer."],"a":3,"e":"All changes and updates go back to the designer to update the design package. That new set becomes the drawings of record, or 'as built' drawings, which the client receives at project completion.","id":34},{"t":20,"q":"A service technician finds that the cabling in the AV rack doesn't match the original plan. To understand what was actually installed, what documentation should be requested?","o":["Documents of record (as builts)","The installer's system notes","The rack elevation drawings","The bill of materials documentation"],"a":0,"e":"As-built documents include drawings of how the system was actually installed and functional at the time of commissioning and acceptance.","id":35},{"t":20,"q":"A technician is preparing for a service call and needs to understand how devices are connected. They ask for a resource that shows signal paths and device relationships. What documentation should be provided?","o":["Schematic drawings","Detailed view","Elevation drawings","Manufacturer installation manuals"],"a":0,"e":"Schematic drawings contain the wiring diagrams for the associated devices and cable types.","id":36},{"t":12,"q":"If a conference room created by removing a wall between two offices measures 14 ft (4.27 m) by 23 ft (7.01 m), what is its area in square feet (sq ft) / square meters (sq m)?","o":["322 sq ft (29.93 sq m)","336 sq ft (31.22 sq m)","327 sq ft (30.38 sq m)","315 sq ft (29.26 sq m)"],"a":0,"e":"Area = width x length.  A = 14 x 23 = 322 sq ft.  A = 4.27 x 7.01 = 29.93 sq m.","id":37},{"t":5,"q":"A 90 in (2286 mm) display is being hung on the front wall; how wide is this 4K display?","o":["44.10 in (1120.14 mm)","78.43 in (1992.15 mm)","72.05 in (1828.80 mm)","54.65 in (1371.60 mm)"],"a":1,"e":"A 4K display is 16:9. Using Pythagoras on a 16 x 9 rectangle, the diagonal is 18.36 units. Cross-multiply and divide:  (90 x 16) / 18.36 = 78.43 in;  (2286 x 16) / 18.36 = 1992.15 mm.","id":38},{"t":9,"q":"A device operates at 24 volts and consumes 72 watts of power. What is the current flowing through the device?","o":["2 Amps","3 Amps","4 Amps","5 Amps"],"a":1,"e":"I = P / V.  I = 72 / 24 = 3 amps.","id":39},{"t":5,"q":"What is the aspect ratio of a screen that has a height of 29.5 in (74.9 cm) and a diagonal of 60 in (152.4 cm)?","o":["16:10","5:4","16:9","4:3"],"a":2,"e":"Use a^2 + b^2 = c^2 to solve for width.  29.5^2 + b^2 = 60^2, so b is about 52.3. Divide width by height: 52.3 / 29.5 = 1.77, which is the 16:9 ratio.","id":40},{"t":4,"q":"During a live event, sound level is measured at four locations: 85 dB, 90 dB, 87 dB, and 92 dB. Event guidelines specify the average sound level should not exceed 88 dB. What adjustment, if any, should be made to comply?","o":["No adjustment is necessary; the current average is within the acceptable range.","Decrease the overall sound level by 2 dB to bring the average into compliance.","Increase the sound levels at the quieter locations to balance the overall average.","Decrease the overall sound level by 6 dB to bring the average into compliance."],"a":1,"e":"Current average: (85 + 90 + 87 + 92) / 4 = 88.5 dB. Reducing by 2 dB gives (83 + 88 + 85 + 90) / 4 = 86.5 dB, which is under the 88 dB target.","id":41},{"t":4,"q":"The reference voltage for 0 dBu is:","o":["0.316 volts","0.775 volts","1 volt","1.23 volts"],"a":1,"e":"0 dBu = 0.775 V. Watch the distractors: 0.316 V is -10 dBV, 1 volt is 0 dBV, and 1.23 V is +4 dBu (a common mixer input spec).","id":42},{"t":4,"q":"In a meeting environment, what is the recommended best practice when setting program audio levels relative to ambient noise?","o":["Ensure program audio levels match ambient noise levels.","Adjust program audio levels 25 dB higher than ambient noise levels.","Keep program audio levels 30 dB lower than ambient noise levels.","Set program levels independently of ambient noise levels."],"a":1,"e":"Best practice is to set program audio at least 25 dB above the ambient noise level for clear and effective communication.","id":43},{"t":4,"q":"When setting the program audio levels in a meeting environment, it is best practice to set the level to at least ____ above the ambient noise level.","o":["15 dB","20 dB","25 dB","30 dB"],"a":2,"e":"25 dB is the target. Sometimes this is too low in very quiet rooms and too high in very loud ones — in a high-ambient space it could push program level into the uncomfortable 80-90 dB SPL range.","id":44},{"t":4,"q":"It is important to consider polar patterns when _____.","o":["calibrating the display","replacing batteries in series","selecting microphones for use at live events","setting up a satellite dish for reception"],"a":2,"e":"Microphone polar patterns determine pickup direction, which drives proper sound reproduction and gain-before-feedback.","id":45},{"t":4,"q":"The tech manager at a university makes the purchasing decisions on AV equipment. The professors, instructors, and teaching assistants need wireless lavalier microphones, but they do not understand the physics behind microphones. Which is the BEST choice of pickup pattern for this type of user?","o":["Omnidirectional","Cardioid","Hyper cardioid","Figure eight"],"a":0,"e":"People who don't understand microphones will clip them in unexpected places — collars, pockets, suspenders — and point them in any direction. Because of that misplacement, an omnidirectional pattern gives the best voice reproduction. A cardioid aimed correctly is better, but aimed away from the voice it sounds poor.","id":46},{"t":4,"q":"An AV professional is testing the sound system for web-based meetings. Listening from the far end, they notice some individuals are loud talkers and are drowning out the other people in the meeting. What technology can be used or adjusted to improve the situation?","o":["Gate","Pre-amplifier","Compressor","Limiter"],"a":2,"e":"A compressor reduces volume increases past a set threshold — loud talkers still get louder, but at a lesser rate, evening out level differences between people. Adjusting the pre-amp would work for a single meeting, but each meeting is different; dynamics processing adapts to the situation.","id":47},{"t":4,"q":"Which of the following correctly describes the typical audio signal flow in a live event setup?","o":["Microphone -> Mixer -> Amplifier -> Speaker","Speaker -> Mixer -> Microphone -> Amplifier","Amplifier -> Mixer -> Microphone -> Speaker","Mixer -> Microphone -> Speaker -> Amplifier"],"a":0,"e":"The microphone captures the sound, the mixer processes and mixes the signal, the amplifier boosts signal power, and the speaker projects the sound.","id":48},{"t":13,"q":"In an auditorium, sightlines for the audience viewing a screen space can be improved by _____.","o":["providing staggered or stepped seating arrangements","installing retractable seating systems","lowering the screen base to the stage floor","adding a proscenium arch"],"a":0,"e":"Staggered (or stepped/raked) seating keeps heads out of the sightline to the screen.","id":49},{"t":5,"q":"A medical center needs to install a display for diagnostic imagery. The space should be designed according to which viewing category?","o":["Passive viewing","Full motion video","Basic decision making","Analytical decision making"],"a":3,"e":"The fine detail of medical imagery requires analytical decision making — the most demanding DISCAS viewing category.","id":50},{"t":5,"q":"The HDTV aspect ratio is expressed as _____?","o":["1.33:1","1.78:1","1.85:1","2.76:1"],"a":1,"e":"HDTV is 16:9, which expressed in lowest terms is 1.78:1. (1.33:1 is 4:3.)","id":51},{"t":5,"q":"A guest presenter brings their computer to present 4K content in a meeting room. The video comes on the screen, but the image is reduced to 1920x1080 resolution. What is the MOST common reason this is happening?","o":["The system was never designed for 4K images.","The person needs to double check that their graphic output is set properly.","Reduced resolution is caused by content protection embedded in the video.","The system designer forgot to include the higher resolutions in the setup files."],"a":0,"e":"Older systems were not capable of resolutions higher than 1920x1080, and even some newer systems are not fully 4K compliant end to end.","id":52},{"t":17,"q":"When building a rack, which signal type is MOST sensitive to noise and interference?","o":["HDMI","Ethernet","Microphone","Line level audio"],"a":2,"e":"Microphone level is in the range of 0.002 volts. Any noise introduced into a mic cable is boosted in the preamp stage. Other signals can be affected too, but mic level is the smallest of the signals.","id":53},{"t":17,"q":"When planning the work to be completed during the installation process, _____ is helpful to understand the items that need to be completed.","o":["a work breakdown structure","an installation agenda","a calendar of construction","a coordination progress plan"],"a":0,"e":"A work breakdown structure shows all the steps necessary to complete a task.","id":54},{"t":17,"q":"An AV system installation is scheduled at a new location next week. What is the MOST important thing to do before arriving at the job site?","o":["Collect the necessary tools and pack them into the truck.","Inventory the equipment going to the site.","Confirm the site is ready for the installation.","Confirm the place to unload the equipment."],"a":2,"e":"Confirm the site is ready. The other items matter, but if you can't get on site and work, they don't.","id":55},{"t":17,"q":"During the installation of a large display screen, resistance is encountered while tightening the mounting bolts. What precautionary measures should be taken to prevent potential mounting malfunctions?","o":["Ignore the resistance and proceed with tightening the bolts to complete the installation quickly.","Apply additional force to overcome the resistance and ensure the mounting hardware is securely fastened.","Stop tightening the bolts and reassess the situation.","Proceed with the installation without addressing the resistance, assuming it is a normal part of the mounting process."],"a":2,"e":"Excessive resistance may indicate improper alignment or potential damage to the mounting surface. Better to stop and review before mounting than to have the display become damaged.","id":56},{"t":17,"q":"What is the purpose of cable trays in AV installations?","o":["To provide insulation for cables.","To support cables and hold them in place.","To protect cables from physical damage.","To conceal cables and improve aesthetics."],"a":1,"e":"Cable trays support cables above the ceiling, help organize them, and allow for servicing of AV cables.","id":57},{"t":17,"q":"Upon inspecting the location where a 90-inch display is supposed to be mounted, the drawing indicates blocking, but none is visible. What is blocking?","o":["A wooden support that goes under the display's wall mount to support and level the display.","A temporary lift that will help support the display while you are mounting it.","Wooden supports that are between the studs, inside the wall, for load distribution.","A structure that protects cables from damage if a mounting screw is installed incorrectly."],"a":2,"e":"Blocking is wooden support between the studs, inside the wall, for load distribution. It gives the mounting screws substance to attach to, and is preferred over mounting to studs alone.","id":58},{"t":17,"q":"When tasked with mounting a heavy projector in a large auditorium, what factors should be considered when selecting the mounting hardware to ensure a secure installation?","o":["Focus primarily on the aesthetic appeal of the mounting hardware to complement the auditorium's design.","Select hardware with the highest load rating available, regardless of the specific requirements of the projector.","Assess the weight and dimensions of the projector, ensuring the selected hardware can support the load and distribute it evenly.","Prioritize cost-effectiveness by choosing the least expensive mounting hardware available."],"a":2,"e":"Sometimes the manufacturer has a recommended mount and other times the installer must create their own mounting system. Fit, function, and safety are the most important factors.","id":59},{"t":17,"q":"During the cable pulling process, the client is rushing you to complete your work. You decide to save time by laying the cable on top of the drop ceiling instead of mounting it properly. What's the WORST-CASE scenario?","o":["During an unrelated fire, the drop ceiling falls, and the firefighters get tangled and trip on the falling cables.","During a service call, it is difficult to trace the cables while troubleshooting noise in the audio.","After pulling the last wire, the ceiling gives way due to the weight of the cable. The ceiling now needs to be replaced.","The client discovers the wires on the drop ceiling and makes you remove them and mount them properly."],"a":0,"e":"The other scenarios cost time and money, but the safety issue is always the most important item.","id":60},{"t":17,"q":"You are setting up the software for a piece of equipment but are not getting the results you expected. What is the best course of action at this point?","o":["Accept the results; it's working as intended.","Call the manufacturer of the equipment.","Ask another installer for their opinion.","Read the manual more intently."],"a":1,"e":"Manufacturers have tech support staff who know their equipment very well. They are the authority on the gear and can explain how it works and how to set it up.","id":61},{"t":17,"q":"A store's digital signage player is visible and hanging by some wires. What MOST likely happened to the player?","o":["It was placed between the display and the wall; someone moved the monitor and it fell.","The glue from the double stick tape gave way from the heat of the monitor.","The supporting cable ties broke when the monitor was installed on the wall bracket.","A technician switched out the unit and will be coming back to finish the mounting later."],"a":1,"e":"Never use double stick tape or adhesive-backed hook and loop. The glue can dry out or become unstable with the heat of the monitor. Use a more secure fastener, and never mount anything to the back of a display unless it is specifically designed for it.","id":62},{"t":16,"q":"What is the designer's responsibility for ensuring that the design is installed and operating properly?","o":["The designer must include a list of items to be tested and verified.","The designer is not responsible; it's the installer's job to set up the system.","The designer will hand-off the project to the client's team to create a punch/check list.","The designer will commission the system after it has been assembled and installed."],"a":0,"e":"Who is better to write the test than the person who designed the system? The installer doesn't always know the intent of the designer or customer.","id":63},{"t":19,"q":"During the final commissioning meeting with the client, the AV integrator realizes that some features of the AV system were not included in the initial project scope. How should the AV integrator handle this situation?","o":["Inform the client about the missed features and offer to include them for an additional cost.","Ignore the missed features and proceed with system handover.","Document the missed features and discuss them with the project manager for resolution.","Blame the oversight on the client for not providing clear requirements."],"a":2,"e":"Document concerns so they can be addressed. The features may need to be included at no additional charge, or they may be genuinely out of original scope and require additional materials, labor, and cost.","id":64},{"t":17,"q":"Which of the following is considered a best practice for providing equipment manuals and software documentation to the client after system commissioning?","o":["Keeping physical copies at the installer's office only.","Providing copies in paper format only.","Print out system documents only. Owner's manuals are available on the manufacturer's website.","Supplying PDF copies on a thumb drive or in a cloud server."],"a":3,"e":"Best practice is to provide system documents and manuals to the customer on a thumb drive. Some installers also provide the documents on a cloud drive for a limited period.","id":65},{"t":17,"q":"During system commissioning, who typically demonstrates the system's operation to the client, salesperson, and designer?","o":["Project manager","Lead technician","AV integrator","Operations manager"],"a":1,"e":"The lead technician knows how the system was set up. The salesperson, designer, and consultant verify it works as designed and meets the end-user's needs, and the end user verifies and accepts it.","id":66},{"t":17,"q":"Which of the following items might be included in the lead technician's checklist during system commissioning?","o":["Manufacturer warranty information.","Project budget details.","Software development guidelines.","Client contact information."],"a":0,"e":"The lead technician can run into products that fail early in the installation phase. It is their responsibility to get units replaced or repaired promptly, which requires warranty information.","id":67},{"t":17,"q":"An AV installer is asked to verify that the AV system was installed according to the approved design. The client wants confirmation before signing off. What should be provided to compare?","o":["Verification checklist","Packing and inventory lists","Operational specification manuals","Program report contract sign-off"],"a":0,"e":"The AV installer creates a verification checklist using the Performance Verification Standard (ANSI/AVIXA 10:2013 D402) to prove the system works as originally designed.","id":68},{"t":17,"q":"The AV systems performance verification process is BEST described as:","o":["A detailed adjustment procedure of each of the most important AV equipment configurations.","A comprehensive methodology to ensure all elements of an AV system are complete and ready.","A 'first use' event for project stakeholders that makes sure everything sounds and looks good.","A way to further develop AV design concepts that maximizes efficiency of the entire system."],"a":1,"e":"The performance verification standard and process makes sure all elements of any AV system are properly tested and commissioned. It does not provide specific details of conducting each test (those are left to other standards and best practices), nor is it a 'first use' demonstration or a design-efficiency activity.","id":69},{"t":18,"q":"You're conducting a training session for a newly installed AV system in a government facility. To ensure the session covers all necessary topics, what should guide your agenda?","o":["A checklist of functions from the program report.","The purchase request forms and reports.","The client's security structure status.","The connections available in the training room."],"a":0,"e":"A checklist of functions from the program report details all of the system's capabilities, so it makes sure training covers everything the system was built to do.","id":70},{"t":18,"q":"A client requests a resource to help their staff operate the AV system without assistance. They need something that clearly explains procedures. What would be the most helpful tool?","o":["Quick start guide to the system","QR code to an instructional video","Manufacturer operational manuals","The system documentation package"],"a":0,"e":"A quick start guide gives end users a step-by-step guide for first-time use.","id":71},{"t":18,"q":"Which of the following is a best practice for conducting end-user training on an AV system?","o":["Use highly technical jargon to impress users.","Provide hands-on experience with the AV system.","Conduct training sessions without any visual aids.","Limit the training session to reading the system manual aloud."],"a":1,"e":"Hands-on experience helps users become familiar with the system's functionality and build confidence using it — far more effective than reading manuals or using technical jargon.","id":72},{"t":18,"q":"Every couple of months, the AV professional hosts hands-on training sessions for new employees on the meeting and multipurpose room systems. Since training includes using the touchscreen to control the systems, what is a REASONABLE number of people to attend per session?","o":["Absolutely no more than 4","6 to 8","10 to 15","There is no practical limit"],"a":1,"e":"6 to 8 is enough people to ask questions and share responses, while the wait between individual hands-on turns stays relatively short.","id":73},{"t":18,"q":"A laptop is provided to guest speakers in a corporate meeting room to display their presentations. There is also a screen and an HDMI cable available at the front of the room. What else would be the MOST valuable item to help set up the presentation?","o":["A touchscreen control system.","Quick start user guide.","A network cable.","A gooseneck microphone."],"a":1,"e":"Guidance on how to set up computer video on the screen and audio through the sound system is very helpful to a guest who doesn't know the room.","id":74},{"t":18,"q":"The user guide for an audiovisual system should include ______.","o":["a complete equipment list with serial numbers","maintenance requirements for the entire system","drawings and instructions on equipment operation","a brochure of useful accessories which can be purchased"],"a":2,"e":"The user guide should include drawings and instructions on equipment operation so users can understand setup, operate the system correctly, and troubleshoot common issues.","id":75},{"t":20,"q":"Preventative maintenance tasks and intervals are detailed in which document?","o":["Elevation drawing","Program report","Service agreement","DISCAS standard"],"a":2,"e":"The service agreement details preventative maintenance tasks and intervals, ensuring both the service provider and the client are clear on the schedule and responsibilities.","id":76},{"t":21,"q":"A company has a global standard on meeting room equipment. A projector has failed, that model is no longer available, and the replacement uses different commands from the control system. The original control system programmer has retired. What is required to update the control systems?","o":["A new programmer to write new code for that system and all the company's systems to stay standardized.","A new programmer that can write new code that looks and behaves like the current systems.","A programmer that can reverse engineer the compiled code and update the code for the new projector.","The source code for the current system and a programmer that can update the code for that specific projector."],"a":3,"e":"The source code plus a programmer who can update it for that specific projector ensures seamless integration and functionality with the new equipment. This is why obtaining source code at handover matters.","id":77},{"t":21,"q":"As part of regular system maintenance, when is the BEST time to update device firmware?","o":["On Friday afternoons.","As soon as updates are available.","Device firmware should never be updated after system sign-off.","After coordination with the client, and when the system will be available for an extended period of time."],"a":3,"e":"Firmware should never be updated without coordinating with a client. Always leave a buffer of time in case there are problems.","id":78},{"t":21,"q":"Near the end of a scheduled service window in a heavily used client boardroom, the technician confirms firmware on the system switcher needs updating to enable a new feature. What should they be considering before starting the update?","o":["Start the update immediately with hopes it'll complete before the next meeting, because getting back in the room will be difficult to schedule.","Find the client point of contact and try to talk them out of enabling the new feature because updating firmware can be problematic.","Defer updating the firmware for another service window allowing enough time to revert firmware and/or update other connected devices as well.","Try to find a faster network connection because the last time it was done the download took a long time to complete."],"a":2,"e":"Defer to a service window with enough time to revert the firmware and/or update other connected devices as well. Starting a firmware update without a rollback window is how a boardroom ends up dark for a meeting.","id":79},{"t":21,"q":"Daily maintenance of a wireless microphone system will most likely include which of the following activities?","o":["Checking battery life, and replacing those which are low/dead.","Coordinating frequency allocation with the FCC.","Calibrating the mic pre-amp sensitivity.","Tuning the delay equalization."],"a":0,"e":"Battery checks are the daily task. Frequency coordination, preamp calibration, and delay tuning are commissioning or occasional activities, not daily ones.","id":80},{"t":21,"q":"A junior level technician observes a senior level technician occasionally taking a pen-like device out of her shirt pocket and laying it along other cables in the area where they are working. What might the senior technician be doing?","o":["Recording modulated signals for further evaluation after work is completed.","Using a non-contact voltage detector to verify AC high voltage is not present.","Making invisible cable markers so she knows what's already been worked on.","Charging her USB backup battery using induction charging technology."],"a":1,"e":"When it comes to safety, best practice is 'trust but verify.' Any AC power lines that could present a hazard should be disabled before starting work, and it's best practice to also verify with test equipment.","id":81},{"t":21,"q":"Which resources should be prioritized to ensure compliance with industry standards and best practices when maintaining an AV system in a university lecture hall?","o":["Industry resources, product manuals, and project documentation.","Specialized equipment, personal notes, and user feedback forms.","Internet forums, social media reviews, and vendor advertisements.","Stock images, marketing brochures, and client testimonials."],"a":0,"e":"Industry resources, product manuals, and project documentation are essential for conducting maintenance in accordance with industry standards and best practices.","id":82},{"t":20,"q":"A facilities manager has started installing motion sensors for room lighting to reduce energy consumption. As the AV manager, what is the AV professional's MAIN concern with automatic lighting systems?","o":["There are no concerns with the AV systems.","The lights are all on or all off, no dimming.","You would need a manual override for controlling the contrast ratio of the screen.","The control system programmer will have to include this code into the system."],"a":2,"e":"Ambient light can wash out a projection screen, which can bring the contrast ratio out of standard. A manual override is needed so presenters can control light levels.","id":83},{"t":21,"q":"Which of the following sets of preventive maintenance tasks are most appropriate for ensuring the longevity and optimal performance of an AV system in a conference room?","o":["Updating software on all devices, calibrating display screens, and checking cable connections.","Installing new speakers, replacing all cables, and reconfiguring the network.","Documenting user feedback, managing event schedules, and ordering new equipment.","Designing a new AV system, drafting installation plans, and training users."],"a":0,"e":"Preventive maintenance includes updating software, calibrating displays, and checking cable connections to keep the system operating efficiently and prevent potential issues.","id":84},{"t":22,"q":"A ceiling mounted projector is working well, but after two hours it shuts down. What is the FIRST thing an AV professional should check?","o":["Make sure that it is plugged into the AC power.","Double check that the HDMI cables are connected at all points.","Check the filter assembly for proper air flow.","Confirm the touchscreen does not have an auto shutdown feature."],"a":2,"e":"A common issue is that the filter gets clogged with dust and blocks air flow, causing the projector to overheat. The time-delayed nature of the failure is the clue.","id":85},{"t":22,"q":"In the middle of a live-streamed panel discussion, the audio feed from one of the panelists' microphones becomes distorted and includes noticeable static. The other microphones are functioning normally. What is the most appropriate immediate troubleshooting step?","o":["Mute the problematic microphone and continue the event without it.","Check and adjust the gain levels for the distorted microphone on the mixing console.","Swap the microphone cable and/or microphone with a spare.","Stop the stream and restart the entire audio system."],"a":2,"e":"Swapping the microphone and cable is a quick, easy attempt at a fix and often gets you through the presentation. If the swap doesn't fix it, that solution is eliminated and the next course of action can begin.","id":86},{"t":22,"q":"When installing an audiovisual system, a user connects a laptop to an HDMI distribution amplifier with two monitors connected. The first monitor shows the laptop screen without any difficulty; the second monitor does not. What is the likely cause?","o":["FPGA","DDC","EDID","DHCP"],"a":2,"e":"EDID is the handshake of information between a source and a sink, or source > repeater > sink. With a DA feeding two displays, mismatched EDID is the classic cause of one display working and one not.","id":87},{"t":22,"q":"A client is using their new podcast setup and complains that their new microphone sounds muffled and distant, even though they are speaking into it at a normal voice level and proper distance. The laptop is new and has enough resources. What is the MOST LIKELY cause?","o":["They are talking into the end of the microphone, but the pickup is side address.","The laptop microphone is selected in the software, not the podcast microphone.","The input EQ is attenuating the 500 Hz band.","The microphone cable is unbalanced and needs to be replaced with a balanced cable."],"a":1,"e":"Most laptops default to their integrated microphone. Always double check that the proper microphone is selected. Talking off-axis into a microphone may sound muffled, but not distant.","id":88},{"t":22,"q":"Having identified and corrected a malfunction in an AV system, what is the next best practice step?","o":["Immediately inform the presenter and move on.","Document the procedures and findings for future reference.","Test another unrelated part of the system.","Leave the system powered off."],"a":1,"e":"Documenting procedures and findings builds a knowledge base useful for troubleshooting similar issues later and ensures all team members know what was done.","id":89},{"t":22,"q":"The AV professional is setting up sound for a four-person panel discussion and can't get any level out of one gooseneck microphone. At the table, that microphone is swapped with the one next to it. Now the problem mic works, but the other one doesn't. What is the NEXT thing to check or test?","o":["Check the level of the preamp, make sure it is set properly.","Remove the microphone and test with a signal generator.","Check that the channel fader level is set to 0 dB and mains are up.","Check if phantom power is turned on for each microphone."],"a":3,"e":"The swap proves the fault follows the position, not the mic. Most gooseneck microphones are condenser type and require phantom power. Preamp setting matters, but it was likely already tried, and you'd typically hear something even if misadjusted.","id":90},{"t":22,"q":"A client reports that the AV system powers off randomly during use. The technician confirms the power source is stable. What should be investigated?","o":["Thermal conditions in the rack","High RF signal conditions at the rack","High static environment near the rack","Quick start guide is accurate"],"a":0,"e":"If not properly ventilated, thermal conditions in the rack cause problems when the system has been running for an extended period. Excess heat buildup causes components to shut down to protect themselves.","id":91},{"t":22,"q":"What is the next logical step in troubleshooting a projector that is not displaying any image?","o":["Replace the projector lamp.","Check for fault within the HDMI or DisplayPort cable and connections.","Restart the entire audio-visual system.","Check the projector's internal cooling fan."],"a":1,"e":"If the projector is powered on and connected, the next logical step is to check the signal cables and their connections. Cabling faults are common and checking them is simple and effective.","id":92},{"t":22,"q":"A projector is removed and taken to the shop. Another projector of the same make and model is installed in its place. The replacement can't be turned on with the control system but works manually. What is the LIKELY cause?","o":["The control cable is defective and needs to be replaced.","The on and off commands are different between the projectors.","The projector is not plugged into the AC power socket.","The IP address is not set correctly and is not recognized."],"a":3,"e":"The control system needs to send commands to the proper IP address. If it isn't set correctly it won't work. It obviously is plugged in — the question says it works when you press the button manually.","id":93},{"t":6,"q":"Which of the following is an example of an IPv4 address?","o":["04-7B-CB-2C-2F-F8","2603:6010:c200:17b1:4daf:686:9611:325d","192.168.1.100","00-01-00-01-2C-C0-CA-EA-6C-24-08-C6-AF-86"],"a":2,"e":"192.168.1.100 is IPv4. 04-7B-CB-2C-2F-F8 is a MAC address, the long hex-colon string is IPv6, and the last one is a DUID.","id":94},{"t":6,"q":"At the end of the installation, you supply the client with a list of all the equipment usernames and passwords used for the installation. What should be the client's FIRST step?","o":["Store the login and password document in a safe place from hackers.","Use the list for maintenance and general use.","Change the logins and passwords and store the new information.","Leave the default information as is; it's needed for the control system to work properly."],"a":2,"e":"Best practice is for the client to change the logins and passwords provided at the end of the installation to enhance security and protect their system from unauthorized access.","id":95},{"t":6,"q":"The AV professional is the tech support person for the office; however, they work from home two days a week. Most tech support issues can be corrected by selecting the proper inputs using the networked control system. What is the BEST technology that would allow them to access the control system from home?","o":["14.4 PSTN modem connection","Twisted pair RS-485","Gateway with port forwarding","VPN access to the VLAN"],"a":3,"e":"A VPN is a secure connection from the AV professional's home to the corporate network. Having AV equipment on a separate VLAN adds security because it allows access only to the AV equipment and nothing else on the network.","id":96},{"t":20,"q":"Of the following, who is NOT required for a meeting to discuss an internal audit of an existing AV system's security profile?","o":["Technology manager responsible for the room/system.","IT manager responsible for the network it's connected to.","Integrator's representative responsible for the original installation.","Manufacturer's representative that provided technical sales assistance."],"a":3,"e":"An internal security audit involves the people responsible for the system, the network, and the installation. A manufacturer's sales representative has no role in an internal security review.","id":97},{"t":18,"q":"When striking a room after a live event, what is the BEST way to ensure that nothing gets missed?","o":["Only hire experienced technicians.","Use a plan of action and a set of checklists.","In live events, something always gets missed.","Have the lead technician doublecheck the room after it has been struck."],"a":1,"e":"A checklist of the items brought on site, plus a checklist of standard operating procedures for striking a site, ensures all items are addressed and packed correctly.","id":98},{"t":18,"q":"How do effective inventory management skills impact the coordination of AV operations?","o":["They optimize the allocation of human resources for equipment setup.","They ensure compatibility among various AV components.","They maintain additional stock to manage unexpected demand during the project.","They reduce the downtime of AV equipment due to malfunction."],"a":2,"e":"Effective inventory management includes maintaining a buffer stock, which helps manage unexpected demand and ensures the project continues without interruption due to equipment shortages.","id":99},{"t":18,"q":"While troubleshooting a malfunctioning sound system during a live event, realizing that the issue might take longer than anticipated, what should be done next?","o":["Continue troubleshooting until the issue is resolved, regardless of time.","Communicate with the presenter to discuss the backup plan and possible waiting time.","Ignore the problem and let the event proceed without sound.","Replace random components in the hope of fixing the issue quickly."],"a":1,"e":"Communication is key in live events. Inform the presenter and discuss whether they prefer a backup plan or want to wait for the fix, so the event proceeds with their awareness and consent.","id":100}]}</script>
+<script>
+(function(){
+  "use strict";
+  var BANK = JSON.parse(document.getElementById('bank').textContent);
+  var TOPICS = BANK.topics, ALL = BANK.q;
+  var TNAME = {}; TOPICS.forEach(function(t){ TNAME[t.k] = t.n; });
+
+  var S = {
+    mode:'quiz', selected:{}, order:[], i:0, answered:{}, revealed:false,
+    picked:null, running:false, flipped:false, optOrder:{}
+  };
+  TOPICS.forEach(function(t){ S.selected[t.k] = true; });
+
+  var $ = function(id){ return document.getElementById(id); };
+  var view = $('view');
+
+  /* ---------- sidebar ---------- */
+  function countFor(k){ var n=0; ALL.forEach(function(q){ if(q.t===k) n++; }); return n; }
+
+  function buildTopics(){
+    var box = $('topics'); box.innerHTML=''; var lastPart = null;
+    TOPICS.forEach(function(t){
+      var n = countFor(t.k);
+      if(t.part !== lastPart){
+        lastPart = t.part;
+        var h = document.createElement('div');
+        h.className = 'part-head'; h.textContent = t.part;
+        box.appendChild(h);
+      }
+      var l = document.createElement('label');
+      l.className = 'topic' + (n ? '' : ' void');
+      l.innerHTML = '<input type="checkbox"'+(n?' checked':' disabled')+' data-k="'+t.k+'">'+
+                    '<span class="tn">'+t.n+'</span>'+
+                    '<span class="tc">'+(n || '--')+'</span>';
+      if(!n){ S.selected[t.k] = false; l.title = 'No questions in the bank for this chapter yet'; }
+      l.querySelector('input').addEventListener('change', function(e){
+        S.selected[t.k] = e.target.checked; updateCount();
+      });
+      box.appendChild(l);
+    });
+    updateCount();
+  }
+
+  function pool(){ return ALL.filter(function(q){ return S.selected[q.t]; }); }
+
+  function updateCount(){
+    var n = pool().length;
+    $('side-count').textContent = n + ' of ' + ALL.length + ' questions selected';
+  }
+
+  function setAll(v){
+    TOPICS.forEach(function(t){ if(countFor(t.k)) S.selected[t.k]=v; });
+    Array.prototype.forEach.call(document.querySelectorAll('#topics input'), function(c){
+      if(!c.disabled) c.checked = v;
+    });
+    updateCount();
+  }
+  $('all').addEventListener('click', function(){ setAll(true); });
+  $('none').addEventListener('click', function(){ setAll(false); });
+
+  Array.prototype.forEach.call(document.querySelectorAll('#mode-seg button'), function(b){
+    b.addEventListener('click', function(){
+      Array.prototype.forEach.call(document.querySelectorAll('#mode-seg button'), function(x){ x.classList.remove('on'); });
+      b.classList.add('on'); S.mode = b.dataset.mode;
+    });
+  });
+
+  function openNav(v){ document.body.classList.toggle('nav-open', v); }
+  $('burger').addEventListener('click', function(){ openNav(!document.body.classList.contains('nav-open')); });
+  $('scrim').addEventListener('click', function(){ openNav(false); });
+  document.addEventListener('keydown', function(e){ if(e.key==='Escape') openNav(false); });
+
+  /* ---------- session ---------- */
+  function shuffle(a){
+    for(var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)); var t=a[i]; a[i]=a[j]; a[j]=t; }
+    return a;
+  }
+
+  function start(list){
+    var qs = list || pool();
+    if(!qs.length){ view.innerHTML = '<div class="card empty">No questions selected. Open the menu and pick at least one chapter.</div>'; return; }
+    S.order = qs.slice();
+    if($('shuffleQ').checked) shuffle(S.order);
+    S.optOrder = {};
+    S.order.forEach(function(q){
+      var idx = q.o.map(function(_,n){ return n; });
+      if($('shuffleA').checked) shuffle(idx);
+      S.optOrder[q.id] = idx;
+    });
+    S.i = 0; S.answered = {}; S.revealed = false; S.picked = null; S.flipped = false; S.running = true;
+    openNav(false); render();
+  }
+  $('start').addEventListener('click', function(){ start(null); });
+  $('end').addEventListener('click', function(){ if(S.running) results(); });
+
+  function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+  /* ---------- render ---------- */
+  function render(){
+    if(!S.running){ intro(); return; }
+    if(S.i >= S.order.length){ results(); return; }
+    var q = S.order[S.i];
+    var done = Object.keys(S.answered).length;
+    var right = 0; for(var k in S.answered){ if(S.answered[k]) right++; }
+    var pct = Math.round((S.i / S.order.length) * 100);
+    var acc = done ? Math.round(right/done*100) + '%' : '--';
+
+    var h = '<div id="bar-wrap">'+
+      '<div id="bar-meta"><span>Question <b>'+(S.i+1)+'</b> / '+S.order.length+'</span>'+
+      '<span>'+(S.mode==='quiz' ? 'Accuracy <b>'+acc+'</b><span class="detail"> &nbsp;·&nbsp; '+right+' of '+done+' correct</span>' : 'Flashcard mode')+'</span></div>'+
+      '<div id="bar"><i style="width:'+pct+'%"></i></div></div>';
+
+    h += '<div class="card"><span class="chip">'+esc(TNAME[q.t])+'</span>'+
+         '<p class="qtext">'+esc(q.q)+'</p>';
+
+    if(S.mode === 'card'){
+      if(!S.flipped){
+        h += '<div class="flip" id="flip">Tap to reveal the answer</div>';
+      } else {
+        h += '<div class="opts">';
+        q.o.forEach(function(o,n){
+          h += '<div class="opt locked '+(n===q.a?'right':'dim')+'"><span class="k">'+String.fromCharCode(65+n)+'</span><span>'+esc(o)+'</span></div>';
+        });
+        h += '</div>';
+        h += '<div class="fb tip"><div class="hd">Why</div>'+esc(q.e)+'</div>';
+      }
+      h += '<div class="nav">';
+      if(S.i>0) h += '<button class="btn ghost" id="prev">Back</button>';
+      h += '<button class="btn" id="next">'+(S.i===S.order.length-1?'Finish':'Next')+'</button></div>';
+    } else {
+      var order = S.optOrder[q.id];
+      h += '<div class="opts">';
+      order.forEach(function(orig, pos){
+        var cls = 'opt';
+        if(S.revealed){
+          cls += ' locked';
+          if(orig === q.a) cls += ' right';
+          else if(orig === S.picked) cls += ' wrong';
+          else cls += ' dim';
+        }
+        h += '<button class="'+cls+'" data-o="'+orig+'"'+(S.revealed?' disabled':'')+
+             '><span class="k">'+String.fromCharCode(65+pos)+'</span><span>'+esc(q.o[orig])+'</span></button>';
+      });
+      h += '</div>';
+
+      if(S.revealed){
+        var ok = S.picked === q.a;
+        h += '<div class="fb '+(ok?'ok':'no')+'"><div class="hd">'+(ok?'Correct':'Not quite')+'</div>';
+        if(!ok) h += '<div class="ans">Correct answer: <b>'+esc(q.o[q.a])+'</b></div>';
+        h += esc(q.e)+'</div>';
+        h += '<div class="nav"><button class="btn" id="next">'+(S.i===S.order.length-1?'See results':'Next question')+'</button></div>';
+      } else if(S.picked !== null){
+        h += '<div class="nav"><button class="btn" id="reveal">Check answer</button></div>';
+      }
+    }
+    h += '</div>';
+    view.innerHTML = h;
+    wire(q);
+    window.scrollTo({top:0, behavior:'instant' in document.documentElement.style ? 'auto' : 'auto'});
+  }
+
+  function wire(q){
+    var f = $('flip');
+    if(f) f.addEventListener('click', function(){ S.flipped = true; render(); });
+
+    Array.prototype.forEach.call(document.querySelectorAll('.opt[data-o]'), function(b){
+      b.addEventListener('click', function(){
+        if(S.revealed) return;
+        S.picked = parseInt(b.dataset.o, 10);
+        if($('instant').checked) reveal(q); else render();
+      });
+    });
+
+    var r = $('reveal'); if(r) r.addEventListener('click', function(){ reveal(q); });
+    var n = $('next'); if(n) n.addEventListener('click', advance);
+    var p = $('prev'); if(p) p.addEventListener('click', function(){ S.i--; S.flipped=false; render(); });
+  }
+
+  function reveal(q){
+    S.revealed = true;
+    S.answered[q.id] = (S.picked === q.a);
+    render();
+  }
+
+  function advance(){
+    S.i++; S.revealed = false; S.picked = null; S.flipped = false;
+    render();
+  }
+
+  document.addEventListener('keydown', function(e){
+    if(!S.running) return;
+    if(e.target && /input|textarea/i.test(e.target.tagName)) return;
+    var q = S.order[S.i]; if(!q) return;
+    if(S.mode === 'quiz' && !S.revealed && /^[1-9]$/.test(e.key)){
+      var pos = parseInt(e.key,10) - 1;
+      var order = S.optOrder[q.id];
+      if(pos < order.length){ S.picked = order[pos]; if($('instant').checked) reveal(q); else render(); }
+    } else if(e.key === 'Enter' || e.key === ' '){
+      if(S.mode === 'card' && !S.flipped){ e.preventDefault(); S.flipped = true; render(); }
+      else if(S.revealed || S.mode === 'card'){ e.preventDefault(); advance(); }
+      else if(S.picked !== null){ e.preventDefault(); reveal(q); }
+    }
+  });
+
+  /* ---------- results ---------- */
+  function results(){
+    S.running = false;
+    openNav(false);
+    var seen = S.order.filter(function(q){ return q.id in S.answered; });
+    if(!seen.length){ intro('No questions were answered in that session.'); return; }
+    var right = seen.filter(function(q){ return S.answered[q.id]; }).length;
+    var pct = Math.round(right / seen.length * 100);
+
+    var by = {};
+    seen.forEach(function(q){
+      if(!by[q.t]) by[q.t] = {r:0, n:0};
+      by[q.t].n++; if(S.answered[q.id]) by[q.t].r++;
+    });
+
+    var h = '<div class="card"><div class="score-hero"><div class="big">'+pct+'%</div>'+
+            '<div class="sub">'+right+' of '+seen.length+' correct</div></div>';
+
+    h += '<div class="side-label" style="margin-bottom:14px">Accuracy by chapter</div><div class="brk">';
+    var lp = null;
+    TOPICS.forEach(function(t){
+      var d = by[t.k]; if(!d) return;
+      if(t.part !== lp){ lp = t.part; h += '<div class="part-head brk-part">'+esc(t.part)+'</div>'; }
+      var p = Math.round(d.r/d.n*100);
+      var col = p >= 80 ? 'var(--teal)' : (p >= 60 ? 'var(--amber)' : 'var(--red)');
+      h += '<div class="brk-row"><div class="brk-top"><span>'+esc(t.n)+'</span>'+
+           '<span class="pc">'+d.r+'/'+d.n+' &nbsp;'+p+'%</span></div>'+
+           '<div class="brk-bar"><i style="width:'+p+'%;background:'+col+'"></i></div></div>';
+    });
+    h += '</div>';
+
+    var missed = seen.filter(function(q){ return !S.answered[q.id]; });
+    if(missed.length){
+      h += '<div class="miss"><div class="side-label" style="margin-bottom:12px">Missed ('+missed.length+')</div>';
+      missed.forEach(function(q){
+        h += '<div class="miss-item"><div class="mt">'+esc(TNAME[q.t])+'</div>'+
+             '<div class="mq">'+esc(q.q)+'</div>'+
+             '<div class="ma">'+esc(q.o[q.a])+'</div></div>';
+      });
+      h += '</div>';
+    }
+
+    h += '<div class="nav">';
+    if(missed.length) h += '<button class="btn" id="retry">Retry the '+missed.length+' missed</button>';
+    h += '<button class="btn ghost" id="again">New session</button></div></div>';
+
+    view.innerHTML = h;
+    var rt = $('retry'); if(rt) rt.addEventListener('click', function(){ start(missed); });
+    $('again').addEventListener('click', function(){ start(null); });
+    window.scrollTo(0,0);
+  }
+
+  /* ---------- intro ---------- */
+  function intro(msg){
+    var h = '<div class="hero"><div class="eyebrow">CTS Practice Exam</div>'+
+      '<h1>Question bank</h1>'+
+      '<p>'+ALL.length+' practice questions sorted by exam-guide chapter. '+
+      'Pick your chapters in the menu, choose quiz or flashcard mode, and start.</p></div>';
+    if(msg) h += '<div class="card" style="margin-bottom:18px"><div class="fb tip" style="margin:0"><div class="hd">Note</div>'+esc(msg)+'</div></div>';
+    h += '<div class="card"><div class="side-label" style="margin-bottom:14px">Questions by chapter</div><div class="brk">';
+    var mx = 1; TOPICS.forEach(function(t){ mx = Math.max(mx, countFor(t.k)); });
+    var lp = null, empties = [];
+    TOPICS.forEach(function(t){
+      var n = countFor(t.k);
+      if(!n){ empties.push(t.short); return; }
+      if(t.part !== lp){ lp = t.part; h += '<div class="part-head brk-part">'+esc(t.part)+'</div>'; }
+      var p = Math.round(n/mx*100);
+      h += '<div class="brk-row"><div class="brk-top"><span>'+esc(t.n)+'</span><span class="pc">'+n+'</span></div>'+
+           '<div class="brk-bar"><i style="width:'+p+'%;background:var(--teal)"></i></div></div>';
+    });
+    if(empties.length){
+      h += '<div class="fb tip" style="margin-top:18px"><div class="hd">Gaps in this bank</div>'+
+           'No questions yet for '+esc(empties.join(', '))+'. Those chapters still need study time — the bank just hasn\'t covered them.</div>';
+    }
+    h += '</div><div class="nav"><button class="btn" id="go">Start session</button>'+
+         '<button class="btn ghost" id="opts">Choose chapters</button></div></div>';
+    view.innerHTML = h;
+    $('go').addEventListener('click', function(){ start(null); });
+    $('opts').addEventListener('click', function(){ openNav(true); });
+  }
+
+  buildTopics();
+  intro();
+})();
+</script>
+</body>
+</html>

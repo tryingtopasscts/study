@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CTS Crash Course — Log Equations, Spelled Out</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=DM+Sans:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0f1117; --surface:#181b24; --surface2:#1f2330; --border:#2a2f3e;
+  --text:#e8eaf0; --muted:#9aa3b5;
+  --teal:#2dd4bf; --amber:#fbbf24; --red:#f87171; --purple:#a78bfa;
+  --teal-dim:rgba(45,212,191,.12); --amber-dim:rgba(251,191,36,.12);
+  --red-dim:rgba(248,113,113,.12); --purple-dim:rgba(167,139,250,.12);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:18px;line-height:1.65}
+h1,h2,h3{font-family:'Fraunces',serif;line-height:1.2}
+h1{font-size:2.3rem;font-weight:700;margin-bottom:.4rem}
+h2{font-size:1.7rem;font-weight:600;margin:3rem 0 1rem;padding-top:1rem;border-top:1px solid var(--border)}
+h3{font-size:1.25rem;font-weight:600;margin:1.8rem 0 .7rem;color:var(--teal)}
+p{margin-bottom:1rem}
+code,.mono{font-family:'IBM Plex Mono',monospace}
+main{max-width:820px;margin:0 auto;padding:2.5rem 1.25rem 6rem}
+.subtitle{color:var(--muted);font-size:1.05rem;margin-bottom:.5rem}
+.chapter-tag{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:.75rem;letter-spacing:.08em;color:var(--teal);background:var(--teal-dim);border:1px solid var(--teal);border-radius:4px;padding:.15rem .55rem;margin-bottom:1rem}
+
+/* ---------- Sidebar drawer ---------- */
+#hamburger{position:fixed;top:1rem;left:1rem;z-index:60;background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:8px;width:44px;height:44px;font-size:1.3rem;cursor:pointer;transition:left .25s ease;display:flex;align-items:center;justify-content:center}
+#hamburger.open{left:calc(280px + 1rem)}
+#sidebar{position:fixed;top:0;left:-290px;width:280px;height:100%;background:var(--surface);border-right:1px solid var(--border);z-index:55;transition:left .25s ease;overflow-y:auto;padding:4.5rem 0 2rem}
+#sidebar.open{left:0}
+#backdrop{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:50;opacity:0;pointer-events:none;transition:opacity .25s}
+#backdrop.show{opacity:1;pointer-events:auto}
+#sidebar a{display:block;color:var(--muted);text-decoration:none;padding:.5rem 1.4rem;font-size:.95rem;border-left:3px solid transparent}
+#sidebar a:hover{color:var(--text);background:var(--surface2);border-left-color:var(--teal)}
+#sidebar .nav-head{font-family:'IBM Plex Mono',monospace;font-size:.7rem;letter-spacing:.1em;color:var(--muted);text-transform:uppercase;padding:.9rem 1.4rem .3rem}
+
+/* ---------- Callouts ---------- */
+.callout{border-radius:10px;padding:1rem 1.2rem;margin:1.4rem 0;border:1px solid;font-size:.97rem}
+.callout .label{font-family:'IBM Plex Mono',monospace;font-size:.72rem;letter-spacing:.12em;font-weight:600;display:block;margin-bottom:.4rem}
+.co-key{background:var(--teal-dim);border-color:var(--teal)} .co-key .label{color:var(--teal)}
+.co-spec{background:var(--amber-dim);border-color:var(--amber)} .co-spec .label{color:var(--amber)}
+.co-watch{background:var(--red-dim);border-color:var(--red)} .co-watch .label{color:var(--red)}
+.co-exam{background:var(--purple-dim);border-color:var(--purple)} .co-exam .label{color:var(--purple)}
+.callout p:last-child{margin-bottom:0}
+
+/* ---------- Formula box ---------- */
+.formula{background:var(--surface2);border:1px solid var(--border);border-left:4px solid var(--teal);border-radius:10px;padding:1.1rem 1.3rem;margin:1.3rem 0;font-family:'IBM Plex Mono',monospace;font-size:1.15rem;text-align:center}
+.formula .fnote{display:block;font-family:'DM Sans',sans-serif;font-size:.85rem;color:var(--muted);margin-top:.5rem}
+
+/* ---------- Tables ---------- */
+table{width:100%;border-collapse:collapse;margin:1.3rem 0;font-size:.95rem}
+th{font-family:'IBM Plex Mono',monospace;font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:var(--teal);text-align:left;padding:.55rem .7rem;border-bottom:2px solid var(--teal)}
+td{padding:.55rem .7rem;border-bottom:1px solid var(--border)}
+td.mono{font-size:.92rem}
+tr.hl td{background:var(--teal-dim)}
+
+/* ---------- SVG figure ---------- */
+figure{margin:1.6rem 0;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.2rem;overflow-x:auto}
+figcaption{font-size:.85rem;color:var(--muted);margin-top:.7rem;text-align:center}
+svg{display:block;margin:0 auto;max-width:100%;height:auto}
+svg text{font-family:'DM Sans',sans-serif}
+svg .m{font-family:'IBM Plex Mono',monospace}
+
+/* ---------- Step-through worked examples ---------- */
+.example{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.3rem 1.4rem;margin:1.6rem 0}
+.example .ex-title{font-family:'Fraunces',serif;font-size:1.15rem;font-weight:600;margin-bottom:.3rem}
+.example .ex-q{color:var(--muted);font-size:.97rem;margin-bottom:1rem}
+.step{display:none;border-left:3px solid var(--border);padding:.7rem 0 .7rem 1.1rem;margin:.5rem 0;animation:fadeIn .35s ease}
+.step.shown{display:block}
+.step .step-num{font-family:'IBM Plex Mono',monospace;font-size:.72rem;letter-spacing:.1em;color:var(--purple);display:block;margin-bottom:.25rem}
+.step .step-math{font-family:'IBM Plex Mono',monospace;font-size:1.05rem;background:var(--surface2);border-radius:8px;padding:.6rem .9rem;margin:.45rem 0;display:inline-block}
+.step p{font-size:.95rem;margin-bottom:.3rem}
+.step.answer{border-left-color:var(--teal);background:var(--teal-dim);border-radius:0 8px 8px 0}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.ex-controls{margin-top:.9rem;display:flex;gap:.6rem}
+button.btn{font-family:'DM Sans',sans-serif;font-size:.9rem;font-weight:500;background:var(--teal);color:#06281f;border:none;border-radius:8px;padding:.55rem 1.1rem;cursor:pointer}
+button.btn:disabled{background:var(--surface2);color:var(--muted);cursor:default}
+button.btn.ghost{background:transparent;border:1px solid var(--border);color:var(--muted)}
+button.btn.ghost:hover{color:var(--text)}
+
+/* ---------- Calculators ---------- */
+.calc{background:var(--surface);border:1px solid var(--purple);border-radius:12px;padding:1.3rem 1.4rem;margin:1.6rem 0}
+.calc h4{font-family:'Fraunces',serif;font-size:1.1rem;margin-bottom:.8rem;color:var(--purple)}
+.calc .row{display:flex;flex-wrap:wrap;gap:.8rem;margin-bottom:.8rem}
+.calc label{font-size:.85rem;color:var(--muted);display:block;margin-bottom:.25rem}
+.calc input{font-family:'IBM Plex Mono',monospace;font-size:1rem;background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:.5rem .7rem;width:130px}
+.calc input:focus{outline:2px solid var(--purple);border-color:var(--purple)}
+.calc .result{font-family:'IBM Plex Mono',monospace;background:var(--surface2);border-radius:8px;padding:.8rem 1rem;font-size:.95rem;white-space:pre-line;line-height:1.7}
+.calc .result .big{color:var(--teal);font-size:1.2rem;font-weight:600}
+
+/* ---------- Flip cards ---------- */
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:.9rem;margin:1.4rem 0}
+.fcard{perspective:800px;cursor:pointer;height:120px}
+.fcard-inner{position:relative;width:100%;height:100%;transition:transform .5s;transform-style:preserve-3d}
+.fcard.flipped .fcard-inner{transform:rotateY(180deg)}
+.fcard-face{position:absolute;inset:0;backface-visibility:hidden;border-radius:10px;display:flex;align-items:center;justify-content:center;text-align:center;padding:.7rem;font-size:.92rem}
+.fcard-front{background:var(--surface2);border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;font-size:1.15rem;color:var(--teal)}
+.fcard-back{background:var(--teal-dim);border:1px solid var(--teal);transform:rotateY(180deg);font-size:.85rem}
+
+/* ---------- Quiz ---------- */
+.quiz-q{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.2rem 1.3rem;margin:1.2rem 0}
+.quiz-q .qnum{font-family:'IBM Plex Mono',monospace;font-size:.72rem;letter-spacing:.1em;color:var(--purple)}
+.quiz-q .qtext{font-weight:500;margin:.4rem 0 .8rem}
+.opt{display:block;width:100%;text-align:left;background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:.6rem .9rem;margin:.4rem 0;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:.95rem}
+.opt:hover{border-color:var(--muted)}
+.opt.correct{background:var(--teal-dim);border-color:var(--teal)}
+.opt.wrong{background:var(--red-dim);border-color:var(--red)}
+.opt:disabled{cursor:default}
+.expl{display:none;font-size:.9rem;color:var(--muted);border-left:3px solid var(--purple);padding:.5rem 0 .5rem 1rem;margin-top:.7rem}
+.expl.shown{display:block}
+#quiz-score{font-family:'IBM Plex Mono',monospace;font-size:1.05rem;color:var(--teal);margin-top:1rem}
+@media(max-width:600px){body{font-size:17px}h1{font-size:1.8rem}.formula{font-size:1rem}}
+</style>
+</head>
+<body>
+<button id="hamburger" aria-label="Open navigation">&#9776;</button>
+<div id="backdrop"></div>
+<nav id="sidebar" aria-label="Guide navigation">
+  <span class="nav-head">Foundations</span>
+  <a href="#why">1 · Why logs exist</a>
+  <a href="#what">2 · What a log actually is</a>
+  <a href="#landmarks">3 · The logs you'll actually meet</a>
+  <span class="nav-head">Decibels</span>
+  <a href="#db">4 · From logs to decibels</a>
+  <a href="#tenvtwenty">5 · 10-log vs 20-log</a>
+  <a href="#formulas">6 · The three exam formulas</a>
+  <span class="nav-head">Doing the math</span>
+  <a href="#examples">7 · Worked examples, every step</a>
+  <a href="#backwards">8 · Going backwards (dB → ratio)</a>
+  <a href="#refs">9 · Reference levels</a>
+  <span class="nav-head">Lock it in</span>
+  <a href="#magic">10 · Magic numbers</a>
+  <a href="#calcs">11 · Try it yourself</a>
+  <a href="#quiz">12 · Self-check quiz</a>
+</nav>
+
+<main>
+<span class="chapter-tag">CH 4 · CH 16 · APPENDIX C</span>
+<h1>Log Equations, Spelled Out</h1>
+<p class="subtitle">The dummy-proof crash course: what a logarithm is, why the decibel uses one, when to use 10-log vs 20-log, and every worked example with nothing skipped.</p>
+
+<h2 id="why">1 · Why logs exist at all</h2>
+<p>Your ears can hear everything from a mosquito across the room to a jet engine. The pressure difference between the quietest thing you can hear and the threshold of pain is about <strong>3,000,000 : 1</strong>. If we measured sound on a normal (linear) scale, we'd be writing numbers like 0.00002 Pa and 60 Pa in the same sentence. Ugly, error-prone, and — worse — it doesn't match how you <em>hear</em>.</p>
+<p>Your hearing doesn't perceive loudness linearly. Going from 1 watt to 2 watts sounds like the same size of jump as going from 100 watts to 200 watts. What your ear cares about is the <strong>ratio</strong>, not the raw difference. Logarithms are the math tool that turns ratios into simple, small numbers.</p>
+<div class="callout co-key"><span class="label">KEY TERM</span><p><strong>Logarithmic perception:</strong> humans perceive sound level differences by ratio (multiplication), not by amount (addition). That's why the entire audio world runs on a base-10 log scale.</p></div>
+
+<figure>
+<svg viewBox="0 0 720 190" role="img" aria-label="Linear vs logarithmic scale comparison">
+  <text x="10" y="28" fill="#9aa3b5" font-size="13">LINEAR SCALE — every step adds 1,000</text>
+  <line x1="40" y1="60" x2="680" y2="60" stroke="#2a2f3e" stroke-width="2"/>
+  <g fill="#e8eaf0" font-size="12" text-anchor="middle">
+    <line x1="40" y1="52" x2="40" y2="68" stroke="#2dd4bf" stroke-width="2"/><text x="40" y="86" class="m">0</text>
+    <line x1="200" y1="52" x2="200" y2="68" stroke="#2dd4bf" stroke-width="2"/><text x="200" y="86" class="m">2,500</text>
+    <line x1="360" y1="52" x2="360" y2="68" stroke="#2dd4bf" stroke-width="2"/><text x="360" y="86" class="m">5,000</text>
+    <line x1="520" y1="52" x2="520" y2="68" stroke="#2dd4bf" stroke-width="2"/><text x="520" y="86" class="m">7,500</text>
+    <line x1="680" y1="52" x2="680" y2="68" stroke="#2dd4bf" stroke-width="2"/><text x="680" y="86" class="m">10,000</text>
+  </g>
+  <text x="10" y="122" fill="#9aa3b5" font-size="13">LOG SCALE — every step MULTIPLIES by 10</text>
+  <line x1="40" y1="150" x2="680" y2="150" stroke="#2a2f3e" stroke-width="2"/>
+  <g fill="#e8eaf0" font-size="12" text-anchor="middle">
+    <line x1="40" y1="142" x2="40" y2="158" stroke="#fbbf24" stroke-width="2"/><text x="40" y="176" class="m">1</text>
+    <line x1="200" y1="142" x2="200" y2="158" stroke="#fbbf24" stroke-width="2"/><text x="200" y="176" class="m">10</text>
+    <line x1="360" y1="142" x2="360" y2="158" stroke="#fbbf24" stroke-width="2"/><text x="360" y="176" class="m">100</text>
+    <line x1="520" y1="142" x2="520" y2="158" stroke="#fbbf24" stroke-width="2"/><text x="520" y="176" class="m">1,000</text>
+    <line x1="680" y1="142" x2="680" y2="158" stroke="#fbbf24" stroke-width="2"/><text x="680" y="176" class="m">10,000</text>
+  </g>
+</svg>
+<figcaption>Same physical distance on each ruler. Linear: equal steps <em>add</em>. Log: equal steps <em>multiply</em> ×10. The log ruler squeezes 1 → 10,000 into the same space the linear ruler uses for 0 → 10,000.</figcaption>
+</figure>
+
+<h2 id="what">2 · What a log actually is</h2>
+<p>Here is the entire concept in one sentence:</p>
+<div class="formula">log(x) = "how many times do I multiply 10 by itself to get x?"<span class="fnote">In AV, "log" always means log base 10 (log₁₀). Your calculator's LOG button. Not LN.</span></div>
+<p>That's it. A log is a <strong>counting machine for zeros</strong> (and, more precisely, for factors of 10):</p>
+<ul style="margin:0 0 1rem 1.3rem">
+<li><span class="mono">log(1,000) = 3</span> &nbsp;because 10 × 10 × 10 = 1,000. You multiplied 10 by itself <strong>3 times</strong>.</li>
+<li><span class="mono">log(100) = 2</span> &nbsp;because 10 × 10 = 100.</li>
+<li><span class="mono">log(10) = 1</span> &nbsp;because 10 by itself is… 10.</li>
+<li><span class="mono">log(1) = 0</span> &nbsp;because you multiplied 10 by itself <strong>zero times</strong>. Nothing changed.</li>
+<li><span class="mono">log(0.001) = −3</span> &nbsp;because you <em>divided</em> by 10 three times. Going below 1 makes logs negative.</li>
+</ul>
+<div class="callout co-watch"><span class="label">WATCH OUT</span><p>A negative log does <strong>not</strong> mean a negative quantity. <span class="mono">log(0.5) = −0.301</span> just means "0.5 is a bit less than one factor-of-10 <em>below</em> 1." In dB terms, negative = <em>loss</em>, positive = <em>gain</em>. Never a negative voltage or negative sound.</p></div>
+
+<figure>
+<svg viewBox="0 0 720 170" role="img" aria-label="Log as a counting machine">
+  <g font-size="14" text-anchor="middle">
+    <rect x="30" y="55" width="150" height="60" rx="10" fill="#1f2330" stroke="#2a2f3e"/>
+    <text x="105" y="80" fill="#e8eaf0" class="m">10 × 10 × 10</text>
+    <text x="105" y="102" fill="#9aa3b5" font-size="12">three tens multiplied</text>
+    <path d="M190 85 L250 85" stroke="#2dd4bf" stroke-width="2" marker-end="url(#arr)"/>
+    <rect x="260" y="55" width="120" height="60" rx="10" fill="#1f2330" stroke="#2a2f3e"/>
+    <text x="320" y="90" fill="#e8eaf0" class="m" font-size="17">= 1,000</text>
+    <path d="M390 85 L450 85" stroke="#2dd4bf" stroke-width="2" marker-end="url(#arr)"/>
+    <rect x="460" y="45" width="230" height="80" rx="10" fill="rgba(45,212,191,.12)" stroke="#2dd4bf"/>
+    <text x="575" y="80" fill="#2dd4bf" class="m" font-size="17">log(1,000) = 3</text>
+    <text x="575" y="105" fill="#9aa3b5" font-size="12">"the count of tens is 3"</text>
+  </g>
+  <defs><marker id="arr" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#2dd4bf"/></marker></defs>
+</svg>
+<figcaption>The log doesn't care about the number itself — it reports <em>how many factors of 10</em> are packed inside it.</figcaption>
+</figure>
+
+<h2 id="landmarks">3 · The logs you'll actually meet</h2>
+<p>Exam questions are built so the log values land on a handful of "landmark" numbers. Memorize these four and you can sanity-check almost any dB calculation without a calculator:</p>
+<table>
+<thead><tr><th>Ratio</th><th>log(ratio)</th><th>Worth remembering because…</th></tr></thead>
+<tbody>
+<tr class="hl"><td class="mono">2</td><td class="mono">0.301 ≈ 0.3</td><td>Doubling anything. The single most-used log in AV.</td></tr>
+<tr><td class="mono">4</td><td class="mono">0.602 ≈ 0.6</td><td>4 = 2 × 2, so its log is 0.3 + 0.3. Logs turn multiplication into addition.</td></tr>
+<tr><td class="mono">8</td><td class="mono">0.903 ≈ 0.9</td><td>8 = 2 × 2 × 2 → 0.3 + 0.3 + 0.3. (You'll see this in the 8-meter example below.)</td></tr>
+<tr class="hl"><td class="mono">10</td><td class="mono">1.000</td><td>One full factor of ten.</td></tr>
+<tr><td class="mono">0.5</td><td class="mono">−0.301</td><td>Halving = doubling with a minus sign. log(1/x) = −log(x).</td></tr>
+<tr><td class="mono">0.125</td><td class="mono">−0.903</td><td>1/8. Same digits as log(8), sign flipped.</td></tr>
+<tr><td class="mono">1</td><td class="mono">0</td><td>No change at all → 0 dB.</td></tr>
+</tbody>
+</table>
+<div class="callout co-exam"><span class="label">EXAM TIP</span><p>The sign-flip rule is a free answer-checker: if the ratio inside the log is <strong>less than 1</strong> (measured value smaller than reference, or listener farther than the reference distance), the dB result <strong>must be negative</strong> — a loss. Greater than 1 → positive → gain. If your sign doesn't match the story, you flipped the fraction.</p></div>
+
+<h2 id="db">4 · From logs to decibels</h2>
+<p>A <strong>decibel is not a unit of loudness</strong>. It's a unit of <em>comparison</em>. Every dB figure is secretly a sentence: "this thing is X compared to that thing." The original unit was the <strong>Bel</strong> (after Alexander Graham Bell):</p>
+<div class="formula">Bel = log(quantity₁ / quantity₂)</div>
+<p>The Bel turned out to be too coarse for real work, so the industry uses tenths of a Bel — <strong>deci</strong>bels. Ten decibels per Bel means we multiply by 10:</p>
+<div class="formula">dB = 10 × log(quantity₁ / quantity₂)<span class="fnote">1 dB = 0.1 Bel — that's the whole origin of the "10 ×" out front.</span></div>
+<div class="callout co-key"><span class="label">KEY TERM</span><p><strong>Decibel (dB):</strong> the logarithmic ratio between two quantities of the same physical property (power, voltage, pressure, distance). Because it's a ratio, a dB value is meaningless without knowing what it's compared against — that's why reference levels (Section 9) exist.</p></div>
+<div class="callout co-watch"><span class="label">WATCH OUT</span><p>Saying "the room is at 85 dB" only means something because there's an implied reference: 85 dB <strong>SPL</strong>, referenced to the threshold of hearing. "It's 10 degrees hotter than yesterday" tells you nothing unless you know yesterday's temperature. Same logic.</p></div>
+
+<h2 id="tenvtwenty">5 · The one decision: 10-log or 20-log?</h2>
+<p>This is where everyone gets tripped up, so let's kill it permanently. There is exactly <strong>one question</strong> to ask:</p>
+<p style="font-family:'Fraunces',serif;font-size:1.3rem;text-align:center;margin:1.5rem 0"><em>"Am I comparing watts?"</em></p>
+<ul style="margin:0 0 1rem 1.3rem">
+<li><strong>Yes — it's power (watts):</strong> use <span class="mono">10 log</span>.</li>
+<li><strong>No — it's voltage, distance, or sound pressure:</strong> use <span class="mono">20 log</span>.</li>
+</ul>
+<h3>Why 20 and not 10? (The actual reason)</h3>
+<p>Power is related to the <strong>square</strong> of voltage: <span class="mono">P = V² / R</span>. Double the voltage → four times the power. So when you compare voltages, you're implicitly comparing <em>squared</em> quantities. In log-world, squaring a number <strong>doubles its log</strong> — that's a core log rule: <span class="mono">log(x²) = 2 × log(x)</span>. The doubled log turns the 10 into a 20:</p>
+<div class="formula">10 × log(V₁²/V₂²) &nbsp;=&nbsp; 10 × 2 × log(V₁/V₂) &nbsp;=&nbsp; 20 × log(V₁/V₂)</div>
+<p>Distance works the same way for a different reason: radiated energy (sound, light, RF) spreads over an area that grows with the <strong>square</strong> of distance — the inverse square law. Square relationship → doubled log → 20.</p>
+
+<figure>
+<svg viewBox="0 0 720 300" role="img" aria-label="Decision flowchart: 10 log vs 20 log">
+  <g text-anchor="middle" font-size="14">
+    <rect x="235" y="15" width="250" height="55" rx="10" fill="#1f2330" stroke="#a78bfa" stroke-width="2"/>
+    <text x="360" y="38" fill="#e8eaf0">What are you comparing?</text>
+    <text x="360" y="58" fill="#9aa3b5" font-size="12">(two of the same kind of thing)</text>
+    <path d="M300 70 L170 120" stroke="#2a2f3e" stroke-width="2" marker-end="url(#arr2)"/>
+    <path d="M420 70 L550 120" stroke="#2a2f3e" stroke-width="2" marker-end="url(#arr2)"/>
+    <rect x="60" y="128" width="220" height="52" rx="10" fill="#1f2330" stroke="#2a2f3e"/>
+    <text x="170" y="150" fill="#e8eaf0">POWER — watts</text>
+    <text x="170" y="170" fill="#9aa3b5" font-size="12">amplifier power, electrical power</text>
+    <rect x="440" y="128" width="220" height="52" rx="10" fill="#1f2330" stroke="#2a2f3e"/>
+    <text x="550" y="146" fill="#e8eaf0" font-size="13">VOLTAGE · DISTANCE · PRESSURE</text>
+    <text x="550" y="166" fill="#9aa3b5" font-size="12">signal levels, listener distance, SPL</text>
+    <path d="M170 180 L170 218" stroke="#2a2f3e" stroke-width="2" marker-end="url(#arr2)"/>
+    <path d="M550 180 L550 218" stroke="#2a2f3e" stroke-width="2" marker-end="url(#arr2)"/>
+    <rect x="75" y="226" width="190" height="52" rx="10" fill="rgba(45,212,191,.12)" stroke="#2dd4bf" stroke-width="2"/>
+    <text x="170" y="258" fill="#2dd4bf" class="m" font-size="17">dB = 10 log(ratio)</text>
+    <rect x="455" y="226" width="190" height="52" rx="10" fill="rgba(251,191,36,.12)" stroke="#fbbf24" stroke-width="2"/>
+    <text x="550" y="258" fill="#fbbf24" class="m" font-size="17">dB = 20 log(ratio)</text>
+  </g>
+  <defs><marker id="arr2" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#9aa3b5"/></marker></defs>
+</svg>
+<figcaption>The entire 10-vs-20 decision. Watts → 10. Everything else you'll meet on the exam (volts, meters, pascals) → 20, because those quantities relate to power by a <em>square</em>.</figcaption>
+</figure>
+
+<div class="callout co-exam"><span class="label">EXAM TIP</span><p>Mnemonic: <strong>"Power stands alone"</strong> — power gets the plain 10. Voltage, distance, and pressure all <em>square up</em> to become power, so they get double: 20.</p></div>
+
+<h2 id="formulas">6 · The three exam formulas</h2>
+<p>All three are the same machine wearing different hats. Same shape every time: <em>a coefficient, a log, a ratio.</em></p>
+<div class="formula">dB = 10 × log(P₁ / P₂)<span class="fnote">POWER — P₁ = new/measured power, P₂ = reference power (both in watts)</span></div>
+<div class="formula">dB = 20 × log(V₁ / Vᵣ)<span class="fnote">VOLTAGE — V₁ = new/measured voltage, Vᵣ = reference voltage</span></div>
+<div class="formula">dB = 20 × log(D₁ / D₂)<span class="fnote">DISTANCE (inverse square law) — D₁ = original/reference distance, D₂ = new/measured distance</span></div>
+<div class="callout co-watch"><span class="label">WATCH OUT</span><p>Notice the distance formula puts the <strong>reference distance on top</strong> (D₁ = original, D₂ = new) — opposite of the voltage and power formulas, where the <strong>new value is on top</strong>. This is how AVIXA writes them, and exam answer options are built around it. Moving <em>away</em> from a loudspeaker: farther distance goes on the bottom, ratio &lt; 1, result negative = loss. That matches physical reality — use the sign check from Section 3.</p></div>
+
+<figure>
+<svg viewBox="0 0 720 260" role="img" aria-label="Inverse square law: energy spreading over area">
+  <g text-anchor="middle" font-size="13">
+    <circle cx="80" cy="130" r="14" fill="#fbbf24"/>
+    <text x="80" y="170" fill="#9aa3b5" font-size="12">source</text>
+    <path d="M94 118 L250 40" stroke="#2a2f3e" stroke-width="1.5"/>
+    <path d="M94 142 L250 220" stroke="#2a2f3e" stroke-width="1.5"/>
+    <path d="M250 40 A 195 195 0 0 1 250 220" stroke="#2dd4bf" stroke-width="3" fill="none"/>
+    <rect x="238" y="112" width="26" height="26" fill="rgba(45,212,191,.35)" stroke="#2dd4bf"/>
+    <text x="251" y="245" fill="#2dd4bf" class="m">1 m</text>
+    <path d="M420 8 A 390 390 0 0 1 420 252" stroke="#fbbf24" stroke-width="3" fill="none"/>
+    <g fill="rgba(251,191,36,.3)" stroke="#fbbf24">
+      <rect x="408" y="99" width="26" height="26"/><rect x="434" y="99" width="26" height="26"/>
+      <rect x="408" y="125" width="26" height="26"/><rect x="434" y="125" width="26" height="26"/>
+    </g>
+    <text x="434" y="245" fill="#fbbf24" class="m">2 m</text>
+    <text x="595" y="95" fill="#e8eaf0" font-size="14">Double the distance →</text>
+    <text x="595" y="117" fill="#e8eaf0" font-size="14">same energy covers</text>
+    <text x="595" y="139" fill="#fbbf24" font-size="14" font-weight="bold">4× the area</text>
+    <text x="595" y="161" fill="#e8eaf0" font-size="14">→ ¼ the energy per spot</text>
+    <text x="595" y="187" fill="#2dd4bf" class="m" font-size="15">= −6 dB SPL</text>
+  </g>
+</svg>
+<figcaption>The inverse square law. One patch of sound energy at 1 m has to stretch over four patches at 2 m. Quarter the energy at any point → <strong>−6 dB per doubling of distance</strong>.</figcaption>
+</figure>
+
+<h2 id="examples">7 · Worked examples — every single step</h2>
+<p>Each example below reveals one step at a time. Try to predict the next step before you tap the button. That's the whole trick to making this stick.</p>
+
+<div class="example" data-ex>
+  <div class="ex-title">Example 1 — Doubling the distance</div>
+  <div class="ex-q">A listener moves from 1 m to 2 m away from a loudspeaker. What's the change in SPL?</div>
+  <div class="step"><span class="step-num">STEP 1 — PICK THE FORMULA</span><p>We're comparing <strong>distances</strong>, not watts → 20-log. Distance formula: reference distance on top.</p><span class="step-math">dB = 20 × log(D₁ / D₂)</span></div>
+  <div class="step"><span class="step-num">STEP 2 — PLUG IN THE NUMBERS</span><p>D₁ = 1 m (original), D₂ = 2 m (new position).</p><span class="step-math">dB = 20 × log(1 / 2)</span></div>
+  <div class="step"><span class="step-num">STEP 3 — DO THE DIVISION FIRST</span><p>Always resolve the fraction before touching the log. 1 ÷ 2 = 0.5.</p><span class="step-math">dB = 20 × log(0.5)</span></div>
+  <div class="step"><span class="step-num">STEP 4 — TAKE THE LOG</span><p>log(0.5) = −0.301 (landmark value: halving = −0.3). Negative because 0.5 &lt; 1.</p><span class="step-math">dB = 20 × (−0.301)</span></div>
+  <div class="step"><span class="step-num">STEP 5 — MULTIPLY</span><span class="step-math">dB = −6.02 ≈ −6 dB</span></div>
+  <div class="step answer"><span class="step-num" style="color:var(--teal)">ANSWER + SANITY CHECK</span><p><strong>−6 dB.</strong> Negative = loss, which makes sense — we moved <em>away</em>. This is the famous <strong>6 dB per doubling rule</strong>. Every doubling of distance costs you another 6 dB.</p></div>
+  <div class="ex-controls"><button class="btn" data-next>Show next step</button><button class="btn ghost" data-reset>Reset</button></div>
+</div>
+
+<div class="example" data-ex>
+  <div class="ex-title">Example 2 — The farthest listener (the classic exam setup)</div>
+  <div class="ex-q">A loudspeaker is rated <strong>92 dB SPL, 1 watt @ 1 meter</strong>. The farthest listener sits 8 m away. What SPL do they get with 1 watt in?</div>
+  <div class="step"><span class="step-num">STEP 1 — UNDERSTAND THE SENSITIVITY RATING</span><p>"92 dB SPL, 1 W @ 1 m" means: feed it 1 watt, stand 1 meter away, you measure 92 dB SPL. That's our anchor point. Now we need the <em>loss</em> from 1 m out to 8 m.</p></div>
+  <div class="step"><span class="step-num">STEP 2 — PICK THE FORMULA</span><p>Comparing distances → 20-log, reference distance (1 m) on top.</p><span class="step-math">dB = 20 × log(1 / 8)</span></div>
+  <div class="step"><span class="step-num">STEP 3 — DIVIDE</span><span class="step-math">dB = 20 × log(0.125)</span></div>
+  <div class="step"><span class="step-num">STEP 4 — TAKE THE LOG</span><p>log(0.125) = −0.903. No calculator needed: 8 = 2×2×2, so log(8) = 0.3+0.3+0.3 = 0.903, and 1/8 flips the sign.</p><span class="step-math">dB = 20 × (−0.903)</span></div>
+  <div class="step"><span class="step-num">STEP 5 — MULTIPLY</span><span class="step-math">dB = −18.06 ≈ −18 dB</span></div>
+  <div class="step"><span class="step-num">STEP 6 — APPLY THE LOSS TO THE RATING</span><p>Start at the anchor (92 dB @ 1 m) and subtract the distance loss.</p><span class="step-math">92 dB − 18 dB = 74 dB SPL</span></div>
+  <div class="step answer"><span class="step-num" style="color:var(--teal)">ANSWER + SANITY CHECK</span><p><strong>74 dB SPL at the farthest listener.</strong> Shortcut check: 1→2 m (−6), 2→4 m (−6), 4→8 m (−6). Three doublings × 6 dB = −18 dB. Same answer, zero calculator.</p></div>
+  <div class="ex-controls"><button class="btn" data-next>Show next step</button><button class="btn ghost" data-reset>Reset</button></div>
+</div>
+
+<div class="example" data-ex>
+  <div class="ex-title">Example 3 — Solving for power (working the formula backwards)</div>
+  <div class="ex-q">Continuing Example 2: the design target at the listener is 80 dB SPL (70 dB speech + 10 dB headroom), but 1 watt only gets us 74 dB. We're 6 dB short. <strong>How many watts do we need?</strong></div>
+  <div class="step"><span class="step-num">STEP 1 — PICK THE FORMULA</span><p>Now we're comparing <strong>watts</strong> → 10-log.</p><span class="step-math">SPL increase = 10 × log(P₂ / P₁)</span></div>
+  <div class="step"><span class="step-num">STEP 2 — PLUG IN WHAT WE KNOW</span><p>The increase we need is 6 dB. The reference power P₁ is 1 W (from the sensitivity rating). The unknown is x.</p><span class="step-math">6 = 10 × log(x / 1)</span></div>
+  <div class="step"><span class="step-num">STEP 3 — ISOLATE THE LOG</span><p>Divide both sides by 10 to get the log alone.</p><span class="step-math">0.6 = log(x)</span></div>
+  <div class="step"><span class="step-num">STEP 4 — UNDO THE LOG</span><p>The opposite of "log" is "10 to the power of." Raise 10 to both sides. (Calculator: the 10ˣ button, usually SHIFT + LOG.)</p><span class="step-math">x = 10^0.6</span></div>
+  <div class="step"><span class="step-num">STEP 5 — COMPUTE</span><span class="step-math">x = 3.98 watts ≈ 4 W</span></div>
+  <div class="step answer"><span class="step-num" style="color:var(--teal)">ANSWER + SANITY CHECK</span><p><strong>About 4 watts.</strong> Check with magic numbers: +3 dB = double the power. We need +6 dB = two doublings = 1 W → 2 W → 4 W. ✔ Also notice: quadrupling the power only bought us 6 dB. Power is expensive; dB are stubborn.</p></div>
+  <div class="ex-controls"><button class="btn" data-next>Show next step</button><button class="btn ghost" data-reset>Reset</button></div>
+</div>
+
+<div class="example" data-ex>
+  <div class="ex-title">Example 4 — Voltage gain</div>
+  <div class="ex-q">A line driver takes a 0.775 V input and outputs 7.75 V. What's the gain in dB?</div>
+  <div class="step"><span class="step-num">STEP 1 — PICK THE FORMULA</span><p>Volts → 20-log. New/measured value on top, reference on the bottom.</p><span class="step-math">dB = 20 × log(V₁ / Vᵣ)</span></div>
+  <div class="step"><span class="step-num">STEP 2 — PLUG IN</span><span class="step-math">dB = 20 × log(7.75 / 0.775)</span></div>
+  <div class="step"><span class="step-num">STEP 3 — DIVIDE</span><p>7.75 ÷ 0.775 = 10. The output is ten times the input voltage.</p><span class="step-math">dB = 20 × log(10)</span></div>
+  <div class="step"><span class="step-num">STEP 4 — TAKE THE LOG</span><p>log(10) = 1. One factor of ten.</p><span class="step-math">dB = 20 × 1</span></div>
+  <div class="step answer"><span class="step-num" style="color:var(--teal)">ANSWER + SANITY CHECK</span><p><strong>+20 dB.</strong> Positive = gain ✔. Burn this in: <strong>10× the voltage = +20 dB</strong>, but <strong>10× the power = +10 dB</strong>. Same ratio, different coefficient, different answer — exactly what the exam loves to test.</p></div>
+  <div class="ex-controls"><button class="btn" data-next>Show next step</button><button class="btn ghost" data-reset>Reset</button></div>
+</div>
+
+<div class="example" data-ex>
+  <div class="ex-title">Example 5 — Doubling amplifier power</div>
+  <div class="ex-q">You swap a 100 W amp for a 200 W amp. How much more level do you get?</div>
+  <div class="step"><span class="step-num">STEP 1 — PICK THE FORMULA</span><p>Watts → 10-log.</p><span class="step-math">dB = 10 × log(P₁ / P₂)</span></div>
+  <div class="step"><span class="step-num">STEP 2 — PLUG IN</span><span class="step-math">dB = 10 × log(200 / 100)</span></div>
+  <div class="step"><span class="step-num">STEP 3 — DIVIDE</span><span class="step-math">dB = 10 × log(2)</span></div>
+  <div class="step"><span class="step-num">STEP 4 — TAKE THE LOG</span><p>log(2) = 0.301. The most important landmark log there is.</p><span class="step-math">dB = 10 × 0.301</span></div>
+  <div class="step answer"><span class="step-num" style="color:var(--teal)">ANSWER + SANITY CHECK</span><p><strong>+3 dB.</strong> Double the power = +3 dB, and 3 dB is only a "just noticeable" change to human ears. You doubled your amp budget for a just-noticeable difference. (To sound <em>twice as loud</em> you'd need +10 dB = <strong>ten times</strong> the power.)</p></div>
+  <div class="ex-controls"><button class="btn" data-next>Show next step</button><button class="btn ghost" data-reset>Reset</button></div>
+</div>
+
+<h2 id="backwards">8 · Going backwards: dB → ratio</h2>
+<p>Half the exam questions run the machine in reverse: "you gained 6 dB — what happened to the power?" The undo button for a log is <strong>10 raised to a power</strong> (the antilog):</p>
+<div class="formula">Power ratio = 10^(dB ÷ 10)<span class="fnote">watts: divide the dB by 10 first, then hit 10ˣ</span></div>
+<div class="formula">Voltage / distance / pressure ratio = 10^(dB ÷ 20)<span class="fnote">everything else: divide by 20 first, then 10ˣ</span></div>
+<p>It's the forward process mirror-imaged. Forward: divide → log → multiply by the coefficient. Backward: <strong>divide by the coefficient → 10ˣ → that's your ratio.</strong></p>
+<p>Quick example: +6 dB of power gain. 6 ÷ 10 = 0.6. Then 10^0.6 = 3.98 ≈ 4. The power quadrupled — exactly what Example 3 found the long way.</p>
+<div class="callout co-watch"><span class="label">WATCH OUT</span><p>Divide by the coefficient <strong>before</strong> raising 10 to the power. Computing 10^6 and then dividing gives garbage. The dB has to be shrunk back down to a bare log value first.</p></div>
+
+<h2 id="refs">9 · Reference levels — the "compared to what?" cheat sheet</h2>
+<p>A dB with a letter after it is just a dB with the reference <strong>baked in</strong>. Memorize the reference value for each:</p>
+<table>
+<thead><tr><th>Notation</th><th>0 dB means…</th><th>Measures</th><th>Uses</th></tr></thead>
+<tbody>
+<tr><td class="mono">dB SPL</td><td class="mono">20 µPa</td><td>Sound pressure</td><td class="mono">20 log — threshold of human hearing</td></tr>
+<tr><td class="mono">dBu</td><td class="mono">0.775 V (775 mV)</td><td>Voltage</td><td class="mono">20 log — pro audio line level</td></tr>
+<tr><td class="mono">dBV</td><td class="mono">1.0 V</td><td>Voltage</td><td class="mono">20 log — consumer line level</td></tr>
+<tr><td class="mono">dBm</td><td class="mono">1 mW</td><td>Power</td><td class="mono">10 log — electrical power</td></tr>
+</tbody>
+</table>
+<div class="callout co-spec"><span class="label">SPEC</span><p>0 dB SPL = <strong>20 microPascals</strong> — the quietest sound a human can hear. 1 Pa = 0.00015 psi, so this is an absurdly tiny pressure. Also note <strong>−20 dBu is not a negative voltage</strong> — it's simply a voltage smaller than 775 mV.</p></div>
+<div class="callout co-exam"><span class="label">EXAM TIP</span><p>Coming from audio, you already know dBu vs dBV from gear spec sheets: +4 dBu (pro) vs −10 dBV (consumer). The exam only needs you to match each suffix to its reference value and know whether it's a 10-log (power: dBm) or 20-log (voltage/pressure: dBu, dBV, dB SPL) family member.</p></div>
+
+<h2 id="magic">10 · The magic numbers (tap to flip)</h2>
+<p>These are the values that let you answer most dB questions without a calculator. Tap each card.</p>
+<div class="cards">
+  <div class="fcard"><div class="fcard-inner"><div class="fcard-face fcard-front">+3 dB</div><div class="fcard-face fcard-back"><strong>Double the power.</strong> Also the smallest "just noticeable" loudness change.</div></div></div>
+  <div class="fcard"><div class="fcard-inner"><div class="fcard-face fcard-front">+6 dB</div><div class="fcard-face fcard-back"><strong>Double the voltage</strong> — or halve the distance to the source.</div></div></div>
+  <div class="fcard"><div class="fcard-inner"><div class="fcard-face fcard-front">−6 dB</div><div class="fcard-face fcard-back"><strong>Doubling of distance.</strong> The inverse square law's per-doubling price.</div></div></div>
+  <div class="fcard"><div class="fcard-inner"><div class="fcard-face fcard-front">+10 dB</div><div class="fcard-face fcard-back"><strong>10× the power.</strong> Perceived as <em>twice as loud</em> by humans.</div></div></div>
+  <div class="fcard"><div class="fcard-inner"><div class="fcard-face fcard-front">+20 dB</div><div class="fcard-face fcard-back"><strong>10× the voltage</strong> (or pressure, or 1/10 the distance).</div></div></div>
+  <div class="fcard"><div class="fcard-inner"><div class="fcard-face fcard-front">1 dB</div><div class="fcard-face fcard-back"><strong>Smallest perceptible change.</strong> Most people won't notice it.</div></div></div>
+  <div class="fcard"><div class="fcard-inner"><div class="fcard-face fcard-front">0 dB</div><div class="fcard-face fcard-back"><strong>No change.</strong> Ratio = 1, log(1) = 0. Not silence — equality.</div></div></div>
+  <div class="fcard"><div class="fcard-inner"><div class="fcard-face fcard-front">log(2)</div><div class="fcard-face fcard-back"><strong>0.301</strong> — the landmark behind 3 dB and 6 dB.</div></div></div>
+</div>
+<div class="callout co-exam"><span class="label">EXAM TIP</span><p>Trap pairing to keep straight: <strong>3 dB</strong> = double the <em>power</em> (physics), but <strong>10 dB</strong> = double the <em>loudness</em> (perception). Different questions, different answers. Read whether the question asks about watts or about what a listener hears.</p></div>
+
+<h2 id="calcs">11 · Try it yourself — live calculators</h2>
+<p>Every calculator shows its steps, not just the answer. Change the numbers and watch each stage update.</p>
+
+<div class="calc">
+<h4>Inverse square law · dB = 20 log(D₁/D₂)</h4>
+<div class="row">
+  <div><label for="d1">D₁ — reference distance (m)</label><input type="number" id="d1" value="1" step="any"></div>
+  <div><label for="d2">D₂ — new distance (m)</label><input type="number" id="d2" value="8" step="any"></div>
+</div>
+<div class="result" id="distres"></div>
+</div>
+
+<div class="calc">
+<h4>Power change · dB = 10 log(P₁/P₂)</h4>
+<div class="row">
+  <div><label for="p1">P₁ — new power (W)</label><input type="number" id="p1" value="200" step="any"></div>
+  <div><label for="p2">P₂ — reference power (W)</label><input type="number" id="p2" value="100" step="any"></div>
+</div>
+<div class="result" id="powres"></div>
+</div>
+
+<div class="calc">
+<h4>Backwards · dB → ratio</h4>
+<div class="row">
+  <div><label for="bdb">dB value</label><input type="number" id="bdb" value="6" step="any"></div>
+  <div><label for="btype">Quantity</label><select id="btype" style="font-family:'IBM Plex Mono',monospace;font-size:1rem;background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:.55rem .7rem"><option value="10">Power (÷10)</option><option value="20">Voltage / distance (÷20)</option></select></div>
+</div>
+<div class="result" id="backres"></div>
+</div>
+
+<h2 id="quiz">12 · Self-check quiz</h2>
+<p>Original questions, exam-style. Tap an answer for instant feedback and the reasoning.</p>
+<div id="quizwrap"></div>
+<div id="quiz-score"></div>
+<div class="ex-controls"><button class="btn ghost" id="quiz-reset">Reset quiz</button></div>
+
+<div class="callout co-key" style="margin-top:3rem"><span class="label">KEY TERM</span><p><strong>The whole guide in three lines:</strong> a log counts factors of 10. A decibel is 10 × that count for power, 20 × for anything that squares up to power (voltage, distance, pressure). Ratio &gt; 1 → gain, ratio &lt; 1 → loss.</p></div>
+
+<a class="callout co-exam" href="cts-av-math-guide.html" style="display:block;text-decoration:none;color:inherit"><span class="label">NEXT</span><p>Got it? Take it back into the <strong>AV Math Guide</strong> — the same dB material sits alongside Ohm's law, loudspeaker impedance, screen sizing, throw distance and the full formula cheat sheet. <span style="color:var(--teal);white-space:nowrap">Open the AV Math Guide →</span></p></a>
+</main>
+
+<script>
+// ---------- Sidebar drawer ----------
+const ham=document.getElementById('hamburger'),sb=document.getElementById('sidebar'),bd=document.getElementById('backdrop');
+function setDrawer(open){sb.classList.toggle('open',open);bd.classList.toggle('show',open);ham.classList.toggle('open',open);ham.innerHTML=open?'&times;':'&#9776;';}
+ham.addEventListener('click',()=>setDrawer(!sb.classList.contains('open')));
+bd.addEventListener('click',()=>setDrawer(false));
+sb.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>setDrawer(false)));
+
+// ---------- Step-through examples ----------
+document.querySelectorAll('[data-ex]').forEach(ex=>{
+  const steps=[...ex.querySelectorAll('.step')];
+  const next=ex.querySelector('[data-next]'),reset=ex.querySelector('[data-reset]');
+  let i=0;
+  function update(){next.disabled=i>=steps.length;next.textContent=i>=steps.length?'All steps shown ✓':(i===steps.length-1?'Show answer':'Show next step');}
+  next.addEventListener('click',()=>{if(i<steps.length){steps[i].classList.add('shown');i++;update();}});
+  reset.addEventListener('click',()=>{steps.forEach(s=>s.classList.remove('shown'));i=0;update();});
+  update();
+});
+
+// ---------- Flip cards ----------
+document.querySelectorAll('.fcard').forEach(c=>c.addEventListener('click',()=>c.classList.toggle('flipped')));
+
+// ---------- Calculators ----------
+const fmt=n=>Math.abs(n)>=1000?n.toLocaleString('en-US',{maximumFractionDigits:2}):+n.toFixed(3)+'';
+function distCalc(){
+  const d1=parseFloat(document.getElementById('d1').value),d2=parseFloat(document.getElementById('d2').value),out=document.getElementById('distres');
+  if(!(d1>0)||!(d2>0)){out.textContent='Enter two distances greater than zero.';return;}
+  const r=d1/d2,l=Math.log10(r),db=20*l;
+  out.innerHTML='Step 1 · ratio:  '+fmt(d1)+' ÷ '+fmt(d2)+' = '+fmt(r)+
+  '\nStep 2 · log:    log('+fmt(r)+') = '+fmt(l)+
+  '\nStep 3 · × 20:   20 × '+fmt(l)+' = <span class="big">'+db.toFixed(2)+' dB</span>'+
+  '\n'+(db<-0.01?'Negative → a LOSS of '+Math.abs(db).toFixed(1)+' dB (moved farther away)':db>0.01?'Positive → a GAIN of '+db.toFixed(1)+' dB (moved closer)':'Zero → no change');
+}
+function powCalc(){
+  const p1=parseFloat(document.getElementById('p1').value),p2=parseFloat(document.getElementById('p2').value),out=document.getElementById('powres');
+  if(!(p1>0)||!(p2>0)){out.textContent='Enter two power values greater than zero.';return;}
+  const r=p1/p2,l=Math.log10(r),db=10*l;
+  out.innerHTML='Step 1 · ratio:  '+fmt(p1)+' ÷ '+fmt(p2)+' = '+fmt(r)+
+  '\nStep 2 · log:    log('+fmt(r)+') = '+fmt(l)+
+  '\nStep 3 · × 10:   10 × '+fmt(l)+' = <span class="big">'+db.toFixed(2)+' dB</span>'+
+  '\n'+(db<-0.01?'Negative → power DECREASED':db>0.01?'Positive → power INCREASED':'Zero → no change');
+}
+function backCalc(){
+  const db=parseFloat(document.getElementById('bdb').value),k=parseFloat(document.getElementById('btype').value),out=document.getElementById('backres');
+  if(isNaN(db)){out.textContent='Enter a dB value.';return;}
+  const e=db/k,r=Math.pow(10,e);
+  out.innerHTML='Step 1 · ÷ '+k+':   '+fmt(db)+' ÷ '+k+' = '+fmt(e)+
+  '\nStep 2 · 10ˣ:    10^'+fmt(e)+' = <span class="big">'+fmt(r)+'×</span>'+
+  '\nMeaning: the '+(k===10?'power':'voltage/distance/pressure')+' is '+fmt(r)+' times the reference'+(r<1?' (smaller — a loss)':r>1?' (larger — a gain)':'');
+}
+['d1','d2'].forEach(id=>document.getElementById(id).addEventListener('input',distCalc));
+['p1','p2'].forEach(id=>document.getElementById(id).addEventListener('input',powCalc));
+document.getElementById('bdb').addEventListener('input',backCalc);
+document.getElementById('btype').addEventListener('change',backCalc);
+distCalc();powCalc();backCalc();
+
+// ---------- Quiz ----------
+const QUIZ=[
+{q:'A listener moves from 4 m to 8 m from a loudspeaker. Which formula correctly finds the change in SPL?',
+ o:['dB = 10 log(4/8)','dB = 20 log(4/8)','dB = 20 log(8/4)','dB = 10 log(8/4)'],a:1,
+ e:'Distance uses 20-log with the reference (original) distance on top: 20 log(4/8) = 20 log(0.5) = −6 dB. A loss, matching the move away from the source.'},
+{q:'An amplifier upgrade takes a system from 50 W to 500 W. The level change is:',
+ o:['+3 dB','+6 dB','+10 dB','+20 dB'],a:2,
+ e:'Watts → 10-log. 10 log(500/50) = 10 log(10) = 10 × 1 = +10 dB. Ten times the power = +10 dB — which listeners perceive as only twice as loud.'},
+{q:'A signal voltage rises from 1 V to 10 V. The gain is:',
+ o:['+10 dB','+20 dB','+3 dB','+6 dB'],a:1,
+ e:'Voltage → 20-log. 20 log(10/1) = 20 × 1 = +20 dB. Same 10× ratio as the previous question, but volts get the 20 coefficient, so the answer doubles.'},
+{q:'0 dBu corresponds to which reference value?',
+ o:['1 volt','1 milliwatt','775 millivolts','20 micropascals'],a:2,
+ e:'dBu is referenced to 0.775 V. (dBV = 1 V, dBm = 1 mW, dB SPL = 20 µPa.)'},
+{q:'A loudspeaker is rated 90 dB SPL, 1 W @ 1 m. With 1 W applied, the SPL at 4 m is approximately:',
+ o:['84 dB SPL','78 dB SPL','72 dB SPL','88 dB SPL'],a:1,
+ e:'20 log(1/4) = 20 × (−0.602) = −12 dB. Or by shortcut: two doublings (1→2→4 m) × −6 dB = −12 dB. 90 − 12 = 78 dB SPL.'},
+{q:'You need +3 dB more SPL from a loudspeaker currently fed 8 W. Roughly how much power do you now need?',
+ o:['11 W','16 W','24 W','80 W'],a:1,
+ e:'+3 dB = double the power (10 log 2 ≈ 3). 8 W × 2 = 16 W. Solving formally: 3 = 10 log(x/8) → 0.3 = log(x/8) → x = 8 × 10^0.3 ≈ 16.'},
+{q:'For most listeners, a sound must change by how many dB to be perceived as twice as loud?',
+ o:['3 dB','6 dB','10 dB','20 dB'],a:2,
+ e:'Perceived doubling of loudness ≈ +10 dB. (3 dB is just noticeable; 1 dB is the smallest perceptible change; 6 dB is the physics of doubled voltage or halved distance — not perception.)'},
+{q:'A calculation gives dB = 20 log(0.125). Before computing, you can already know the result is:',
+ o:['Positive, because logs are always positive','Negative, because the ratio is less than 1','Zero, because 0.125 rounds down','Impossible — you can\u2019t take the log of a decimal'],a:1,
+ e:'Any ratio below 1 has a negative log → negative dB → a loss. (log 0.125 = −0.903, so the answer is −18 dB.) The sign check catches flipped fractions before they cost you the question.'}
+];
+const wrap=document.getElementById('quizwrap'),scoreEl=document.getElementById('quiz-score');
+let answered=0,correct=0;
+function buildQuiz(){
+  wrap.innerHTML='';answered=0;correct=0;scoreEl.textContent='';
+  QUIZ.forEach((item,qi)=>{
+    const d=document.createElement('div');d.className='quiz-q';
+    d.innerHTML='<span class="qnum">QUESTION '+(qi+1)+' / '+QUIZ.length+'</span><div class="qtext">'+item.q+'</div>';
+    item.o.forEach((opt,oi)=>{
+      const b=document.createElement('button');b.className='opt';b.textContent=String.fromCharCode(65+oi)+'.  '+opt;
+      b.addEventListener('click',()=>{
+        if(d.dataset.done)return;d.dataset.done='1';answered++;
+        d.querySelectorAll('.opt').forEach((btn,bi)=>{btn.disabled=true;if(bi===item.a)btn.classList.add('correct');});
+        if(oi===item.a){correct++;}else{b.classList.add('wrong');}
+        d.querySelector('.expl').classList.add('shown');
+        scoreEl.textContent='Score: '+correct+' / '+answered+(answered===QUIZ.length?'  ·  quiz complete':'');
+      });
+      d.appendChild(b);
+    });
+    const ex=document.createElement('div');ex.className='expl';ex.textContent=item.e;d.appendChild(ex);
+    wrap.appendChild(d);
+  });
+}
+document.getElementById('quiz-reset').addEventListener('click',buildQuiz);
+buildQuiz();
+</script>
+</body>
+</html>

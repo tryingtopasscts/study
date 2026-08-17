@@ -88,6 +88,13 @@ strong{color:#fff}
 .plain{border-left:3px solid var(--blue);background:var(--blue-bg);border-radius:0 12px 12px 0;padding:14px 18px;margin:18px 0;font-size:16.5px}
 .plain .label{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--blue);display:block;margin-bottom:6px;font-weight:600}
 
+/* ---------- Cross-reference to the companion crash course ---------- */
+.xref{display:block;background:var(--panel);border:1px solid var(--border);border-left:4px solid var(--purple);border-radius:0 12px 12px 0;
+  padding:14px 18px;margin:22px 0;text-decoration:none;color:var(--text);font-size:16.5px;transition:.15s}
+.xref:hover{background:var(--panel2);border-left-color:var(--teal)}
+.xref .label{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--purple);display:block;margin-bottom:6px;font-weight:600}
+.xref .go{color:var(--teal);white-space:nowrap}
+
 /* ---------- Diagrams ---------- */
 .diagram{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:20px 16px 16px;margin:24px 0;text-align:center}
 .diagram svg{max-width:100%;height:auto}
@@ -351,6 +358,8 @@ The CTS exam gives you an on-screen calculator, and the math never goes beyond a
 <li>log(1) = 0, because 10⁰ = 1</li>
 <li>log(0.5) ≈ −0.301 — numbers <em>less than 1</em> give <em>negative</em> logs</li>
 </ul>
+<div class="plain"><span class="label">In Plain English</span>
+A log is a <strong>counting machine for factors of ten</strong>. log(1,000) = 3 because you multiplied 10 by itself three times to get there. log(1) = 0 because you multiplied zero times — nothing changed. log(0.001) = −3 because you <em>divided</em> by 10 three times. Negative doesn't mean a negative quantity; it means "smaller than the reference."</div>
 <p>Why does AV use logs at all? Human hearing perceives loudness logarithmically — the range between the quietest sound you can hear and the onset of pain covers a ratio of roughly 3,000,000:1. A log scale squashes that huge range into friendly numbers.</p>
 
 <div class="diagram">
@@ -375,12 +384,21 @@ The CTS exam gives you an on-screen calculator, and the math never goes beyond a
 <div class="log-pill">log(2) ≈ 0.301</div>
 <div class="log-pill">log(0.5) ≈ −0.301</div>
 <div class="log-pill">log(4) ≈ 0.602</div>
+<div class="log-pill">log(8) ≈ 0.903</div>
+<div class="log-pill">log(0.125) ≈ −0.903</div>
 <div class="log-pill">log(10) = 1</div>
 <div class="log-pill">log(0.1) = −1</div>
 <div class="log-pill">log(1) = 0</div>
 </div>
+<p>Those aren't six unrelated numbers to cram — they're two numbers and a pair of rules. <strong>Logs turn multiplication into addition:</strong> 4 = 2 × 2, so log(4) = 0.301 + 0.301 = 0.602. 8 = 2 × 2 × 2, so log(8) = three lots of 0.301 = 0.903. And <strong>flipping the fraction flips the sign:</strong> log(1/x) = −log(x), which is why log(0.5) and log(0.125) are just log(2) and log(8) wearing a minus sign. Exam questions are built so the ratios land on these values.</p>
+
+<div class="callout watchout"><span class="label">Watch Out</span>
+<strong>The free answer-checker.</strong> Look at the ratio <em>before</em> you calculate. If it's <strong>less than 1</strong> — the measured value is smaller than the reference, or the listener is farther away than the reference distance — the dB answer <strong>must come out negative</strong> (a loss). Greater than 1 → positive → gain. If your sign doesn't match the story the question tells, you've flipped the fraction upside down. That single check catches the most common dB mistake on the exam.</div>
 <div class="callout examtip"><span class="label">Exam Tip</span>
 log(2) ≈ 0.3 is the single most useful number in AV math. It's why doubling <em>power</em> gives +3 dB (10 × 0.301) and doubling <em>distance</em> or <em>voltage</em> gives ±6 dB (20 × 0.301). If you remember 0.3, you can reconstruct most dB shortcuts from scratch.</div>
+
+<a class="xref" href="cts-log-equations-crash-course.html"><span class="label">Go Deeper</span>
+If logs still feel slippery, the companion <strong>Log Equations Crash Course</strong> takes this same ground at half speed — the whole concept from zero, five worked examples that reveal one step at a time, and its own self-check quiz. <span class="go">Open the crash course →</span></a>
 </section>
 
 <!-- ================= WORD PROBLEMS ================= -->
@@ -506,6 +524,48 @@ Electricity in a wire behaves like water in a pipe. <strong>Voltage</strong> is 
 <div class="callout watchout"><span class="label">Watch Out</span>
 The multiplier is <strong>10 for power</strong> and <strong>20 for voltage and distance</strong>. Also notice the fractions run in different directions: the power and voltage formulas put the <em>new</em> value on top, while the distance formula puts the <em>original</em> distance on top — that's what makes moving farther away come out negative (a loss). Exam distractors love swapping the 10 and the 20.</div>
 
+<h3>The One Decision: 10-log or 20-log?</h3>
+<p>This is where most people lose marks, and it collapses into a single question you ask <em>before</em> touching the calculator:</p>
+<p style="font-family:'Fraunces',serif;font-size:25px;text-align:center;color:#fff;margin:22px 0"><em>“Am I comparing watts?”</em></p>
+<ul>
+<li><strong>Yes — it's power (watts):</strong> use <span class="mono">10 log</span>.</li>
+<li><strong>No — it's voltage, distance, or sound pressure:</strong> use <span class="mono">20 log</span>.</li>
+</ul>
+
+<div class="diagram">
+<svg viewBox="0 0 720 250" role="img" aria-label="Decision flowchart for choosing between 10 log and 20 log">
+  <rect x="245" y="10" width="230" height="52" rx="10" class="dg-fill-panel"/>
+  <text x="360" y="33" text-anchor="middle" class="dt">What are you comparing?</text>
+  <text x="360" y="52" text-anchor="middle" class="dsmall">(two of the same kind of thing)</text>
+  <line x1="305" y1="62" x2="185" y2="108" class="dg-line" marker-end="url(#arr)"/>
+  <line x1="415" y1="62" x2="535" y2="108" class="dg-line" marker-end="url(#arr)"/>
+  <rect x="70" y="112" width="230" height="52" rx="10" class="dg-fill-panel"/>
+  <text x="185" y="134" text-anchor="middle" class="dt">POWER — watts</text>
+  <text x="185" y="153" text-anchor="middle" class="dsmall">amplifier output, electrical power</text>
+  <rect x="420" y="112" width="230" height="52" rx="10" class="dg-fill-panel"/>
+  <text x="535" y="132" text-anchor="middle" class="dt" style="font-size:13.5px">VOLTAGE · DISTANCE · PRESSURE</text>
+  <text x="535" y="153" text-anchor="middle" class="dsmall">signal level, listener distance, SPL</text>
+  <line x1="185" y1="164" x2="185" y2="188" class="dg-line" marker-end="url(#arr)"/>
+  <line x1="535" y1="164" x2="535" y2="188" class="dg-line" marker-end="url(#arr)"/>
+  <rect x="85" y="192" width="200" height="48" rx="10" class="dg-fill-teal"/>
+  <text x="185" y="222" text-anchor="middle" class="dm dteal" style="font-size:17px">dB = 10 log(ratio)</text>
+  <rect x="435" y="192" width="200" height="48" rx="10" class="dg-fill-amber"/>
+  <text x="535" y="222" text-anchor="middle" class="dm damber" style="font-size:17px">dB = 20 log(ratio)</text>
+</svg>
+<div class="dcap">The entire 10-vs-20 decision on one page. Watts take the plain 10. Everything else you'll meet on the exam — volts, metres, pascals — takes 20, because each of those relates to power by a <em>square</em>.</div>
+</div>
+
+<p><strong>Why 20 and not 10?</strong> Because power is the <em>square</em> of voltage: <span class="mono">P = V² / R</span>. Double the voltage and you get four times the power. So when you compare two voltages, you're really comparing squared quantities — and squaring a number <strong>doubles its log</strong>: <span class="mono">log(x²) = 2 × log(x)</span>. That doubling is what turns the 10 into a 20:</p>
+
+<div class="formula-box"><div class="fname">Where the 20 comes from</div>
+<div class="formula">10 × log(V₁²/V₂²) &nbsp;=&nbsp; 10 × 2 × log(V₁/V₂) &nbsp;=&nbsp; 20 × log(V₁/V₂)</div>
+</div>
+
+<p>Distance gets the 20 for the same structural reason by a different route: radiated energy spreads over an area that grows with the <em>square</em> of the distance — the inverse square law, below. Square relationship → doubled log → 20.</p>
+
+<div class="callout examtip"><span class="label">Exam Tip</span>
+Mnemonic: <strong>“Power stands alone.”</strong> Power gets the plain 10. Voltage, distance, and pressure all <em>square up</em> into power, so they get double: 20. And note the consequence the exam loves — the same 10× ratio gives <strong>+10 dB in watts but +20 dB in volts</strong>. Same ratio, different coefficient, different answer.</div>
+
 <h3>The dB Numbers Worth Memorizing</h3>
 <div class="tbl-wrap"><table>
 <tr><th>Change</th><th>Effect</th><th>Why</th></tr>
@@ -564,6 +624,48 @@ The multiplier is <strong>10 for power</strong> and <strong>20 for voltage and d
 <div class="calc-result" id="db-out">Enter both values…</div>
 <div class="calc-note">Positive = gain · Negative = loss</div>
 </div>
+
+<h3>Going Backwards: dB → Ratio</h3>
+<p>Roughly half of all dB questions run the machine in reverse: <em>"the level rose 6 dB — what happened to the power?"</em> The undo button for a log is <strong>10 raised to that power</strong> (the antilog — on the exam calculator it's the <span class="mono">10^x</span> button, usually SHIFT + LOG).</p>
+
+<div class="formula-box"><div class="fname">Antilog — Power Ratio</div>
+<div class="formula">Power ratio = 10<sup>(dB ÷ 10)</sup></div>
+<ul class="where"><li>Watts: divide the dB by <strong>10</strong> first, then hit 10^x</li></ul>
+</div>
+
+<div class="formula-box"><div class="fname">Antilog — Voltage / Distance / Pressure Ratio</div>
+<div class="formula">Ratio = 10<sup>(dB ÷ 20)</sup></div>
+<ul class="where"><li>Everything that isn't watts: divide the dB by <strong>20</strong> first, then hit 10^x</li></ul>
+</div>
+
+<p>It's the forward process mirror-imaged. Forward: <em>divide → log → multiply by the coefficient.</em> Backward: <em>divide by the coefficient → 10^x → that's your ratio.</em></p>
+
+<div class="callout watchout"><span class="label">Watch Out</span>
+Divide by the coefficient <strong>before</strong> raising 10 to the power. Computing 10⁶ and then dividing by 10 gives 100,000 — nonsense. The dB has to be shrunk back down to a bare log value first.</div>
+
+<div class="worked" data-worked>
+<div class="wtitle">Worked Example — dB Back to Watts</div>
+<div class="wproblem">A system is 6 dB short of its target SPL, currently driven by 1 W. How many watts does it actually need?</div>
+<div class="wstep"><span class="snum">Step 1 — Identify the quantity</span>We want watts, so this is the power version: divide by 10.<span class="m">Power ratio = 10^(6 ÷ 10)</span></div>
+<div class="wstep"><span class="snum">Step 2 — Do the division first</span><span class="m">6 ÷ 10 = 0.6</span></div>
+<div class="wstep"><span class="snum">Step 3 — Undo the log</span>Press 10^x with 0.6.<span class="m">10^0.6 = 3.98</span></div>
+<div class="wstep"><span class="snum">Step 4 — Apply the ratio to the current power</span><span class="m">1 W × 3.98 ≈ 4 W</span></div>
+<div class="wstep"><span class="snum">Step 5 — Check with the shortcut</span>+3 dB doubles the power, so +6 dB is two doublings: 1 → 2 → 4 W. ✓ Also worth absorbing: quadrupling the amplifier bought only 6 dB. Power is expensive; decibels are stubborn.</div>
+<button class="wbtn">Show next step</button>
+</div>
+
+<h3>Reference Levels — "Compared to What?"</h3>
+<p>A dB is a comparison, so a bare dB figure is meaningless on its own. A dB with a <strong>letter after it</strong> is simply a dB with the reference baked in. Learn the reference value for each, and whether it belongs to the 10-log (power) family or the 20-log family.</p>
+<div class="tbl-wrap"><table>
+<tr><th>Notation</th><th>0 dB means…</th><th>Measures</th><th>Family</th></tr>
+<tr><td>dB SPL</td><td>20 µPa</td><td>Sound pressure</td><td>20 log — threshold of human hearing</td></tr>
+<tr><td>dBu</td><td>0.775 V (775 mV)</td><td>Voltage</td><td>20 log — pro audio line level (+4 dBu)</td></tr>
+<tr><td>dBV</td><td>1.0 V</td><td>Voltage</td><td>20 log — consumer line level (−10 dBV)</td></tr>
+<tr><td>dBm</td><td>1 mW</td><td>Power</td><td>10 log — electrical power</td></tr>
+</table></div>
+
+<div class="callout spec"><span class="label">Spec</span>
+0 dB SPL = <strong>20 micropascals</strong>, the quietest sound a healthy human ear can detect — an absurdly small pressure. And <strong>−20 dBu is not a negative voltage</strong>; it's just a voltage smaller than 775 mV. Negative always means "below the reference," never "below zero."</div>
 </section>
 
 <!-- ================= LOUDSPEAKER MATH ================= -->
@@ -1324,6 +1426,9 @@ An equipment rack is, thermodynamically, a space heater with features. Once the 
 <tr><td>dB (voltage)</td><td>dB = 20 log(V₁/V<sub>R</sub>)</td><td>20 for voltage</td></tr>
 <tr><td>dB (distance)</td><td>dB = 20 log(D₁/D₂)</td><td>Original distance on top</td></tr>
 <tr><td>Power for SPL increase</td><td>ΔSPL = 10 log(P₂/P₁)</td><td>+3 dB = double the watts</td></tr>
+<tr><td>dB → power ratio</td><td>ratio = 10<sup>(dB/10)</sup></td><td>Divide by 10 <em>first</em>, then 10^x</td></tr>
+<tr><td>dB → voltage/distance ratio</td><td>ratio = 10<sup>(dB/20)</sup></td><td>Divide by 20 <em>first</em>, then 10^x</td></tr>
+<tr><td>Reference levels</td><td>dBu 0.775 V · dBV 1 V</td><td>dBm 1 mW · dB SPL 20 µPa</td></tr>
 <tr><td>Series impedance</td><td>Z<sub>T</sub> = Z₁ + Z₂ + …</td><td>Total &gt; largest</td></tr>
 <tr><td>Parallel (same Z)</td><td>Z<sub>T</sub> = Z₁ / N</td><td>Total &lt; smallest</td></tr>
 <tr><td>Parallel (mixed Z)</td><td>1/Z<sub>T</sub> = 1/Z₁ + 1/Z₂ + …</td><td>Flip, add, flip back</td></tr>
@@ -1372,7 +1477,7 @@ An equipment rack is, thermodynamically, a space heater with features. Once the 
 <!-- ================= QUIZ ================= -->
 <section id="quiz">
 <h2>Quick-Check Quiz</h2>
-<p class="section-sub">26 original math problems in exam style. Every answer comes with a full worked solution.</p>
+<p class="section-sub">29 original math problems in exam style. Every answer comes with a full worked solution.</p>
 <div id="quiz-score">Score: 0 / 0 answered</div>
 <div id="quiz-area"></div>
 <button id="quiz-reset">Reset Quiz</button>
@@ -1525,6 +1630,14 @@ const cards=[
 {t:'Decibels',q:'A just-noticeable change in loudness is about…',a:'±3 dB',x:'The smallest SPL change most listeners reliably perceive.'},
 {t:'Decibels',q:'Doubling the number of open microphones (NOM) costs…',a:'−3 dB gain before feedback',x:'Every doubling of open mics loses 3 dB of usable gain.'},
 {t:'Decibels',q:'0 dB SPL represents…',a:'The threshold of human hearing',x:'Reference pressure of 20 micropascals.'},
+{t:'Decibels',q:'The one question that decides 10-log vs 20-log',a:'“Am I comparing watts?”',x:'Yes → 10 log. No (volts, distance, pressure) → 20 log. “Power stands alone.”'},
+{t:'Decibels',q:'Why do voltage and distance use 20 instead of 10?',a:'They relate to power by a square',x:'P = V²/R, and log(x²) = 2 log(x). The doubled log turns the 10 into a 20.'},
+{t:'Decibels',q:'Converting dB back into a POWER ratio',a:'ratio = 10^(dB / 10)',x:'Divide by the coefficient first, then press 10^x. 6 dB → 10^0.6 = 3.98 ≈ 4× the power.'},
+{t:'Decibels',q:'Converting dB back into a VOLTAGE or DISTANCE ratio',a:'ratio = 10^(dB / 20)',x:'Same move, coefficient 20. Never raise 10 to the raw dB value.'},
+{t:'Decibels',q:'A 10× increase gives how many dB — in watts, and in volts?',a:'+10 dB power · +20 dB voltage',x:'Identical ratio, different coefficient. A favourite exam trap.'},
+{t:'Decibels',q:'0 dBu, 0 dBV and 0 dBm reference what?',a:'0.775 V · 1.0 V · 1 mW',x:'dBu and dBV are 20-log (voltage); dBm is 10-log (power). dB SPL = 20 µPa.'},
+{t:'Decibels',q:'A ratio less than 1 always produces…',a:'A negative dB result (a loss)',x:'The free answer-checker: if the sign doesn’t match the story, you flipped the fraction.'},
+{t:'Foundations',q:'log(8) ≈ ?',a:'0.903',x:'8 = 2×2×2, so log(8) = three lots of 0.301. Logs turn multiplication into addition.'},
 {t:'Loudspeakers',q:'Total impedance of speakers in SERIES',a:'Z_T = Z₁ + Z₂ + …',x:'Just add. The total is always larger than the largest speaker.'},
 {t:'Loudspeakers',q:'Parallel impedance, identical speakers',a:'Z_T = Z₁ / N',x:'One speaker\u2019s impedance divided by the count.'},
 {t:'Loudspeakers',q:'Parallel impedance, mixed speakers',a:'1/Z_T = 1/Z₁ + 1/Z₂ + …',x:'Add the reciprocals, then flip the sum back over.'},
@@ -1579,6 +1692,9 @@ const quiz=[
 {q:'Amplifier power increases from 100 W to 200 W. The SPL change is:',o:['+2 dB','+3 dB','+6 dB','+10 dB'],c:1,e:'dB = 10 log(200/100) = 10 log(2) = 10 × 0.301 ≈ +3 dB. Power uses the 10 multiplier.'},
 {q:'Power increases from 10 W to 100 W. The change is:',o:['+3 dB','+6 dB','+10 dB','+20 dB'],c:2,e:'10 log(100/10) = 10 log(10) = 10 × 1 = +10 dB. Ten times the power is always +10 dB.'},
 {q:'A signal voltage doubles from 1 V to 2 V. The change is:',o:['+3 dB','+6 dB','+10 dB','+20 dB'],c:1,e:'Voltage uses the 20 multiplier: 20 log(2/1) = 20 × 0.301 ≈ +6 dB.'},
+{q:'A line driver raises a signal from 0.775 V to 7.75 V. The gain is:',o:['+10 dB','+20 dB','+6 dB','+3 dB'],c:1,e:'Volts → 20 log. 7.75 / 0.775 = 10, and log(10) = 1, so 20 × 1 = +20 dB. The same 10× ratio in WATTS would be only +10 dB — identical ratio, different coefficient.'},
+{q:'0 dBu corresponds to which reference value?',o:['1 volt','1 milliwatt','775 millivolts','20 micropascals'],c:2,e:'dBu references 0.775 V. The others: dBV = 1 V, dBm = 1 mW, dB SPL = 20 µPa. dBu and dBV are 20-log (voltage); dBm is 10-log (power).'},
+{q:'A calculation reads dB = 20 log(0.125). Before computing anything, you already know the answer is:',o:['Positive — logs are always positive','Negative — the ratio is below 1','Zero — 0.125 rounds down','Undefined — you cannot log a decimal'],c:1,e:'Any ratio below 1 has a negative log, so the dB is negative — a loss. (log 0.125 = −0.903, giving −18 dB.) This sign check catches a flipped fraction before it costs you the question.'},
 {q:'Four 8 Ω loudspeakers are wired in series. The total impedance is:',o:['2 Ω','8 Ω','16 Ω','32 Ω'],c:3,e:'Series just adds: 8 + 8 + 8 + 8 = 32 Ω. Series totals are always bigger than any single speaker.'},
 {q:'Four 8 Ω loudspeakers are wired in parallel. The total impedance is:',o:['2 Ω','4 Ω','8 Ω','32 Ω'],c:0,e:'Identical speakers in parallel: Z_T = Z₁ / N = 8 / 4 = 2 Ω.'},
 {q:'A 12 Ω and a 6 Ω loudspeaker are wired in parallel. The total impedance is:',o:['18 Ω','9 Ω','6 Ω','4 Ω'],c:3,e:'1/Z_T = 1/12 + 1/6 = 0.0833 + 0.1667 = 0.25, so Z_T = 1/0.25 = 4 Ω. Parallel totals are always smaller than the smallest speaker.'},

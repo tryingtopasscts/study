@@ -425,6 +425,50 @@ A log is a <strong>counting machine for factors of ten</strong>. log(1,000) = 3 
 <div class="callout examtip"><span class="label">Exam Tip</span>
 log(2) ≈ 0.3 is the single most useful number in AV math. It's why doubling <em>power</em> gives +3 dB (10 × 0.301) and doubling <em>distance</em> or <em>voltage</em> gives ±6 dB (20 × 0.301). If you remember 0.3, you can reconstruct most dB shortcuts from scratch.</div>
 
+<div class="worked" data-worked>
+<div class="wtitle">Worked Example — Building a Log You Don't Know From One You Do</div>
+<div class="wproblem">You have a calculator, but keying errors are real and a sanity check costs seconds. Using only log(2) = 0.301, work out log(8) — then log(0.125) — then turn it into a decibel answer.</div>
+<div class="wstep"><span class="snum">Step 1 — Break the number into factors you recognise</span>Don't look at 8 as "eight." Look at it as twos multiplied together.<span class="m">8 = 2 × 2 × 2</span></div>
+<div class="wstep"><span class="snum">Step 2 — Apply the rule that makes logs useful</span>A log turns multiplication into addition. Multiplying three 2s together means <em>adding</em> three log(2)s.<span class="m">log(8) = log(2) + log(2) + log(2)</span></div>
+<div class="wstep"><span class="snum">Step 3 — Substitute the one value you memorised</span><span class="m">0.301 + 0.301 + 0.301 = 0.903</span></div>
+<div class="wstep"><span class="snum">Step 4 — Flip it for the reciprocal</span>0.125 is 1/8, and log(1/x) = −log(x). Same digits, opposite sign — no new work.<span class="m">log(0.125) = −0.903</span></div>
+<div class="wstep"><span class="snum">Step 5 — Cash it out in decibels</span>That reciprocal is exactly what a listener 8 m from a 1 m reference produces. Distance → 20-log.<span class="m">20 × (−0.903) = −18.06 ≈ −18 dB</span></div>
+<div class="wstep"><span class="snum">Step 6 — Why this is worth doing</span>You just produced the classic 8-metre exam answer with no LOG button at all. Cross-check it the other way: 1→2→4→8 m is three doublings at −6 dB each = −18 dB. ✓ Two independent routes agreeing is the strongest check available to you in an exam.</div>
+<button class="wbtn">Show next step</button>
+</div>
+
+<div class="diagram">
+<svg viewBox="0 0 720 240" role="img" aria-label="Squaring a number doubles its logarithm, which is why the voltage coefficient is 20 rather than 10">
+  <text x="240" y="28" text-anchor="middle" class="dsmall">square the NUMBER…</text>
+  <rect x="100" y="44" width="80" height="50" rx="8" class="dg-fill-teal"/>
+  <text x="140" y="76" text-anchor="middle" class="dm dteal" style="font-size:19px">2</text>
+  <line x1="188" y1="69" x2="292" y2="69" class="dg-teal" marker-end="url(#arrT)"/>
+  <text x="240" y="60" text-anchor="middle" class="dsmall dteal">squared</text>
+  <rect x="300" y="44" width="80" height="50" rx="8" class="dg-fill-teal"/>
+  <text x="340" y="76" text-anchor="middle" class="dm dteal" style="font-size:19px">4</text>
+
+  <line x1="140" y1="98" x2="140" y2="140" class="dg-line dg-dash" marker-end="url(#arr)"/>
+  <text x="154" y="124" text-anchor="start" class="dsmall">log</text>
+  <line x1="340" y1="98" x2="340" y2="140" class="dg-line dg-dash" marker-end="url(#arr)"/>
+  <text x="354" y="124" text-anchor="start" class="dsmall">log</text>
+
+  <text x="240" y="222" text-anchor="middle" class="dsmall damber">…and the LOG doubles</text>
+  <rect x="95" y="144" width="90" height="46" rx="8" class="dg-fill-amber"/>
+  <text x="140" y="173" text-anchor="middle" class="dm damber">0.301</text>
+  <line x1="192" y1="167" x2="292" y2="167" class="dg-amber" marker-end="url(#arrA)"/>
+  <text x="242" y="158" text-anchor="middle" class="dsmall damber">× 2</text>
+  <rect x="300" y="144" width="90" height="46" rx="8" class="dg-fill-amber"/>
+  <text x="345" y="173" text-anchor="middle" class="dm damber">0.602</text>
+
+  <line x1="440" y1="30" x2="440" y2="210" class="dg-border"/>
+  <text x="580" y="86" text-anchor="middle" class="dm dteal" style="font-size:18px">log(x²) = 2 log(x)</text>
+  <text x="580" y="126" text-anchor="middle" class="dsmall">squaring a number</text>
+  <text x="580" y="148" text-anchor="middle" class="dsmall">doubles its logarithm</text>
+  <text x="580" y="188" text-anchor="middle" class="dm dsmall damber">10 log(V²) → 20 log(V)</text>
+</svg>
+<div class="dcap">This one log rule is the entire reason the decibel has two different coefficients. Square the number on the top row and its logarithm on the bottom row simply doubles. Since power is the <em>square</em> of voltage, comparing two voltages means comparing squared quantities — so the log doubles, and the 10 out front becomes a 20. The next section shows that playing out with real numbers.</div>
+</div>
+
 <a class="xref" href="cts-log-equations-crash-course.html"><span class="label">Go Deeper</span>
 If logs still feel slippery, the companion <strong>Log Equations Crash Course</strong> takes this same ground at half speed — the whole concept from zero, five worked examples that reveal one step at a time, and its own self-check quiz. <span class="go">Open the crash course →</span></a>
 </section>
@@ -762,6 +806,44 @@ The multiplier is <strong>10 for power</strong> and <strong>20 for voltage and d
 
 <div class="formula-box"><div class="fname">Where the 20 comes from</div>
 <div class="formula">10 × log(V₁²/V₂²) &nbsp;=&nbsp; 10 × 2 × log(V₁/V₂) &nbsp;=&nbsp; 20 × log(V₁/V₂)</div>
+</div>
+
+<div class="diagram">
+<svg viewBox="0 0 720 275" role="img" aria-label="Doubling the voltage and quadrupling the power both give plus 6 decibels, proving the two coefficients describe one change">
+  <rect x="30" y="38" width="150" height="54" rx="10" class="dg-fill-teal"/>
+  <text x="105" y="62" text-anchor="middle" class="dm dteal">VOLTAGE × 2</text>
+  <text x="105" y="81" text-anchor="middle" class="dsmall dteal">1 V → 2 V</text>
+  <line x1="182" y1="65" x2="206" y2="65" class="dg-line" marker-end="url(#arr)"/>
+  <rect x="208" y="38" width="170" height="54" rx="10" class="dg-fill-panel"/>
+  <text x="293" y="62" text-anchor="middle" class="dm dt">20 × log(2)</text>
+  <text x="293" y="81" text-anchor="middle" class="dsmall">20 × 0.301</text>
+  <line x1="380" y1="65" x2="404" y2="65" class="dg-line" marker-end="url(#arr)"/>
+  <rect x="406" y="38" width="120" height="54" rx="10" class="dg-fill-panel"/>
+  <text x="466" y="71" text-anchor="middle" class="dm dteal">6.02 dB</text>
+
+  <line x1="105" y1="96" x2="105" y2="176" class="dg-amber dg-dash" style="stroke-width:1.5" marker-end="url(#arrA)"/>
+  <text x="120" y="128" text-anchor="start" class="dm dsmall damber">P = V² / R</text>
+  <text x="120" y="150" text-anchor="start" class="dsmall damber">double the volts →</text>
+  <text x="120" y="168" text-anchor="start" class="dsmall damber">quadruple the watts</text>
+
+  <rect x="30" y="180" width="150" height="54" rx="10" class="dg-fill-amber"/>
+  <text x="105" y="204" text-anchor="middle" class="dm damber">POWER × 4</text>
+  <text x="105" y="223" text-anchor="middle" class="dsmall damber">1 W → 4 W</text>
+  <line x1="182" y1="207" x2="206" y2="207" class="dg-line" marker-end="url(#arr)"/>
+  <rect x="208" y="180" width="170" height="54" rx="10" class="dg-fill-panel"/>
+  <text x="293" y="204" text-anchor="middle" class="dm dt">10 × log(4)</text>
+  <text x="293" y="223" text-anchor="middle" class="dsmall">10 × 0.602</text>
+  <line x1="380" y1="207" x2="404" y2="207" class="dg-line" marker-end="url(#arr)"/>
+  <rect x="406" y="180" width="120" height="54" rx="10" class="dg-fill-panel"/>
+  <text x="466" y="213" text-anchor="middle" class="dm damber">6.02 dB</text>
+
+  <path d="M528,65 C556,65 556,110 570,124" class="dg-line" marker-end="url(#arr)"/>
+  <path d="M528,207 C556,207 556,162 570,148" class="dg-line" marker-end="url(#arr)"/>
+  <rect x="574" y="106" width="116" height="60" rx="10" class="dg-fill-teal"/>
+  <text x="632" y="132" text-anchor="middle" class="dm dteal" style="font-size:20px">+6 dB</text>
+  <text x="632" y="153" text-anchor="middle" class="dsmall dteal">identical</text>
+</svg>
+<div class="dcap">Two routes, one destination. Doubling the voltage <em>is</em> quadrupling the power — they're the same event described in different units, because P = V²/R. So the 20 and the 10 aren't rival answers to pick between; each is the coefficient that makes its own unit land on the correct, single physical result. Whenever you're unsure which to use, this is the check: if both coefficients are applied to their matching quantity, they must agree.</div>
 </div>
 
 <p>Distance gets the 20 for the same structural reason by a different route: radiated energy spreads over an area that grows with the <em>square</em> of the distance — the inverse square law, below. Square relationship → doubled log → 20.</p>

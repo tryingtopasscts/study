@@ -194,6 +194,33 @@ tr:hover td{background:rgba(255,255,255,.02)}
 #quiz-reset{margin:10px auto 0;display:block;background:var(--panel2);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:10px 22px;cursor:pointer;font-size:15px}
 #quiz-reset:hover{border-color:var(--teal);color:var(--teal)}
 
+/* ---------- Question anatomy ---------- */
+.anatomy{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:20px 24px;margin:22px 0;font-size:17px;line-height:2}
+.anatomy .scen{color:var(--faint)}
+.anatomy .given{background:rgba(251,191,36,.16);border-bottom:2px solid var(--amber);padding:1px 5px;border-radius:3px;color:#fff}
+.anatomy .ask{background:rgba(45,212,191,.16);border-bottom:2px solid var(--teal);padding:1px 5px;border-radius:3px;color:#fff}
+.anatomy-key{display:flex;flex-wrap:wrap;gap:18px;margin-top:16px;padding-top:14px;border-top:1px solid var(--border);
+  font-size:13.5px;font-family:'IBM Plex Mono',monospace;color:var(--muted)}
+.anatomy-key span{display:flex;align-items:center;gap:7px}
+.anatomy-key i{width:12px;height:12px;border-radius:3px;display:inline-block;flex-shrink:0}
+.anatomy-key i.k-scen{background:var(--faint)}
+.anatomy-key i.k-given{background:var(--amber)}
+.anatomy-key i.k-ask{background:var(--teal)}
+
+/* ---------- Decoder tables ---------- */
+table.decoder td:nth-child(2){color:var(--teal);font-family:'IBM Plex Mono',monospace;font-size:14.5px}
+table.decoder td:nth-child(3){font-family:'IBM Plex Mono',monospace;font-size:14.5px;color:#fff}
+table.decoder tr.two-step td:nth-child(3){color:var(--amber)}
+table.triggers td:first-child{font-family:'IBM Plex Mono',monospace;color:var(--amber);font-size:14.5px;white-space:nowrap}
+
+/* ---------- Formula-ID drill ---------- */
+#drill-score{background:var(--panel2);border:1px solid var(--border);border-radius:12px;padding:12px 20px;
+  font-family:'IBM Plex Mono',monospace;font-size:15px;color:var(--teal);text-align:center;margin-bottom:20px}
+#drill-reset{margin:10px auto 0;display:block;background:var(--panel2);border:1px solid var(--border);color:var(--text);
+  border-radius:10px;padding:10px 22px;cursor:pointer;font-size:15px}
+#drill-reset:hover{border-color:var(--teal);color:var(--teal)}
+.q-block .qstem{color:var(--muted);font-style:italic;font-size:15.5px;margin-bottom:12px;padding-left:12px;border-left:2px solid var(--border)}
+
 /* ---------- Log table pills ---------- */
 .log-pills{display:flex;flex-wrap:wrap;gap:10px;margin:18px 0}
 .log-pill{background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:10px 16px;font-family:'IBM Plex Mono',monospace;font-size:15px;color:var(--teal)}
@@ -217,6 +244,7 @@ tr:hover td{background:rgba(255,255,255,.02)}
     <a href="#foundations">Math Foundations</a>
     <a href="#logs">Logarithms, Demystified</a>
     <a href="#wordproblems">The 4-Step Method</a>
+    <a href="#decoder">Decoding the Question</a>
     <div class="nav-group">Electrical</div>
     <a href="#ohms">Ohm's Law &amp; Power</a>
     <div class="nav-group">Audio</div>
@@ -411,6 +439,131 @@ If logs still feel slippery, the companion <strong>Log Equations Crash Course</s
 <div class="concept-card"><h4>3 · Execute</h4><p>Write the formula down, substitute the numbers, calculate, and attach units. People who skip writing it out make the most mistakes.</p></div>
 <div class="concept-card"><h4>4 · Check</h4><p>Translate the number back into the real world. 95 V in a loudspeaker circuit? Plausible. 50,000 V? You slipped somewhere. A wrong answer reused in later steps causes cascading errors.</p></div>
 </div>
+</section>
+
+<div class="divider"></div>
+<!-- ================= DECODING THE QUESTION ================= -->
+<section id="decoder">
+<h2>Decoding the Question</h2>
+<p class="section-sub">Step 2 above says "pick a formula." This section is how you pick it in about five seconds, before you've done any arithmetic at all.</p>
+
+<p>Exam calculation questions are not freely invented. Each one is built backwards from a formula the exam wants to test: the writer picks the formula, decides which variable to hide, and wraps the rest in a scenario. That construction leaves fingerprints. Once you can read them, the formula announces itself.</p>
+
+<h3>The One Move: Read It Backwards</h3>
+<p>Every calculation stem has the same three parts, in the same order:</p>
+<ol>
+<li><strong>The scenario</strong> — a room, a school, a client. Almost always decoration. It exists to make the question feel real and to hide the numbers in prose.</li>
+<li><strong>The givens</strong> — every number that arrives with a unit attached.</li>
+<li><strong>The ask</strong> — nearly always the final sentence, and it names the unit you have to produce.</li>
+</ol>
+<p>So <strong>read the last sentence first.</strong> It tells you what you're solving for. Then sweep back through and collect only the numbers-with-units. The right formula is simply the one that connects what you've got to what they want.</p>
+
+<div class="anatomy">
+<span class="scen">A school gymnasium is being converted into a multipurpose space with a stage area at one end. A cluster loudspeaker system over the front of the stage is mounted <span class="given">9 m from the floor</span>. The distance from the cluster to the D2 listener is <span class="given">20 m</span>, and to the D3 listener is <span class="given">40 m</span>.</span> <span class="ask">What is the decibel difference between the D3 position and the D2 position?</span>
+<div class="anatomy-key">
+  <span><i class="k-scen"></i>scenario — skip it</span>
+  <span><i class="k-given"></i>givens — three numbers, all in metres</span>
+  <span><i class="k-ask"></i>the ask — a difference, in dB</span>
+</div>
+</div>
+
+<p>Decoded: metres in, decibels out. That is the distance formula and nothing else. And notice the third fingerprint — the <strong>9 m mounting height is a decoy</strong>, a given that no formula needs. Exam writers include spare numbers precisely to see whether you're pattern-matching on "numbers present" instead of reading what's asked.</p>
+
+<div class="callout examtip"><span class="label">Exam Tip</span>
+An unused given is normal, not a sign you've gone wrong. Ask "does this number carry a unit the formula wants?" If the formula needs two distances and you have three lengths, one of them is scenery. Confidently leaving a number on the table is a skill worth practising.</div>
+
+<h3>Units Are the Fingerprint</h3>
+<p>This is the whole trick condensed into one table. Find the row whose <em>givens</em> match what the stem handed you, and the formula is on the right. Amber rows are the two-step problems — see below.</p>
+<div class="tbl-wrap"><table class="decoder">
+<tr><th>When the stem hands you…</th><th>…and asks for</th><th>Reach for</th></tr>
+<tr><td>Volts + ohms</td><td>current (A)</td><td>I = V / R</td></tr>
+<tr><td>Watts + volts</td><td>current (A)</td><td>I = P / V</td></tr>
+<tr><td>Amps + volts</td><td>power (W)</td><td>P = I × V</td></tr>
+<tr><td>Amps + ohms-per-unit-length + a cable run</td><td>voltage drop (V)</td><td>V = I × R</td></tr>
+<tr><td>A circuit's rated amps</td><td>maximum planned load</td><td>rating × 0.8</td></tr>
+<tr><td>Two power values (W)</td><td>level change (dB)</td><td>10 log(P₁ / P<sub>r</sub>)</td></tr>
+<tr><td>Two voltages</td><td>level change (dB)</td><td>20 log(V₁ / V<sub>R</sub>)</td></tr>
+<tr><td>Two distances</td><td>SPL change / difference (dB)</td><td>20 log(D₁ / D₂)</td></tr>
+<tr><td>A dB figure + one power value</td><td>the other power value</td><td>P × 10<sup>(dB/10)</sup></td></tr>
+<tr class="two-step"><td>"dB SPL @ 1 W / 1 m" + a listener distance</td><td>SPL at that seat</td><td>distance loss, then add to the rating</td></tr>
+<tr class="two-step"><td>Sensitivity + distance + target SPL (+ headroom)</td><td>amplifier power (W)</td><td>distance loss, then 10<sup>(shortfall/10)</sup></td></tr>
+<tr><td>Several impedances + "series"</td><td>total impedance (Ω)</td><td>Z<sub>T</sub> = Z₁ + Z₂ + …</td></tr>
+<tr><td>Identical impedances + "parallel"</td><td>total impedance (Ω)</td><td>Z<sub>T</sub> = Z₁ / N</td></tr>
+<tr><td>Mixed impedances + "parallel"</td><td>total impedance (Ω)</td><td>1/Z<sub>T</sub> = 1/Z₁ + 1/Z₂ + …</td></tr>
+<tr><td>Screen width + height</td><td>aspect ratio</td><td>AR = W / H</td></tr>
+<tr><td>Aspect ratio + one dimension</td><td>the other dimension</td><td>H = W / AR · W = H × AR</td></tr>
+<tr class="two-step"><td>Any two of width / height / diagonal</td><td>the third — or the aspect ratio</td><td>A² + B² = C², then AR if asked</td></tr>
+<tr><td>Screen width + throw ratio (or zoom lens)</td><td>throw distance</td><td>D = SW × TR</td></tr>
+<tr><td>Screen height + width + average lux/fc</td><td>projector output (lumens)</td><td>L = SH × SW × AI</td></tr>
+<tr><td>Element height + image height</td><td>%EH (DISCAS)</td><td>%EH = element H / image H</td></tr>
+<tr><td>A frequency (Hz)</td><td>wavelength (m)</td><td>λ = v / f · v = 343 m/s</td></tr>
+<tr><td>Sample rate + bit depth + channels</td><td>bandwidth (bps)</td><td>SR × bits × ch</td></tr>
+<tr><td>Total equipment watts</td><td>heat load</td><td>Btu = W × 3.4 · kJ = W × 3.6</td></tr>
+<tr><td>A cable's outer diameter</td><td>minimum bend radius</td><td>OD × 4</td></tr>
+<tr><td>A mass to be flown overhead</td><td>required mount rating</td><td>load × 5</td></tr>
+<tr><td>A drawing measurement + a scale</td><td>real-world size</td><td>drawn × scale factor</td></tr>
+<tr><td>A project value + "markup"</td><td>dollars</td><td>5-10% of the value</td></tr>
+</table></div>
+
+<h3>Trigger Words and What They Signal</h3>
+<p>The prose is mostly decoration, but a handful of phrases are load-bearing. These change what you do:</p>
+<div class="tbl-wrap"><table class="triggers">
+<tr><th>Phrase in the stem</th><th>What it's telling you</th></tr>
+<tr><td>"difference between X and Y"</td><td>A ratio question — and the <strong>order named is the order of the fraction</strong>. Getting this backwards flips your sign, which is usually an offered answer.</td></tr>
+<tr><td>"total"</td><td>Things are being combined: impedance, load, bandwidth, heat. Rarely a log formula.</td></tr>
+<tr><td>"maximum planned" / "should not exceed"</td><td>A derating rule is in play — most often the 80% circuit rule.</td></tr>
+<tr><td>"at least" / "minimum" / "rated for"</td><td>A safety factor, and you <strong>round up</strong>. Never answer with the bare calculated value if a larger option exists.</td></tr>
+<tr><td>"approximately" / "nearest"</td><td>Permission to use the shortcuts — doublings and magic numbers rather than the calculator.</td></tr>
+<tr><td>"@ 1 W / 1 m" or "sensitivity"</td><td>You've been handed the anchor point of a loudspeaker problem. Expect two steps.</td></tr>
+<tr><td>"headroom"</td><td>Add it to the target SPL <em>before</em> working out the shortfall. It is not optional decoration.</td></tr>
+<tr><td>"within tolerance" / "will this comply"</td><td>Calculate, then <strong>compare against a threshold</strong>. The answer has two halves and both must be right.</td></tr>
+<tr><td>"if any"</td><td>"No change is needed" is a live option. Check whether the requirement is already met before adjusting anything.</td></tr>
+<tr><td>MOST / BEST / LIKELY / FIRST (in caps)</td><td><strong>Not a calculation.</strong> This is a judgment question wearing numbers. Don't reach for a formula.</td></tr>
+</table></div>
+
+<div class="callout watchout"><span class="label">Watch Out</span>
+That last row matters more than it looks. A stem can be full of units — "an engineer measures 55 dB SPL A-weighted of ambient noise… how should they proceed?" — and still want a decision, not a number. If the options are sentences rather than values, no formula will help you. Check the options before you start calculating.</div>
+
+<h3>Counting the Givens: the Two-Step Tell</h3>
+<p>Every formula needs a fixed number of inputs. So compare what you were given against what your chosen formula consumes:</p>
+<ul>
+<li><strong>Givens match the formula exactly</strong> → one-step problem. Substitute and go.</li>
+<li><strong>You're short a value</strong> → the missing one must be produced by another formula first. Classic: asked for aspect ratio but given <em>height and diagonal</em>. AR needs width, so Pythagoras runs first.</li>
+<li><strong>You have more than you need</strong> → either a decoy (the 9 m gymnasium ceiling), or a second stage is coming — a target SPL and a headroom figure alongside a sensitivity rating means distance loss <em>then</em> power.</li>
+</ul>
+<div class="callout keyterm"><span class="label">Key Term</span>
+<strong>Chained problem</strong> — one where the output of the first formula becomes an input to the second. The exam favours these because a single wrong intermediate value cascades, and the wrong intermediate result is almost always offered as a distractor. Write down each stage; don't try to hold it in your head.</div>
+
+<h3>Hidden Steps the Formula Doesn't Mention</h3>
+<p>A recurring trick: the formula is short, but the scenario adds an operation before you can use it.</p>
+<ul>
+<li><strong>Out and back.</strong> Current has to return. A supply "25 feet away" means <strong>50 feet</strong> of conductor for a voltage-drop calculation.</li>
+<li><strong>Rate × quantity.</strong> "0.0062 ohms per foot" is not a resistance yet. Multiply by the length first.</li>
+<li><strong>Diameter is not radius.</strong> Bend radius is 4× the outer <em>diameter</em>; check which one you were handed.</li>
+<li><strong>Headroom rides on top.</strong> "70 dB speech with 10 dB headroom" is an 80 dB target.</li>
+<li><strong>Match your units to your area.</strong> Lux pairs with square metres, foot-candles with square feet. Never cross them.</li>
+<li><strong>Pick one measurement system.</strong> When a stem gives both — "4 m (13 ft)" — work entirely in one and read the answer in the same one.</li>
+</ul>
+
+<h3>How the Wrong Answers Are Built</h3>
+<p>Distractors aren't random; they're the results of specific, predictable mistakes. Recognising which mistake an option represents tells you a lot about the question.</p>
+<div class="tbl-wrap"><table>
+<tr><th>Distractor type</th><th>How it's made</th><th>Real example</th></tr>
+<tr><td>Inverted operation</td><td>Divided where you should multiply, or flipped the fraction</td><td>Throw distance of a 4 m screen with a 2.0 lens: <strong>8 m</strong> is right, <strong>2 m</strong> is the division</td></tr>
+<tr><td>Right size, wrong sign</td><td>The fraction was built in the other order</td><td>The gymnasium question offers both <strong>6 dB</strong> and <strong>−6 dB</strong></td></tr>
+<tr><td>Wrong coefficient</td><td>10-log used where 20-log belongs, or the reverse</td><td>A 10× change offers both <strong>+10 dB</strong> and <strong>+20 dB</strong></td></tr>
+<tr><td>Wrong constant</td><td>The neighbouring conversion factor</td><td>2,000 W of heat: <strong>6,800 Btu</strong> (× 3.4) sits beside <strong>7,200</strong> (× 3.6, the kJ figure)</td></tr>
+<tr><td>Missed hidden step</td><td>The formula applied without the setup operation</td><td>Voltage drop computed on 25 ft instead of the 50 ft round trip</td></tr>
+<tr><td>Compound option</td><td>A value <em>and</em> a verdict — four combinations from two decisions</td><td>"0.558 volts and is in tolerance" vs "1.86 volts and is out of tolerance"</td></tr>
+</table></div>
+<div class="callout examtip"><span class="label">Exam Tip</span>
+Use this in reverse as a check. If your answer isn't among the options, look at what <em>is</em> there: seeing your number's reciprocal, or the same digits with the opposite sign, tells you exactly which mistake you made and usually fixes it in one move.</div>
+
+<h3>Drill — Name That Formula</h3>
+<p class="section-sub" style="margin-bottom:20px">Formula selection only: no arithmetic required, and none of the options are numbers. Read the stem, decide what it's asking for, pick the tool. Several of these are real questions from the practice bank.</p>
+<div id="drill-score"></div>
+<div id="drill-area"></div>
+<button id="drill-reset">Reset Drill</button>
 </section>
 
 <div class="divider"></div>
@@ -1681,6 +1834,104 @@ $('fc-next').addEventListener('click',()=>{idx=(idx+1)%cards.length;renderCard()
 $('fc-prev').addEventListener('click',()=>{idx=(idx-1+cards.length)%cards.length;renderCard();});
 $('fc-shuffle').addEventListener('click',()=>{for(let i=order.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[order[i],order[j]]=[order[j],order[i]];}idx=0;renderCard();});
 renderCard();
+
+/* ---------- Formula-ID drill ---------- */
+const drill=[
+{s:'A school gymnasium is being converted into a multipurpose space with a stage at one end. A cluster loudspeaker over the front of the stage is mounted 9 m from the floor. The distance from the cluster to the D2 listener is 20 m, and to the D3 listener is 40 m. What is the decibel difference between the D3 and D2 positions?',
+ o:['20 log(D₁ / D₂) — the distance formula','10 log(P₁ / P_r) — the power formula','λ = v / f — wavelength','No formula — this is a judgment question'],c:0,
+ e:'Metres in, decibels out. That combination is only ever the distance formula. <span class="m">20 log(40 / 20) = 20 log(2) = 6 dB</span>The 9 m mounting height is a pure decoy — no distance formula needs three lengths. Note the option list also offered −6 dB; here the exam wanted the size of the difference between the two seats, which is one doubling.'},
+
+{s:'A device operates at 24 volts and consumes 72 watts of power. What is the current flowing through the device?',
+ o:['I = V / R','I = P / V','P = I × V','V = I × R'],c:1,
+ e:'The ask is current, and the givens are watts and volts — no resistance anywhere. So it is the power formula rearranged, not Ohm’s law. <span class="m">I = 72 / 24 = 3 A</span>Let the units you were actually handed choose the rearrangement for you.'},
+
+{s:'What is the aspect ratio of a screen that has a height of 29.5 in and a diagonal of 60 in?',
+ o:['AR = W / H, straight away','A² + B² = C² first, then AR = W / H','H = W / AR','%EH = element height / image height'],c:1,
+ e:'Aspect ratio needs width and height, but you were given height and <em>diagonal</em>. You are one value short, which is the two-step tell. <span class="m">29.5² + b² = 60² → b ≈ 52.3, then 52.3 / 29.5 ≈ 1.77 = 16:9</span>Any two of width, height and diagonal will produce the third through Pythagoras.'},
+
+{s:'A wall-mounted assistive listening transmitter has its 12 V, 1.8 A DC supply located in the AV rack 25 feet away. The 18 AWG extension wire has a resistance of 0.0062 ohms per foot. What is the voltage drop, and is it within a 5% tolerance?',
+ o:['V = I × R — but double the run and convert the per-foot rate first','I = P / V','Rated capacity × 0.8','20 log(D₁ / D₂)'],c:0,
+ e:'Ohm’s law is the easy part; the hidden steps are the question. Current flows out <em>and back</em>, so the conductor is 50 ft, and the per-foot figure has to become a real resistance. <span class="m">50 × 0.0062 = 0.31 Ω, then 1.8 × 0.31 = 0.558 V</span>Then the second half: 5% of 12 V is 0.6 V, so it just fits. "Within tolerance" always means calculate, then compare.'},
+
+{s:'While surveying a conference room for a system upgrade, an engineer measures 55 dB SPL A-weighted of ambient noise when the room is empty. How should they proceed?',
+ o:['20 log(D₁ / D₂)','Compare against the 80% rule','No formula — the options are courses of action, not values','10 log(P₁ / P_r)'],c:2,
+ e:'A stem stuffed with units that wants a decision, not a number. The giveaway is the answer list: sentences rather than values. <strong>Always glance at the options before you start calculating</strong> — it costs two seconds and saves you from solving a problem nobody asked.'},
+
+{s:'A loudspeaker is rated 92 dB SPL, 1 W @ 1 m. The farthest listener sits 8 m away, and the design target at that seat is 70 dB of speech with 10 dB of headroom. How much amplifier power is required?',
+ o:['10 log(P₁ / P_r), once','20 log(D₁ / D₂), once','Distance loss first, then 10^(shortfall / 10)','L = SH × SW × AI'],c:2,
+ e:'Three signals that a chain is coming: a sensitivity anchor, a distance, and a target with headroom. <span class="m">20 log(1/8) = −18 dB → 92 − 18 = 74 dB at the seat</span><span class="m">Target 70 + 10 = 80 dB, so you are 6 dB short → 10^(6/10) ≈ 4 W</span>The headroom is not decoration — leaving it out gives 74 dB against a 70 dB target and the wrong conclusion that you already have enough.'},
+
+{s:'Three 4-ohm loudspeakers are wired in series. What is the total impedance?',
+ o:['Z_T = Z₁ / N','1/Z_T = 1/Z₁ + 1/Z₂ + 1/Z₃','I = V / R','Z_T = Z₁ + Z₂ + Z₃'],c:3,
+ e:'The word "series" does all the work. <span class="m">4 + 4 + 4 = 12 Ω</span>Sanity check built into the wiring: series totals are always <em>larger</em> than the biggest single speaker, parallel totals always <em>smaller</em> than the smallest. If your answer breaks that rule you used the wrong one.'},
+
+{s:'A projector with a 2.0 zoom lens fills a 4 m wide screen. What is the throw distance?',
+ o:['D = SW × TR','D = SW / TR','L = SH × SW × AI','AR = W / H'],c:0,
+ e:'Screen width plus a lens ratio, asking for a distance. <span class="m">4 × 2.0 = 8 m</span>The distractor 2 m is the same formula run backwards — the classic inverted-operation option. A longer-throw lens puts the projector <em>farther</em> away, which is the physical check.'},
+
+{s:'Amplifier output increases from 100 W to 200 W. What is the level change?',
+ o:['20 log(200 / 100)','10 log(200 / 100)','10 log(100 / 200)','20 log(100 / 200)'],c:1,
+ e:'Watts, so the coefficient is 10 — "power stands alone." And these are not distances, so the new value goes on top. <span class="m">10 log(2) = +3 dB</span>All four options are the same numbers in different arrangements; only the units in the stem tell you which is right.'},
+
+{s:'A signal voltage rises from 1 V to 2 V. What is the change in level?',
+ o:['10 log(2 / 1)','20 log(2 / 1)','20 log(1 / 2)','10 log(1 / 2)'],c:1,
+ e:'Volts square up into power, so they take the 20. <span class="m">20 log(2) = +6 dB</span>Identical ratio to the previous question, double the answer. That pairing — same ratio, different quantity — is one of the most reliably tested traps on the exam.'},
+
+{s:'Rack equipment totals 2,000 W. What is the heat load in Btu per hour?',
+ o:['Btu = W × 3.6','W = Btu × 3.4','Rated capacity × 0.8','Btu = W × 3.4'],c:3,
+ e:'<span class="m">2,000 × 3.4 = 6,800 Btu/h</span>3.6 is the correct factor for the <em>kilojoule</em> version, which is why 7,200 always appears in the options. Read whether the ask says Btu or kJ — that single word is the entire question.'},
+
+{s:'A screen is 1.5 m high and 2 m wide. Nine-zone light readings average 400 lux. What is the projector output?',
+ o:['λ = v / f','L = SH × SW × AI','AR = W / H','D = SW × TR'],c:1,
+ e:'Two screen dimensions plus an illuminance average, asking for lumens. <span class="m">1.5 × 2 × 400 = 1,200 lumens</span>Unit discipline matters here: lux pairs with square metres, foot-candles with square feet. Mixing them is a whole order of magnitude out.'},
+
+{s:'What is the approximate wavelength of a 100 Hz tone in air?',
+ o:['λ = f / v','BW = SR × bits × channels','20 log(D₁ / D₂)','λ = v / f, with v = 343 m/s'],c:3,
+ e:'A single frequency in, a length out. The speed of sound is the constant you supply yourself. <span class="m">343 / 100 = 3.43 m</span>Check by feel: low frequencies are long. If a bass note comes out in centimetres, you divided the wrong way round.'},
+
+{s:'A system runs 48 kHz sampling at 24-bit depth across 2 channels. What bandwidth does it require?',
+ o:['SR × bit depth × channels','SR ÷ bit depth','λ = v / f','SR × 2 (Nyquist)'],c:0,
+ e:'Three multiplicands handed over together is the bandwidth fingerprint. <span class="m">48,000 × 24 × 2 = 2,304,000 bps ≈ 2.3 Mbps</span>Nyquist is the neighbouring idea but a different question — it sets the sample rate you need, it does not compute bandwidth.'},
+
+{s:'When planning loads, what is the maximum you should put on a 20 A branch circuit?',
+ o:['20 A','Rated capacity × 0.8','Rated capacity × 5','P = I × V'],c:1,
+ e:'"Maximum planned" is the trigger phrase for the derating rule. <span class="m">20 × 0.8 = 16 A</span>The full rated value is always offered, because answering with it is the natural mistake.'},
+
+{s:'A 60 kg loudspeaker cluster will be flown overhead. What should the mount be rated for?',
+ o:['60 kg','Load × 4','Load × 5','Load × 0.8'],c:2,
+ e:'"Flown overhead" plus "rated for" means the safety factor. <span class="m">60 × 5 = 300 kg</span>Note the neighbouring multiplier: <strong>4×</strong> belongs to cable bend radius, <strong>5×</strong> to rigging. Two small integers, two unrelated rules, frequently swapped in the options.'},
+
+{s:'What is the minimum safe bend radius for a cable with an 8 mm outer diameter?',
+ o:['OD × 5','OD × 0.4','OD ÷ 4','OD × 4'],c:3,
+ e:'<span class="m">8 × 4 = 32 mm</span>Check which measurement you were handed — the rule is four times the <em>diameter</em>. A stem quoting a radius instead is doing it deliberately.'},
+
+{s:'On a 1:20 drawing, a hallway measures 15 cm. What is its real-world length?',
+ o:['Drawn ÷ scale factor','Drawn × 0.8','Drawn × scale factor','A² + B² = C²'],c:2,
+ e:'<span class="m">15 × 20 = 300 cm = 3 m</span>Real is always bigger than drawn, so the operation must be multiplication. The division option exists purely to catch a reflex.'}
+];
+const da=$('drill-area');let dAnswered=0,dScore=0;
+function buildDrill(){
+  da.innerHTML='';dAnswered=0;dScore=0;updateDrill();
+  drill.forEach((item,qi)=>{
+    const blk=document.createElement('div');blk.className='q-block';
+    blk.innerHTML=`<div class="qnum">Stem ${qi+1} of ${drill.length}</div><div class="qstem">${item.s}</div><div class="qtext">Which formula does this call for?</div>`;
+    item.o.forEach((opt,oi)=>{
+      const b=document.createElement('button');b.className='q-opt';b.textContent=opt;
+      b.addEventListener('click',()=>{
+        if(blk.dataset.done)return;blk.dataset.done='1';dAnswered++;
+        [...blk.querySelectorAll('.q-opt')].forEach((bb,bi)=>{bb.disabled=true;if(bi===item.c)bb.classList.add('correct');});
+        if(oi===item.c){dScore++;}else{b.classList.add('wrong');}
+        blk.querySelector('.q-expl').classList.add('show');updateDrill();
+      });
+      blk.appendChild(b);
+    });
+    const ex=document.createElement('div');ex.className='q-expl';ex.innerHTML=item.e;blk.appendChild(ex);
+    da.appendChild(blk);
+  });
+}
+function updateDrill(){$('drill-score').textContent=`Identified: ${dScore} / ${dAnswered} answered · ${drill.length} total${dAnswered===drill.length?` — Final: ${Math.round(dScore/drill.length*100)}%`:''}`;}
+$('drill-reset').addEventListener('click',buildDrill);
+buildDrill();
 
 /* ---------- Quiz ---------- */
 const quiz=[

@@ -1075,16 +1075,31 @@ The <strong>Nyquist–Shannon sampling theorem</strong>: the sample rate must be
   <tr><td><strong>4:2:2</strong></td><td><strong>2</strong></td><td>Halves colour data</td></tr>
   <tr><td><strong>4:2:0</strong></td><td><strong>1.5</strong></td><td>Reduces colour data to a quarter</td></tr>
 </table></div>
-<div class="worked">
-<div class="wstep"><strong>Worked example &mdash; UHD, 60 fps, 8-bit, no subsampling</strong></div>
-<div class="wstep">3840 &times; 2160 &times; 60 &times; 8 &times; 3 = <strong>11.94 Gbps</strong></div>
-<div class="wstep">Is that reasonable? No &mdash; 11.94 Gbps is greater than any enterprise network.</div>
-<div class="wstep">At <strong>4:2:2</strong>: multiply 11.94 by two-thirds &rarr; about <strong>8 Gbps</strong>. Still very high.</div>
-<div class="wstep">At <strong>4:2:0</strong>: halve the original &rarr; <strong>5.97 Gbps</strong>. Still high.</div>
-<div class="wstep"><strong>Conclusion:</strong> every video signal you will ever encounter requires compression. Broadcast and production studios use <strong>25G networks</strong> to handle 4:4:4 signals without compression.</div>
-</div>
 <div class="callout watchout"><span class="label">Watch Out</span>
-<p>The subsampling factor is <em>not</em> the ratio in the name. 4:4:4 uses a factor of <strong>3</strong>, not 4. Getting this wrong is the single most common error on this calculation.</p>
+<p>The subsampling factor is <em>not</em> the first number in the ratio. 4:4:4 uses a factor of <strong>3</strong>, not 4. Getting this wrong is the single most common error on this calculation.</p>
+</div>
+
+<div class="plain"><span class="label">In Plain English</span>
+Here is why that factor is 3 and not 4, which makes the whole table stop being arbitrary. Every pixel carries <strong>three</strong> pieces of information: one brightness value (luma, the "Y") and two colour values (chroma, "Cb" and "Cr"). The <em>name</em> 4:4:4 doesn't count pixels — it describes, for every block of 4 luma samples, how many Cb and how many Cr samples come along with them. So count the samples in a 4-pixel block and divide by 4 to get the per-pixel factor:</div>
+<div class="tbl-wrap"><table>
+<tr><th>Notation</th><th>Per 4 pixels you get…</th><th>Total samples</th><th>Per pixel</th></tr>
+<tr><td><strong>4:4:4</strong></td><td>4 luma + 4 Cb + 4 Cr</td><td>12</td><td>12 ÷ 4 = <strong>3</strong></td></tr>
+<tr><td><strong>4:2:2</strong></td><td>4 luma + 2 Cb + 2 Cr</td><td>8</td><td>8 ÷ 4 = <strong>2</strong></td></tr>
+<tr><td><strong>4:2:0</strong></td><td>4 luma + 1 Cb + 1 Cr <span class="mono">(chroma shared between two lines)</span></td><td>6</td><td>6 ÷ 4 = <strong>1.5</strong></td></tr>
+</table></div>
+<p>The luma count never drops — your eye is far more sensitive to brightness detail than to colour detail, so subsampling throws away colour resolution and keeps every scrap of brightness. That's the entire idea, and the factors fall out of it as simple arithmetic rather than a table to memorise.</p>
+
+<div class="worked" data-worked>
+<div class="wtitle">Worked Example — Uncompressed 4K Bandwidth</div>
+<div class="wproblem">A UHD source runs 3840 × 2160 at 60 frames per second, 8-bit colour, with no chroma subsampling (4:4:4). How much bandwidth does the uncompressed signal need — and will a 10 Gb network carry it?</div>
+<div class="wstep"><span class="snum">Step 1 — Pixels in a single frame</span>Start with the picture itself: width × height.<span class="m">3,840 × 2,160 = 8,294,400 pixels</span></div>
+<div class="wstep"><span class="snum">Step 2 — Pixels every second</span>Multiply by the frame rate, because that whole grid is sent 60 times a second.<span class="m">8,294,400 × 60 = 497,664,000 pixels/second</span></div>
+<div class="wstep"><span class="snum">Step 3 — Bits for each pixel</span>Bit depth is per colour component, so 8-bit means 8 bits each.<span class="m">497,664,000 × 8 = 3,981,312,000</span></div>
+<div class="wstep"><span class="snum">Step 4 — Apply the subsampling factor</span>4:4:4 → factor 3, from the table above.<span class="m">3,981,312,000 × 3 = 11,943,936,000 bps ≈ 11.94 Gbps</span></div>
+<div class="wstep"><span class="snum">Step 5 — Answer the question that was asked</span>No. 11.94 Gbps exceeds a 10 Gb link, and comfortably exceeds the 1 Gb network in almost every building.</div>
+<div class="wstep"><span class="snum">Step 6 — What subsampling buys you</span>Swap the factor and rerun only the last step. 4:2:2 uses 2 instead of 3, so two-thirds of the total; 4:2:0 uses 1.5, so half.<span class="m">4:2:2 → 11.94 × ⅔ ≈ 7.96 Gbps · 4:2:0 → 11.94 × ½ ≈ 5.97 Gbps</span></div>
+<div class="wstep"><span class="snum">Step 7 — The takeaway</span><strong>Every real-world video signal is compressed.</strong> Even the most aggressive subsampling leaves you near 6 Gbps. Broadcast and production facilities that genuinely need uncompressed 4:4:4 run <strong>25G networks</strong> to do it.</div>
+<button class="wbtn">Show next step</button>
 </div>
 
 <h3>PoE Power Budget</h3>
@@ -1093,13 +1108,20 @@ The <strong>Nyquist–Shannon sampling theorem</strong>: the sample rate must be
 <div class="formula">Device Power = Voltage &times; Current</div>
 <div class="formula">Switch Rating Required = Total Device Power &times; 1.2</div>
 </div>
-<div class="worked">
-<div class="wstep">Decoder A: 48 V &times; 140 mA = <strong>6.72 W</strong> &nbsp;&middot;&nbsp; Encoder B: 48 V &times; 185 mA = <strong>8.88 W</strong></div>
-<div class="wstep">4 encoders: 8.88 &times; 4 = <strong>35.5 W</strong></div>
-<div class="wstep">12 decoders: 6.72 &times; 12 = <strong>80.6 W</strong></div>
-<div class="wstep">Total = <strong>116.1 W</strong> across <strong>16 ports</strong></div>
-<div class="wstep">Specify a switch providing 120% &rarr; <strong>&asymp;139 W</strong> with at least 16 PoE ports</div>
+<div class="worked" data-worked>
+<div class="wtitle">Worked Example — PoE Power Budget</div>
+<div class="wproblem">A system uses 4 encoders drawing 48 V at 185 mA each, and 12 decoders drawing 48 V at 140 mA each, all powered over Ethernet. What switch do you specify?</div>
+<div class="wstep"><span class="snum">Step 1 — Turn each device into watts</span>This is just the power formula, P = V × I. Convert milliamps to amps first: 185 mA = 0.185 A.<span class="m">Encoder: 48 × 0.185 = 8.88 W · Decoder: 48 × 0.140 = 6.72 W</span></div>
+<div class="wstep"><span class="snum">Step 2 — Multiply by how many of each</span><span class="m">4 encoders: 8.88 × 4 = 35.52 W</span><span class="m">12 decoders: 6.72 × 12 = 80.64 W</span></div>
+<div class="wstep"><span class="snum">Step 3 — Add for the total load</span><span class="m">35.52 + 80.64 = 116.16 W across 16 ports</span></div>
+<div class="wstep"><span class="snum">Step 4 — Add headroom</span>Never specify a switch whose rating exactly equals your load. Applying the 120% figure from the formula above:<span class="m">116.16 × 1.2 ≈ 139 W</span></div>
+<div class="wstep"><span class="snum">Step 5 — State the specification</span>Both halves matter — the power budget <em>and</em> the port count.<span class="m">A switch supplying ≥ 139 W of PoE across at least 16 PoE-capable ports</span></div>
+<div class="wstep"><span class="snum">Step 6 — Sanity check</span>16 ports at roughly 7-9 W each landing near 116 W is a believable mid-size AV-over-IP deployment. A total in the single watts or the thousands would mean a milliamp-to-amp slip in Step 1 — by far the most common error here.</div>
+<button class="wbtn">Show next step</button>
 </div>
+
+<div class="callout watchout"><span class="label">Watch Out</span>
+<strong>"120% of the load" and "load it to no more than 80%" are not the same number.</strong> Adding 20% headroom means × 1.2 (116 W → 139 W). Restricting a switch to 80% of its rating means the rating must be load ÷ 0.8 = × 1.25 (116 W → 145 W). Both framings appear in AV documentation. Read which one the question actually asks for, and use that one.</div>
 
 <h3>The 100-Metre Channel</h3>
 <p>The 100 m (328 ft) copper maximum applies to the <strong>entire channel</strong> &mdash; permanent link plus both patch cords. TIA sets the permanent link at a maximum of <strong>90 m</strong>, leaving <strong>10 m</strong> for the two patch cords.</p>
@@ -1252,6 +1274,18 @@ A projector's lens spreads light in a fixed-angle cone, so the farther back it s
 <div class="callout examtip"><span class="label">Exam Tip</span>
 These formulas are pure PEMDAS practice: multiply inside the parentheses first, then add the constant. The constants differ per projector — the exam gives you the numbers; your job is just the order of operations.</div>
 
+<div class="worked" data-worked>
+<div class="wtitle">Worked Example — Throw Distance from a Spec Sheet</div>
+<div class="wproblem">A room needs a 2.5 m wide image. The projector's data sheet gives Max throw (m) = (4.5 × SW) + 0.3 and Min throw (m) = (2.8 × SW) + 0.25. The only available mounting point is 8 m back from the screen. Will this projector work there?</div>
+<div class="wstep"><span class="snum">Step 1 — Read what's actually being asked</span>Not "what is the throw distance" — the question is whether <strong>8 m falls inside the range this lens can produce</strong>. So you need both ends of the range, not one number.</div>
+<div class="wstep"><span class="snum">Step 2 — Max throw, parentheses first</span>PEMDAS: resolve inside the brackets before adding the constant.<span class="m">4.5 × 2.5 = 11.25, then 11.25 + 0.3 = 11.55 m</span></div>
+<div class="wstep"><span class="snum">Step 3 — Min throw, same order</span><span class="m">2.8 × 2.5 = 7.0, then 7.0 + 0.25 = 7.25 m</span></div>
+<div class="wstep"><span class="snum">Step 4 — Compare the mounting point to the range</span>This lens can fill a 2.5 m image from anywhere between 7.25 m and 11.55 m.<span class="m">7.25 ≤ 8 ≤ 11.55 ✓</span></div>
+<div class="wstep"><span class="snum">Step 5 — Answer in the terms asked</span><strong>Yes.</strong> At 8 m the projector sits near the short end of its zoom range, so it will fill the screen with room to adjust. Had the mount been at 6 m, the image would overshoot 2.5 m and you would need a short-throw lens instead.</div>
+<div class="wstep"><span class="snum">Step 6 — Sanity check</span>Min must be smaller than max, and both should be a small multiple of the screen width — a 2.5 m image from roughly 7-12 m is a plausible ratio of about 2.9-4.6. A "max" that came out below the "min" means the two constant sets got swapped.</div>
+<button class="wbtn">Show next step</button>
+</div>
+
 <div class="calc" data-calc="throw">
 <div class="ctitle">Calculator — Throw Distance</div>
 <div class="calc-row">
@@ -1284,6 +1318,18 @@ These formulas are pure PEMDAS practice: multiply inside the parentheses first, 
 </div>
 <div class="callout watchout"><span class="label">Watch Out</span>
 Units must match: if the light readings are in <strong>lux</strong>, screen area must be in <strong>square meters</strong> (1 lux = 1 lumen/m²). If readings are in <strong>foot-candles</strong>, area must be in <strong>square feet</strong> (1 fc = 1 lumen/ft²). Mixing them is the classic trap.</div>
+
+<div class="worked" data-worked>
+<div class="wtitle">Worked Example — ANSI Lumens from Nine Readings</div>
+<div class="wproblem">A 16:9 screen is 2.44 m wide. Nine incident readings across a full-white field give: 520, 495, 480, 540, 610, 530, 470, 455, and 480 lux. What is the projector's ANSI lumen output?</div>
+<div class="wstep"><span class="snum">Step 1 — Notice what you were <em>not</em> given</span>The formula needs screen <strong>height</strong>, and you only have width. But you were told 16:9, which is the missing link. This is a chained problem.</div>
+<div class="wstep"><span class="snum">Step 2 — Get the height from the aspect ratio</span>Height = width ÷ aspect ratio.<span class="m">2.44 ÷ 1.7778 = 1.372 m</span></div>
+<div class="wstep"><span class="snum">Step 3 — Average the nine readings</span>Add them all, divide by nine. This is the "AI" in the formula — never use the brightest center reading on its own.<span class="m">520+495+480+540+610+530+470+455+480 = 4,580</span><span class="m">4,580 ÷ 9 = 508.9 lux</span></div>
+<div class="wstep"><span class="snum">Step 4 — Check your units line up</span>The readings are in <strong>lux</strong>, so the area must be in <strong>square metres</strong>. Both are metric here, so no conversion is needed. Had the readings been foot-candles, the screen would have to be measured in feet.</div>
+<div class="wstep"><span class="snum">Step 5 — Apply the formula</span><span class="m">L = SH × SW × AI = 1.372 × 2.44 × 508.9</span><span class="m">1.372 × 2.44 = 3.348 m² of screen area</span><span class="m">3.348 × 508.9 ≈ 1,704 lumens</span></div>
+<div class="wstep"><span class="snum">Step 6 — Sanity check</span>Around 1,700 lumens is believable for a small meeting-room projector. Note how far the answer sits from the 610 lux hot spot at centre — that gap is exactly why ANSI insists on nine readings rather than one.</div>
+<button class="wbtn">Show next step</button>
+</div>
 
 <div class="calc" data-calc="lum">
 <div class="ctitle">Calculator — ANSI Lumens</div>
@@ -1799,6 +1845,8 @@ const cards=[
 {t:'Video',q:'Aspect ratio from dimensions',a:'AR = W / H',x:'Height = W ÷ AR · Width = H × AR. Use 4 decimal places for 16:9 (1.7778).'},
 {t:'Video',q:'Screen diagonal formula',a:'A² + B² = C²',x:'Pythagorean theorem: height² + width² = diagonal².'},
 {t:'Video',q:'Estimating throw distance',a:'Distance = Screen Width × Throw Ratio',x:'Always verify with the projector manual\u2019s own formulas.'},
+{t:'Video',q:'Chroma subsampling factors: 4:4:4, 4:2:2, 4:2:0',a:'3, 2 and 1.5',x:'Count samples per 4 pixels and divide by 4: 12/4 = 3, 8/4 = 2, 6/4 = 1.5. The factor is never the first number in the name.'},
+{t:'Video',q:'Uncompressed 4K (3840×2160, 60 fps, 8-bit, 4:4:4) needs roughly…',a:'≈ 11.94 Gbps',x:'W × H × fps × bit depth × subsampling factor. More than a 10 Gb link — which is why all real video is compressed.'},
 {t:'Video',q:'ANSI lumen rating formula',a:'L = SH × SW × AI',x:'Screen height × width × the average of nine illuminance readings. Lux pairs with m², foot-candles with ft².'},
 {t:'Video',q:'DISCAS BDM sizing metric',a:'%EH = element height / image height',x:'ADM viewing instead requires resolving a single pixel.'},
 {t:'Audio',q:'Wavelength formula',a:'λ = v / f',x:'Speed of sound in air: 343 m/s (sea level, 20 °C).'},

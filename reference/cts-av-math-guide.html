@@ -373,6 +373,39 @@ The CTS exam gives you an on-screen calculator, and the math never goes beyond a
 
 <div class="callout watchout"><span class="label">Watch Out</span>
 <strong>Round only your final answer.</strong> If you round at every step of a multi-step problem, small errors stack up and your result drifts away from the answer choices. Carry full decimals through and round once at the end (answer keys typically round to the nearest tenth).</div>
+
+<h3>Unit Conversions Worth Memorizing</h3>
+<p>The exam is written in both measurement systems, and questions routinely hand you one and want the other. These are the conversions that actually appear:</p>
+<div class="tbl-wrap"><table>
+<tr><th>Convert</th><th>Factor</th><th>Where it shows up</th></tr>
+<tr><td>inches → millimetres</td><td><strong>× 25.4</strong></td><td>Display sizes. The drawing-scale form of this is written <span class="mono">1:25.40</span>.</td></tr>
+<tr><td>feet → metres</td><td><strong>× 0.3048</strong></td><td>Room dimensions, cable runs, throw distances</td></tr>
+<tr><td>foot-candles → lux</td><td><strong>× 10.76</strong></td><td>Light readings. 1 fc = 10.76 lux, because 1 m² ≈ 10.76 ft².</td></tr>
+<tr><td>pounds → kilograms</td><td><strong>÷ 2.205</strong></td><td>Rigging loads and mount ratings</td></tr>
+<tr><td>watts → Btu/h</td><td><strong>× 3.4</strong></td><td>Heat load (the kJ/h version is × 3.6)</td></tr>
+</table></div>
+<div class="callout examtip"><span class="label">Exam Tip</span>
+The 10.76 in the foot-candle conversion is not a coincidence — it's the number of square feet in a square metre. Both lux and foot-candles mean "one lumen spread over one unit of area," so converting between them <em>is</em> converting the area unit. Remember that and you never have to wonder which way the factor goes: lux numbers are always the bigger ones, because a square foot is a small patch.</div>
+
+<h3>Room and Screen Geometry</h3>
+<p>A handful of questions test nothing more exotic than area, perimeter and volume — usually with one value missing so you have to rearrange, exactly as above.</p>
+<div class="formula-box"><div class="fname">The Three Basics</div>
+<div class="formula" style="font-size:19px">Area = W × L<br>Perimeter = 2 × (W + L)<br>Volume = W × L × H</div>
+<ul class="where"><li><strong>Area</strong> comes back in square units (ft², m²) · <strong>perimeter</strong> in plain length units · <strong>volume</strong> in cubic units</li><li>Rearranged for a missing side: <strong>L = Area ÷ W</strong></li></ul>
+</div>
+<div class="callout watchout"><span class="label">Watch Out</span>
+Perimeter is <strong>2 × (W + H)</strong>, not W + H. Forgetting the doubling gives exactly half the right answer — and half is always one of the options. For a screen 2.50 m wide and 1.80 m high: 2 × (2.50 + 1.80) = <strong>8.60 m</strong>, not 4.30 m.</div>
+
+<div class="worked" data-worked>
+<div class="wtitle">Worked Example — The Measurement Nobody Wrote Down</div>
+<div class="wproblem">After a site visit, the room length was never recorded. You know the width is 35 ft and the ceiling is 8 ft, and the documentation lists the total floor area as 980 sq ft. What is the length?</div>
+<div class="wstep"><span class="snum">Step 1 — Identify which formula owns "floor area"</span>Floor area is width × length. The ceiling height belongs to volume, not area — so it is a decoy here.<span class="m">Area = W × L</span></div>
+<div class="wstep"><span class="snum">Step 2 — Substitute what you know</span><span class="m">980 = 35 × L</span></div>
+<div class="wstep"><span class="snum">Step 3 — Rearrange to isolate L</span>35 is multiplying L, so divide both sides by 35.<span class="m">L = 980 ÷ 35</span></div>
+<div class="wstep"><span class="snum">Step 4 — Compute and attach units</span><span class="m">L = 28 ft</span></div>
+<div class="wstep"><span class="snum">Step 5 — Check</span>Multiply back: 35 × 28 = 980 ✓. And 28 ft is a plausible room length — if you had produced 4 ft or 400 ft, you would know the division went the wrong way. The 8 ft ceiling was never needed, which is normal.</div>
+<button class="wbtn">Show next step</button>
+</div>
 </section>
 
 <!-- ================= LOGARITHMS ================= -->
@@ -744,6 +777,31 @@ Electricity in a wire behaves like water in a pipe. <strong>Voltage</strong> is 
 <div class="calc-result" id="oh-out">Enter two values…</div>
 <div class="calc-note">Solves the other two from Ohm's law + power law.</div>
 </div>
+
+<h3>Voltage Drop Over a Long Run</h3>
+<p class="section-sub" style="margin-bottom:20px">The most-tested application of Ohm's law, and the one with a hidden step.</p>
+<div class="plain"><span class="label">In Plain English</span>
+Cable is not a perfect conductor — it has a small resistance per unit of length. Push current through it and Ohm's law does what it always does: some voltage is consumed by the <em>wire itself</em> and never reaches the device. Over a metre this is nothing. Over 25 metres to a remotely-powered transmitter, it can drop the device below its operating tolerance.</div>
+
+<div class="formula-box"><div class="fname">Voltage Drop</div>
+<div class="formula">V<sub>drop</sub> = I × R<sub>total</sub><span style="display:block;font-size:15px;margin-top:10px;color:var(--muted)">where R<sub>total</sub> = resistance-per-unit-length × (2 × one-way distance)</span></div>
+<ul class="where"><li><strong>I</strong> — the current the device draws</li><li><strong>The doubling is not optional.</strong> Current flows out to the device <em>and back</em>, so the conductor length is twice the distance on the drawing.</li></ul>
+</div>
+
+<div class="callout watchout"><span class="label">Watch Out</span>
+Two hidden steps hide in every voltage-drop question, and the distractors are built from skipping them. <strong>One:</strong> a figure like "0.0062 ohms per foot" is a <em>rate</em>, not a resistance — multiply it by the length first. <strong>Two:</strong> use the round-trip length. Miss the doubling and your answer is exactly half of right, which will be sitting in the options waiting for you.</div>
+
+<div class="worked" data-worked>
+<div class="wtitle">Worked Example — Voltage Drop and Tolerance</div>
+<div class="wproblem">An assistive listening transmitter draws 1.8 A from a 12 V DC supply located 25 feet away in the rack. The 18 AWG extension wire has a resistance of 0.0062 ohms per foot. What is the voltage drop, and does it stay inside a 5% operating tolerance?</div>
+<div class="wstep"><span class="snum">Step 1 — Find the real conductor length</span>The supply is 25 ft away, but the circuit runs out and back.<span class="m">25 × 2 = 50 ft of conductor</span></div>
+<div class="wstep"><span class="snum">Step 2 — Turn the rate into a resistance</span>Ohms-per-foot × feet = ohms.<span class="m">50 × 0.0062 = 0.31 Ω</span></div>
+<div class="wstep"><span class="snum">Step 3 — Apply Ohm's law</span>Now it's the plainest possible V = I × R.<span class="m">1.8 × 0.31 = 0.558 V dropped in the cable</span></div>
+<div class="wstep"><span class="snum">Step 4 — Work out what the tolerance actually allows</span>The question asks a second thing, so answer it. 5% of the supply voltage:<span class="m">12 × 0.05 = 0.6 V permitted</span></div>
+<div class="wstep"><span class="snum">Step 5 — Compare and state both halves</span><span class="m">0.558 V &lt; 0.6 V ✓</span><strong>0.558 volts, and it is (just barely) in tolerance.</strong> The device sees 12 − 0.558 = 11.44 V.</div>
+<div class="wstep"><span class="snum">Step 6 — Notice how close that was</span>It passes with 0.042 V to spare — about 7% of the allowance. Add a few more feet of the same wire, or swap to thinner gauge with higher resistance per foot, and it fails. That margin is exactly why the calculation gets done at design time rather than discovered on site.</div>
+<button class="wbtn">Show next step</button>
+</div>
 </section>
 
 <!-- ================= DECIBELS ================= -->
@@ -951,6 +1009,18 @@ Divide by the coefficient <strong>before</strong> raising 10 to the power. Compu
 
 <div class="callout spec"><span class="label">Spec</span>
 0 dB SPL = <strong>20 micropascals</strong>, the quietest sound a healthy human ear can detect — an absurdly small pressure. And <strong>−20 dBu is not a negative voltage</strong>; it's just a voltage smaller than 775 mV. Negative always means "below the reference," never "below zero."</div>
+
+<h3>Speech Above the Noise: the 25 dB Rule</h3>
+<div class="plain"><span class="label">In Plain English</span>
+Intelligibility isn't about how loud the speech is — it's about how far the speech sits <strong>above the room's background noise</strong>. HVAC rumble, projector fans and corridor noise all compete with the talker. The working rule is that program audio should land at least <strong>25 dB above the ambient noise floor</strong>. Below that, listeners strain; well below it, they stop following entirely.</div>
+<div class="formula-box"><div class="fname">Speech-to-Noise Headroom</div>
+<div class="formula">Program level − Background noise ≥ 25 dB</div>
+<ul class="where"><li>Rearranged, which is how it is usually asked: <strong>Maximum acceptable background = target speech level − 25 dB</strong></li><li>Levels are A-weighted, written dB SPL (A) — the weighting that approximates how the ear responds.</li></ul>
+</div>
+<div class="callout examtip"><span class="label">Exam Tip</span>
+This rule gets asked from both directions, so practise it both ways. <em>Forward:</em> "the room measures 55 dB SPL(A) of ambient noise — how loud must the program be?" → at least 80 dB SPL(A). <em>Backward:</em> "the design targets 70 dB SPL(A) for speech — what is the maximum acceptable background noise?" → 70 − 25 = <strong>45 dB SPL(A)</strong>. Same single subtraction, two different-looking questions.</div>
+<div class="callout watchout"><span class="label">Watch Out</span>
+Don't confuse this 25 dB with the other dB landmarks. <strong>3 dB</strong> is a just-noticeable change, <strong>6 dB</strong> is a doubling of distance or voltage, <strong>10 dB</strong> is perceived double loudness, and <strong>25 dB</strong> is the speech-above-noise margin. They answer completely different questions, and a question about intelligibility is not a question about doubling.</div>
 </section>
 
 <!-- ================= LOUDSPEAKER MATH ================= -->
@@ -1118,6 +1188,24 @@ Sound is a pressure wave rippling through air — squeeze, release, squeeze, rel
   <text x="660" y="224" text-anchor="end" class="dm dsmall" style="fill:var(--blue)">high frequency → short wavelength</text>
 </svg>
 <div class="dcap">Both waves travel at the same 343 m/s. The lower one simply repeats more often, so each cycle has to fit into less distance. A 100 Hz bass note is a 3.4 m wave — furniture-sized, which is why bass wraps around obstacles; a 10 kHz sizzle is 3.4 cm — easily blocked by a head in the way.</div>
+</div>
+
+<h3>Octaves — Counting Doublings of Frequency</h3>
+<div class="plain"><span class="label">In Plain English</span>
+An <strong>octave</strong> is a doubling of frequency. 100 Hz to 200 Hz is one octave; 200 to 400 is the next. Notice what that means: octaves are a <em>ratio</em> scale, exactly like decibels. Equal musical steps are equal <em>multiplications</em>, not equal additions — which is why the octave bands on a graphic EQ get wider and wider as you move right.</div>
+<div class="formula-box"><div class="fname">Number of Octaves Between Two Frequencies</div>
+<div class="formula">Octaves = <span class="frac"><span class="top">log(f₂ / f₁)</span><span class="bot">log(2)</span></span></div>
+<ul class="where"><li>Or just count the doublings, which is faster when the numbers are friendly.</li></ul>
+</div>
+<div class="worked" data-worked>
+<div class="wtitle">Worked Example — Octaves of Human Hearing</div>
+<div class="wproblem">An average human adult hears from 20 Hz to 20 kHz. How many octaves does that range span?</div>
+<div class="wstep"><span class="snum">Step 1 — Count the doublings</span>Start at 20 and keep doubling.<span class="m">20 → 40 → 80 → 160 → 320 → 640 → 1,280 → 2,560 → 5,120 → 10,240 → 20,480</span></div>
+<div class="wstep"><span class="snum">Step 2 — Count the arrows, not the numbers</span>There are <strong>ten</strong> doublings in that chain, landing just past 20 kHz.<span class="m">≈ 10 octaves</span></div>
+<div class="wstep"><span class="snum">Step 3 — Confirm it with the formula</span>The ratio is 20,000 ÷ 20 = 1,000, and log(1,000) = 3.<span class="m">3 ÷ 0.301 = 9.97 ≈ 10 octaves</span></div>
+<div class="wstep"><span class="snum">Step 4 — Notice the connection</span>That is the same log(2) = 0.301 doing the same job as in every decibel calculation. Dividing by log(2) counts <em>doublings</em>; multiplying by 10 or 20 counts <em>decibels</em>. One landmark number, two uses.</div>
+<div class="wstep"><span class="snum">Step 5 — Answer</span><strong>10 octaves.</strong> The standard ISO octave-band centres across that range are 31.25, 62.5, 125, 250, 500, 1k, 2k, 4k, 8k and 16k Hz — ten bands, which is a useful cross-check.</div>
+<button class="wbtn">Show next step</button>
 </div>
 
 <div class="formula-box"><div class="fname">Digital Audio Bandwidth</div>
@@ -1433,6 +1521,33 @@ An aspect ratio is a <strong>shape promise</strong>: "16:9" just means every 16 
 <div class="calc-note">Works in any unit — answers come back in the unit you enter.</div>
 </div>
 
+<h3>From Diagonal to Width and Height — the Shortcut</h3>
+<p>Displays are sold by their diagonal ("a 90-inch display"), but you install them by width and height. Going from a diagonal to the other two <em>can</em> be done with Pythagoras and algebra, but for a known aspect ratio the whole thing collapses into a single multiplier you can memorise.</p>
+<div class="formula-box"><div class="fname">16:9 Diagonal Conversions</div>
+<div class="formula" style="font-size:19px">Width = Diagonal × 0.8716<br>Height = Diagonal × 0.4903</div>
+<ul class="where"><li>These come from the 16-9-18.358 triangle: 16 ÷ √(16² + 9²) = 0.8716, and 9 ÷ √(16² + 9²) = 0.4903.</li><li>A quick check: width should land a little under 90% of the diagonal, height a little under half.</li></ul>
+</div>
+<div class="worked" data-worked>
+<div class="wtitle">Worked Example — How Wide Is a 90-Inch Display?</div>
+<div class="wproblem">A 90 in (2286 mm) 4K display is being hung on the front wall. How wide is it?</div>
+<div class="wstep"><span class="snum">Step 1 — Notice what "90 inch" actually measures</span>It is the <strong>diagonal</strong>, never the width. Reading it as width is the trap this question is built on.</div>
+<div class="wstep"><span class="snum">Step 2 — Establish the shape</span>4K is a 16:9 format, so the 16:9 multipliers apply. (The resolution is a decoy — 1080p, 4K and 8K are all 16:9 and all give the same answer.)</div>
+<div class="wstep"><span class="snum">Step 3 — Apply the width multiplier</span><span class="m">90 × 0.8716 = 78.4 in</span></div>
+<div class="wstep"><span class="snum">Step 4 — Or the long way, if you'd rather</span>Let height = 9x and width = 16x. Then (9x)² + (16x)² = 90², so 337x² = 8,100, x² = 24.04, x = 4.903.<span class="m">Width = 16 × 4.903 = 78.4 in ✓</span></div>
+<div class="wstep"><span class="snum">Step 5 — Answer, with a sanity check</span><strong>About 78.4 in (1,992 mm) wide.</strong> The width must be less than the diagonal but not far off it — a 16:9 rectangle is wide and shallow. Anything above 90 in is impossible; anything near 45 in means you used the height multiplier.</div>
+<button class="wbtn">Show next step</button>
+</div>
+
+<h3>Two Numbers the Sizing Standards Hand You</h3>
+<p>Some sizing questions are not calculations at all — they check whether you know the constant the standard specifies.</p>
+<div class="tbl-wrap"><table>
+<tr><th>Constant</th><th>Value</th><th>Used for</th></tr>
+<tr><td>Average seated eye height</td><td><strong>1.2 m (48 in)</strong></td><td>Sightline calculations — where a viewer's eyes actually are when checking whether heads block the screen</td></tr>
+<tr><td>Minimum contrast ratio, full-motion video</td><td><strong>80:1</strong></td><td>Projected Image System Contrast Ratio. Lower-demand viewing tolerates less; analytical viewing demands more.</td></tr>
+</table></div>
+<div class="callout examtip"><span class="label">Exam Tip</span>
+Contrast ratio is set far more by <strong>ambient light in the room</strong> than by the projector's specification — stray light lifts the black level, and a black that isn't black collapses the ratio no matter how bright the projector is. That's why a contrast question often has a room-lighting answer rather than an equipment answer.</div>
+
 <h3>Sizing for the Viewer: %EH</h3>
 <p>AVIXA's DISCAS standard (V202.01, Display Image Size for 2D Content) drives image-size decisions from what the viewer must actually see. For <strong>basic decision-making (BDM)</strong> viewing — presentations, classrooms, boardrooms — calculations are based on <em>percent element height</em>:</p>
 <div class="formula-box"><div class="fname">Percent Element Height (DISCAS · BDM)</div>
@@ -1541,7 +1656,20 @@ These formulas are pure PEMDAS practice: multiply inside the parentheses first, 
 <ul class="where"><li><strong>L</strong> — lumens · <strong>SH</strong> — screen height · <strong>SW</strong> — screen width · <strong>AI</strong> — average illuminance of the nine readings</li></ul>
 </div>
 <div class="callout watchout"><span class="label">Watch Out</span>
-Units must match: if the light readings are in <strong>lux</strong>, screen area must be in <strong>square meters</strong> (1 lux = 1 lumen/m²). If readings are in <strong>foot-candles</strong>, area must be in <strong>square feet</strong> (1 fc = 1 lumen/ft²). Mixing them is the classic trap.</div>
+Units must match: if the light readings are in <strong>lux</strong>, screen area must be in <strong>square meters</strong> (1 lux = 1 lumen/m²). If readings are in <strong>foot-candles</strong>, area must be in <strong>square feet</strong> (1 fc = 1 lumen/ft²). Mixing them is the classic trap. To convert between the readings themselves: <strong>1 fc = 10.76 lux</strong>.</div>
+
+<h3>Light Falls Off by the Inverse Square Law Too</h3>
+<p>The same inverse square law that costs sound 6 dB per doubling of distance governs light. Double the distance from a lamp and the same light spreads over four times the area, so the illuminance at any point drops to <strong>one quarter</strong>.</p>
+<div class="callout watchout"><span class="label">Watch Out</span>
+Read whether the question asks what <em>remains</em> or what is <em>lost</em> — both numbers are always in the options. At double the distance, <strong>25% remains</strong>, which means illumination has <strong>decreased by 75%</strong>. Same physics, two phrasings, and the wrong one is right there waiting. "Decreases by" means subtract from 100.</div>
+<div class="tbl-wrap"><table>
+<tr><th>Distance becomes…</th><th>Illuminance remaining</th><th>Stated as a decrease</th></tr>
+<tr><td>2× as far</td><td>1/4 = 25%</td><td>decreased by <strong>75%</strong></td></tr>
+<tr><td>3× as far</td><td>1/9 ≈ 11%</td><td>decreased by ≈ 89%</td></tr>
+<tr><td>Half as far</td><td>4× = 400%</td><td>increased fourfold</td></tr>
+</table></div>
+<div class="callout examtip"><span class="label">Exam Tip</span>
+Light is quoted as a <strong>fraction or percentage</strong>, sound as <strong>decibels</strong> — but it's one law. A quarter of the power is 10 log(0.25) ≈ −6 dB, which is exactly the sound answer. If you can do the loudspeaker version you can already do the lighting version; only the units of the answer change.</div>
 
 <div class="worked" data-worked>
 <div class="wtitle">Worked Example — ANSI Lumens from Nine Readings</div>
@@ -1845,6 +1973,12 @@ An equipment rack is, thermodynamically, a space heater with features. Once the 
 <tr><th>What</th><th>Formula</th><th>Remember</th></tr>
 <tr><td>Ohm's law</td><td>I = V / R</td><td>V = IR · R = V/I</td></tr>
 <tr><td>Power</td><td>P = I × V</td><td>Also P = V²/R, P = I²R</td></tr>
+<tr><td>Voltage drop</td><td>V<sub>drop</sub> = I × R<sub>total</sub></td><td>R = rate/length × <strong>2 ×</strong> distance</td></tr>
+<tr><td>Area · perimeter · volume</td><td>W×L · 2(W+L) · W×L×H</td><td>Perimeter doubles the sum</td></tr>
+<tr><td>Diagonal → width (16:9)</td><td>D × 0.8716</td><td>Height = D × 0.4903</td></tr>
+<tr><td>Octaves between 2 frequencies</td><td>log(f₂/f₁) ÷ log(2)</td><td>Or count doublings · 20 Hz-20 kHz = 10</td></tr>
+<tr><td>Speech above noise</td><td>program − background ≥ 25 dB</td><td>Max noise = target − 25</td></tr>
+<tr><td>Light at double distance</td><td>25% remains</td><td>= "decreased by 75%"</td></tr>
 <tr><td>dB (power)</td><td>dB = 10 log(P₁/P<sub>r</sub>)</td><td>10 for power</td></tr>
 <tr><td>dB (voltage)</td><td>dB = 20 log(V₁/V<sub>R</sub>)</td><td>20 for voltage</td></tr>
 <tr><td>dB (distance)</td><td>dB = 20 log(D₁/D₂)</td><td>Original distance on top</td></tr>
@@ -1870,6 +2004,9 @@ An equipment rack is, thermodynamically, a space heater with features. Once the 
 <tr><td>Rigging safety factor</td><td>Rating = load × 5</td><td>40 kg → 200 kg mount</td></tr>
 <tr><td>RS-485 / DMX512</td><td>32 devices, 120 Ω</td><td>Not 75 Ω — that's coax</td></tr>
 <tr><td>Drawing scale</td><td>Real = drawn × scale factor</td><td>1:50 → ×50</td></tr>
+<tr><td>Unit conversions</td><td>1 in = 25.4 mm · 1 fc = 10.76 lux</td><td>1 ft = 0.3048 m · 1 kg = 2.205 lb</td></tr>
+<tr><td>Seated eye height</td><td>1.2 m (48 in)</td><td>For sightline calculations</td></tr>
+<tr><td>Min contrast, full-motion video</td><td>80:1</td><td>Ambient light drives this, not the projector</td></tr>
 <tr><td>GC markup</td><td>~5-10%+</td><td>$2M → $100k-$200k</td></tr>
 <tr><td>Contingency budget</td><td>5-10%</td><td>For $500k+ / 1yr+ projects</td></tr>
 </table></div>
@@ -1900,7 +2037,7 @@ An equipment rack is, thermodynamically, a space heater with features. Once the 
 <!-- ================= QUIZ ================= -->
 <section id="quiz">
 <h2>Quick-Check Quiz</h2>
-<p class="section-sub">29 original math problems in exam style. Every answer comes with a full worked solution.</p>
+<p class="section-sub">36 original math problems in exam style. Every answer comes with a full worked solution.</p>
 <div id="quiz-score">Score: 0 / 0 answered</div>
 <div id="quiz-area"></div>
 <button id="quiz-reset">Reset Quiz</button>
@@ -2045,6 +2182,15 @@ const cards=[
 {t:'Electrical',q:'Ohm\u2019s law — solve for current',a:'I = V / R',x:'Amps = volts ÷ ohms. Rearranged: V = IR, R = V/I.'},
 {t:'Electrical',q:'The power formula',a:'P = I × V',x:'Watts = amps × volts. Also P = V²/R and P = I²R.'},
 {t:'Electrical',q:'Maximum planned load on any circuit',a:'80% of rated capacity',x:'A 20 A circuit should carry no more than 16 A of planned load.'},
+{t:'Electrical',q:'Voltage drop over a cable run',a:'V = I × R, with R = rate × 2 × distance',x:'Current goes out AND back, so double the one-way run before applying the ohms-per-foot rate.'},
+{t:'Foundations',q:'Perimeter of a rectangle',a:'2 × (W + L)',x:'Forgetting to double gives exactly half — and half is always an option.'},
+{t:'Foundations',q:'1 inch = ? mm · 1 foot-candle = ? lux',a:'25.4 mm · 10.76 lux',x:'10.76 is the number of square feet in a square metre — that is why it is the fc/lux factor.'},
+{t:'Video',q:'Width of a 16:9 screen from its diagonal',a:'Diagonal × 0.8716',x:'Height = diagonal × 0.4903. A 90 in display is 78.4 in wide.'},
+{t:'Video',q:'Minimum contrast ratio for full-motion video',a:'80:1',x:'Driven mostly by ambient room light, which lifts the black level.'},
+{t:'Video',q:'Average seated eye height for sightlines',a:'1.2 m (48 in)',x:'The standard constant for checking whether heads block the screen.'},
+{t:'Video',q:'Illumination at double the distance from a source',a:'25% remains — a 75% decrease',x:'Inverse square law. Read whether the question wants what remains or what was lost.'},
+{t:'Audio',q:'An octave is…',a:'A doubling of frequency',x:'Octaves = log(f₂/f₁) ÷ log(2). 20 Hz to 20 kHz is about 10 octaves.'},
+{t:'Audio',q:'How far above background noise should program audio sit?',a:'At least 25 dB',x:'So a 70 dB SPL(A) speech target allows a maximum 45 dB SPL(A) noise floor.'},
 {t:'Decibels',q:'dB change for POWER',a:'dB = 10 × log(P₁ / P_r)',x:'Multiplier 10 — power is the odd one out.'},
 {t:'Decibels',q:'dB change for VOLTAGE',a:'dB = 20 × log(V₁ / V_R)',x:'New or measured voltage over the reference voltage.'},
 {t:'Decibels',q:'dB change for DISTANCE',a:'dB = 20 × log(D₁ / D₂)',x:'Original distance on top — moving away gives a negative (loss).'},
@@ -2218,6 +2364,13 @@ const quiz=[
 {q:'A line driver raises a signal from 0.775 V to 7.75 V. The gain is:',o:['+10 dB','+20 dB','+6 dB','+3 dB'],c:1,e:'Volts → 20 log. 7.75 / 0.775 = 10, and log(10) = 1, so 20 × 1 = +20 dB. The same 10× ratio in WATTS would be only +10 dB — identical ratio, different coefficient.'},
 {q:'0 dBu corresponds to which reference value?',o:['1 volt','1 milliwatt','775 millivolts','20 micropascals'],c:2,e:'dBu references 0.775 V. The others: dBV = 1 V, dBm = 1 mW, dB SPL = 20 µPa. dBu and dBV are 20-log (voltage); dBm is 10-log (power).'},
 {q:'A calculation reads dB = 20 log(0.125). Before computing anything, you already know the answer is:',o:['Positive — logs are always positive','Negative — the ratio is below 1','Zero — 0.125 rounds down','Undefined — you cannot log a decimal'],c:1,e:'Any ratio below 1 has a negative log, so the dB is negative — a loss. (log 0.125 = −0.903, giving −18 dB.) This sign check catches a flipped fraction before it costs you the question.'},
+{q:'A 12 V DC supply sits 25 ft from the device it powers, which draws 1.8 A. The wire is 0.0062 Ω per foot. The voltage drop is:',o:['0.558 V','0.279 V','1.86 V','0.31 V'],c:0,e:'Two hidden steps. Out and back: 25 × 2 = 50 ft. Rate to resistance: 50 × 0.0062 = 0.31 Ω. Then Ohm: 1.8 × 0.31 = 0.558 V. The 0.279 V distractor is what you get by forgetting to double the run.'},
+{q:'A room is 35 ft wide with a total floor area of 980 sq ft. Its length is:',o:['34 ft','122.5 ft','945 ft','28 ft'],c:3,e:'Area = W × L, so L = Area ÷ W = 980 ÷ 35 = 28 ft. If a ceiling height is also quoted, it belongs to volume and is a decoy for a floor-area question.'},
+{q:'A projector screen is 2.50 m wide and 1.80 m high. Its perimeter is:',o:['4.30 m','4.50 m','9.00 m','8.60 m'],c:3,e:'Perimeter = 2 × (W + H) = 2 × (2.50 + 1.80) = 8.60 m. The 4.30 m option is the sum without the doubling; 4.50 m is the area.'},
+{q:'A 90 in (2286 mm) 4K display is going on the wall. How wide is it?',o:['78.4 in','90 in','50.6 in','44.1 in'],c:0,e:'The 90 in is the DIAGONAL. For 16:9, width = diagonal × 0.8716 = 78.4 in. (Height would be 90 × 0.4903 = 44.1 in — offered as a distractor.) 4K, 1080p and 8K are all 16:9, so the resolution is irrelevant.'},
+{q:'Approximately how many octaves span the 20 Hz to 20 kHz range of human hearing?',o:['6 octaves','8 octaves','10 octaves','20 octaves'],c:2,e:'An octave is a doubling. 20→40→80→160→320→640→1,280→2,560→5,120→10,240→20,480 is ten doublings. Formula: log(1,000) ÷ log(2) = 3 ÷ 0.301 ≈ 10.'},
+{q:'A conference room targets 70 dB SPL (A) for speech. The maximum acceptable background noise is:',o:['35 dB SPL (A)','60 dB SPL (A)','67 dB SPL (A)','45 dB SPL (A)'],c:3,e:'Program audio should sit at least 25 dB above the noise floor, so the maximum background is 70 − 25 = 45 dB SPL (A). Don’t confuse the 25 dB intelligibility margin with the 3/6/10 dB perception landmarks.'},
+{q:'Illumination from a light source decreases by how much when you double the distance?',o:['25 percent','50 percent','75 percent','100 percent'],c:2,e:'Inverse square law: at double the distance one quarter REMAINS, so illumination has DECREASED by 75%. Both 25 and 75 appear in the options — read whether the question asks what is left or what was lost.'},
 {q:'Four 8 Ω loudspeakers are wired in series. The total impedance is:',o:['2 Ω','8 Ω','16 Ω','32 Ω'],c:3,e:'Series just adds: 8 + 8 + 8 + 8 = 32 Ω. Series totals are always bigger than any single speaker.'},
 {q:'Four 8 Ω loudspeakers are wired in parallel. The total impedance is:',o:['2 Ω','4 Ω','8 Ω','32 Ω'],c:0,e:'Identical speakers in parallel: Z_T = Z₁ / N = 8 / 4 = 2 Ω.'},
 {q:'A 12 Ω and a 6 Ω loudspeaker are wired in parallel. The total impedance is:',o:['18 Ω','9 Ω','6 Ω','4 Ω'],c:3,e:'1/Z_T = 1/12 + 1/6 = 0.0833 + 0.1667 = 0.25, so Z_T = 1/0.25 = 4 Ω. Parallel totals are always smaller than the smallest speaker.'},

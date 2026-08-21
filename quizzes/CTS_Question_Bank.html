@@ -275,7 +275,7 @@ main{max-width:820px; margin:0 auto; padding:84px 22px 120px}
      turn on auto-submit; leave it empty and the page behaves exactly as
      it did before (copy button only). See tracker/SETUP.md in the repo.
   ------------------------------------------------------------------ */
-  var TRACKER_URL = '';
+  var TRACKER_URL = 'https://script.google.com/macros/s/AKfycbwmbERhQn1iTWZ68Ds7zw4fEfGrJ2bssGzwVGMHs-3L9YHbd_6kVyIeA8nDwYNz4HgC/exec';
 
   var BANK = JSON.parse(document.getElementById('bank').textContent);
   var TOPICS = BANK.topics, ALL = BANK.q;
@@ -639,7 +639,6 @@ main{max-width:820px; margin:0 auto; padding:84px 22px 120px}
     view.innerHTML = h;
 
     var payload = buildPayload(base, right, pct, grade, slips, gaps, by, bySrc);
-    submitResults(payload);
     var rs = $('resend'); if(rs) rs.addEventListener('click', function(){ submitResults(payload); });
 
     var rt = $('retry'); if(rt) rt.addEventListener('click', function(){ start(origMissed, true); });
@@ -653,6 +652,10 @@ main{max-width:820px; margin:0 auto; padding:84px 22px 120px}
       copyResults(base.seen, origMissed, slips, gaps, right, pct, grade, by, bySrc);
     });
     window.scrollTo(0,0);
+
+    /* last, and defensively: a tracker problem must never cost you the results card
+       or the buttons above — the copy summary stays the fallback either way */
+    submitResults(payload);
   }
 
   /* ---------- results tracker ---------- */
@@ -680,6 +683,7 @@ main{max-width:820px; margin:0 auto; padding:84px 22px 120px}
      preflight it can't answer. Falls back to no-cors, which writes but can't
      confirm — hence the three-state status. */
   function send(payload){
+    if(typeof fetch !== 'function') return Promise.reject(new Error('no fetch'));
     return fetch(TRACKER_URL, {
       method:'POST',
       headers:{'Content-Type':'text/plain;charset=utf-8'},
@@ -727,27 +731,33 @@ main{max-width:820px; margin:0 auto; padding:84px 22px 120px}
 
   function submitResults(payload){
     if(!TRACKER_URL){ return; }
-    enqueue(payload);
-    setStatus('pending', 'Saving to tracker…');
-    send(payload).then(function(state){
-      dequeue(payload.sessionId);
-      if(state === 'saved') setStatus('ok', 'Saved to tracker');
-      else setStatus('warn', 'Saved (unconfirmed) — check your sheet');
-      flushQueue(true);
-    }).catch(function(){
+    try {
+      enqueue(payload);
+      setStatus('pending', 'Saving to tracker…');
+      send(payload).then(function(state){
+        dequeue(payload.sessionId);
+        if(state === 'saved') setStatus('ok', 'Saved to tracker');
+        else setStatus('warn', 'Saved (unconfirmed) — check your sheet');
+        flushQueue(true);
+      }, function(){
+        setStatus('bad', "Couldn't reach the tracker — saved locally, will retry");
+      });
+    } catch(e){
       setStatus('bad', "Couldn't reach the tracker — saved locally, will retry");
-    });
+    }
   }
 
   /* fire any sessions stranded by an earlier outage */
   function flushQueue(quiet){
     if(!TRACKER_URL) return;
-    var q = readQueue();
-    if(!q.length) return;
-    q.forEach(function(p){
-      send(p).then(function(){ dequeue(p.sessionId); }).catch(function(){});
-    });
-    if(!quiet && q.length) setStatus('pending', 'Retrying ' + q.length + ' queued session(s)…');
+    try {
+      var q = readQueue();
+      if(!q.length) return;
+      q.forEach(function(p){
+        send(p).then(function(){ dequeue(p.sessionId); }, function(){});
+      });
+      if(!quiet && q.length) setStatus('pending', 'Retrying ' + q.length + ' queued session(s)…');
+    } catch(e){}
   }
 
   /* Plain-text summary in the same shape the Part quizzes emit, so results

@@ -9,7 +9,7 @@
   --bg:#0f1117; --bg2:#161a23; --bg3:#1d2230;
   --text:#e8eaf0; --muted:#9aa3b5; --line:#2a3040;
   --teal:#3fd0c9; --amber:#ffb454; --red:#ff6b6b; --purple:#b48cff;
-  --accent:#5b8dee;
+  --accent:#5b8dee; --green:#5bd97a;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
@@ -49,6 +49,10 @@ strong{color:#fff}
 .spec{border-color:var(--amber)} .spec .tag{background:rgba(255,180,84,.15);color:var(--amber)}
 .watchout{border-color:var(--red)} .watchout .tag{background:rgba(255,107,107,.15);color:var(--red)}
 .examtip{border-color:var(--purple)} .examtip .tag{background:rgba(180,140,255,.15);color:var(--purple)}
+.fromtest{border-color:var(--green)} .fromtest .tag{background:rgba(91,217,122,.15);color:var(--green)}
+.fromtest ul{margin:6px 0 0 20px} .fromtest li{margin-bottom:7px;font-size:.95rem}
+.fromtest li b{color:#fff}
+.fromtest .seen{display:block;color:var(--muted);font-size:.82rem;font-family:'IBM Plex Mono',monospace;margin-top:10px}
 
 /* ---------- Formula boxes ---------- */
 .formula{background:var(--bg3);border:1px solid var(--line);border-radius:12px;padding:16px 20px;margin:16px 0}
@@ -133,6 +137,15 @@ li{margin-bottom:5px}
   <p class="sub">The middle layer: deeper than the Part essentials, leaner than the full guides. One section per chapter, second-tier concepts included.</p>
   <div class="callout examtip"><span class="tag">EXAM TIP</span>
   Use the Part essentials doc for the night-before skim, this doc for working review, and the full study guides + quizzes when a chapter here feels shaky. Each chapter ends with its own most-tested list.</div>
+
+  <div class="callout fromtest"><span class="tag">FROM THE REAL TESTS</span>
+  <strong>Audited against the Master Question Bank on 21 Aug 2026.</strong> All 156 questions transcribed from real online practice tests were checked chapter by chapter against this guide. Where a fact showed up on a real test but wasn't here, it was added — those additions are marked with green <span class="mono">FROM THE REAL TESTS</span> blocks like this one, and folded into the most-tested list at the end of each chapter.
+  <ul>
+  <li><b>Where the real questions concentrate:</b> Ch. 17 (22 questions), Ch. 11 (18), Ch. 22 (17), Ch. 4 and Ch. 12 (13 each), Ch. 15 and Ch. 18 (12 each).</li>
+  <li><b>The two biggest surprises:</b> nearly 40% of Ch. 11's questions were about <em>communication skills</em>, not process — and almost none of Ch. 22's asked you to name a troubleshooting strategy, they asked you to recognise a symptom.</li>
+  <li><b>Where the exam loves numbers:</b> 0 dBu = 0.775 V · 25 dB above ambient · 16:9 diagonal = 18.36 units · 5:1 mounting safety factor · voltage drop over doubled run length · 6–8 per training session.</li>
+  </ul>
+  <span class="seen">No practice-test questions have been harvested yet for Ch. 3, 7, 8 or 10 — that means no data, not low exam weight. Treat those four from the full study guides.</span></div>
 </section>
 <!-- ==================== CH 3 ==================== -->
 <section id="ch3">
@@ -287,6 +300,44 @@ li{margin-bottom:5px}
 <div class="card"><h4>Drivers &amp; systems</h4><p>A <em>driver</em> is an individual loudspeaker unit. A distributed system uses many loudspeakers to cover an area at constant SPL — versus point-source covering from one location.</p></div>
 </div>
 
+<h3>The dB Reference Levels</h3>
+<p>Every one of these appeared as a distractor set on a real practice test. The trap is that all four numbers look plausible — you have to know which reference each belongs to.</p>
+<table>
+<tr><th>VALUE</th><th>IS</th><th>NOTE</th></tr>
+<tr><td>0.775 V</td><td>0 dBu</td><td>The one most often asked directly. dBu references 0.775 V.</td></tr>
+<tr><td>1.0 V</td><td>0 dBV</td><td>dBV references 1 volt — a whole different scale.</td></tr>
+<tr><td>0.316 V</td><td>−10 dBV</td><td>Consumer line level.</td></tr>
+<tr><td>1.23 V</td><td>+4 dBu</td><td>Pro line level — the common mixer input spec.</td></tr>
+</table>
+
+<div class="formula">
+<span class="f">Power: dB = 10 log(P₂/P₁)  ·  Voltage &amp; SPL: dB = 20 log(V₂/V₁)</span>
+<span class="fx">A decibel is always a <strong>logarithmic ratio</strong> — a relative change from one value to another, never an absolute unit on its own. The exam's favourite trap is swapping the 10 and the 20.</span>
+</div>
+
+<div class="formula">
+<span class="f">Distance: dB change = 20 log(d₂/d₁)  →  double the distance = −6 dB</span>
+<span class="fx">Same inverse-square physics as projector throw in Ch. 5. Cluster at 20 m vs. 40 m: 20 log(40/20) = <strong>6 dB</strong> quieter at the far seat.</span>
+</div>
+
+<div class="callout spec"><span class="tag">HARD NUMBER</span>
+<strong>Program audio sits at least 25 dB above the ambient noise level.</strong> This is the meeting-room intelligibility target and it came up twice on the practice tests. It is the same 25 dB cushion behind Ch. 16's 70 dB SPL program / ≤ 45 dB SPL background pair — one rule, two places it gets asked.</div>
+
+<div class="callout keyterm"><span class="tag">KEY TERM</span>
+<strong>Sensitivity</strong> is the loudspeaker spec that defines <strong>efficiency</strong> — how well it converts input power into acoustic output. Not impedance, not power handling, not frequency response.</div>
+
+<div class="callout fromtest"><span class="tag">FROM THE REAL TESTS</span>
+Facts that showed up in harvested practice-test questions but weren't in this chapter before:
+<ul>
+<li><b>20 Hz – 20 kHz is 10 octaves.</b> An octave is a doubling; the band centres run 31.25, 62.5, 125, 250, 500, 1k, 2k, 4k, 8k, 16k Hz.</li>
+<li><b>A compressor is the fix for uneven talker levels.</b> It reduces gain above a threshold, so loud talkers still get louder but at a lesser rate. Riding the preamp fixes one meeting; dynamics processing adapts to every meeting.</li>
+<li><b>Omnidirectional is the best lavalier pattern for untrained users.</b> Counter-intuitive but tested: people clip lavs to collars, pockets and suspenders pointing anywhere. A correctly aimed cardioid beats it — a misaimed one is far worse.</li>
+<li><b>Use balanced cable for everything</b>, not just past some length threshold. "Balanced only over X metres" is a distractor.</li>
+<li><b>Averaging SPL readings is plain arithmetic.</b> Four readings of 85/90/87/92 average to 88.5 dB; a question asking you to hit an 88 dB cap wants (85+90+87+92)/4, not a log sum.</li>
+<li><b>Polar pattern choice is a live-event microphone-selection decision</b> — it drives pickup direction and gain-before-feedback.</li>
+</ul>
+<span class="seen">13 real practice-test questions seen for this chapter</span></div>
+
 <div class="most-tested">
 <h3>Ch. 4 — Most Tested</h3>
 <ul>
@@ -296,6 +347,10 @@ li{margin-bottom:5px}
 <li>Ceiling mics = poorest pickup position; wireless needs frequency coordination</li>
 <li>XLR on shielded twisted pair; low impedance = longer runs, less noise</li>
 <li>Amp feeds loudspeakers directly; crossover = frequency-dividing circuit</li>
+<li><strong>0 dBu = 0.775 V</strong> · 0 dBV = 1 V · +4 dBu = 1.23 V · −10 dBV = 0.316 V</li>
+<li><strong>10 log for power, 20 log for voltage/SPL</strong>; double the distance = −6 dB</li>
+<li><strong>Program audio ≥ 25 dB above ambient</strong>; sensitivity = loudspeaker efficiency</li>
+<li>20 Hz–20 kHz = 10 octaves; compressor evens out talker levels; balanced cable always</li>
 </ul>
 </div>
 </section>
@@ -373,6 +428,36 @@ li{margin-bottom:5px}
 <div class="card"><h4>Keystone</h4><p>Trapezoidal distortion when the projector isn't perpendicular to the screen. Fix physically first; digital correction discards pixels.</p></div>
 </div>
 
+<h3>Aspect-Ratio Math</h3>
+<p>Displays are sold by <em>diagonal</em>, but rooms are designed by <em>width</em> and <em>height</em>. Converting between them is pure Pythagoras, and it was the single most common calculation on the harvested Ch. 5 questions.</p>
+
+<div class="formula">
+<span class="f">16:9 → diagonal = √(16² + 9²) = √337 = 18.36 units</span>
+<span class="fx">Memorise <strong>18.36</strong>. A 16:9 rectangle 16 wide and 9 tall has a diagonal of 18.36, so any 16:9 display scales off that one constant.</span>
+</div>
+
+<div class="formula">
+<span class="f">width = (diagonal × 16) ÷ 18.36    ·    height = (diagonal × 9) ÷ 18.36</span>
+<span class="fx">A 90 in (2286 mm) 4K display: (90 × 16) ÷ 18.36 = <strong>78.43 in</strong> wide. Metric works identically: (2286 × 16) ÷ 18.36 = 1992.15 mm.</span>
+</div>
+
+<div class="formula">
+<span class="f">Unknown ratio: a² + b² = c², then width ÷ height</span>
+<span class="fx">Height 29.5 in, diagonal 60 in → 29.5² + b² = 60², b ≈ 52.3. Then 52.3 ÷ 29.5 = <strong>1.77 → 16:9</strong>.</span>
+</div>
+
+<div class="callout spec"><span class="tag">HARD NUMBER</span>
+Ratios also get asked in decimal form: <strong>16:9 = 1.78:1</strong> (HDTV) and <strong>4:3 = 1.33:1</strong> (legacy). If the answer choices are decimals, they're testing the same fact under a different notation.</div>
+
+<div class="callout fromtest"><span class="tag">FROM THE REAL TESTS</span>
+Facts that showed up in harvested practice-test questions but weren't in this chapter before:
+<ul>
+<li><b>4K needs an end-to-end 4K path.</b> When a 4K source falls back to 1920×1080, the most common cause is simply that the system was never designed for 4K — one non-compliant component anywhere in the chain caps the whole path.</li>
+<li><b>Viewing angle sets the furthest off-axis seat.</b> It is the specific factor determining the maximum off-axis position from which on-screen images stay legible — pairs with the Ch. 13 sightline study.</li>
+<li><b>LED is the light source chosen for long life without relamping</b> — higher efficiency converting electricity to light, and it far outlasts halogen or arc lamps.</li>
+</ul>
+<span class="seen">7 real practice-test questions seen for this chapter</span></div>
+
 <div class="most-tested">
 <h3>Ch. 5 — Most Tested</h3>
 <ul>
@@ -382,6 +467,8 @@ li{margin-bottom:5px}
 <li>RGBHV = 5 signals; picture detail is the high-frequency (MHz) content</li>
 <li>Front projection: ambient light and shadows; rear: space cost, better contrast</li>
 <li>Bigger throw = dimmer image (inverse square); native resolution = no scaling</li>
+<li><strong>16:9 diagonal = 18.36 units</strong> — width = (diag × 16) ÷ 18.36; unknown ratios via a² + b² = c²</li>
+<li><strong>16:9 = 1.78:1 · 4:3 = 1.33:1</strong>; 4K requires a 4K-capable path end to end</li>
 </ul>
 </div>
 </section>
@@ -458,6 +545,15 @@ li{margin-bottom:5px}
 <div class="card"><h4>Bridge &amp; firewall</h4><p>A bridge translates one network protocol to another (a broadband modem bridges Ethernet ↔ WAN). A firewall filters traffic against security rules.</p></div>
 </div>
 
+<div class="callout fromtest"><span class="tag">FROM THE REAL TESTS</span>
+The practice-test questions for this chapter leaned on <strong>security and address recognition</strong> rather than topology theory:
+<ul>
+<li><b>Recognise the four address formats on sight.</b> <span class="mono">192.168.1.100</span> = IPv4 · <span class="mono">04-7B-CB-2C-2F-F8</span> = MAC · a long hex-and-colon string = IPv6 · a DUID is the DHCPv6 client identifier. Questions give you all four and ask which is which.</li>
+<li><b>The client's first step after handover is changing every login and password</b> you used during installation, then storing the new credentials. Handing over a credential list is correct practice; leaving those credentials live is not.</li>
+<li><b>Remote support = VPN into the AV VLAN.</b> The VPN secures the connection from outside; putting AV gear on its own VLAN means that connection reaches the AV equipment and nothing else on the corporate network. Both halves are the answer.</li>
+</ul>
+<span class="seen">3 real practice-test questions seen for this chapter</span></div>
+
 <div class="most-tested">
 <h3>Ch. 6 — Most Tested</h3>
 <ul>
@@ -466,6 +562,7 @@ li{margin-bottom:5px}
 <li>MAC = 48-bit six hex pairs; IPv6 = 8 groups of 4 hex; manual IP = address + subnet mask; DHCP automates it</li>
 <li>Switch learns MACs; router reads IPs; gateway = topmost router; bridge = protocol translator</li>
 <li>Wi-Fi = 802.11; weaker signal = slower connection, not a dropped one</li>
+<li><strong>Change all install credentials at handover</strong>; remote support = <strong>VPN into the AV VLAN</strong></li>
 </ul>
 </div>
 </section>
@@ -684,6 +781,27 @@ li{margin-bottom:5px}
 <div class="card"><h4>The 80% rule</h4><p>Never plan any circuit, fixed or temporary, beyond <strong>80% of its rated current capacity</strong>.</p></div>
 </div>
 
+<h3>Voltage Drop Over Distance</h3>
+<p>Cable has resistance, so a remotely located DC supply delivers less voltage than it makes. This appeared as a full multi-step calculation on a real practice test — and it hides two traps.</p>
+
+<div class="formula">
+<span class="f">R = (2 × one-way length) × Ω-per-foot     V<sub>drop</sub> = I × R</span>
+<span class="fx"><strong>Trap 1: double the length.</strong> Current travels out <em>and</em> back, so a 25 ft run is 50 ft of conductor.<br>
+<strong>Trap 2: check the tolerance.</strong> The question usually asks both "how much" and "is that acceptable."</span>
+</div>
+
+<div class="callout spec"><span class="tag">WORKED EXAMPLE</span>
+12 V, 1.8 A supply, 25 ft away, 18 AWG at 0.0062 Ω/ft.<br>
+Length = 25 × 2 = <strong>50 ft</strong> · R = 50 × 0.0062 = <strong>0.31 Ω</strong> · V<sub>drop</sub> = 1.8 × 0.31 = <strong>0.558 V</strong>.<br>
+Tolerance = 5% of 12 V = 0.6 V. So 0.558 V is <strong>just inside</strong> tolerance.</div>
+
+<div class="callout fromtest"><span class="tag">FROM THE REAL TESTS</span>
+<ul>
+<li><b>I = P ÷ V is the rearrangement they ask for.</b> "24 V device consuming 72 W — what current?" → 72 ÷ 24 = 3 A. The Ohm's-law family questions on the practice tests started from <em>power</em>, not resistance.</li>
+<li><b>Voltage drop is the named consideration for any long DC run.</b> If a question asks what to consider when a DC supply runs a long distance, the answer is voltage drop — not gauge, not polarity, not current rating.</li>
+</ul>
+<span class="seen">3 real practice-test questions seen for this chapter</span></div>
+
 <div class="most-tested">
 <h3>Ch. 9 — Most Tested</h3>
 <ul>
@@ -692,6 +810,8 @@ li{margin-bottom:5px}
 <li>80% max planned circuit load</li>
 <li>GFCI trips in &lt; 1/10 s on ground leakage</li>
 <li>Ground loops = hum + rolling bars → isolated grounding, never ground lifts</li>
+<li><strong>I = P ÷ V</strong> — practice tests start from watts and volts, not resistance</li>
+<li><strong>Voltage drop = I × R, and R counts the conductor out and back (2 × run length)</strong></li>
 </ul>
 </div>
 </section>
@@ -802,6 +922,28 @@ Three terms that are <strong>not</strong> interchangeable: <strong>Radio waves</
 <div class="card"><h4>Documentation to collect</h4><p>Architectural drawings (as-builts or in progress), engineering drawings (power, conduit, HVAC noise), project directories, contract scopes, owner/end-user info. Send detailed technical info to clients as an <strong>electronic document</strong>.</p></div>
 </div>
 
+<h3>The Consultant's Soft Skills</h3>
+<div class="callout examtip"><span class="tag">BIGGEST AUDIT FINDING</span>
+Nearly <strong>40% of the real practice-test questions for this chapter were about communication skills, not process</strong>. This is the widest gap between what the chapter looks like on paper and what the exam actually asks. Learn these four roles and skills as hard content.</div>
+
+<div class="cards">
+<div class="card"><h4>Facilitator, not interrogator</h4><p>The AV professional's role in a needs analysis is <strong>facilitator of design collaboration</strong>. You lead the discussion and keep it focused on the end user's AV needs while other trades and stakeholders participate.</p></div>
+<div class="card"><h4>Technical writing</h4><p>The single most critical skill for <strong>documenting</strong> findings accurately — describing physical dimensions and user requirements clearly, and tying each proposed solution to the need it answers.</p></div>
+<div class="card"><h4>Active listening</h4><p>The most critical skill for <strong>gathering</strong> requirements: repeating back what was said, keeping focus on the other people and what matters to them.</p></div>
+<div class="card"><h4>Plain language</h4><p>Avoid industry slang, jargon and acronyms. Most customers don't speak AV — use common terms.</p></div>
+</div>
+
+<div class="callout fromtest"><span class="tag">FROM THE REAL TESTS</span>
+<ul>
+<li><b>Bring an interview checklist.</b> Asked directly as "what is MOST important to have" when interviewing a client — a checklist stops you forgetting details in the room.</li>
+<li><b>Conflicting stakeholder requirements are handled by facilitating open discussion</b>, not by ranking departments or deferring to whoever pays. Surface needs and conflicts early, compile and distribute notes, then hold a follow-up meeting on the specific conflicts.</li>
+<li><b>After a proposal, keep communicating until the decision is made.</b> When objections are answered and the buying decision moves to an internal meeting, steady contact is the correct next step — not silence, not discounting, not a revised proposal.</li>
+<li><b>Bring a scale to read architectural drawings</b> during the needs-analysis phase — the tool that converts paper measurements to real-world ones (the math is in Ch. 12).</li>
+<li><b>Needs analysis belongs to the program phase</b> — named explicitly as such, and its findings are documented in the program report.</li>
+<li><b>Needs = applications + tasks + the functions that support those applications.</b> That third item is the blank the fill-in questions leave open.</li>
+</ul>
+<span class="seen">18 real practice-test questions seen for this chapter — the joint-largest sample in the bank</span></div>
+
 <div class="most-tested">
 <h3>Ch. 11 — Most Tested</h3>
 <ul>
@@ -809,6 +951,8 @@ Three terms that are <strong>not</strong> interchangeable: <strong>Radio waves</
 <li>Best information source = end users; include them so all parties are invested</li>
 <li>Program report communicates capabilities + budget to decision-makers; on approval it's the basis of design</li>
 <li>Benchmarking = experiencing comparable existing systems</li>
+<li><strong>The AV pro's role is facilitator</strong>; technical writing documents it, active listening gathers it, no jargon</li>
+<li>Needs = applications + tasks + <strong>functions to support the applications</strong>; bring an interview checklist</li>
 </ul>
 </div>
 </section>
@@ -877,6 +1021,26 @@ Three terms that are <strong>not</strong> interchangeable: <strong>Radio waves</
 <div class="card"><h4>Site survey checklist</h4><p>Captures <strong>general client and site information</strong> relevant to design and installation — access, power, environment, contacts. PPE requirements on site are set by the <strong>AHJ</strong> (authority having jurisdiction), plus client and company rules.</p></div>
 </div>
 
+<div class="formula">
+<span class="f">Area = L × W    ·    L = Area ÷ W    ·    Perimeter = 2L + 2W</span>
+<span class="fx">The practice tests ran area <em>backwards</em> (980 sq ft ÷ 35 ft width = 28 ft length) and asked for <strong>perimeter</strong>, which the chapter never mentioned. A screen 8.20 ft × 5.91 ft has a perimeter of 8.20 + 5.91 + 8.20 + 5.91 = <strong>28.22 ft</strong>. Watch for a ceiling-height figure thrown in as a distractor — it plays no part in floor area.</span>
+</div>
+
+<div class="callout spec"><span class="tag">HARD LIST</span>
+<strong>Site-visit PPE:</strong> hard hat, eye protection, steel-toe boots, reflective vest. Many jobsites won't let you through the gate without it, so it outranks every other item you might pack. Asked in reverse too — <strong>tools with nonslip handles are <em>not</em> typical AV site safety equipment</strong>.</div>
+
+<div class="callout fromtest"><span class="tag">FROM THE REAL TESTS</span>
+More questions covered <strong>what you record and when</strong> than covered scale math:
+<ul>
+<li><b>Ceiling material and structure</b> is the ceiling information to document — it determines what mounts are possible for the gear and cable going up there.</li>
+<li><b>Visible finishes are negotiated at the initial site survey</b> — wall plates, surface-mount speakers, screen casings. Everything after the proposal is too late to be choosing finishes.</li>
+<li><b>Wall colour is the LEAST important survey item</b> — it can be changed during the project; the constraints that can't be changed are what you're there to capture.</li>
+<li><b>A noisy fan coil unit gets measured and reported to the client in writing.</b> You won't fix it, but the client must understand the impact and own the decision.</li>
+<li><b>Unfamiliar drawing symbol → look for the legend or key.</b> Symbols are not standardised between firms, so the document set's own legend is the authority.</li>
+<li><b>1 in = 25.40 mm expressed as a ratio is 1:25.40</b> — the same conversion, asked as a ratio.</li>
+</ul>
+<span class="seen">13 real practice-test questions seen for this chapter</span></div>
+
 <div class="most-tested">
 <h3>Ch. 12 — Most Tested</h3>
 <ul>
@@ -885,6 +1049,8 @@ Three terms that are <strong>not</strong> interchangeable: <strong>Radio waves</
 <li>25.4 mm to the inch, both directions</li>
 <li>AFF = mounting height reference; NTS = don't scale it</li>
 <li>Area/volume arithmetic — shows up as plug-in questions</li>
+<li><strong>Perimeter = 2L + 2W; length = area ÷ width</strong> — area gets asked backwards</li>
+<li><strong>PPE = hard hat, eye protection, steel-toe boots</strong>; unfamiliar symbol → the legend</li>
 </ul>
 </div>
 </section>
@@ -927,6 +1093,16 @@ Three terms that are <strong>not</strong> interchangeable: <strong>Radio waves</
 <div class="card"><h4>Acoustics</h4><p>Background noise quantified by <strong>NC / NR / RC ratings</strong>; reverberation from hard parallel surfaces; HVAC diffusers and projector fans are the classic noise sources. Speech needs level <em>and</em> uniformity at every seat.</p></div>
 </div>
 
+<div class="callout fromtest"><span class="tag">FROM THE REAL TESTS</span>
+<ul>
+<li><b>The purpose of site evaluation is validating what you were already told.</b> Asked twice, two ways: its objective is to validate information gathered from the customer and the initial survey, and it must happen <em>before beginning any AV project</em>.</li>
+<li><b>Divisible rooms are the problem space for private videoconferencing.</b> Movable walls have gaps that leak conversation between rooms. Solutions exist but are difficult and expensive — raise it with the client as early as possible.</li>
+<li><b>An incident light meter measures ambient light</b> — it reads light just before it lands on a surface, so you use it at the screen position to find out how dark that location really is.</li>
+<li><b>Staggered, stepped or raked seating is the sightline fix</b> in an auditorium — it keeps heads out of the path to the screen.</li>
+<li><b>Reverberation is treated with soft furnishings and flooring.</b> Hard surfaces — laminate, blinds, mirrors — make it worse.</li>
+</ul>
+<span class="seen">6 real practice-test questions seen for this chapter</span></div>
+
 <div class="most-tested">
 <h3>Ch. 13 — Most Tested</h3>
 <ul>
@@ -934,6 +1110,8 @@ Three terms that are <strong>not</strong> interchangeable: <strong>Radio waves</
 <li>Front screens reflect everything; ambient light sets the contrast floor</li>
 <li>Sightline study elements: lowest visible screen point, near/far viewers, off-axis angles</li>
 <li>NC/NR/RC = background noise ratings; finishes near the screen should be dark and neutral</li>
+<li><strong>Site evaluation validates earlier information</strong> and happens before any project begins</li>
+<li>Divisible rooms leak sound through movable walls; incident light meter reads ambient at the screen</li>
 </ul>
 </div>
 </section>
@@ -975,6 +1153,15 @@ Three terms that are <strong>not</strong> interchangeable: <strong>Radio waves</
 <div class="card"><h4>The coordination reality</h4><p>These changes belong to other trades — architects, electrical, mechanical. The AV professional <em>recommends</em>, documents the reasoning, and coordinates; the program/design documents carry the requirement.</p></div>
 </div>
 
+<div class="callout fromtest"><span class="tag">FROM THE REAL TESTS</span>
+Every question here followed the same shape: <strong>you find a problem you can't fix yourself — what do you do?</strong> The answer is always <em>measure it, recommend the real fix, and put it in front of the client</em> — never a workaround, never silence.
+<ul>
+<li><b>55 dB SPL A-weighted of ambient noise in an empty room</b> → talk to the client about the noise source. Best resolution is removing or reducing the source; failing that, isolate and absorb. Other trades usually have to be brought in.</li>
+<li><b>No window treatments</b> → recommend installing them. Direct and reflected sunlight irritates participants, wrecks projected contrast ratio, and degrades camera images.</li>
+<li><b>Outlets mounted unusually high (≈6 ft / 1.83 m)</b> → recommend relocating them to standard height. Extension cords or raising the gear are workarounds that dodge the underlying problem.</li>
+</ul>
+<span class="seen">3 real practice-test questions seen for this chapter</span></div>
+
 <div class="most-tested">
 <h3>Ch. 14 — Most Tested</h3>
 <ul>
@@ -982,6 +1169,7 @@ Three terms that are <strong>not</strong> interchangeable: <strong>Radio waves</
 <li>Screen-facing windows: treat, relocate the screen, or both</li>
 <li>Dark neutral finishes near the display; acoustic treatment for reflective parallel surfaces</li>
 <li>AV recommends and coordinates — the changes execute through other trades</li>
+<li><strong>Found a problem you can't fix? Measure it, recommend the real fix, tell the client in writing.</strong> Workarounds are always the wrong answer here</li>
 </ul>
 </div>
 </section>
@@ -1027,6 +1215,29 @@ Three terms that are <strong>not</strong> interchangeable: <strong>Radio waves</
 <div class="card"><h4>Engineering drawings</h4><p>The <em>other</em> trades' documents — mechanical, electrical, structural, plumbing. The AV designer reads them for power, conduit, data infrastructure, and HVAC noise flags.</p></div>
 </div>
 
+<h3>What Lives in Which Phase</h3>
+<p>The practice tests hammered one boundary over and over: <strong>the program report holds needs and a rough budget; the design phase holds equipment and detailed cost.</strong></p>
+<table>
+<tr><th>ITEM</th><th>PHASE</th><th>WHY</th></tr>
+<tr><td>Program report</td><td>Program</td><td>Needs, capabilities, space planning, overall budget. Signed off, it becomes the basis of design.</td></tr>
+<tr><td>Detailed equipment list</td><td><strong>Design</strong></td><td>Asked as "which is NOT presented in the program report" — the equipment list is the answer.</td></tr>
+<tr><td>Bill of materials</td><td><strong>Design</strong></td><td>A detailed equipment-and-labour budget request lands in the design phase, not the program phase.</td></tr>
+<tr><td>Rough overall budget</td><td>Program</td><td>The program phase produces a rough number only.</td></tr>
+</table>
+
+<div class="callout examtip"><span class="tag">EXAM TIP</span>
+<strong>Phase order questions are free points:</strong> the <strong>program phase comes first</strong>, and the phase immediately after it is the <strong>design phase</strong>. Both were asked outright.</div>
+
+<div class="callout fromtest"><span class="tag">FROM THE REAL TESTS</span>
+<ul>
+<li><b>The program report is the reference document for disputes.</b> Asked twice: a client verifying the finished system matches the original plan, and a client claiming a whole portion was never started — both point to the program report, because that's where the agreed scope lives.</li>
+<li><b>Preliminary work schedule: the rough-in date and the occupancy date</b> are the two that matter. Rough-in is the earliest you can pull cable and block walls; occupancy is when the client starts using the space. The gap between them <em>is</em> your available time.</li>
+<li><b>Organisational documentation shows who decides.</b> An org chart tells you which departments are involved, who reports to whom, who the decision-makers are, and who is information-only.</li>
+<li><b>The executive summary is written for the CEO, CIO and stakeholders</b> — the people who won't read the whole program report.</li>
+<li><b>Out-of-scope questions at a program-report meeting get addressed, not deflected.</b> If the answers materially change the scope, amend the report, present it again, and get it signed off.</li>
+</ul>
+<span class="seen">12 real practice-test questions seen for this chapter</span></div>
+
 <div class="most-tested">
 <h3>Ch. 15 — Most Tested</h3>
 <ul>
@@ -1034,6 +1245,8 @@ Three terms that are <strong>not</strong> interchangeable: <strong>Radio waves</
 <li>Design docs must convey installation intent, function, and quality — for bidding and building</li>
 <li>Functional/block diagram = the signal-flow overview; as-builts = the field-verified record</li>
 <li>Scope ≈ 9% of your exam score — this chapter and its documents punch above their page count</li>
+<li><strong>Program report = needs + rough budget · design phase = equipment list + BOM.</strong> Program phase first, design phase next</li>
+<li><strong>Rough-in date → occupancy date</strong> are the schedule dates that matter; the org chart identifies the decision-makers</li>
 </ul>
 </div>
 </section>
@@ -1093,6 +1306,13 @@ Three terms that are <strong>not</strong> interchangeable: <strong>Radio waves</
 <div class="card"><h4>Bill of materials</h4><p>Every item + quantity + proposed pricing, categorized by type (sources/processors/destinations), built at the <em>end</em> of design. Don't forget the invisible infrastructure: backboxes, plates, mounts, suspension hardware, tables.</p></div>
 </div>
 
+<div class="callout fromtest"><span class="tag">FROM THE REAL TESTS</span>
+<ul>
+<li><b>The architect, engineers and consultants collectively are the <em>design team</em></b> — a straight vocabulary question worth knowing cold.</li>
+<li><b>The designer's verification responsibility is to supply the list of items to be tested.</b> The designer knows the intent behind the system; the installer doesn't always. That test list is what makes "installed and operating properly" a checkable claim rather than an opinion — and it's what feeds the Ch. 18 verification checklist.</li>
+</ul>
+<span class="seen">2 real practice-test questions seen for this chapter</span></div>
+
 <div class="most-tested">
 <h3>Ch. 16 — Most Tested</h3>
 <ul>
@@ -1101,6 +1321,7 @@ Three terms that are <strong>not</strong> interchangeable: <strong>Radio waves</
 <li>Acoustic vs. electronic echo; the feedback-control toolkit</li>
 <li>Control definition starts with a per-device function list</li>
 <li>BOM comes last and includes the infrastructure nobody sees</li>
+<li>Architect + engineers + consultants = <strong>the design team</strong>; the <strong>designer supplies the list of items to be tested</strong></li>
 </ul>
 </div>
 </section>
@@ -1159,6 +1380,41 @@ Three terms that are <strong>not</strong> interchangeable: <strong>Radio waves</
 <div class="card"><h4>Control &amp; network config</h4><p>Terminate control wiring (RS-232/422/485 rules from Ch. 8), load and test control software, and configure networked AV to the IT-coordinated plan — device list with MACs to the IT manager, addresses/hostnames back.</p></div>
 </div>
 
+<h3>Mounting: The Numbers and Names</h3>
+<div class="callout spec"><span class="tag">HARD NUMBER</span>
+<strong>The minimum load safety rating for mounting AV equipment is 5:1.</strong> Add the weight of the equipment <em>and</em> the mount together, then multiply by five — that's the rating the structure and hardware must carry. Asked as a bare recall question.</div>
+
+<div class="callout keyterm"><span class="tag">KEY TERM</span>
+<strong>Blocking</strong> = wooden supports fitted between the studs, inside the wall, to distribute load. It gives mounting screws real substance to bite into and is <strong>preferred over mounting to studs alone</strong>. If the drawing calls for blocking and you can't see any, that's a stop-work-and-ask moment, not a improvise moment.</div>
+
+<div class="callout watchout"><span class="tag">WATCH OUT</span>
+<strong>Never mount anything with double-stick tape or adhesive-backed hook-and-loop</strong> — the glue dries out or destabilises in the heat coming off a display, and the device ends up hanging by its own cables. And never mount anything to the back of a display unless the display is specifically designed for it.<br><br>
+<strong>Resistance while tightening mounting bolts = stop and reassess.</strong> It signals misalignment or damage to the mounting surface. Forcing it through is the wrong answer every time.</div>
+
+<h3>Commissioning &amp; the Lead Technician</h3>
+<p>A third of this chapter's real questions were about commissioning — the handover ritual that turns an installation into an accepted system. (The verification <em>standard</em> itself is Ch. 18; the <em>people and paperwork</em> get asked here.)</p>
+<div class="cards">
+<div class="card"><h4>Who demonstrates</h4><p>The <strong>lead technician</strong> demonstrates operation to the client, salesperson and designer — they know how the system was set up. The salesperson, designer and consultant verify it matches the design; the end user verifies and accepts.</p></div>
+<div class="card"><h4>Their main job</h4><p><strong>Making corrections based on checklist items</strong> — finalising settings and closing out open issues. Their checklist also carries <strong>manufacturer warranty information</strong>, because early-failure units have to be replaced fast.</p></div>
+<div class="card"><h4>Proof of compliance</h4><p>A <strong>verification checklist</strong>, built from the Performance Verification Standard (ANSI/AVIXA 10:2013), is what you hand a client who wants confirmation before signing off.</p></div>
+<div class="card"><h4>Documentation handoff</h4><p>Best practice is <strong>PDF copies on a thumb drive</strong>, sometimes also a cloud drive for a limited period — not paper binders, not "download it yourself."</p></div>
+</div>
+
+<div class="callout fromtest"><span class="tag">FROM THE REAL TESTS</span>
+<ul>
+<li><b>Field change to the design → red-line the drawing and send it back to the designer.</b> The designer updates the package; that updated set becomes the <strong>drawings of record (as-builts)</strong> the client receives at completion. Never just make the change silently.</li>
+<li><b>Problems found at commissioning get documented and reported to the project manager</b>, not quietly fixed and not hidden. It joins the task list — the repair may be trivial or may not be.</li>
+<li><b>Unlabelled cables get labelled immediately.</b> The standard labelling scheme is best, but <em>any</em> label beats no label — a handwritten one is acceptable in the moment.</li>
+<li><b>Microphone level is the most noise-sensitive signal in the rack</b> — around 0.002 V, and any noise picked up gets amplified by the whole preamp stage after it.</li>
+<li><b>Cable trays support and organise cables above the ceiling</b> and keep them serviceable. Laying cable loose on a drop ceiling instead has a <em>safety</em> worst case, not just a tidiness one: in a fire, the ceiling falls and firefighters get tangled in it.</li>
+<li><b>Before travelling to a job site, confirm the site is ready</b> for installation. Everything else you might prepare is worthless if you can't get on site and work.</li>
+<li><b>Jobsite security check → government-issued photo ID</b> is the first thing you'll be asked for.</li>
+<li><b>Security screws exist to slow down thieves</b>, nothing more. The bits are easy to buy; they're a deterrent, not a lock.</li>
+<li><b>Software not behaving as expected → call the manufacturer.</b> Their tech support are the authority on their own gear.</li>
+<li><b>A work breakdown structure is what you consult to understand the items to be completed</b> during installation planning (built in Ch. 19).</li>
+</ul>
+<span class="seen">22 real practice-test questions seen for this chapter — the largest sample in the bank</span></div>
+
 <div class="most-tested">
 <h3>Ch. 17 — Most Tested</h3>
 <ul>
@@ -1167,6 +1423,10 @@ Three terms that are <strong>not</strong> interchangeable: <strong>Radio waves</
 <li>Cross cables at 90°; low-level signals take the direct route</li>
 <li>Color coding ≠ labeling; pull from spools; AV electronics installed after trades finish, into a clean site</li>
 <li>Rack: heavy low, hot high, fill every space, signal separation</li>
+<li><strong>5:1 minimum mounting safety factor</strong> — (equipment + mount) × 5; <strong>blocking</strong> = in-wall wooden supports between studs</li>
+<li><strong>Red-line field changes back to the designer</strong> → they become the as-builts the client receives</li>
+<li>Lead technician demonstrates at commissioning and closes checklist items; docs handed over as PDFs on a thumb drive</li>
+<li>Never mount with double-stick tape; resistance while tightening = stop and reassess</li>
 </ul>
 </div>
 </section>
@@ -1218,6 +1478,31 @@ Three terms that are <strong>not</strong> interchangeable: <strong>Radio waves</
 <div class="card"><h4>Handover training</h4><p>Operation guides and flash-card instructions exist so end users can run the system without you — the documentation package is part of the product.</p></div>
 </div>
 
+<h3>End-User Training</h3>
+<div class="callout examtip"><span class="tag">AUDIT FINDING</span>
+This chapter reads as a verification chapter, but <strong>the real practice-test questions were overwhelmingly about training end users and running live operations</strong> — the 10:2013 standard questions actually surfaced under Ch. 17. Don't let the standard crowd out the people-facing half of this chapter.</div>
+
+<div class="cards">
+<div class="card"><h4>What drives the agenda</h4><p>A <strong>checklist of functions from the program report</strong>. It lists everything the system was built to do, so nothing gets left out of the session.</p></div>
+<div class="card"><h4>How to teach</h4><p><strong>Hands-on experience</strong>, always. Reading manuals and technical jargon build far less confidence than actually driving the system.</p></div>
+<div class="card"><h4>How many people</h4><p><strong>6 to 8 per hands-on session.</strong> Enough for questions and shared answers, few enough that nobody waits long for a turn at the touchscreen.</p></div>
+<div class="card"><h4>Why it matters</h4><p>To <strong>build user confidence and a positive experience</strong>. Service calls will still happen; training removes the preventable ones.</p></div>
+</div>
+
+<div class="callout keyterm"><span class="tag">KEY TERM</span>
+A <strong>quick start guide</strong> is the deliverable for anyone who has to run the room without you — staff operating unaided, or a guest presenter handed a laptop and an HDMI cable. The fuller <strong>user guide</strong> should include <strong>drawings plus instructions on equipment operation</strong>, so users can set up, operate and self-diagnose the basics.</div>
+
+<div class="callout fromtest"><span class="tag">FROM THE REAL TESTS</span>
+The operations half of this chapter — none of it was in the guide before:
+<ul>
+<li><b>Inventory management means keeping buffer stock.</b> Spare inventory absorbs unexpected demand so a project isn't interrupted by a shortage.</li>
+<li><b>Short on gear for an event? Rent from a local supplier.</b> Twelve mics needed and eight available — renting the shortfall is correct. Substituting inferior gear or reducing what the client gets are the wrong answers.</li>
+<li><b>Electrical is the most critical allied trade</b> for AV operations — power supply and signal integrity both depend on it.</li>
+<li><b>Striking a room needs a plan of action plus checklists</b> — one for gear brought on site, one for standard strike procedure.</li>
+<li><b>A fix running long during a live event → tell the presenter.</b> Discuss the backup plan and likely wait so the event continues with their awareness and consent. Silently working the problem is the wrong answer.</li>
+</ul>
+<span class="seen">12 real practice-test questions seen for this chapter</span></div>
+
 <div class="most-tested">
 <h3>Ch. 18 — Most Tested</h3>
 <ul>
@@ -1225,6 +1510,9 @@ Three terms that are <strong>not</strong> interchangeable: <strong>Radio waves</
 <li>The method: test-signal generator at the head, calibrate at points along the path</li>
 <li>Purpose: objective proof of contracted performance, issues caught pre-handover</li>
 <li>As-builts + full settings (IPs, MACs, gains) belong in the final documentation package</li>
+<li><strong>Training: agenda from the program report's function checklist, hands-on, 6–8 people per session</strong></li>
+<li>Quick start guide for unaided operation; user guide = drawings + operating instructions</li>
+<li><strong>Electrical is the most critical allied trade</strong>; keep buffer stock; rent to cover shortfalls</li>
 </ul>
 </div>
 </section>
@@ -1266,6 +1554,32 @@ Three terms that are <strong>not</strong> interchangeable: <strong>Radio waves</
 <div class="card"><h4>Dependency</h4><p>A task that can't start until another finishes — mount the display only after the wall is painted. Dependencies are what the logic network exists to capture.</p></div>
 </div>
 
+<h3>The Four Project Documents</h3>
+<p>The chapter above covers the change order and the RFC. The practice tests used <strong>two more</strong> — and the whole point of the question is matching the <em>driver</em> to the right document.</p>
+<table>
+<tr><th>DOCUMENT</th><th>USE IT WHEN</th><th>WHO</th></tr>
+<tr><td>RFC<br><span class="mono">request for change</span></td><td>Building changes affect the AV work — the request that precedes approval.</td><td>AV company raises it</td></tr>
+<tr><td>CO<br><span class="mono">change order</span></td><td>Changes to contractual obligations, equipment specs or system design are being <strong>ordered</strong> — issued after an RFC is approved. Signed by both parties before out-of-scope work starts.</td><td>Both parties sign</td></tr>
+<tr><td><strong>RFI</strong><br><span class="mono">request for information</span></td><td>What you were told conflicts with what the drawings show. Get the answer <strong>in writing</strong> — even if no reply ever comes, you have the record, and a written reply can be forwarded. Verbal answers can't.</td><td>You → general contractor</td></tr>
+<tr><td><strong>CCD</strong><br><span class="mono">construction change directive</span></td><td><strong>Time-critical work, typically safety.</strong> It bypasses the normal RFC-to-CO approval chain so the work can start immediately.</td><td>GC issues it</td></tr>
+</table>
+
+<div class="callout watchout"><span class="tag">WATCH OUT</span>
+<strong>Two different phase lists, and the exam will mix them.</strong><br>
+<strong>PMP (Project Management Professional):</strong> Initiation → Planning → Execution → Monitoring &amp; Controlling → Closing.<br>
+<strong>AVIXA project lifecycle:</strong> Program → Design → Installation (Integration) → Verification.<br>
+If a question names PMP, it wants the five-phase list — the AVIXA four are the distractor, and vice versa.</div>
+
+<div class="callout fromtest"><span class="tag">FROM THE REAL TESTS</span>
+<ul>
+<li><b>Risk is managed with a comprehensive plan</b> — specifically a <strong>risk register</strong>, a <strong>risk matrix</strong>, and <strong>mitigation alternatives</strong>. Weather delays, logistics, labour shortages and financing are the risks these questions name.</li>
+<li><b>International documentation uses a named month:</b> <span class="mono">11/Feb/2025</span>, <span class="mono">11:30am</span>. Never a numeric month — 11/02 means two different dates depending on the reader. 24-hour time is fine; anything that removes ambiguity is right.</li>
+<li><b>A WBS organises and defines the total scope</b> of the project by breaking it into deliverable-oriented components — that's its primary stated objective.</li>
+<li><b>Gantt vs. logic network:</b> both track the same activities in different layouts. The Gantt shows them graphically as bars over time; the logic network shows dependencies more explicitly.</li>
+<li><b>Work that's incomplete or out of scope gets written down and sent.</b> Two separate questions, same answer shape: put the list in writing to the integrator, or document it for the project manager. Never handle it verbally.</li>
+</ul>
+<span class="seen">10 real practice-test questions seen for this chapter</span></div>
+
 <div class="most-tested">
 <h3>Ch. 19 — Most Tested</h3>
 <ul>
@@ -1273,6 +1587,9 @@ Three terms that are <strong>not</strong> interchangeable: <strong>Radio waves</
 <li>Change order: signed by both parties, before out-of-scope work</li>
 <li>RFC: the AV company's document when building changes affect AV</li>
 <li>Effort ≠ duration; price = cost + markup (overhead + profit)</li>
+<li><strong>RFI = drawings conflict with what you were told · CCD = time-critical safety change, skips the RFC→CO chain</strong></li>
+<li><strong>PMP phases: Initiation · Planning · Execution · Monitoring &amp; Controlling · Closing</strong> — not the AVIXA four</li>
+<li>Risk plan = risk register + risk matrix + mitigation alternatives; international dates use the month <em>name</em></li>
 </ul>
 </div>
 </section>
@@ -1314,12 +1631,33 @@ Three terms that are <strong>not</strong> interchangeable: <strong>Radio waves</
 <div class="cap">Operations upkeep at a glance. Know the five exist and what each covers — that's the depth the exam wants.</div>
 </div>
 
+<h3>Which Document Answers Which Question</h3>
+<div class="callout examtip"><span class="tag">AUDIT FINDING</span>
+This chapter was written as "lightly tested, easy points" — but four of its six real practice-test questions were <strong>document-lookup questions</strong>: a technician needs to know something, which document do they ask for? Learn this table cold; it's the highest-yield thing in the chapter.</div>
+
+<table>
+<tr><th>THEY NEED</th><th>ASK FOR</th><th>BECAUSE</th></tr>
+<tr><td>What was <em>actually</em> installed</td><td><strong>As-builts</strong><br><span class="mono">documents of record</span></td><td>Drawings of how the system was really installed and working at commissioning and acceptance. The go-to when the rack doesn't match the original plan.</td></tr>
+<tr><td>How devices connect</td><td><strong>Schematic drawings</strong></td><td>Signal paths, device relationships, wiring diagrams and cable types.</td></tr>
+<tr><td>PM tasks and intervals</td><td><strong>Service agreement</strong></td><td>It defines what preventive maintenance happens and how often — the contract both sides are held to.</td></tr>
+<tr><td>History of repairs</td><td><strong>Maintenance log</strong></td><td>Service dates, work performed, and which equipment or system was serviced.</td></tr>
+</table>
+
+<div class="callout fromtest"><span class="tag">FROM THE REAL TESTS</span>
+<ul>
+<li><b>Automatic lighting needs a manual override.</b> When facilities installs occupancy sensors to save energy, the AV concern is <strong>contrast ratio</strong> — ambient light washes out the screen and pushes contrast out of standard. Presenters must be able to take control of the light levels.</li>
+<li><b>An internal security audit is for the people responsible for the system, the network and the installation.</b> A <strong>manufacturer's sales representative has no role</strong> in it — asked as a "who is NOT required" question.</li>
+</ul>
+<span class="seen">6 real practice-test questions seen for this chapter</span></div>
+
 <div class="most-tested">
 <h3>Ch. 20 — Most Tested</h3>
 <ul>
 <li>Stock management covers consumables and spares against predictable failures</li>
 <li>Equipment records must be kept current — they feed maintenance and troubleshooting</li>
 <li>Security/theft deterrence and user training are ongoing operational duties, not one-time events</li>
+<li><strong>As-builts = what was installed · schematics = how it connects · service agreement = PM tasks and intervals · maintenance log = repair history</strong></li>
+<li>Automatic lighting needs a manual override to protect screen contrast ratio</li>
 </ul>
 </div>
 </section>
@@ -1357,6 +1695,23 @@ Three terms that are <strong>not</strong> interchangeable: <strong>Radio waves</
 <div class="card"><h4>Service records</h4><p>Every visit logged: technician, date/time, work performed, downtime, user reports, follow-ups. Any system change updates the as-builts and manuals. A PM visit ends with a findings report to the client.</p></div>
 </div>
 
+<h3>Firmware Updates: The Discipline</h3>
+<div class="callout watchout"><span class="tag">WATCH OUT</span>
+Two separate practice-test questions turned on the same judgement, so it's clearly a favourite:<br><br>
+<strong>Never update firmware without coordinating with the client</strong>, and only when the system is free for an extended period.<br>
+<strong>Near the end of a service window, defer the update.</strong> You need time to <em>revert</em> the firmware if it misbehaves and to update other connected devices that may now be out of step. Starting an update with no rollback window is how a boardroom goes dark for the next meeting.</div>
+
+<div class="callout fromtest"><span class="tag">FROM THE REAL TESTS</span>
+<ul>
+<li><b>You need the source code <em>and</em> a programmer.</b> When a discontinued projector is replaced with a model using different commands and the original programmer has retired, updating the control system takes the current system's source code plus someone who can modify it. This is exactly why obtaining source code at handover matters.</li>
+<li><b>Daily wireless-mic maintenance is battery checks</b> — checking levels and replacing low or dead cells. Frequency coordination, preamp calibration and delay tuning are commissioning or occasional tasks, not daily ones.</li>
+<li><b>Changing contract terms or ignoring warranty stipulations voids the warranty</b>, leaving the client with no coverage for repair or replacement.</li>
+<li><b>"Trust but verify" on AC power.</b> The pen-like device a senior tech lays along cables is a <strong>non-contact voltage detector</strong>. Hazardous AC lines should be disabled before work starts — and then confirmed dead with test equipment.</li>
+<li><b>Preventive maintenance is software updates, display calibration and cable-connection checks</b> — the routine set, asked as "which group of tasks."</li>
+<li><b>Maintenance follows industry resources, product manuals and project documentation</b> — those three together are the compliance answer.</li>
+</ul>
+<span class="seen">9 real practice-test questions seen for this chapter</span></div>
+
 <div class="most-tested">
 <h3>Ch. 21 — Most Tested</h3>
 <ul>
@@ -1364,6 +1719,8 @@ Three terms that are <strong>not</strong> interchangeable: <strong>Radio waves</
 <li>Preventive maintenance = scheduled replacement before failure (the lamp example)</li>
 <li>First step on any problem report: gather symptom detail</li>
 <li>Software/firmware updates can cascade — evaluate before installing, even on owner equipment</li>
+<li><strong>Never update firmware without client coordination and a rollback window</strong> — defer if the service window is nearly over</li>
+<li>Get the <strong>source code at handover</strong>; daily wireless-mic task = battery checks; changing contract terms voids the warranty</li>
 </ul>
 </div>
 </section>
@@ -1419,6 +1776,37 @@ Three terms that are <strong>not</strong> interchangeable: <strong>Radio waves</
 <div class="card"><h4>Close the loop</h4><p>Repair or work-around → verify full operation → document the fix → record labor and parts for accurate billing. An undocumented repair is a future troubleshooting session.</p></div>
 </div>
 
+<h3>The Symptom → Cause Table</h3>
+<div class="callout examtip"><span class="tag">BIGGEST AUDIT FINDING</span>
+This chapter teaches the <em>method</em> — and the method is right. But almost none of the real practice-test questions asked you to name a strategy. They handed over <strong>a specific symptom and asked for the likely cause or the next step</strong>. Knowing "divide and conquer" doesn't answer them; recognising the scenario does. These are the pairings that actually appeared.</div>
+
+<table>
+<tr><th>SYMPTOM</th><th>LIKELY CAUSE / NEXT STEP</th></tr>
+<tr><td>Projector works, then shuts down after ~2 hours</td><td><strong>Clogged filter blocking airflow</strong> → overheating. The <em>time delay</em> is the clue — check the filter assembly first.</td></tr>
+<tr><td>System powers off randomly, supply confirmed stable</td><td><strong>Thermal conditions in the rack.</strong> Poor ventilation makes components self-protect after extended running.</td></tr>
+<tr><td>DA feeding two displays — one works, one doesn't</td><td><strong>EDID.</strong> The handshake between source, repeater and sink; mismatched EDID is the classic one-of-two-displays failure.</td></tr>
+<tr><td>New 4K projector won't accept 4K, but 1080p is fine</td><td><strong>Cable bandwidth</strong> → fit an <strong>Ultra High Speed HDMI</strong> cable (rated to 48 Gbps). Usable length varies.</td></tr>
+<tr><td>Podcast mic sounds muffled and distant</td><td><strong>The laptop's built-in mic is selected in software</strong>, not the good one. Laptops default to the internal mic. (Off-axis speech sounds muffled but not <em>distant</em>.)</td></tr>
+<tr><td>Audible hiss from background-music loudspeakers</td><td><strong>Improper gain structure.</strong> Level entering the system is too low, so later boosting amplifies the noise along with the signal.</td></tr>
+<tr><td>Client reports "distortion" on a newly calibrated system</td><td><strong>Check gain structure through the whole chain</strong> first.</td></tr>
+<tr><td>Swapped projector (same make/model) works manually but not from the control system</td><td><strong>IP address not set correctly</strong> — the control system is sending commands to an address nothing answers on.</td></tr>
+<tr><td>Control panel unresponsive, reboot didn't help</td><td><strong>Network connectivity to the panel.</strong></td></tr>
+<tr><td>Worked Friday, dead Monday, everything powered up</td><td><strong>Network port settings and the ACL.</strong> Bring in the network manager — check for weekend maintenance against your documented ports and protocols.</td></tr>
+<tr><td>Gooseneck mic dead; swapping with its neighbour moves the fault to the other position</td><td>Fault follows the <em>position</em>, not the mic → <strong>check phantom power for that channel</strong> (goosenecks are usually condensers).</td></tr>
+<tr><td>One panellist's mic distorts mid-stream, others fine</td><td><strong>Swap the mic and/or cable with a spare</strong> — fast, likely to get you through the session, and eliminates one branch either way.</td></tr>
+<tr><td>Projector powered and connected, no image at all</td><td><strong>Check the HDMI/DisplayPort cable and connections</strong> — cabling faults are common and cheap to rule out.</td></tr>
+<tr><td>Intermittent audio dropouts, two hours before a conference</td><td><strong>Signal-test each component starting at the mixer</strong> and work toward the speakers — the mixer is the halfway point, so it halves the system in one move.</td></tr>
+</table>
+
+<div class="callout fromtest"><span class="tag">FROM THE REAL TESTS</span>
+Method points that <em>did</em> get asked, and weren't stated here before:
+<ul>
+<li><b>Change only one component at a time, and test after each change.</b> Named directly as best practice when several causes are plausible — multiple simultaneous changes destroy your ability to attribute the fix.</li>
+<li><b>Best customer-service follow-up question: "what was being used just prior to the last failure?"</b> It surfaces the recent action, application or device behind an intermittent fault.</li>
+<li><b>Document procedures and findings after the fix</b> — it builds a knowledge base for similar faults later and keeps the team informed. Asked as "what's the next best practice step" <em>after</em> a successful repair.</li>
+</ul>
+<span class="seen">17 real practice-test questions seen for this chapter</span></div>
+
 <div class="most-tested">
 <h3>Ch. 22 — Most Tested</h3>
 <ul>
@@ -1427,6 +1815,8 @@ Three terms that are <strong>not</strong> interchangeable: <strong>Radio waves</
 <li>Most common failure point: cables and connectors; swapping clears only the swapped part</li>
 <li>Intermittent = difficult to reproduce; always consider user error</li>
 <li>"What's the NEXT logical step?" questions follow the method — wrong answers skip or regress</li>
+<li><strong>Learn the symptom → cause table above</strong> — the real questions give a scenario, not a strategy name</li>
+<li><strong>One change at a time, test after each</strong>; document the fix afterwards; ask what was in use just before the failure</li>
 </ul>
 </div>
 </section>

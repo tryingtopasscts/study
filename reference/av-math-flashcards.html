@@ -15,22 +15,27 @@
 }
 *{margin:0;padding:0;box-sizing:border-box}
 body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:18px;line-height:1.6;-webkit-tap-highlight-color:transparent}
-main{max-width:640px;margin:0 auto;padding:2.2rem 1.1rem 4.5rem}
-header{margin-bottom:1.4rem}
+main{max-width:640px;margin:0 auto;padding:1.3rem 1.1rem 3rem}
+header{margin-bottom:.85rem}
 .kicker{font-family:var(--mono);font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:.5rem}
 .kicker a{color:inherit;text-decoration:none}
 .kicker a:hover{text-decoration:underline}
-h1{font-family:var(--serif);font-weight:700;font-size:1.9rem;line-height:1.2}
-.lede{color:var(--text2);font-size:.95rem;margin-top:.45rem}
+h1{font-family:var(--serif);font-weight:700;font-size:1.5rem;line-height:1.2}
+.lede{color:var(--text2);font-size:.86rem;margin-top:.3rem}
 
-.chip-row{display:flex;flex-wrap:wrap;gap:.45rem;margin:1.1rem 0 .9rem}
-.chip{font-family:var(--sans);font-size:.82rem;font-weight:500;background:var(--surface);border:1px solid var(--border2);
-  color:var(--text2);border-radius:99px;padding:.38rem .9rem;cursor:pointer;transition:all .15s}
+/* one scrollable row rather than two wrapped ones, so the card clears the fold;
+   the right-edge fade is what tells you there is more to scroll to */
+.chip-row{display:flex;gap:.4rem;margin:.7rem 0 .55rem;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none;
+  -webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 32px),transparent);
+  mask-image:linear-gradient(90deg,#000 calc(100% - 32px),transparent)}
+.chip-row::-webkit-scrollbar{display:none}
+.chip{font-family:var(--sans);font-size:.78rem;font-weight:500;background:var(--surface);border:1px solid var(--border2);
+  color:var(--text2);border-radius:99px;padding:.3rem .78rem;cursor:pointer;transition:all .15s;white-space:nowrap;flex:0 0 auto}
 .chip:hover{border-color:var(--accent)}
 .chip.on{background:var(--accent-dim);border-color:var(--accent);color:var(--accent2)}
 .chip .n{font-family:var(--mono);font-size:.72rem;opacity:.75;margin-left:.3rem}
 
-.top-row{display:flex;justify-content:space-between;align-items:center;gap:.8rem;margin-bottom:.55rem}
+.top-row{display:flex;justify-content:space-between;align-items:center;gap:.8rem;margin-bottom:.45rem}
 .meta{font-family:var(--mono);font-size:.78rem;color:var(--text3)}
 .btn{font-family:var(--sans);font-weight:500;font-size:.86rem;background:var(--surface);color:var(--text);
   border:1px solid var(--border2);border-radius:10px;padding:.55rem 1.05rem;cursor:pointer;transition:all .15s}
@@ -38,16 +43,16 @@ h1{font-family:var(--serif);font-weight:700;font-size:1.9rem;line-height:1.2}
 .btn.small{font-size:.78rem;padding:.35rem .75rem}
 .btn.primary{background:var(--accent-dim);border-color:var(--accent);color:var(--accent2);font-weight:700;padding:.62rem 1.7rem;font-size:.95rem}
 
-.progress{height:6px;background:var(--surface);border-radius:99px;overflow:hidden;margin:0 0 1.1rem}
+.progress{height:6px;background:var(--surface);border-radius:99px;overflow:hidden;margin:0 0 .75rem}
 .progress>div{height:100%;background:var(--accent);width:0;transition:width .3s}
 
 /* ---- the card ----
    One face, everything visible at once: prompt, diagram, answer, note.
    No flip — the whole point is to absorb the card and move on. */
-.flashcard{position:relative;min-height:430px;cursor:pointer;
+.flashcard{position:relative;min-height:360px;cursor:pointer;
   background:var(--bg2);border:1px solid var(--accent);border-radius:18px;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.95rem;
-  padding:2.7rem 1.5rem 2.4rem;text-align:center}
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.7rem;
+  padding:1.9rem 1.4rem 1.8rem;text-align:center}
 .fc-label{font-family:var(--mono);font-size:.64rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent2);
   position:absolute;top:.95rem;left:1.2rem}
 .fc-cat{font-family:var(--mono);font-size:.64rem;letter-spacing:.1em;text-transform:uppercase;color:var(--accent2);
@@ -61,7 +66,7 @@ h1{font-family:var(--serif);font-weight:700;font-size:1.9rem;line-height:1.2}
 .fc-note{font-size:.82rem;line-height:1.5;color:var(--amber);background:var(--amber-dim);border:1px solid rgba(245,166,35,.35);
   border-radius:10px;padding:.5rem .8rem;max-width:46ch}
 .fc-note b{color:var(--amber)}
-.fc-viz{width:100%;max-width:400px;flex-shrink:0}
+.fc-viz{width:100%;max-width:320px;flex-shrink:0}
 .fc-viz svg{width:100%;height:auto;display:block}
 
 .flashcard.deal{animation:deal .3s ease}
@@ -111,16 +116,16 @@ svg .tick{animation:tick 2.6s ease-in-out infinite}
 svg .sweep{stroke-dasharray:600;stroke-dashoffset:600;animation:sweep 3s ease-in-out infinite}
 @keyframes sweep{0%{stroke-dashoffset:600}55%,100%{stroke-dashoffset:0}}
 
-.nav-row{display:flex;justify-content:center;gap:.7rem;margin-top:1.1rem;align-items:center;flex-wrap:wrap}
-.kbd-hint{font-family:var(--mono);font-size:.7rem;color:var(--text3);text-align:center;margin-top:1.6rem;line-height:1.8}
+.nav-row{display:flex;justify-content:center;gap:.7rem;margin-top:.85rem;align-items:center;flex-wrap:wrap}
+.kbd-hint{font-family:var(--mono);font-size:.7rem;color:var(--text3);text-align:center;margin-top:1rem;line-height:1.7}
 .kbd-hint kbd{border:1px solid var(--border2);border-radius:5px;padding:1px 6px;background:var(--surface)}
 
-footer{margin-top:2.6rem;padding-top:1.2rem;border-top:1px solid var(--border);font-size:.78rem;color:var(--text3);font-family:var(--mono);line-height:1.7}
+footer{margin-top:1.8rem;padding-top:1.1rem;border-top:1px solid var(--border);font-size:.78rem;color:var(--text3);font-family:var(--mono);line-height:1.7}
 footer a{color:var(--accent2)}
 
 @media (max-width:480px){
   body{font-size:17px}
-  .flashcard{min-height:470px}
+  .flashcard{min-height:400px}
   .kbd-hint .desk{display:none}
 }
 @media (prefers-reduced-motion: reduce){
@@ -135,7 +140,7 @@ footer a{color:var(--accent2)}
 <header>
   <div class="kicker"><a href="../index.html">← CTS Study Console</a> · Drill</div>
   <h1>AV Math Flashcards</h1>
-  <p class="lede">Every formula and hard number from the AV Math Guide — drawn, not just written. The whole card shows at once: read it, move on. Nothing here is graded, counted, or saved.</p>
+  <p class="lede">Every AV Math formula and hard number, drawn. Nothing graded, counted, or saved.</p>
 </header>
 
 <div class="chip-row" id="filters">
@@ -1199,8 +1204,8 @@ function render(dir){
   if(c.n){nb.innerHTML=c.n;nb.style.display='block';}else{nb.style.display='none';}
   $('counter').textContent=`Card ${pos+1} / ${queue.length}`;
   $('pbar').style.width=((pos+1)/queue.length*100)+'%';
-  // a tall card can push you down the page; come back up for the next one
-  if(window.scrollY>0)window.scrollTo({top:0,behavior:'smooth'});
+  // deliberately no scrolling here — if you've scrolled to frame the card
+  // comfortably, advancing must leave you exactly where you are
 }
 
 // the deck loops — there is no end screen to reach

@@ -41,22 +41,19 @@ h1{font-family:var(--serif);font-weight:700;font-size:1.9rem;line-height:1.2}
 .progress{height:6px;background:var(--surface);border-radius:99px;overflow:hidden;margin:0 0 1.1rem}
 .progress>div{height:100%;background:var(--accent);width:0;transition:width .3s}
 
-/* ---- the card ---- */
-.stage{perspective:1400px}
-.flashcard{position:relative;min-height:430px;cursor:pointer}
-.fc-inner{position:relative;width:100%;height:100%;min-height:430px;transition:transform .55s cubic-bezier(.4,.1,.2,1);transform-style:preserve-3d}
-.flashcard.flipped .fc-inner{transform:rotateY(180deg)}
-.fc-face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:18px;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.9rem;
-  padding:2.6rem 1.5rem 1.6rem;text-align:center;overflow-y:auto}
-.fc-front{background:var(--surface);border:1px solid var(--border2)}
-.fc-back{background:var(--bg2);border:1px solid var(--accent);transform:rotateY(180deg)}
-.fc-label{font-family:var(--mono);font-size:.64rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text3);
+/* ---- the card ----
+   One face, everything visible at once: prompt, diagram, answer, note.
+   No flip — the whole point is to absorb the card and move on. */
+.flashcard{position:relative;min-height:430px;cursor:pointer;
+  background:var(--bg2);border:1px solid var(--accent);border-radius:18px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.95rem;
+  padding:2.7rem 1.5rem 2.4rem;text-align:center}
+.fc-label{font-family:var(--mono);font-size:.64rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent2);
   position:absolute;top:.95rem;left:1.2rem}
 .fc-cat{font-family:var(--mono);font-size:.64rem;letter-spacing:.1em;text-transform:uppercase;color:var(--accent2);
   position:absolute;top:.95rem;right:1.2rem}
-.fc-back .fc-label{color:var(--accent2)}
-.fc-q{font-size:1.12rem;font-weight:500;line-height:1.5;max-width:30ch;text-wrap:balance}
+.fc-q{font-size:1.08rem;font-weight:500;line-height:1.45;max-width:32ch;text-wrap:balance}
+.fc-rule{width:44px;height:2px;background:var(--border2);border-radius:2px;flex-shrink:0}
 .fc-a{font-size:1rem;line-height:1.55;max-width:44ch}
 .fc-a b{color:var(--accent2)}
 .fc-a .big{display:block;font-family:var(--serif);font-size:1.5rem;font-weight:700;color:var(--accent2);margin-bottom:.35rem}
@@ -67,10 +64,10 @@ h1{font-family:var(--serif);font-weight:700;font-size:1.9rem;line-height:1.2}
 .fc-viz{width:100%;max-width:400px;flex-shrink:0}
 .fc-viz svg{width:100%;height:auto;display:block}
 
-.flashcard.deal{animation:deal .28s ease}
-@keyframes deal{from{opacity:0;transform:translateX(18px)}to{opacity:1;transform:none}}
-.flashcard.dealback{animation:dealback .28s ease}
-@keyframes dealback{from{opacity:0;transform:translateX(-18px)}to{opacity:1;transform:none}}
+.flashcard.deal{animation:deal .3s ease}
+@keyframes deal{from{opacity:0;transform:translateX(22px)}to{opacity:1;transform:none}}
+.flashcard.dealback{animation:dealback .3s ease}
+@keyframes dealback{from{opacity:0;transform:translateX(-22px)}to{opacity:1;transform:none}}
 
 /* svg vocabulary */
 svg .ln{stroke:var(--text2);stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round}
@@ -123,11 +120,10 @@ footer a{color:var(--accent2)}
 
 @media (max-width:480px){
   body{font-size:17px}
-  .flashcard,.fc-inner{min-height:470px}
+  .flashcard{min-height:470px}
   .kbd-hint .desk{display:none}
 }
 @media (prefers-reduced-motion: reduce){
-  .fc-inner{transition:none}
   .flashcard.deal,.flashcard.dealback{animation:none}
   svg *{animation:none !important}
 }
@@ -139,7 +135,7 @@ footer a{color:var(--accent2)}
 <header>
   <div class="kicker"><a href="../index.html">← CTS Study Console</a> · Drill</div>
   <h1>AV Math Flashcards</h1>
-  <p class="lede">Every formula and hard number from the AV Math Guide — drawn, not just written. Tap to flip, then advance. Nothing here is graded, counted, or saved.</p>
+  <p class="lede">Every formula and hard number from the AV Math Guide — drawn, not just written. The whole card shows at once: read it, move on. Nothing here is graded, counted, or saved.</p>
 </header>
 
 <div class="chip-row" id="filters">
@@ -162,21 +158,14 @@ footer a{color:var(--accent2)}
 
 <div class="stage" id="stage">
   <div class="flashcard" id="card">
-    <div class="fc-inner" id="cardInner">
-      <div class="fc-face fc-front">
-        <span class="fc-label">Prompt</span>
-        <span class="fc-cat" id="catF"></span>
-        <div class="fc-q" id="qText"></div>
-        <div class="fc-hint">tap / space to flip</div>
-      </div>
-      <div class="fc-face fc-back">
-        <span class="fc-label">Answer</span>
-        <span class="fc-cat" id="catB"></span>
-        <div class="fc-viz" id="viz"></div>
-        <div class="fc-a" id="aText"></div>
-        <div class="fc-note" id="noteBox" style="display:none"></div>
-      </div>
-    </div>
+    <span class="fc-label">Card</span>
+    <span class="fc-cat" id="cat"></span>
+    <div class="fc-q" id="qText"></div>
+    <div class="fc-rule"></div>
+    <div class="fc-viz" id="viz"></div>
+    <div class="fc-a" id="aText"></div>
+    <div class="fc-note" id="noteBox" style="display:none"></div>
+    <div class="fc-hint">tap / space for the next card</div>
   </div>
 
   <div class="nav-row">
@@ -185,7 +174,7 @@ footer a{color:var(--accent2)}
   </div>
 </div>
 
-<div class="kbd-hint"><span class="desk"><kbd>space</kbd> flip &nbsp; <kbd>←</kbd><kbd>→</kbd> move between cards<br></span>On mobile: tap to flip, swipe to move between cards.</div>
+<div class="kbd-hint"><span class="desk"><kbd>space</kbd> or <kbd>→</kbd> next &nbsp; <kbd>←</kbd> back<br></span>On mobile: tap anywhere on the card, or swipe.</div>
 
 <footer>
   Sourced from the <a href="cts-av-math-guide.html">AV Math Guide</a> formula cheat sheet.
@@ -1199,16 +1188,10 @@ function startRun(shuffled){
 
 function render(dir){
   const c=queue[pos];
-  const inner=$('cardInner');
-  // snap straight back to the front — no reverse-flip that would flash the next answer
-  inner.style.transition='none';
-  card.classList.remove('flipped');
-  void inner.offsetWidth;
-  inner.style.transition='';
   card.classList.remove('deal','dealback');
-  void card.offsetWidth;
+  void card.offsetWidth;               // restart the deal-in animation
   card.classList.add(dir<0?'dealback':'deal');
-  $('catF').textContent=c.c; $('catB').textContent=c.c;
+  $('cat').textContent=c.c;
   $('qText').innerHTML=c.q;
   $('aText').innerHTML=c.a;
   $('viz').innerHTML=c.viz?V[c.viz]:'';
@@ -1216,15 +1199,16 @@ function render(dir){
   if(c.n){nb.innerHTML=c.n;nb.style.display='block';}else{nb.style.display='none';}
   $('counter').textContent=`Card ${pos+1} / ${queue.length}`;
   $('pbar').style.width=((pos+1)/queue.length*100)+'%';
+  // a tall card can push you down the page; come back up for the next one
+  if(window.scrollY>0)window.scrollTo({top:0,behavior:'smooth'});
 }
 
-function flip(){ card.classList.toggle('flipped'); }
 // the deck loops — there is no end screen to reach
 function next(){ pos=(pos+1)%queue.length; render(1); }
 function prev(){ pos=(pos-1+queue.length)%queue.length; render(-1); }
 
 /* ============ events ============ */
-card.addEventListener('click',flip);
+card.addEventListener('click',next);
 $('nextBtn').addEventListener('click',next);
 $('prevBtn').addEventListener('click',prev);
 $('shuffleBtn').addEventListener('click',()=>startRun(true));
@@ -1235,8 +1219,7 @@ document.querySelectorAll('#filters .chip').forEach(ch=>ch.addEventListener('cli
 }));
 
 document.addEventListener('keydown',e=>{
-  if(e.code==='Space'){e.preventDefault();flip();}
-  else if(e.key==='ArrowRight')next();
+  if(e.code==='Space'||e.key==='ArrowRight'){e.preventDefault();next();}
   else if(e.key==='ArrowLeft')prev();
 });
 

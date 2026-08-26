@@ -62,7 +62,18 @@ h1{font-family:var(--serif);font-weight:700;font-size:1.5rem;line-height:1.2}
 .fc-a{font-size:1rem;line-height:1.55;max-width:44ch}
 .fc-a b{color:var(--accent2)}
 .fc-a .big{display:block;font-family:var(--serif);font-size:1.5rem;font-weight:700;color:var(--accent2);margin-bottom:.35rem}
-.fc-hint{font-family:var(--mono);font-size:.7rem;color:var(--text3);position:absolute;bottom:.85rem;left:0;right:0}
+.fc-hint{font-family:var(--mono);font-size:.7rem;color:var(--text3);position:absolute;bottom:.85rem;left:0;right:0;
+  display:flex;justify-content:space-between;padding:0 1.35rem;pointer-events:none}
+
+/* the two halves of the card are the back/forward controls */
+.tapzone{position:absolute;top:0;bottom:0;width:50%;cursor:pointer;border-radius:18px;transition:background .18s}
+.tz-left{left:0}
+.tz-right{right:0}
+@media (hover:hover){
+  .tz-left:hover{background:linear-gradient(90deg,rgba(91,156,246,.12),transparent 72%)}
+  .tz-right:hover{background:linear-gradient(270deg,rgba(91,156,246,.12),transparent 72%)}
+  .tz-left:hover~.fc-hint .h-l,.tz-right:hover~.fc-hint .h-r{color:var(--accent2)}
+}
 .fc-note{font-size:.82rem;line-height:1.5;color:var(--amber);background:var(--amber-dim);border:1px solid rgba(245,166,35,.35);
   border-radius:10px;padding:.5rem .8rem;max-width:46ch}
 .fc-note b{color:var(--amber)}
@@ -170,7 +181,9 @@ footer a{color:var(--accent2)}
     <div class="fc-viz" id="viz"></div>
     <div class="fc-a" id="aText"></div>
     <div class="fc-note" id="noteBox" style="display:none"></div>
-    <div class="fc-hint">tap / space for the next card</div>
+    <div class="tapzone tz-left" id="tapPrev" aria-hidden="true"></div>
+    <div class="tapzone tz-right" id="tapNext" aria-hidden="true"></div>
+    <div class="fc-hint"><span class="h-l">← back</span><span class="h-r">next →</span></div>
   </div>
 
   <div class="nav-row">
@@ -179,7 +192,7 @@ footer a{color:var(--accent2)}
   </div>
 </div>
 
-<div class="kbd-hint"><span class="desk"><kbd>space</kbd> or <kbd>→</kbd> next &nbsp; <kbd>←</kbd> back<br></span>On mobile: tap anywhere on the card, or swipe.</div>
+<div class="kbd-hint"><span class="desk"><kbd>space</kbd> or <kbd>→</kbd> next &nbsp; <kbd>←</kbd> back<br></span>Tap the card's right half for the next card, its left half to go back — or swipe.</div>
 
 <footer>
   Sourced from the <a href="cts-av-math-guide.html">AV Math Guide</a> formula cheat sheet.
@@ -1213,7 +1226,12 @@ function next(){ pos=(pos+1)%queue.length; render(1); }
 function prev(){ pos=(pos-1+queue.length)%queue.length; render(-1); }
 
 /* ============ events ============ */
-card.addEventListener('click',next);
+// left half goes back, right half goes forward; a swipe suppresses the
+// click it would otherwise also fire, so one gesture moves one card
+let swiped=false;
+const zoneTap=fn=>e=>{e.stopPropagation();if(swiped){swiped=false;return;}fn();};
+$('tapPrev').addEventListener('click',zoneTap(prev));
+$('tapNext').addEventListener('click',zoneTap(next));
 $('nextBtn').addEventListener('click',next);
 $('prevBtn').addEventListener('click',prev);
 $('shuffleBtn').addEventListener('click',()=>startRun(true));
@@ -1229,11 +1247,11 @@ document.addEventListener('keydown',e=>{
 });
 
 let tx=null;
-card.addEventListener('touchstart',e=>{tx=e.changedTouches[0].clientX;},{passive:true});
+card.addEventListener('touchstart',e=>{tx=e.changedTouches[0].clientX;swiped=false;},{passive:true});
 card.addEventListener('touchend',e=>{
   if(tx===null)return;
   const dx=e.changedTouches[0].clientX-tx; tx=null;
-  if(Math.abs(dx)>60){dx<0?next():prev();}
+  if(Math.abs(dx)>60){swiped=true;dx<0?next():prev();}
 },{passive:true});
 
 updateCounts();

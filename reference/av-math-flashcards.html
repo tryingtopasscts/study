@@ -1,0 +1,1256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AV Math Flashcards — Formulas &amp; Numbers</title>
+<style>
+:root{
+  --bg:#0f1117; --bg2:#13161e; --surface:#1a1e2a; --border:#252c3f; --border2:#2e3650;
+  --accent:#5b9cf6; --accent2:#93bbfc; --accent-dim:#1a2f54;
+  --amber:#f5a623; --amber-dim:#2a1f0a; --teal:#2dd4bf; --red:#f87171;
+  --purple:#a78bfa; --green:#34d399;
+  --text:#dde3f0; --text2:#8e9abf; --text3:#4e5a7a;
+  --mono:'IBM Plex Mono',Consolas,monospace; --serif:'Fraunces',Georgia,serif; --sans:'DM Sans',-apple-system,'Segoe UI',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:18px;line-height:1.6;-webkit-tap-highlight-color:transparent}
+main{max-width:640px;margin:0 auto;padding:2.2rem 1.1rem 4.5rem}
+header{margin-bottom:1.4rem}
+.kicker{font-family:var(--mono);font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:.5rem}
+.kicker a{color:inherit;text-decoration:none}
+.kicker a:hover{text-decoration:underline}
+h1{font-family:var(--serif);font-weight:700;font-size:1.9rem;line-height:1.2}
+.lede{color:var(--text2);font-size:.95rem;margin-top:.45rem}
+
+.chip-row{display:flex;flex-wrap:wrap;gap:.45rem;margin:1.1rem 0 .9rem}
+.chip{font-family:var(--sans);font-size:.82rem;font-weight:500;background:var(--surface);border:1px solid var(--border2);
+  color:var(--text2);border-radius:99px;padding:.38rem .9rem;cursor:pointer;transition:all .15s}
+.chip:hover{border-color:var(--accent)}
+.chip.on{background:var(--accent-dim);border-color:var(--accent);color:var(--accent2)}
+.chip .n{font-family:var(--mono);font-size:.72rem;opacity:.75;margin-left:.3rem}
+
+.top-row{display:flex;justify-content:space-between;align-items:center;gap:.8rem;margin-bottom:.55rem}
+.meta{font-family:var(--mono);font-size:.78rem;color:var(--text3)}
+.btn{font-family:var(--sans);font-weight:500;font-size:.86rem;background:var(--surface);color:var(--text);
+  border:1px solid var(--border2);border-radius:10px;padding:.55rem 1.05rem;cursor:pointer;transition:all .15s}
+.btn:hover{background:var(--accent-dim);border-color:var(--accent)}
+.btn.small{font-size:.78rem;padding:.35rem .75rem}
+.btn.primary{background:var(--accent-dim);border-color:var(--accent);color:var(--accent2);font-weight:700;padding:.62rem 1.7rem;font-size:.95rem}
+
+.progress{height:6px;background:var(--surface);border-radius:99px;overflow:hidden;margin:0 0 1.1rem}
+.progress>div{height:100%;background:var(--accent);width:0;transition:width .3s}
+
+/* ---- the card ---- */
+.stage{perspective:1400px}
+.flashcard{position:relative;min-height:430px;cursor:pointer}
+.fc-inner{position:relative;width:100%;height:100%;min-height:430px;transition:transform .55s cubic-bezier(.4,.1,.2,1);transform-style:preserve-3d}
+.flashcard.flipped .fc-inner{transform:rotateY(180deg)}
+.fc-face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:18px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.9rem;
+  padding:2.6rem 1.5rem 1.6rem;text-align:center;overflow-y:auto}
+.fc-front{background:var(--surface);border:1px solid var(--border2)}
+.fc-back{background:var(--bg2);border:1px solid var(--accent);transform:rotateY(180deg)}
+.fc-label{font-family:var(--mono);font-size:.64rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text3);
+  position:absolute;top:.95rem;left:1.2rem}
+.fc-cat{font-family:var(--mono);font-size:.64rem;letter-spacing:.1em;text-transform:uppercase;color:var(--accent2);
+  position:absolute;top:.95rem;right:1.2rem}
+.fc-back .fc-label{color:var(--accent2)}
+.fc-q{font-size:1.12rem;font-weight:500;line-height:1.5;max-width:30ch;text-wrap:balance}
+.fc-a{font-size:1rem;line-height:1.55;max-width:44ch}
+.fc-a b{color:var(--accent2)}
+.fc-a .big{display:block;font-family:var(--serif);font-size:1.5rem;font-weight:700;color:var(--accent2);margin-bottom:.35rem}
+.fc-hint{font-family:var(--mono);font-size:.7rem;color:var(--text3);position:absolute;bottom:.85rem;left:0;right:0}
+.fc-note{font-size:.82rem;line-height:1.5;color:var(--amber);background:var(--amber-dim);border:1px solid rgba(245,166,35,.35);
+  border-radius:10px;padding:.5rem .8rem;max-width:46ch}
+.fc-note b{color:var(--amber)}
+.fc-viz{width:100%;max-width:400px;flex-shrink:0}
+.fc-viz svg{width:100%;height:auto;display:block}
+
+.flashcard.deal{animation:deal .28s ease}
+@keyframes deal{from{opacity:0;transform:translateX(18px)}to{opacity:1;transform:none}}
+.flashcard.dealback{animation:dealback .28s ease}
+@keyframes dealback{from{opacity:0;transform:translateX(-18px)}to{opacity:1;transform:none}}
+
+/* svg vocabulary */
+svg .ln{stroke:var(--text2);stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+svg .thin{stroke:var(--text3);stroke-width:1.4;fill:none;stroke-linecap:round}
+svg .ac{stroke:var(--accent);stroke-width:2.4;fill:none;stroke-linecap:round;stroke-linejoin:round}
+svg .am{stroke:var(--amber);stroke-width:2.2;fill:none;stroke-linecap:round}
+svg .gr{stroke:var(--green);stroke-width:2.2;fill:none;stroke-linecap:round}
+svg .pu{stroke:var(--purple);stroke-width:2.2;fill:none;stroke-linecap:round}
+svg .box{fill:var(--surface);stroke:var(--border2);stroke-width:1.5}
+svg .boxac{fill:var(--accent-dim);stroke:var(--accent);stroke-width:1.5}
+svg text{font-family:var(--mono);fill:var(--text2);font-size:11px}
+svg .t-big{font-size:14px;fill:var(--text);font-weight:600}
+svg .t-ac{fill:var(--accent2);font-weight:600}
+svg .t-am{fill:var(--amber);font-weight:600}
+svg .t-gr{fill:var(--green);font-weight:600}
+svg .t-pu{fill:var(--purple);font-weight:600}
+svg .t-dim{fill:var(--text3);font-size:9.5px}
+svg .flow{stroke-dasharray:6 6;animation:dash 1.1s linear infinite}
+@keyframes dash{to{stroke-dashoffset:-12}}
+svg .flowslow{stroke-dasharray:5 8;animation:dash 2.4s linear infinite}
+svg .arc1,svg .arc2,svg .arc3{animation:arcfade 2.4s ease-out infinite}
+svg .arc2{animation-delay:.35s} svg .arc3{animation-delay:.7s}
+@keyframes arcfade{0%{opacity:0}25%{opacity:1}100%{opacity:0}}
+svg .rise{animation:rise 1.8s ease-in-out infinite}
+@keyframes rise{0%,100%{transform:translateY(0);opacity:.4}50%{transform:translateY(-5px);opacity:1}}
+svg .spin{transform-origin:center;transform-box:fill-box;animation:spin 1.6s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+svg .pulse{animation:pulse 2s ease-in-out infinite}
+svg .pulse2{animation:pulse 2s ease-in-out infinite;animation-delay:.55s}
+svg .pulse3{animation:pulse 2s ease-in-out infinite;animation-delay:1.1s}
+@keyframes pulse{0%,100%{opacity:.28}50%{opacity:1}}
+svg .grow{transform-origin:bottom;transform-box:fill-box;animation:grow 2.4s ease-in-out infinite}
+@keyframes grow{0%,100%{transform:scaleY(.5)}50%{transform:scaleY(1)}}
+svg .slide{animation:slidex 2.8s ease-in-out infinite}
+@keyframes slidex{0%,100%{transform:translateX(0)}50%{transform:translateX(20px)}}
+svg .blink{animation:blink 2s steps(1,end) infinite}
+@keyframes blink{0%,49%{opacity:1}50%,100%{opacity:.18}}
+svg .tick{animation:tick 2.6s ease-in-out infinite}
+@keyframes tick{0%,100%{transform:translateY(0)}50%{transform:translateY(6px)}}
+/* dasharray must exceed the longest path that uses this, or the line never finishes drawing */
+svg .sweep{stroke-dasharray:600;stroke-dashoffset:600;animation:sweep 3s ease-in-out infinite}
+@keyframes sweep{0%{stroke-dashoffset:600}55%,100%{stroke-dashoffset:0}}
+
+.nav-row{display:flex;justify-content:center;gap:.7rem;margin-top:1.1rem;align-items:center;flex-wrap:wrap}
+.kbd-hint{font-family:var(--mono);font-size:.7rem;color:var(--text3);text-align:center;margin-top:1.6rem;line-height:1.8}
+.kbd-hint kbd{border:1px solid var(--border2);border-radius:5px;padding:1px 6px;background:var(--surface)}
+
+footer{margin-top:2.6rem;padding-top:1.2rem;border-top:1px solid var(--border);font-size:.78rem;color:var(--text3);font-family:var(--mono);line-height:1.7}
+footer a{color:var(--accent2)}
+
+@media (max-width:480px){
+  body{font-size:17px}
+  .flashcard,.fc-inner{min-height:470px}
+  .kbd-hint .desk{display:none}
+}
+@media (prefers-reduced-motion: reduce){
+  .fc-inner{transition:none}
+  .flashcard.deal,.flashcard.dealback{animation:none}
+  svg *{animation:none !important}
+}
+</style>
+</head>
+<body>
+<main>
+
+<header>
+  <div class="kicker"><a href="../index.html">← CTS Study Console</a> · Drill</div>
+  <h1>AV Math Flashcards</h1>
+  <p class="lede">Every formula and hard number from the AV Math Guide — drawn, not just written. Tap to flip, then advance. Nothing here is graded, counted, or saved.</p>
+</header>
+
+<div class="chip-row" id="filters">
+  <button class="chip on" data-f="all">All <span class="n" id="n-all"></span></button>
+  <button class="chip" data-f="F">Foundations <span class="n" id="n-F"></span></button>
+  <button class="chip" data-f="E">Electrical <span class="n" id="n-E"></span></button>
+  <button class="chip" data-f="D">Decibels <span class="n" id="n-D"></span></button>
+  <button class="chip" data-f="L">Loudspeakers <span class="n" id="n-L"></span></button>
+  <button class="chip" data-f="A">Audio <span class="n" id="n-A"></span></button>
+  <button class="chip" data-f="V">Video &amp; light <span class="n" id="n-V"></span></button>
+  <button class="chip" data-f="N">Cable &amp; install <span class="n" id="n-N"></span></button>
+  <button class="chip" data-f="B">Budget <span class="n" id="n-B"></span></button>
+</div>
+
+<div class="top-row">
+  <span class="meta" id="counter"></span>
+  <button class="btn small" id="shuffleBtn">Shuffle</button>
+</div>
+<div class="progress"><div id="pbar"></div></div>
+
+<div class="stage" id="stage">
+  <div class="flashcard" id="card">
+    <div class="fc-inner" id="cardInner">
+      <div class="fc-face fc-front">
+        <span class="fc-label">Prompt</span>
+        <span class="fc-cat" id="catF"></span>
+        <div class="fc-q" id="qText"></div>
+        <div class="fc-hint">tap / space to flip</div>
+      </div>
+      <div class="fc-face fc-back">
+        <span class="fc-label">Answer</span>
+        <span class="fc-cat" id="catB"></span>
+        <div class="fc-viz" id="viz"></div>
+        <div class="fc-a" id="aText"></div>
+        <div class="fc-note" id="noteBox" style="display:none"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-row">
+    <button class="btn small" id="prevBtn">← Prev</button>
+    <button class="btn primary" id="nextBtn">Next card →</button>
+  </div>
+</div>
+
+<div class="kbd-hint"><span class="desk"><kbd>space</kbd> flip &nbsp; <kbd>←</kbd><kbd>→</kbd> move between cards<br></span>On mobile: tap to flip, swipe to move between cards.</div>
+
+<footer>
+  Sourced from the <a href="cts-av-math-guide.html">AV Math Guide</a> formula cheat sheet.
+  No grading, no stats, no history — the deck loops forever and remembers nothing between visits.
+</footer>
+
+</main>
+
+<script>
+/* ============ visual vocabulary ============ */
+const V = {
+
+pemdas: `<svg viewBox="0 0 340 150" aria-hidden="true">
+  <rect class="boxac" x="12" y="18" width="42" height="30" rx="6"/><text class="t-ac" x="33" y="38" text-anchor="middle">( )</text>
+  <rect class="box" x="76" y="18" width="42" height="30" rx="6"/><text x="97" y="38" text-anchor="middle">x²</text>
+  <rect class="box" x="140" y="18" width="60" height="30" rx="6"/><text x="170" y="38" text-anchor="middle">× ÷</text>
+  <rect class="box" x="222" y="18" width="60" height="30" rx="6"/><text x="252" y="38" text-anchor="middle">+ −</text>
+  <path class="ac flow" d="M12 66 H300"/>
+  <path class="ac" d="M292 60 L302 66 L292 72"/>
+  <text class="t-dim" x="33" y="88" text-anchor="middle">first</text>
+  <text class="t-dim" x="252" y="88" text-anchor="middle">last</text>
+  <text class="t-am" x="170" y="118" text-anchor="middle">× ÷ and + − run left → right</text>
+  <text class="t-dim" x="170" y="136" text-anchor="middle">multiply does NOT outrank divide</text>
+</svg>`,
+
+rounding: `<svg viewBox="0 0 340 140" aria-hidden="true">
+  <text class="t-dim" x="14" y="22">round every step</text>
+  <circle class="pulse" cx="30" cy="46" r="9" fill="var(--red)" opacity=".8"/>
+  <circle class="pulse2" cx="80" cy="46" r="9" fill="var(--red)" opacity=".8"/>
+  <circle class="pulse3" cx="130" cy="46" r="9" fill="var(--red)" opacity=".8"/>
+  <path class="thin" d="M42 46 H68 M92 46 H118"/>
+  <text x="182" y="50" fill="var(--red)">error compounds</text>
+  <text class="t-dim" x="14" y="92">round once, at the end</text>
+  <circle cx="30" cy="114" r="9" fill="none" stroke="var(--green)" stroke-width="2"/>
+  <circle cx="80" cy="114" r="9" fill="none" stroke="var(--green)" stroke-width="2"/>
+  <circle class="pulse" cx="130" cy="114" r="9" fill="var(--green)"/>
+  <path class="thin" d="M42 114 H68 M92 114 H118"/>
+  <text class="t-gr" x="182" y="118">one clean answer</text>
+</svg>`,
+
+rect: `<svg viewBox="0 0 340 150" aria-hidden="true">
+  <rect class="boxac" x="70" y="30" width="180" height="80" rx="3"/>
+  <path class="am sweep" d="M70 30 H250 V110 H70 Z"/>
+  <text class="t-am" x="160" y="22" text-anchor="middle">L</text>
+  <text class="t-am" x="160" y="126" text-anchor="middle">L</text>
+  <text class="t-am" x="56" y="74" text-anchor="middle">W</text>
+  <text class="t-am" x="264" y="74" text-anchor="middle">W</text>
+  <text class="t-ac t-big" x="160" y="76" text-anchor="middle">area = W × L</text>
+  <text class="t-dim" x="160" y="144" text-anchor="middle">perimeter walks all FOUR sides → 2(W + L)</text>
+</svg>`,
+
+volume: `<svg viewBox="0 0 340 150" aria-hidden="true">
+  <path class="ac" d="M80 50 H230 V120 H80 Z"/>
+  <path class="thin" d="M80 50 L120 22 H270 L230 50 M230 120 L270 92 V22"/>
+  <text class="t-am" x="155" y="138" text-anchor="middle">W</text>
+  <text class="t-am" x="66" y="88" text-anchor="middle">H</text>
+  <text class="t-am" x="256" y="72" text-anchor="middle">L</text>
+  <text class="t-ac t-big" x="155" y="90" text-anchor="middle">W × L × H</text>
+  <text class="t-dim" x="155" y="16" text-anchor="middle">volume — three dimensions, three factors</text>
+</svg>`,
+
+units: `<svg viewBox="0 0 340 150" aria-hidden="true">
+  <path class="ln" d="M20 44 H320"/>
+  <g class="thin"><path d="M20 44 V32 M80 44 V36 M140 44 V32 M200 44 V36 M260 44 V32 M320 44 V36"/></g>
+  <text class="t-ac t-big" x="20" y="66">1 in</text>
+  <text class="t-am t-big" x="230" y="66">= 25.4 mm</text>
+  <rect class="box" x="20" y="86" width="140" height="46" rx="8"/>
+  <text class="t-ac" x="90" y="106" text-anchor="middle">1 ft = 0.3048 m</text>
+  <text class="t-dim" x="90" y="122" text-anchor="middle">1 m = 3.28 ft</text>
+  <rect class="box" x="180" y="86" width="140" height="46" rx="8"/>
+  <text class="t-ac" x="250" y="106" text-anchor="middle">1 kg = 2.205 lb</text>
+  <text class="t-dim" x="250" y="122" text-anchor="middle">1 lb = 0.454 kg</text>
+</svg>`,
+
+fclux: `<svg viewBox="0 0 340 150" aria-hidden="true">
+  <rect class="box" x="26" y="26" width="96" height="96" rx="3"/>
+  <text class="t-dim" x="74" y="18" text-anchor="middle">1 square metre</text>
+  <g stroke="var(--accent)" stroke-width="1" opacity=".5">
+    <path d="M26 56 H122 M26 86 H122 M56 26 V122 M86 26 V122"/>
+  </g>
+  <rect class="boxac pulse" x="26" y="92" width="30" height="30"/>
+  <text class="t-ac" x="41" y="112" text-anchor="middle" font-size="9">1 ft²</text>
+  <text class="t-am t-big" x="160" y="62">≈ 10.76 ft²</text>
+  <text class="t-ac t-big" x="160" y="92">so 1 fc = 10.76 lux</text>
+  <text class="t-dim" x="160" y="112">lux ↔ m² · fc ↔ ft²</text>
+</svg>`,
+
+log2: `<svg viewBox="0 0 340 140" aria-hidden="true">
+  <rect class="boxac" x="24" y="34" width="88" height="40" rx="8"/>
+  <text class="t-ac t-big" x="68" y="60" text-anchor="middle">log(2)</text>
+  <path class="ac flow" d="M118 54 H176"/>
+  <text class="t-am t-big" x="228" y="60" text-anchor="middle">0.301</text>
+  <text class="t-dim" x="68" y="98" text-anchor="middle">one doubling</text>
+  <text class="t-dim" x="228" y="98" text-anchor="middle">× 10 → +3 dB power</text>
+  <text class="t-dim" x="228" y="114" text-anchor="middle">× 20 → +6 dB volts / distance</text>
+</svg>`,
+
+log8: `<svg viewBox="0 0 340 150" aria-hidden="true">
+  <text class="t-ac t-big" x="18" y="34">8 = 2 × 2 × 2</text>
+  <g>
+    <rect class="boxac pulse" x="20" y="52" width="86" height="30" rx="6"/>
+    <text class="t-ac" x="63" y="72" text-anchor="middle">0.301</text>
+    <text x="116" y="72" class="t-dim">+</text>
+    <rect class="boxac pulse2" x="130" y="52" width="86" height="30" rx="6"/>
+    <text class="t-ac" x="173" y="72" text-anchor="middle">0.301</text>
+    <text x="226" y="72" class="t-dim">+</text>
+    <rect class="boxac pulse3" x="240" y="52" width="86" height="30" rx="6"/>
+    <text class="t-ac" x="283" y="72" text-anchor="middle">0.301</text>
+  </g>
+  <path class="am" d="M20 96 H326"/>
+  <text class="t-am t-big" x="173" y="120" text-anchor="middle">log(8) ≈ 0.903</text>
+  <text class="t-dim" x="173" y="140" text-anchor="middle">logs turn multiplication into addition</text>
+</svg>`,
+
+balance: `<svg viewBox="0 0 340 150" aria-hidden="true">
+  <path class="ln" d="M170 34 V116"/>
+  <path class="ac" d="M60 34 H280"/>
+  <path class="thin" d="M60 34 V54 M280 34 V54"/>
+  <rect class="boxac" x="24" y="54" width="72" height="34" rx="6"/>
+  <text class="t-ac" x="60" y="76" text-anchor="middle">V</text>
+  <rect class="boxac" x="244" y="54" width="72" height="34" rx="6"/>
+  <text class="t-ac" x="280" y="76" text-anchor="middle">I × R</text>
+  <circle class="pulse" cx="60" cy="106" r="7" fill="var(--amber)"/>
+  <circle class="pulse" cx="280" cy="106" r="7" fill="var(--amber)"/>
+  <text class="t-am" x="170" y="112" text-anchor="middle">÷ R</text>
+  <text class="t-dim" x="170" y="140" text-anchor="middle">whatever you do to one side, do to the other</text>
+</svg>`,
+
+ohm: `<svg viewBox="0 0 320 150" aria-hidden="true">
+  <path class="ac" d="M160 14 L242 122 L78 122 Z"/>
+  <line class="thin" x1="112" y1="78" x2="208" y2="78"/>
+  <line class="thin" x1="160" y1="78" x2="160" y2="122"/>
+  <text class="t-big t-ac" x="160" y="62" text-anchor="middle" font-size="22">V</text>
+  <text class="t-big" x="135" y="108" text-anchor="middle" font-size="18">I</text>
+  <text class="t-big" x="186" y="108" text-anchor="middle" font-size="18">R</text>
+  <text class="t-dim" x="160" y="144" text-anchor="middle">cover the one you want — I = V / R</text>
+</svg>`,
+
+powertri: `<svg viewBox="0 0 340 150" aria-hidden="true">
+  <path class="am" d="M170 14 L252 110 L88 110 Z"/>
+  <line class="thin" x1="120" y1="70" x2="220" y2="70"/>
+  <line class="thin" x1="170" y1="70" x2="170" y2="110"/>
+  <text class="t-big t-am" x="170" y="56" text-anchor="middle" font-size="22">P</text>
+  <text class="t-big" x="144" y="98" text-anchor="middle" font-size="18">I</text>
+  <text class="t-big" x="197" y="98" text-anchor="middle" font-size="18">V</text>
+  <text class="t-dim" x="170" y="132" text-anchor="middle">P = I × V</text>
+  <text class="t-ac" x="170" y="148" text-anchor="middle">also P = V² / R · P = I² R</text>
+</svg>`,
+
+circuit80: `<svg viewBox="0 0 340 150" aria-hidden="true">
+  <rect class="box" x="30" y="40" width="280" height="40" rx="8"/>
+  <rect class="boxac grow" x="30" y="40" width="224" height="40" rx="8"/>
+  <path class="am" d="M254 28 V92"/>
+  <text class="t-am t-big" x="254" y="22" text-anchor="middle">80%</text>
+  <text class="t-dim" x="310" y="22" text-anchor="end">100%</text>
+  <text class="t-ac" x="142" y="66" text-anchor="middle">planned load</text>
+  <text class="t-dim" x="296" y="66" text-anchor="middle" font-size="8.5">headroom</text>
+  <text class="t-big t-am" x="170" y="118" text-anchor="middle">20 A circuit → 16 A max</text>
+  <text class="t-dim" x="170" y="138" text-anchor="middle">capacity × 0.8 — never the full rating</text>
+</svg>`,
+
+vdrop: `<svg viewBox="0 0 340 150" aria-hidden="true">
+  <rect class="boxac" x="12" y="52" width="34" height="40" rx="5"/>
+  <text class="t-ac" x="29" y="112" text-anchor="middle" font-size="9">source</text>
+  <rect class="box" x="290" y="52" width="38" height="40" rx="5"/>
+  <text class="t-dim" x="309" y="112" text-anchor="middle" font-size="9">load</text>
+  <path class="ac flow" d="M46 62 H290"/>
+  <path class="am flow" d="M290 84 H46"/>
+  <text class="t-ac" x="168" y="52" text-anchor="middle">out →</text>
+  <text class="t-am" x="168" y="104" text-anchor="middle">← and back</text>
+  <text class="t-big t-am" x="170" y="132" text-anchor="middle">R = rate × 2 × distance</text>
+  <text class="t-dim" x="170" y="148" text-anchor="middle">then V drop = I × R — double the one-way run</text>
+</svg>`,
+
+heat: `<svg viewBox="0 0 340 150" aria-hidden="true">
+  <rect class="boxac" x="30" y="46" width="90" height="52" rx="6"/>
+  <text class="t-ac t-big" x="75" y="78" text-anchor="middle">W</text>
+  <g class="am">
+    <path class="rise" d="M150 84 q 8 -14 0 -26 q -8 -12 0 -24"/>
+    <path class="rise" style="animation-delay:.4s" d="M176 84 q 8 -14 0 -26 q -8 -12 0 -24"/>
+    <path class="rise" style="animation-delay:.8s" d="M202 84 q 8 -14 0 -26 q -8 -12 0 -24"/>
+  </g>
+  <text class="t-big t-am" x="270" y="66" text-anchor="middle">× 3.4</text>
+  <text class="t-ac" x="270" y="86" text-anchor="middle">= Btu / hr</text>
+  <text class="t-dim" x="170" y="124" text-anchor="middle">kilojoule version: watts × 3.6</text>
+  <text class="t-dim" x="170" y="140" text-anchor="middle">amplifiers are excluded from this figure</text>
+</svg>`,
+
+db10: `<svg viewBox="0 0 340 150" aria-hidden="true">
+  <text class="t-big t-ac" x="170" y="42" text-anchor="middle" font-size="19">dB = 10 log(P₁ / P_ref)</text>
+  <rect class="boxac pulse" x="60" y="62" width="90" height="36" rx="8"/>
+  <text class="t-ac" x="105" y="86" text-anchor="middle">watts</text>
+  <text class="t-dim" x="180" y="86">only watts</text>
+  <text class="t-am" x="170" y="124" text-anchor="middle">coefficient 10</text>
+  <text class="t-dim" x="170" y="142" text-anchor="middle">"power stands alone"</text>
+</svg>`,
+
+db20: `<svg viewBox="0 0 340 150" aria-hidden="true">
+  <text class="t-big t-ac" x="170" y="40" text-anchor="middle" font-size="19">dB = 20 log(V₁ / V_ref)</text>
+  <rect class="boxac pulse" x="34" y="60" width="80" height="34" rx="8"/>
+  <text class="t-ac" x="74" y="82" text-anchor="middle">volts</text>
+  <rect class="boxac pulse2" x="130" y="60" width="80" height="34" rx="8"/>
+  <text class="t-ac" x="170" y="82" text-anchor="middle">distance</text>
+  <rect class="boxac pulse3" x="226" y="60" width="80" height="34" rx="8"/>
+  <text class="t-ac" x="266" y="82" text-anchor="middle">pressure</text>
+  <text class="t-am" x="170" y="120" text-anchor="middle">coefficient 20</text>
+  <text class="t-dim" x="170" y="140" text-anchor="middle">everything that is not watts</text>
+</svg>`,
+
+decide: `<svg viewBox="0 0 340 155" aria-hidden="true">
+  <rect class="boxac" x="76" y="12" width="188" height="34" rx="8"/>
+  <text class="t-ac" x="170" y="34" text-anchor="middle">Am I comparing watts?</text>
+  <path class="ln" d="M140 46 L86 74 M200 46 L254 74"/>
+  <text class="t-gr" x="96" y="66">yes</text>
+  <text class="t-am" x="228" y="66">no</text>
+  <rect class="box" x="26" y="76" width="120" height="40" rx="8" stroke="var(--green)"/>
+  <text class="t-gr t-big" x="86" y="102" text-anchor="middle">10 log</text>
+  <rect class="box" x="194" y="76" width="120" height="40" rx="8" stroke="var(--amber)"/>
+  <text class="t-am t-big" x="254" y="102" text-anchor="middle">20 log</text>
+  <text class="t-dim" x="170" y="140" text-anchor="middle">one question decides every dB problem</text>
+</svg>`,
+
+square: `<svg viewBox="0 0 340 150" aria-hidden="true">
+  <text class="t-ac t-big" x="170" y="34" text-anchor="middle">P = V² / R</text>
+  <path class="am flow" d="M170 44 V66"/>
+  <text class="t-am t-big" x="170" y="86" text-anchor="middle">log(x²) = 2 · log(x)</text>
+  <path class="am flow" d="M170 96 V116"/>
+  <rect class="boxac" x="96" y="118" width="148" height="30" rx="8"/>
+  <text class="t-ac" x="170" y="138" text-anchor="middle">10 × 2 = 20</text>
+</svg>`,
+
+back10: `<svg viewBox="0 0 340 140" aria-hidden="true">
+  <rect class="boxac" x="18" y="46" width="76" height="38" rx="8"/>
+  <text class="t-ac t-big" x="56" y="70" text-anchor="middle">6 dB</text>
+  <path class="ac flow" d="M100 65 H144"/>
+  <text class="t-dim" x="122" y="52" text-anchor="middle">÷ 10</text>
+  <rect class="box" x="150" y="46" width="70" height="38" rx="8"/>
+  <text x="185" y="70" text-anchor="middle">0.6</text>
+  <path class="ac flow" d="M226 65 H262"/>
+  <text class="t-dim" x="244" y="52" text-anchor="middle">10^x</text>
+  <text class="t-am t-big" x="300" y="70" text-anchor="middle">3.98×</text>
+  <text class="t-dim" x="170" y="114" text-anchor="middle">ratio = 10^(dB / 10)</text>
+  <text class="t-am" x="170" y="132" text-anchor="middle">divide FIRST — never 10^6</text>
+</svg>`,
+
+back20: `<svg viewBox="0 0 340 140" aria-hidden="true">
+  <rect class="boxac" x="18" y="46" width="76" height="38" rx="8"/>
+  <text class="t-ac t-big" x="56" y="70" text-anchor="middle">6 dB</text>
+  <path class="ac flow" d="M100 65 H144"/>
+  <text class="t-dim" x="122" y="52" text-anchor="middle">÷ 20</text>
+  <rect class="box" x="150" y="46" width="70" height="38" rx="8"/>
+  <text x="185" y="70" text-anchor="middle">0.3</text>
+  <path class="ac flow" d="M226 65 H262"/>
+  <text class="t-dim" x="244" y="52" text-anchor="middle">10^x</text>
+  <text class="t-am t-big" x="300" y="70" text-anchor="middle">2.0×</text>
+  <text class="t-dim" x="170" y="114" text-anchor="middle">ratio = 10^(dB / 20)</text>
+  <text class="t-am" x="170" y="132" text-anchor="middle">same 6 dB, different coefficient</text>
+</svg>`,
+
+invsq: `<svg viewBox="0 0 340 145" aria-hidden="true">
+  <rect class="box" x="14" y="48" width="24" height="34" rx="4"/>
+  <path class="ac arc1" d="M48 44 a30 30 0 0 1 0 42"/>
+  <path class="ac arc2" d="M64 34 a44 44 0 0 1 0 62"/>
+  <path class="ac arc3" d="M80 24 a58 58 0 0 1 0 82"/>
+  <path class="am" d="M40 116 H130"/><text class="t-am" x="85" y="132" text-anchor="middle">D₁</text>
+  <path class="am" d="M40 100 H220" opacity=".45"/>
+  <text class="t-am" x="180" y="132" text-anchor="middle">D₂ = 2 × D₁</text>
+  <text class="t-ac t-big" x="256" y="52" text-anchor="middle">−6 dB</text>
+  <text class="t-dim" x="256" y="72" text-anchor="middle">25% of the energy</text>
+  <text class="t-dim" x="256" y="90" text-anchor="middle">dB = 20 log(D₁/D₂)</text>
+</svg>`,
+
+pow3: `<svg viewBox="0 0 340 150" aria-hidden="true">
+  <rect class="box" x="30" y="70" width="46" height="44" rx="6"/>
+  <text x="53" y="98" text-anchor="middle">100 W</text>
+  <path class="ac flow" d="M84 92 H126"/>
+  <rect class="boxac" x="132" y="70" width="46" height="44" rx="6"/>
+  <text class="t-ac" x="155" y="98" text-anchor="middle">200 W</text>
+  <text class="t-am t-big" x="155" y="56" text-anchor="middle">+3 dB</text>
+  <path class="ac flow" d="M186 92 H228"/>
+  <rect class="boxac" x="234" y="70" width="60" height="44" rx="6"/>
+  <text class="t-ac" x="264" y="98" text-anchor="middle">1000 W</text>
+  <text class="t-am t-big" x="264" y="56" text-anchor="middle">+10 dB</text>
+  <text class="t-dim" x="170" y="140" text-anchor="middle">double the watts = +3 dB · ten times = +10 dB</text>
+</svg>`,
+
+jnd: `<svg viewBox="0 0 340 140" aria-hidden="true">
+  <path class="thin" d="M30 100 H310"/>
+  <rect class="boxac" x="60" y="52" width="34" height="48" rx="4"/>
+  <rect class="boxac blink" x="110" y="44" width="34" height="56" rx="4"/>
+  <text class="t-dim" x="77" y="120" text-anchor="middle">70 dB</text>
+  <text class="t-ac" x="127" y="120" text-anchor="middle">73 dB</text>
+  <path class="am" d="M170 68 H210"/><path class="am" d="M202 62 L212 68 L202 74"/>
+  <text class="t-am t-big" x="272" y="62" text-anchor="middle">±3 dB</text>
+  <text class="t-dim" x="272" y="82" text-anchor="middle">smallest change</text>
+  <text class="t-dim" x="272" y="98" text-anchor="middle">most people notice</text>
+</svg>`,
+
+nom: `<svg viewBox="0 0 340 150" aria-hidden="true">
+  <g>
+    <circle class="pulse" cx="50" cy="46" r="10" fill="var(--accent-dim)" stroke="var(--accent)" stroke-width="1.5"/>
+    <path class="ac" d="M50 56 V72"/>
+  </g>
+  <g>
+    <circle class="pulse" cx="90" cy="46" r="10" fill="var(--accent-dim)" stroke="var(--accent)" stroke-width="1.5"/>
+    <circle class="pulse2" cx="130" cy="46" r="10" fill="var(--accent-dim)" stroke="var(--accent)" stroke-width="1.5"/>
+    <path class="ac" d="M90 56 V72 M130 56 V72"/>
+  </g>
+  <text class="t-dim" x="50" y="94" text-anchor="middle">1 mic</text>
+  <text class="t-dim" x="110" y="94" text-anchor="middle">2 mics</text>
+  <path class="am" d="M170 52 H208"/><path class="am" d="M200 46 L210 52 L200 58"/>
+  <text class="t-am t-big" x="272" y="48" text-anchor="middle">−3 dB</text>
+  <text class="t-dim" x="272" y="68" text-anchor="middle">gain before feedback</text>
+  <text class="t-dim" x="170" y="128" text-anchor="middle">every doubling of open mics (NOM) costs 3 dB</text>
+</svg>`,
+
+spl0: `<svg viewBox="0 0 340 150" aria-hidden="true">
+  <path class="ln" d="M40 120 V26"/>
+  <path class="thin" d="M40 120 H310"/>
+  <rect class="boxac" x="52" y="112" width="40" height="8"/>
+  <rect class="boxac" x="106" y="76" width="40" height="44"/>
+  <rect class="boxac" x="160" y="52" width="40" height="68"/>
+  <rect class="boxac" x="214" y="34" width="40" height="86"/>
+  <text class="t-ac" x="72" y="134" text-anchor="middle" font-size="9">0</text>
+  <text class="t-dim" x="126" y="134" text-anchor="middle" font-size="9">60</text>
+  <text class="t-dim" x="180" y="134" text-anchor="middle" font-size="9">90</text>
+  <text class="t-dim" x="234" y="134" text-anchor="middle" font-size="9">120 dB</text>
+  <text class="t-am" x="272" y="86">0 dB SPL =</text>
+  <text class="t-am" x="272" y="102">20 µPa</text>
+  <text class="t-ac" x="40" y="18">threshold of hearing, not silence</text>
+</svg>`,
+
+refs: `<svg viewBox="0 0 340 150" aria-hidden="true">
+  <rect class="boxac" x="10" y="28" width="74" height="52" rx="8"/>
+  <text class="t-ac t-big" x="47" y="52" text-anchor="middle">dBu</text>
+  <text class="t-dim" x="47" y="70" text-anchor="middle">0.775 V</text>
+  <rect class="boxac" x="92" y="28" width="74" height="52" rx="8"/>
+  <text class="t-ac t-big" x="129" y="52" text-anchor="middle">dBV</text>
+  <text class="t-dim" x="129" y="70" text-anchor="middle">1.0 V</text>
+  <rect class="box" x="174" y="28" width="74" height="52" rx="8" stroke="var(--amber)"/>
+  <text class="t-am t-big" x="211" y="52" text-anchor="middle">dBm</text>
+  <text class="t-dim" x="211" y="70" text-anchor="middle">1 mW</text>
+  <rect class="boxac" x="256" y="28" width="74" height="52" rx="8"/>
+  <text class="t-ac t-big" x="293" y="52" text-anchor="middle">dB SPL</text>
+  <text class="t-dim" x="293" y="70" text-anchor="middle">20 µPa</text>
+  <text class="t-ac" x="88" y="106" text-anchor="middle">20 log — voltage</text>
+  <text class="t-am" x="211" y="106" text-anchor="middle">10 log</text>
+  <text class="t-ac" x="293" y="106" text-anchor="middle">20 log</text>
+  <text class="t-dim" x="170" y="136" text-anchor="middle">dBm is the odd one out — it references power</text>
+</svg>`,
+
+tenx: `<svg viewBox="0 0 340 150" aria-hidden="true">
+  <rect class="boxac" x="106" y="14" width="128" height="34" rx="8"/>
+  <text class="t-ac t-big" x="170" y="37" text-anchor="middle">a 10× ratio</text>
+  <path class="ln" d="M140 48 L86 76 M200 48 L254 76"/>
+  <rect class="box" x="20" y="78" width="132" height="46" rx="8" stroke="var(--green)"/>
+  <text class="t-gr t-big" x="86" y="100" text-anchor="middle">+10 dB</text>
+  <text class="t-dim" x="86" y="116" text-anchor="middle">in watts</text>
+  <rect class="box" x="188" y="78" width="132" height="46" rx="8" stroke="var(--amber)"/>
+  <text class="t-am t-big" x="254" y="100" text-anchor="middle">+20 dB</text>
+  <text class="t-dim" x="254" y="116" text-anchor="middle">in volts</text>
+  <text class="t-dim" x="170" y="144" text-anchor="middle">same ratio, different coefficient</text>
+</svg>`,
+
+negdb: `<svg viewBox="0 0 340 140" aria-hidden="true">
+  <rect class="box" x="26" y="42" width="120" height="46" rx="8" stroke="var(--green)"/>
+  <text class="t-gr" x="86" y="64" text-anchor="middle">ratio &gt; 1</text>
+  <text class="t-gr t-big" x="86" y="82" text-anchor="middle">+ dB (gain)</text>
+  <rect class="box" x="194" y="42" width="120" height="46" rx="8" stroke="var(--red)"/>
+  <text x="254" y="64" text-anchor="middle" fill="var(--red)">ratio &lt; 1</text>
+  <text x="254" y="82" text-anchor="middle" fill="var(--red)" font-size="14" font-weight="600">− dB (loss)</text>
+  <text class="t-am" x="170" y="118" text-anchor="middle">sign doesn't match the story? you flipped the fraction</text>
+</svg>`,
+
+speech25: `<svg viewBox="0 0 340 150" aria-hidden="true">
+  <path class="thin" d="M30 122 H316"/>
+  <rect class="box" x="50" y="94" width="230" height="28" fill="var(--surface)"/>
+  <text class="t-dim" x="165" y="113" text-anchor="middle">background noise — 45 dB SPL(A) max</text>
+  <rect class="boxac" x="50" y="34" width="230" height="30"/>
+  <text class="t-ac" x="165" y="54" text-anchor="middle">program audio — 70 dB SPL(A)</text>
+  <path class="am" d="M300 49 V109"/>
+  <path class="am" d="M294 42 L300 32 L306 42"/>
+  <path class="am" d="M294 114 L300 124 L306 114"/>
+  <text class="t-am t-big" x="300" y="84" text-anchor="middle">25</text>
+  <text class="t-dim" x="170" y="146" text-anchor="middle">max noise = target − 25 dB</text>
+</svg>`,
+
+series: `<svg viewBox="0 0 340 150" aria-hidden="true">
+  <path class="ac flow" d="M24 60 H60 M108 60 H140 M188 60 H220 M268 60 H316 M316 60 V104 H24 V60"/>
+  <rect class="boxac" x="60" y="42" width="48" height="36" rx="5"/><text class="t-ac" x="84" y="65" text-anchor="middle">8 Ω</text>
+  <rect class="boxac" x="140" y="42" width="48" height="36" rx="5"/><text class="t-ac" x="164" y="65" text-anchor="middle">8 Ω</text>
+  <rect class="boxac" x="220" y="42" width="48" height="36" rx="5"/><text class="t-ac" x="244" y="65" text-anchor="middle">8 Ω</text>
+  <text class="t-dim" x="170" y="32" text-anchor="middle">one path, in a line</text>
+  <text class="t-am t-big" x="170" y="130" text-anchor="middle">Z_T = 8 + 8 + 8 = 24 Ω</text>
+  <text class="t-dim" x="170" y="146" text-anchor="middle">total is always LARGER than the largest</text>
+</svg>`,
+
+parallel: `<svg viewBox="0 0 340 172" aria-hidden="true">
+  <path class="ac flow" d="M20 76 H70 M270 76 H320"/>
+  <path class="ac" d="M70 30 V122 M270 30 V122"/>
+  <path class="ac" d="M70 30 H100 M240 30 H270 M70 76 H100 M240 76 H270 M70 122 H100 M240 122 H270"/>
+  <rect class="boxac" x="100" y="16" width="140" height="28" rx="5"/><text class="t-ac" x="170" y="35" text-anchor="middle">8 Ω</text>
+  <rect class="boxac" x="100" y="62" width="140" height="28" rx="5"/><text class="t-ac" x="170" y="81" text-anchor="middle">8 Ω</text>
+  <rect class="boxac" x="100" y="108" width="140" height="28" rx="5"/><text class="t-ac" x="170" y="127" text-anchor="middle">8 Ω</text>
+  <text class="t-am t-big" x="170" y="150" text-anchor="middle">Z_T = 8 ÷ 3 = 2.67 Ω</text>
+  <text class="t-dim" x="170" y="166" text-anchor="middle">smaller than the smallest speaker</text>
+</svg>`,
+
+parmixed: `<svg viewBox="0 0 340 150" aria-hidden="true">
+  <rect class="boxac" x="16" y="26" width="70" height="32" rx="6"/><text class="t-ac" x="51" y="47" text-anchor="middle">1/8</text>
+  <text class="t-dim" x="99" y="47" text-anchor="middle">+</text>
+  <rect class="boxac" x="112" y="26" width="70" height="32" rx="6"/><text class="t-ac" x="147" y="47" text-anchor="middle">1/16</text>
+  <text class="t-dim" x="195" y="47" text-anchor="middle">+</text>
+  <rect class="boxac" x="208" y="26" width="70" height="32" rx="6"/><text class="t-ac" x="243" y="47" text-anchor="middle">1/4</text>
+  <path class="am flow" d="M147 66 V88"/>
+  <text class="t-am" x="170" y="104" text-anchor="middle">= 0.4375 &nbsp;→&nbsp; flip it back over</text>
+  <text class="t-ac t-big" x="170" y="132" text-anchor="middle">Z_T = 1 ÷ 0.4375 = 2.29 Ω</text>
+  <text class="t-dim" x="170" y="148" text-anchor="middle">flip · add · flip — the last flip is the one people forget</text>
+</svg>`,
+
+amppow: `<svg viewBox="0 0 340 150" aria-hidden="true">
+  <path class="thin" d="M40 116 H310"/>
+  <rect class="boxac" x="60" y="86" width="40" height="30"/>
+  <text class="t-dim" x="80" y="80" text-anchor="middle">P₁</text>
+  <rect class="boxac grow" x="140" y="46" width="40" height="70"/>
+  <text class="t-ac" x="160" y="40" text-anchor="middle">P₂</text>
+  <path class="am flow" d="M104 100 H136"/>
+  <path class="am" d="M130 94 L140 100 L130 106"/>
+  <text class="t-am" x="120" y="122" text-anchor="middle" font-size="9">more watts</text>
+  <text class="t-am t-big" x="252" y="66" text-anchor="middle">ΔSPL = 10 log(P₂/P₁)</text>
+  <text class="t-ac" x="252" y="92" text-anchor="middle">P₂ = P₁ × 10^(ΔSPL/10)</text>
+  <text class="t-dim" x="170" y="140" text-anchor="middle">+3 dB doubles the watts · +10 dB is ten times</text>
+</svg>`,
+
+sens: `<svg viewBox="0 0 340 150" aria-hidden="true">
+  <rect class="boxac" x="20" y="46" width="46" height="56" rx="5"/>
+  <circle cx="43" cy="74" r="15" fill="none" stroke="var(--accent)" stroke-width="2"/>
+  <circle class="pulse" cx="43" cy="74" r="7" fill="var(--accent)"/>
+  <path class="ac arc1" d="M78 58 a22 22 0 0 1 0 32"/>
+  <path class="ac arc2" d="M92 48 a34 34 0 0 1 0 52"/>
+  <path class="am" d="M43 122 H196"/>
+  <path class="am" d="M188 116 L198 122 L188 128"/>
+  <text class="t-am" x="120" y="140" text-anchor="middle">1 metre</text>
+  <text class="t-ac t-big" x="252" y="60" text-anchor="middle">90 dB SPL</text>
+  <text class="t-dim" x="252" y="80" text-anchor="middle">from 1 watt, at 1 m</text>
+  <text class="t-am" x="252" y="104" text-anchor="middle">= sensitivity</text>
+  <text class="t-dim" x="14" y="30">your reference point for every SPL calc</text>
+</svg>`,
+
+wavelength: `<svg viewBox="0 0 340 150" aria-hidden="true">
+  <path class="ac" d="M20 70 q 20 -34 40 0 t 40 0 t 40 0 t 40 0 t 40 0 t 40 0 t 40 0"/>
+  <path class="am" d="M20 100 H100"/>
+  <path class="am" d="M20 94 V106 M100 94 V106"/>
+  <text class="t-am t-big" x="60" y="122" text-anchor="middle">λ</text>
+  <text class="t-ac t-big" x="230" y="112" text-anchor="middle">λ = v / f</text>
+  <text class="t-dim" x="230" y="132" text-anchor="middle">v = 343 m/s in air (20 °C)</text>
+  <text class="t-dim" x="20" y="24">one full cycle = one wavelength</text>
+</svg>`,
+
+octave: `<svg viewBox="0 0 340 150" aria-hidden="true">
+  <path class="thin" d="M20 96 H320"/>
+  <g class="ac">
+    <path d="M28 96 V70"/><path d="M64 96 V70"/><path d="M118 96 V70"/><path d="M190 96 V70"/><path d="M286 96 V70"/>
+  </g>
+  <text class="t-dim" x="28" y="112" text-anchor="middle" font-size="9">20</text>
+  <text class="t-dim" x="64" y="112" text-anchor="middle" font-size="9">40</text>
+  <text class="t-dim" x="118" y="112" text-anchor="middle" font-size="9">80</text>
+  <text class="t-dim" x="190" y="112" text-anchor="middle" font-size="9">160</text>
+  <text class="t-dim" x="290" y="112" text-anchor="middle" font-size="9">320 Hz…</text>
+  <path class="am" d="M28 56 H64"/><text class="t-am" x="46" y="48" text-anchor="middle" font-size="9">×2</text>
+  <path class="am" d="M64 56 H118"/><text class="t-am" x="91" y="48" text-anchor="middle" font-size="9">×2</text>
+  <path class="am" d="M118 56 H190"/><text class="t-am" x="154" y="48" text-anchor="middle" font-size="9">×2</text>
+  <text class="t-ac t-big" x="170" y="26" text-anchor="middle">an octave = one doubling</text>
+  <text class="t-dim" x="170" y="138" text-anchor="middle">octaves = log(f₂/f₁) ÷ log(2) · 20 Hz–20 kHz ≈ 10</text>
+</svg>`,
+
+audiobw: `<svg viewBox="0 0 340 145" aria-hidden="true">
+  <rect class="boxac" x="12" y="42" width="80" height="36" rx="6"/>
+  <text class="t-ac" x="52" y="65" text-anchor="middle">48 kHz</text>
+  <text class="t-dim" x="52" y="94" text-anchor="middle" font-size="9">sample rate</text>
+  <text class="t-dim" x="104" y="65" text-anchor="middle">×</text>
+  <rect class="boxac" x="116" y="42" width="70" height="36" rx="6"/>
+  <text class="t-ac" x="151" y="65" text-anchor="middle">24 bit</text>
+  <text class="t-dim" x="151" y="94" text-anchor="middle" font-size="9">bit depth</text>
+  <text class="t-dim" x="198" y="65" text-anchor="middle">×</text>
+  <rect class="boxac" x="210" y="42" width="60" height="36" rx="6"/>
+  <text class="t-ac" x="240" y="65" text-anchor="middle">2 ch</text>
+  <text class="t-dim" x="240" y="94" text-anchor="middle" font-size="9">channels</text>
+  <text class="t-am t-big" x="304" y="65" text-anchor="middle">= bps</text>
+  <text class="t-dim" x="170" y="124" text-anchor="middle">bandwidth = sample rate × bit depth × channels</text>
+</svg>`,
+
+nyquist: `<svg viewBox="0 0 340 150" aria-hidden="true">
+  <path class="ln" d="M20 62 q 24 -34 48 0 t 48 0 t 48 0 t 48 0 t 48 0"/>
+  <g fill="var(--accent)">
+    <circle class="pulse" cx="20" cy="62" r="3.5"/><circle class="pulse" cx="44" cy="40" r="3.5"/>
+    <circle class="pulse2" cx="68" cy="62" r="3.5"/><circle class="pulse2" cx="92" cy="40" r="3.5"/>
+    <circle class="pulse3" cx="116" cy="62" r="3.5"/><circle class="pulse3" cx="140" cy="40" r="3.5"/>
+    <circle class="pulse" cx="164" cy="62" r="3.5"/><circle class="pulse" cx="188" cy="40" r="3.5"/>
+    <circle class="pulse2" cx="212" cy="62" r="3.5"/><circle class="pulse2" cx="236" cy="40" r="3.5"/>
+  </g>
+  <text class="t-dim" x="20" y="22">sample faster than twice the top frequency</text>
+  <text class="t-ac t-big" x="170" y="104" text-anchor="middle">rate &gt; 2 × highest frequency</text>
+  <text class="t-am" x="170" y="128" text-anchor="middle">20 kHz audio → above 40 kHz</text>
+  <text class="t-dim" x="170" y="146" text-anchor="middle">which is why CD lands on 44.1 kHz</text>
+</svg>`,
+
+diag169: `<svg viewBox="0 0 340 150" aria-hidden="true">
+  <rect class="boxac" x="60" y="30" width="200" height="86" rx="3"/>
+  <path class="am sweep" d="M60 116 L260 30"/>
+  <text class="t-am t-big" x="160" y="68" text-anchor="middle">D</text>
+  <path class="ac" d="M60 130 H260"/>
+  <text class="t-ac" x="160" y="146" text-anchor="middle">W = D × 0.8716</text>
+  <path class="ac" d="M46 30 V116"/>
+  <text class="t-ac" x="30" y="76" text-anchor="middle" font-size="9">H = D</text>
+  <text class="t-ac" x="30" y="88" text-anchor="middle" font-size="9">× 0.4903</text>
+  <text class="t-dim" x="272" y="76">16:9 only</text>
+</svg>`,
+
+ar: `<svg viewBox="0 0 340 150" aria-hidden="true">
+  <rect class="boxac" x="40" y="34" width="176" height="99" rx="3"/>
+  <text class="t-ac" x="128" y="26" text-anchor="middle">W</text>
+  <text class="t-ac" x="28" y="88" text-anchor="middle">H</text>
+  <text class="t-am t-big" x="128" y="90" text-anchor="middle">AR = W / H</text>
+  <text class="t-dim" x="278" y="60" text-anchor="middle">16:9 → 1.7778</text>
+  <text class="t-dim" x="278" y="80" text-anchor="middle">H = W ÷ AR</text>
+  <text class="t-dim" x="278" y="100" text-anchor="middle">W = H × AR</text>
+</svg>`,
+
+pythag: `<svg viewBox="0 0 340 150" aria-hidden="true">
+  <path class="ac" d="M70 118 H260 V38 Z" fill="var(--accent-dim)" opacity=".55"/>
+  <path class="ac" d="M70 118 H260 V38 Z"/>
+  <path class="thin" d="M70 106 H82 V118"/>
+  <text class="t-ac" x="165" y="136" text-anchor="middle">A (width)</text>
+  <text class="t-ac" x="278" y="82" text-anchor="middle">B (height)</text>
+  <text class="t-am t-big" x="150" y="70" text-anchor="middle">C</text>
+  <text class="t-am t-big" x="170" y="24" text-anchor="middle">A² + B² = C²</text>
+</svg>`,
+
+throw_: `<svg viewBox="0 0 340 140" aria-hidden="true">
+  <rect class="box" x="14" y="55" width="44" height="26" rx="5"/>
+  <circle cx="58" cy="68" r="4" fill="var(--amber)"/>
+  <path class="thin" d="M62 68 L268 20 M62 68 L268 116" opacity=".7"/>
+  <rect class="boxac" x="268" y="16" width="8" height="104" rx="3"/>
+  <path class="am flow" d="M62 132 H268"/>
+  <text class="t-am t-big" x="165" y="127" text-anchor="middle">D = SW × throw ratio</text>
+  <path class="ac" d="M290 20 V116"/>
+  <text class="t-ac" x="302" y="72">SW</text>
+  <text class="t-dim" x="36" y="48" text-anchor="middle">projector</text>
+</svg>`,
+
+lumens: `<svg viewBox="0 0 340 160" aria-hidden="true">
+  <rect class="boxac" x="90" y="20" width="140" height="90" rx="4"/>
+  <g fill="var(--accent2)">
+    <circle class="pulse" cx="120" cy="45" r="3.5"/><circle class="pulse2" cx="160" cy="45" r="3.5"/><circle class="pulse3" cx="200" cy="45" r="3.5"/>
+    <circle class="pulse2" cx="120" cy="65" r="3.5"/><circle class="pulse3" cx="160" cy="65" r="3.5"/><circle class="pulse" cx="200" cy="65" r="3.5"/>
+    <circle class="pulse3" cx="120" cy="85" r="3.5"/><circle class="pulse" cx="160" cy="85" r="3.5"/><circle class="pulse2" cx="200" cy="85" r="3.5"/>
+  </g>
+  <path class="am" d="M60 25 V105" /><text class="t-am" x="46" y="70" text-anchor="middle">SH</text>
+  <path class="am" d="M95 130 H225"/><text class="t-am" x="160" y="147" text-anchor="middle">SW</text>
+  <text class="t-dim" x="248" y="62">9 readings,</text>
+  <text class="t-dim" x="248" y="76">averaged (AI)</text>
+  <text class="t-ac" x="248" y="100">L = SH × SW × AI</text>
+</svg>`,
+
+discas: `<svg viewBox="0 0 340 150" aria-hidden="true">
+  <rect class="boxac" x="50" y="24" width="200" height="112" rx="3"/>
+  <path class="am" d="M262 24 V136"/>
+  <text class="t-am" x="290" y="84" text-anchor="middle">image H</text>
+  <rect class="box" x="80" y="76" width="86" height="18" rx="2" stroke="var(--green)"/>
+  <text class="t-gr" x="123" y="90" text-anchor="middle" font-size="10">12 pt text</text>
+  <path class="gr" d="M172 76 V94"/>
+  <text class="t-gr" x="180" y="70" font-size="9">element H</text>
+  <text class="t-ac t-big" x="150" y="122" text-anchor="middle">%EH = element H / image H</text>
+  <text class="t-dim" x="150" y="16" text-anchor="middle">DISCAS BDM — basic decision making</text>
+</svg>`,
+
+contrast: `<svg viewBox="0 0 340 150" aria-hidden="true">
+  <rect x="30" y="30" width="130" height="86" rx="4" fill="#000" stroke="var(--border2)"/>
+  <rect class="boxac pulse" x="50" y="50" width="90" height="46" rx="3"/>
+  <text class="t-dim" x="95" y="132" text-anchor="middle">dark room</text>
+  <rect x="180" y="30" width="130" height="86" rx="4" fill="#333a4a" stroke="var(--border2)"/>
+  <rect class="boxac pulse" x="200" y="50" width="90" height="46" rx="3" opacity=".7"/>
+  <text class="t-am" x="245" y="132" text-anchor="middle">ambient light lifts black</text>
+  <text class="t-ac t-big" x="170" y="20" text-anchor="middle">full-motion video needs ≥ 80:1</text>
+</svg>`,
+
+eyeheight: `<svg viewBox="0 0 340 150" aria-hidden="true">
+  <path class="thin" d="M20 124 H320"/>
+  <g class="ln">
+    <path d="M74 124 V96 H104 V124"/>
+    <path d="M74 96 V78 H104"/>
+  </g>
+  <circle cx="88" cy="66" r="11" fill="none" stroke="var(--accent)" stroke-width="2"/>
+  <circle class="pulse" cx="88" cy="66" r="3" fill="var(--accent)"/>
+  <path class="am" d="M46 66 V124"/>
+  <path class="am" d="M40 72 L46 62 L52 72"/>
+  <text class="t-am t-big" x="24" y="96">1.2 m</text>
+  <path class="ac flow" d="M100 64 H272"/>
+  <rect class="boxac" x="276" y="34" width="10" height="70" rx="2"/>
+  <text class="t-dim" x="190" y="52" text-anchor="middle">sightline to the screen</text>
+  <text class="t-dim" x="170" y="144" text-anchor="middle">seated eye height — 1.2 m (48 in)</text>
+</svg>`,
+
+lightfall: `<svg viewBox="0 0 340 150" aria-hidden="true">
+  <circle class="pulse" cx="30" cy="70" r="10" fill="var(--amber)"/>
+  <path class="thin" d="M40 70 L300 22 M40 70 L300 118" opacity=".55"/>
+  <rect class="boxac" x="128" y="52" width="8" height="36" rx="2"/>
+  <text class="t-ac" x="132" y="44" text-anchor="middle" font-size="9">100%</text>
+  <text class="t-dim" x="132" y="106" text-anchor="middle" font-size="9">D</text>
+  <rect class="box" x="240" y="34" width="8" height="72" rx="2" stroke="var(--amber)" fill="var(--amber-dim)"/>
+  <text class="t-am" x="248" y="26" text-anchor="middle" font-size="9">25%</text>
+  <text class="t-dim" x="244" y="124" text-anchor="middle" font-size="9">2D</text>
+  <text class="t-am t-big" x="170" y="146" text-anchor="middle">25% remains = a 75% decrease</text>
+</svg>`,
+
+chroma: `<svg viewBox="0 0 340 150" aria-hidden="true">
+  <g>
+    <rect class="boxac" x="24" y="30" width="76" height="46" rx="5"/>
+    <text class="t-ac t-big" x="62" y="58" text-anchor="middle">4:4:4</text>
+    <text class="t-am t-big" x="62" y="98" text-anchor="middle">× 3</text>
+    <text class="t-dim" x="62" y="116" text-anchor="middle" font-size="9">12 ÷ 4</text>
+  </g>
+  <g>
+    <rect class="boxac" x="132" y="30" width="76" height="46" rx="5"/>
+    <text class="t-ac t-big" x="170" y="58" text-anchor="middle">4:2:2</text>
+    <text class="t-am t-big" x="170" y="98" text-anchor="middle">× 2</text>
+    <text class="t-dim" x="170" y="116" text-anchor="middle" font-size="9">8 ÷ 4</text>
+  </g>
+  <g>
+    <rect class="boxac" x="240" y="30" width="76" height="46" rx="5"/>
+    <text class="t-ac t-big" x="278" y="58" text-anchor="middle">4:2:0</text>
+    <text class="t-am t-big" x="278" y="98" text-anchor="middle">× 1.5</text>
+    <text class="t-dim" x="278" y="116" text-anchor="middle" font-size="9">6 ÷ 4</text>
+  </g>
+  <text class="t-dim" x="170" y="140" text-anchor="middle">count samples per 4 pixels, then divide by 4</text>
+  <text class="t-dim" x="170" y="20" text-anchor="middle">the factor is never the first number in the name</text>
+</svg>`,
+
+fourk: `<svg viewBox="0 0 340 150" aria-hidden="true">
+  <rect class="boxac" x="14" y="30" width="60" height="30" rx="5"/><text class="t-ac" x="44" y="50" text-anchor="middle" font-size="10">3840×2160</text>
+  <rect class="boxac" x="82" y="30" width="52" height="30" rx="5"/><text class="t-ac" x="108" y="50" text-anchor="middle" font-size="10">60 fps</text>
+  <rect class="boxac" x="142" y="30" width="52" height="30" rx="5"/><text class="t-ac" x="168" y="50" text-anchor="middle" font-size="10">8 bit</text>
+  <rect class="boxac" x="202" y="30" width="52" height="30" rx="5"/><text class="t-ac" x="228" y="50" text-anchor="middle" font-size="10">× 3</text>
+  <text class="t-dim" x="284" y="50" text-anchor="middle">4:4:4</text>
+  <path class="am flow" d="M20 74 H300"/>
+  <text class="t-am t-big" x="170" y="102" text-anchor="middle">≈ 11.94 Gbps</text>
+  <text class="t-dim" x="170" y="126" text-anchor="middle">more than a 10 Gb link can carry —</text>
+  <text class="t-dim" x="170" y="142" text-anchor="middle">which is why real video is compressed</text>
+</svg>`,
+
+poe: `<svg viewBox="0 0 340 150" aria-hidden="true">
+  <rect class="boxac" x="20" y="26" width="120" height="40" rx="6"/>
+  <text class="t-ac" x="80" y="44" text-anchor="middle" font-size="10">48 V × 0.185 A</text>
+  <text class="t-am" x="80" y="60" text-anchor="middle" font-size="10">= 8.88 W each</text>
+  <path class="ac flow" d="M144 46 H190"/>
+  <rect class="box" x="196" y="26" width="124" height="40" rx="6"/>
+  <text x="258" y="52" text-anchor="middle">total load</text>
+  <path class="am flow" d="M258 70 V90"/>
+  <rect class="box" x="60" y="92" width="104" height="42" rx="8" stroke="var(--green)"/>
+  <text class="t-gr" x="112" y="110" text-anchor="middle">× 1.2</text>
+  <text class="t-dim" x="112" y="126" text-anchor="middle" font-size="9">add 20% headroom</text>
+  <rect class="box" x="180" y="92" width="112" height="42" rx="8" stroke="var(--amber)"/>
+  <text class="t-am" x="236" y="110" text-anchor="middle">÷ 0.8 = × 1.25</text>
+  <text class="t-dim" x="236" y="126" text-anchor="middle" font-size="9">load it to only 80%</text>
+  <text class="t-dim" x="170" y="18" text-anchor="middle">milliamps → amps FIRST</text>
+</svg>`,
+
+channel100: `<svg viewBox="0 0 340 150" aria-hidden="true">
+  <rect class="box" x="16" y="52" width="30" height="34" rx="4"/>
+  <rect class="box" x="294" y="52" width="30" height="34" rx="4"/>
+  <path class="am" d="M46 69 H82"/>
+  <path class="ac flowslow" d="M82 69 H258"/>
+  <path class="am" d="M258 69 H294"/>
+  <circle cx="82" cy="69" r="4" fill="var(--amber)"/><circle cx="258" cy="69" r="4" fill="var(--amber)"/>
+  <text class="t-am" x="64" y="52" text-anchor="middle" font-size="9">patch</text>
+  <text class="t-am" x="276" y="52" text-anchor="middle" font-size="9">patch</text>
+  <text class="t-ac" x="170" y="52" text-anchor="middle">permanent link ≤ 90 m</text>
+  <path class="thin" d="M46 104 H294 M46 98 V110 M294 98 V110"/>
+  <text class="t-big t-ac" x="170" y="126" text-anchor="middle">channel ≤ 100 m (328 ft)</text>
+  <text class="t-dim" x="170" y="144" text-anchor="middle">longer patch cords shorten the link, never the channel</text>
+</svg>`,
+
+rf: `<svg viewBox="0 0 320 120" aria-hidden="true">
+  <defs><linearGradient id="rfg2" x1="0" x2="1"><stop offset="0" stop-color="#5b9cf6"/><stop offset="1" stop-color="#a78bfa"/></linearGradient></defs>
+  <rect x="40" y="45" width="240" height="22" rx="11" fill="url(#rfg2)" opacity=".85"/>
+  <line class="ln" x1="40" y1="30" x2="40" y2="82"/>
+  <line class="ln" x1="280" y1="30" x2="280" y2="82"/>
+  <text class="t-big t-ac" x="40" y="20" text-anchor="middle">3 kHz</text>
+  <text class="t-big t-ac" x="280" y="20" text-anchor="middle">300 GHz</text>
+  <text class="t-dim" x="40" y="100" text-anchor="middle">floor</text>
+  <text class="t-dim" x="280" y="100" text-anchor="middle">ceiling</text>
+  <text x="160" y="61" text-anchor="middle" fill="#0f1117" font-weight="700">RF spectrum</text>
+</svg>`,
+
+conduit: `<svg viewBox="0 0 340 150" aria-hidden="true">
+  <circle cx="110" cy="76" r="58" class="box"/>
+  <circle cx="110" cy="76" r="52" fill="none" stroke="var(--border)" stroke-width="1"/>
+  <g fill="var(--accent-dim)" stroke="var(--accent)" stroke-width="1.5">
+    <circle class="pulse" cx="92" cy="60" r="14"/><circle class="pulse2" cx="128" cy="66" r="14"/>
+    <circle class="pulse3" cx="102" cy="94" r="14"/><circle class="pulse" cx="134" cy="98" r="12"/>
+  </g>
+  <text class="t-am t-big" x="252" y="62" text-anchor="middle">≤ 40%</text>
+  <text class="t-dim" x="252" y="84" text-anchor="middle">of the interior</text>
+  <text class="t-dim" x="252" y="100" text-anchor="middle">cross-sectional area</text>
+  <text class="t-dim" x="110" y="146" text-anchor="middle">3 or more cables</text>
+</svg>`,
+
+bend: `<svg viewBox="0 0 340 150" aria-hidden="true">
+  <path class="ac" d="M30 118 H120 a52 52 0 0 0 52 -52 V22" stroke-width="9" opacity=".7"/>
+  <circle cx="120" cy="66" r="52" fill="none" stroke="var(--amber)" stroke-width="1.4" stroke-dasharray="4 5"/>
+  <path class="am" d="M120 66 L172 66"/>
+  <text class="t-am" x="146" y="58" text-anchor="middle" font-size="9">r</text>
+  <path class="ln" d="M212 108 V122"/>
+  <path class="ln" d="M226 108 V122"/>
+  <text class="t-dim" x="219" y="136" text-anchor="middle" font-size="9">Ø</text>
+  <text class="t-am t-big" x="264" y="60" text-anchor="middle">r ≥ 4 × Ø</text>
+  <text class="t-dim" x="264" y="82" text-anchor="middle">four times the</text>
+  <text class="t-dim" x="264" y="96" text-anchor="middle">cable's diameter</text>
+</svg>`,
+
+rig: `<svg viewBox="0 0 340 150" aria-hidden="true">
+  <path class="thin" d="M20 20 H320"/>
+  <g class="ln"><path d="M170 20 V44"/></g>
+  <rect class="boxac" x="132" y="44" width="76" height="30" rx="4"/>
+  <text class="t-ac" x="170" y="64" text-anchor="middle">40 kg</text>
+  <g class="am"><path class="tick" d="M170 78 V104"/></g>
+  <path class="am" d="M162 98 L170 108 L178 98"/>
+  <text class="t-am t-big" x="170" y="128" text-anchor="middle">mount rated 200 kg</text>
+  <text class="t-ac t-big" x="66" y="64" text-anchor="middle">5 : 1</text>
+  <text class="t-dim" x="66" y="84" text-anchor="middle">safety factor</text>
+  <text class="t-dim" x="170" y="146" text-anchor="middle">rating = load × 5, for anything overhead</text>
+</svg>`,
+
+rs485: `<svg viewBox="0 0 340 150" aria-hidden="true">
+  <path class="ac flowslow" d="M46 70 H294"/>
+  <rect class="box" x="16" y="54" width="30" height="32" rx="4" stroke="var(--amber)" fill="var(--amber-dim)"/>
+  <text class="t-am" x="31" y="102" text-anchor="middle" font-size="9">120 Ω</text>
+  <rect class="box" x="294" y="54" width="30" height="32" rx="4" stroke="var(--amber)" fill="var(--amber-dim)"/>
+  <text class="t-am" x="309" y="102" text-anchor="middle" font-size="9">120 Ω</text>
+  <g>
+    <rect class="boxac" x="80" y="42" width="26" height="22" rx="3"/>
+    <rect class="boxac" x="130" y="42" width="26" height="22" rx="3"/>
+    <rect class="boxac" x="180" y="42" width="26" height="22" rx="3"/>
+    <rect class="boxac" x="230" y="42" width="26" height="22" rx="3"/>
+    <path class="thin" d="M93 64 V70 M143 64 V70 M193 64 V70 M243 64 V70"/>
+  </g>
+  <text class="t-ac t-big" x="170" y="126" text-anchor="middle">32 devices · 120 Ω at BOTH ends</text>
+  <text class="t-dim" x="170" y="144" text-anchor="middle">120 Ω is the data bus — 75 Ω is video coax</text>
+</svg>`,
+
+scale: `<svg viewBox="0 0 340 150" aria-hidden="true">
+  <rect class="box" x="24" y="34" width="110" height="76" rx="4"/>
+  <path class="ac" d="M40 88 H118"/>
+  <path class="ac" d="M40 82 V94 M118 82 V94"/>
+  <text class="t-ac" x="79" y="76" text-anchor="middle" font-size="10">42 mm</text>
+  <text class="t-dim" x="79" y="126" text-anchor="middle" font-size="9">on the page, 1:50</text>
+  <path class="am flow" d="M144 72 H196"/>
+  <text class="t-am" x="170" y="60" text-anchor="middle" font-size="10">× 50</text>
+  <rect class="box" x="206" y="44" width="118" height="56" rx="4" stroke="var(--amber)"/>
+  <text class="t-am t-big" x="265" y="76" text-anchor="middle">2100 mm</text>
+  <text class="t-dim" x="265" y="120" text-anchor="middle" font-size="9">real world</text>
+  <text class="t-dim" x="170" y="20" text-anchor="middle">real = drawn × scale factor</text>
+</svg>`,
+
+aff: `<svg viewBox="0 0 340 150" aria-hidden="true">
+  <path class="ln" d="M20 124 H320"/>
+  <rect x="20" y="124" width="300" height="8" fill="var(--surface)"/>
+  <text class="t-dim" x="24" y="146">finished floor</text>
+  <rect class="boxac" x="180" y="34" width="90" height="52" rx="4"/>
+  <text class="t-ac" x="225" y="64" text-anchor="middle" font-size="10">display</text>
+  <path class="am" d="M120 86 V124"/>
+  <path class="am" d="M114 92 L120 82 L126 92"/>
+  <path class="thin" d="M120 86 H180"/>
+  <text class="t-am t-big" x="86" y="108" text-anchor="middle">1500</text>
+  <text class="t-am" x="86" y="126" text-anchor="middle">AFF</text>
+  <text class="t-dim" x="170" y="20" text-anchor="middle">Above Finished Floor — a mounting height</text>
+</svg>`,
+
+gcmark: `<svg viewBox="0 0 340 150" aria-hidden="true">
+  <rect class="boxac" x="30" y="52" width="150" height="46" rx="6"/>
+  <text class="t-ac t-big" x="105" y="80" text-anchor="middle">$2M AV</text>
+  <rect class="box" x="184" y="52" width="30" height="46" rx="4" stroke="var(--amber)" fill="var(--amber-dim)"/>
+  <path class="am flow" d="M199 44 V22"/>
+  <text class="t-am t-big" x="272" y="60" text-anchor="middle">+5–10%</text>
+  <text class="t-dim" x="272" y="82" text-anchor="middle">$100k–$200k</text>
+  <text class="t-dim" x="170" y="130" text-anchor="middle">the GC's markup rides on top of your number</text>
+</svg>`,
+
+conting: `<svg viewBox="0 0 340 150" aria-hidden="true">
+  <rect class="box" x="30" y="46" width="280" height="40" rx="8"/>
+  <rect class="boxac" x="30" y="46" width="252" height="40" rx="8"/>
+  <rect x="282" y="46" width="28" height="40" fill="var(--amber-dim)" stroke="var(--amber)" stroke-width="1.5"/>
+  <text class="t-ac" x="156" y="70" text-anchor="middle">project budget</text>
+  <text class="t-am t-big" x="296" y="34" text-anchor="middle">5–10%</text>
+  <text class="t-dim" x="170" y="112" text-anchor="middle">fits projects over $500k and over 1 year</text>
+  <text class="t-dim" x="170" y="132" text-anchor="middle">small, short jobs don't carry the same exposure</text>
+</svg>`,
+
+cost: `<svg viewBox="0 0 340 150" aria-hidden="true">
+  <rect class="box" x="16" y="86" width="90" height="42" rx="7"/>
+  <text x="61" y="104" text-anchor="middle" font-size="10">opinion of</text>
+  <text x="61" y="118" text-anchor="middle" font-size="10">probable cost</text>
+  <rect class="boxac" x="124" y="60" width="90" height="42" rx="7"/>
+  <text class="t-ac" x="169" y="86" text-anchor="middle">estimate</text>
+  <rect class="box" x="232" y="34" width="90" height="42" rx="7" stroke="var(--amber)" fill="var(--amber-dim)"/>
+  <text class="t-am" x="277" y="60" text-anchor="middle">quote</text>
+  <path class="ac flow" d="M106 100 H124 M214 76 H232"/>
+  <text class="t-dim" x="170" y="146" text-anchor="middle">increasing detail — and increasing commitment</text>
+  <text class="t-dim" x="16" y="22">before design exists ————————→ binding</text>
+</svg>`
+};
+
+
+/* ============ the deck ============ */
+const CARDS = [
+
+/* ---- Foundations ---- */
+{d:'F', c:'Foundations', q:'Order of operations — the full running order?',
+ a:'<span class="big">PEMDAS</span>Parentheses → Exponents → Multiply/Divide → Add/Subtract.', viz:'pemdas',
+ n:'<b>Trap:</b> × and ÷ share one rank, and so do + and −. Work each pair <b>left to right</b> — multiply does not outrank divide.'},
+{d:'F', c:'Foundations', q:'In a multi-step problem, when should you round?',
+ a:'<span class="big">Only the final result</span>Carry full precision through every intermediate step.', viz:'rounding',
+ n:'Rounding at each step compounds the error, and the compounded value is often one of the offered answers.'},
+{d:'F', c:'Foundations', q:'Area and perimeter of a rectangle?',
+ a:'<span class="big">Area = W × L</span>Perimeter = <b>2 × (W + L)</b> — you walk all four sides.', viz:'rect',
+ n:'<b>Trap:</b> forgetting to double gives exactly half the perimeter — and half is always on the answer list.'},
+{d:'F', c:'Foundations', q:'Volume of a room?',
+ a:'<span class="big">W × L × H</span>Three dimensions, three factors.', viz:'volume'},
+{d:'F', c:'Foundations', q:'1 inch = ? mm &nbsp;·&nbsp; 1 foot = ? m &nbsp;·&nbsp; 1 kg = ? lb',
+ a:'<span class="big">25.4 mm · 0.3048 m · 2.205 lb</span>The three conversions worth having cold.', viz:'units'},
+{d:'F', c:'Foundations', q:'1 foot-candle = how many lux — and why that number?',
+ a:'<span class="big">10.76 lux</span>Because there are <b>10.76 ft² in one m²</b>. Same light, smaller tiles.', viz:'fclux',
+ n:'Lux pairs with metres, foot-candles pair with feet. Mixing them is the classic ANSI-lumens error.'},
+{d:'F', c:'Foundations', q:'log(2) ≈ ?',
+ a:'<span class="big">0.301</span>One doubling. Everything in dB math traces back to this number.', viz:'log2',
+ n:'× 10 → <b>+3 dB</b> (power doubling). × 20 → <b>+6 dB</b> (voltage or distance doubling).'},
+{d:'F', c:'Foundations', q:'log(8) ≈ ? — without a calculator',
+ a:'<span class="big">0.903</span>8 = 2×2×2, so log(8) = three lots of 0.301.', viz:'log8',
+ n:'Logs turn <b>multiplication into addition</b>. That is the entire reason the decibel exists.'},
+{d:'F', c:'Foundations', q:'How do you rearrange a formula safely?',
+ a:'<span class="big">Do the same thing to both sides</span>To get I out of V = I × R, divide <b>both</b> sides by R.', viz:'balance'},
+
+/* ---- Electrical ---- */
+{d:'E', c:'Electrical', q:'Ohm’s Law, solved for current:',
+ a:'<span class="big">I = V / R</span>Amps = volts ÷ ohms. Rearranged: V = IR, R = V/I.', viz:'ohm',
+ n:'Cover the quantity you want in the triangle; what remains is your formula.'},
+{d:'E', c:'Electrical', q:'The power formula — all three forms:',
+ a:'<span class="big">P = I × V</span>Also <b>P = V² / R</b> and <b>P = I² R</b>.', viz:'powertri',
+ n:'The V²/R form is why voltage uses a 20 in dB math — hold onto it.'},
+{d:'E', c:'Electrical', q:'Maximum planned load on any circuit?',
+ a:'<span class="big">80% of rated capacity</span>A 20 A circuit carries no more than <b>16 A</b> of planned load.', viz:'circuit80'},
+{d:'E', c:'Electrical', q:'Voltage drop over a long cable run — what is R?',
+ a:'<span class="big">R = rate × 2 × distance</span>Then V<sub>drop</sub> = I × R.', viz:'vdrop',
+ n:'<b>Trap:</b> current travels out <b>and back</b>. Double the one-way run before applying the ohms-per-foot rate.'},
+{d:'E', c:'Electrical', q:'Heat load in Btu from electrical draw?',
+ a:'<span class="big">Btu = watts × 3.4</span>Kilojoule version: watts × <b>3.6</b>.', viz:'heat',
+ n:'Amplifiers are excluded from this figure — they get calculated separately.'},
+
+/* ---- Decibels ---- */
+{d:'D', c:'Decibels', q:'dB formula for POWER:',
+ a:'<span class="big">dB = 10 log(P₁ / P_ref)</span>Coefficient <b>10</b> — power is the odd one out.', viz:'db10'},
+{d:'D', c:'Decibels', q:'dB formula for VOLTAGE:',
+ a:'<span class="big">dB = 20 log(V₁ / V_ref)</span>New or measured voltage over the reference voltage.', viz:'db20'},
+{d:'D', c:'Decibels', q:'dB formula for DISTANCE:',
+ a:'<span class="big">dB = 20 log(D₁ / D₂)</span><b>Original</b> distance on top — moving away must come out negative.', viz:'invsq',
+ n:'<b>Trap:</b> it is a <b>ratio</b> of two distances. Never multiply them.'},
+{d:'D', c:'Decibels', q:'The single question that decides 10-log vs. 20-log:',
+ a:'<span class="big">“Am I comparing watts?”</span>Yes → 10 log. No (volts, distance, pressure) → 20 log.', viz:'decide',
+ n:'The mnemonic: <b>power stands alone</b>.'},
+{d:'D', c:'Decibels', q:'Why do voltage and distance use 20 instead of 10?',
+ a:'<span class="big">They relate to power by a square</span>P = V²/R, and log(x²) = 2·log(x). The doubled log turns the 10 into a 20.', viz:'square'},
+{d:'D', c:'Decibels', q:'Converting dB back into a POWER ratio:',
+ a:'<span class="big">ratio = 10^(dB / 10)</span>6 dB → 10^0.6 = <b>3.98×</b> the power.', viz:'back10',
+ n:'<b>Trap:</b> divide by the coefficient <b>first</b>, then press 10^x. Never raise 10 to the raw dB value.'},
+{d:'D', c:'Decibels', q:'Converting dB back into a VOLTAGE or DISTANCE ratio:',
+ a:'<span class="big">ratio = 10^(dB / 20)</span>Same move, coefficient 20. 6 dB → <b>2.0×</b>.', viz:'back20'},
+{d:'D', c:'Decibels', q:'Doubling the distance from a sound source changes SPL by…',
+ a:'<span class="big">−6 dB</span>Inverse square law — energy drops to <b>one quarter</b> at double distance.', viz:'invsq'},
+{d:'D', c:'Decibels', q:'Doubling amplifier power changes SPL by…',
+ a:'<span class="big">+3 dB</span>10 × log(2) = 3.01. Ten times the power = <b>+10 dB</b>.', viz:'pow3'},
+{d:'D', c:'Decibels', q:'A just-noticeable change in loudness is about…',
+ a:'<span class="big">±3 dB</span>The smallest SPL change most listeners reliably perceive.', viz:'jnd'},
+{d:'D', c:'Decibels', q:'Doubling the number of open microphones (NOM) costs…',
+ a:'<span class="big">−3 dB gain before feedback</span>Every doubling of open mics costs another 3 dB.', viz:'nom'},
+{d:'D', c:'Decibels', q:'0 dB SPL represents…',
+ a:'<span class="big">The threshold of human hearing</span>Reference pressure of <b>20 micropascals</b>. Not silence.', viz:'spl0'},
+{d:'D', c:'Decibels', q:'0 dBu, 0 dBV, 0 dBm and 0 dB SPL reference what?',
+ a:'<span class="big">0.775 V · 1.0 V · 1 mW · 20 µPa</span>dBu, dBV and SPL are 20-log; <b>dBm is 10-log</b> — it references power.', viz:'refs'},
+{d:'D', c:'Decibels', q:'A 10× increase gives how many dB — in watts, and in volts?',
+ a:'<span class="big">+10 dB power · +20 dB voltage</span>Identical ratio, different coefficient.', viz:'tenx',
+ n:'A favourite exam trap: the ratio alone never tells you the answer — you need to know what is being measured.'},
+{d:'D', c:'Decibels', q:'A ratio less than 1 always produces…',
+ a:'<span class="big">A negative dB result — a loss</span>Free answer-checker at the end of every dB problem.', viz:'negdb',
+ n:'If the sign does not match the story the question told, you flipped the fraction.'},
+{d:'D', c:'Decibels', q:'How far above background noise should program audio sit?',
+ a:'<span class="big">At least 25 dB</span>Max noise = <b>target − 25</b>. A 70 dB SPL(A) speech target allows 45 dB SPL(A) of noise.', viz:'speech25'},
+
+/* ---- Loudspeakers ---- */
+{d:'L', c:'Loudspeakers', q:'Total impedance of loudspeakers in SERIES:',
+ a:'<span class="big">Z_T = Z₁ + Z₂ + …</span>Just add. The total is always <b>larger</b> than the largest.', viz:'series'},
+{d:'L', c:'Loudspeakers', q:'Parallel impedance — identical loudspeakers:',
+ a:'<span class="big">Z_T = Z₁ / N</span>One speaker’s impedance divided by the count. Always <b>smaller</b> than the smallest.', viz:'parallel'},
+{d:'L', c:'Loudspeakers', q:'Parallel impedance — mixed loudspeakers:',
+ a:'<span class="big">1/Z_T = 1/Z₁ + 1/Z₂ + …</span>Flip, add, then <b>flip the sum back over</b>.', viz:'parmixed',
+ n:'<b>Trap:</b> the last flip is the step people skip — leaving the reciprocal as the answer.'},
+{d:'L', c:'Loudspeakers', q:'Watts needed for a required SPL increase?',
+ a:'<span class="big">ΔSPL = 10 log(P₂ / P₁)</span>Solve for P₂: <b>P₂ = P₁ × 10^(ΔSPL/10)</b>.', viz:'amppow'},
+{d:'L', c:'Loudspeakers', q:'What does “90 dB SPL, 1 W @ 1 m” describe?',
+ a:'<span class="big">Loudspeaker sensitivity</span>The SPL produced from a known power at a known distance — your starting reference.', viz:'sens'},
+
+/* ---- Audio ---- */
+{d:'A', c:'Audio', q:'Wavelength formula:',
+ a:'<span class="big">λ = v / f</span>Speed of sound in air: <b>343 m/s</b> (sea level, 20 °C).', viz:'wavelength'},
+{d:'A', c:'Audio', q:'An octave is… and how do you count them?',
+ a:'<span class="big">A doubling of frequency</span>Octaves = <b>log(f₂/f₁) ÷ log(2)</b>. 20 Hz to 20 kHz is about <b>10 octaves</b>.', viz:'octave'},
+{d:'A', c:'Audio', q:'Digital audio bandwidth:',
+ a:'<span class="big">BW = sample rate × bit depth × channels</span>Result in bits per second.', viz:'audiobw'},
+{d:'A', c:'Audio', q:'Nyquist–Shannon sampling theorem:',
+ a:'<span class="big">Sample rate &gt; 2 × highest frequency</span>Capturing 20 kHz needs a rate above 40 kHz — hence CD’s 44.1 kHz.', viz:'nyquist'},
+
+/* ---- Video & light ---- */
+{d:'V', c:'Video', q:'Width and height of a 16:9 screen, from its diagonal:',
+ a:'<span class="big">W = D × 0.8716</span>H = D × <b>0.4903</b>. A 90 in display is 78.4 in wide.', viz:'diag169'},
+{d:'V', c:'Video', q:'Aspect ratio from dimensions:',
+ a:'<span class="big">AR = W / H</span>H = W ÷ AR &nbsp;·&nbsp; W = H × AR.', viz:'ar',
+ n:'Use four decimal places for 16:9 (<b>1.7778</b>) — 1.78 drifts enough to miss the offered answer.'},
+{d:'V', c:'Video', q:'Screen diagonal from width and height:',
+ a:'<span class="big">A² + B² = C²</span>Pythagorean theorem: width² + height² = diagonal².', viz:'pythag'},
+{d:'V', c:'Video', q:'Estimating throw distance:',
+ a:'<span class="big">D = screen width × throw ratio</span>Ratio 2.0 × a 4 m wide image = projector sits <b>8 m</b> back.', viz:'throw_',
+ n:'Always verify against the projector manual’s own formula for the real design.'},
+{d:'V', c:'Video', q:'ANSI lumen rating formula:',
+ a:'<span class="big">L = SH × SW × AI</span>Screen height × width × the <b>average of nine</b> illuminance readings.', viz:'lumens',
+ n:'Lux pairs with m², foot-candles with ft². Mismatch the pair and you are off by 10.76×.'},
+{d:'V', c:'Video', q:'DISCAS BDM sizing metric:',
+ a:'<span class="big">%EH = element height / image height</span>ADM viewing instead requires resolving a <b>single pixel</b>.', viz:'discas'},
+{d:'V', c:'Video', q:'Minimum contrast ratio for full-motion video:',
+ a:'<span class="big">80:1</span>Driven mostly by <b>ambient room light</b>, which lifts the black level.', viz:'contrast'},
+{d:'V', c:'Video', q:'Average seated eye height for sightlines:',
+ a:'<span class="big">1.2 m (48 in)</span>The standard constant for checking whether heads block the screen.', viz:'eyeheight'},
+{d:'V', c:'Video', q:'Illumination at double the distance from a source?',
+ a:'<span class="big">25% remains</span>Which is a <b>75% decrease</b>. Inverse square law applies to light too.', viz:'lightfall',
+ n:'<b>Trap:</b> read whether the question wants what <b>remains</b> or what was <b>lost</b>. Both numbers are on the answer list.'},
+{d:'V', c:'Video', q:'Chroma subsampling factors for 4:4:4, 4:2:2 and 4:2:0?',
+ a:'<span class="big">3, 2 and 1.5</span>Count samples per 4 pixels, divide by 4: 12/4, 8/4, 6/4.', viz:'chroma',
+ n:'<b>Trap:</b> the factor is <b>never</b> the first number in the name.'},
+{d:'V', c:'Video', q:'Uncompressed 4K (3840×2160, 60 fps, 8-bit, 4:4:4) needs roughly…',
+ a:'<span class="big">≈ 11.94 Gbps</span>W × H × fps × bit depth × subsampling factor.', viz:'fourk',
+ n:'More than a 10 Gb link can carry — which is exactly why real video is compressed.'},
+
+/* ---- Cable & install ---- */
+{d:'N', c:'Networks', q:'PoE: how do you size the switch?',
+ a:'<span class="big">Device power = V × I</span>Total the loads, then add headroom: <b>× 1.2</b>.', viz:'poe',
+ n:'“120% of load” (×1.2) and “load it to 80%” (÷0.8 = ×1.25) are <b>different numbers</b>. Read which one is asked. Convert mA → A first.'},
+{d:'N', c:'Networks', q:'The 100-metre copper limit applies to what, exactly?',
+ a:'<span class="big">The whole channel</span>Permanent link (≤ <b>90 m</b>) + both patch cords ≤ <b>100 m / 328 ft</b>.', viz:'channel100',
+ n:'Longer patch cords mean a <b>shorter</b> permanent link — never a longer channel.'},
+{d:'N', c:'RF / Wireless', q:'What is the frequency range of the RF spectrum?',
+ a:'<span class="big">3 kHz – 300 GHz</span>It has a <b>floor</b>, not just a ceiling.', viz:'rf',
+ n:'<b>Trap:</b> answers that only bound the top ("up to 300 GHz") miss the 3 kHz floor.'},
+{d:'N', c:'Cabling', q:'Max conduit fill with 3 or more cables:',
+ a:'<span class="big">40%</span>Of the conduit’s interior cross-sectional area.', viz:'conduit'},
+{d:'N', c:'Cabling', q:'Minimum safe cable bend radius:',
+ a:'<span class="big">4 × cable diameter</span>Tighter bends risk damaging conductors or shielding.', viz:'bend'},
+{d:'N', c:'Rigging', q:'Safety factor for overhead-flown loads:',
+ a:'<span class="big">5 : 1</span>A 40 kg display needs a mount rated for <b>200 kg</b>.', viz:'rig'},
+{d:'N', c:'Control', q:'RS-485 / DMX512: device count and termination?',
+ a:'<span class="big">32 devices · 120 Ω</span>Terminate with 120 Ω at <b>both ends</b> of the line.', viz:'rs485',
+ n:'<b>Trap:</b> 75 Ω is video coax, not the data bus.'},
+{d:'N', c:'Drawings', q:'A drawing is 1:50 scale. How do you get the real dimension?',
+ a:'<span class="big">measured × 50</span>Multiply what you measure on the page by the scale factor.', viz:'scale',
+ n:'This is one of the few places you genuinely <b>do</b> multiply — check ratio vs. product before every formula.'},
+{d:'N', c:'Drawings', q:'On a drawing: what does AFF mean?',
+ a:'<span class="big">Above Finished Floor</span>A <b>mounting height</b>, measured up from the finished floor line.', viz:'aff'},
+
+/* ---- Budget ---- */
+{d:'B', c:'Budget', q:'Typical GC markup on an AV subcontract:',
+ a:'<span class="big">~5–10%+</span>On a $2M AV system, roughly <b>$100k–$200k</b> added.', viz:'gcmark'},
+{d:'B', c:'Budget', q:'A 5–10% contingency budget fits what kind of project?',
+ a:'<span class="big">$500k+ and 1 year+</span>Big, long projects carry formal contingency.', viz:'conting'},
+{d:'B', c:'Budget', q:'What cost figure comes before detailed design — and what follows it?',
+ a:'<span class="big">Opinion of probable cost</span>→ <b>estimate</b> → <b>quote</b>, in increasing detail and enforceability.', viz:'cost'}
+];
+
+
+/* ============ engine ============
+   Deliberately stateless: no localStorage, no grading, no history.
+   Reloading the page starts a clean deck every time. */
+const $=id=>document.getElementById(id);
+const card=$('card');
+
+let filter='all', queue=[], pos=0;
+
+function pool(){ return filter==='all' ? CARDS.slice() : CARDS.filter(c=>c.d===filter); }
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+function updateCounts(){
+  $('n-all').textContent=CARDS.length;
+  ['F','E','D','L','A','V','N','B'].forEach(k=>{
+    $('n-'+k).textContent=CARDS.filter(c=>c.d===k).length;
+  });
+}
+
+function startRun(shuffled){
+  queue=pool();
+  if(shuffled)shuffle(queue);
+  pos=0;
+  render(1);
+}
+
+function render(dir){
+  const c=queue[pos];
+  const inner=$('cardInner');
+  // snap straight back to the front — no reverse-flip that would flash the next answer
+  inner.style.transition='none';
+  card.classList.remove('flipped');
+  void inner.offsetWidth;
+  inner.style.transition='';
+  card.classList.remove('deal','dealback');
+  void card.offsetWidth;
+  card.classList.add(dir<0?'dealback':'deal');
+  $('catF').textContent=c.c; $('catB').textContent=c.c;
+  $('qText').innerHTML=c.q;
+  $('aText').innerHTML=c.a;
+  $('viz').innerHTML=c.viz?V[c.viz]:'';
+  const nb=$('noteBox');
+  if(c.n){nb.innerHTML=c.n;nb.style.display='block';}else{nb.style.display='none';}
+  $('counter').textContent=`Card ${pos+1} / ${queue.length}`;
+  $('pbar').style.width=((pos+1)/queue.length*100)+'%';
+}
+
+function flip(){ card.classList.toggle('flipped'); }
+// the deck loops — there is no end screen to reach
+function next(){ pos=(pos+1)%queue.length; render(1); }
+function prev(){ pos=(pos-1+queue.length)%queue.length; render(-1); }
+
+/* ============ events ============ */
+card.addEventListener('click',flip);
+$('nextBtn').addEventListener('click',next);
+$('prevBtn').addEventListener('click',prev);
+$('shuffleBtn').addEventListener('click',()=>startRun(true));
+document.querySelectorAll('#filters .chip').forEach(ch=>ch.addEventListener('click',()=>{
+  filter=ch.dataset.f;
+  document.querySelectorAll('#filters .chip').forEach(x=>x.classList.toggle('on',x.dataset.f===filter));
+  startRun(false);
+}));
+
+document.addEventListener('keydown',e=>{
+  if(e.code==='Space'){e.preventDefault();flip();}
+  else if(e.key==='ArrowRight')next();
+  else if(e.key==='ArrowLeft')prev();
+});
+
+let tx=null;
+card.addEventListener('touchstart',e=>{tx=e.changedTouches[0].clientX;},{passive:true});
+card.addEventListener('touchend',e=>{
+  if(tx===null)return;
+  const dx=e.changedTouches[0].clientX-tx; tx=null;
+  if(Math.abs(dx)>60){dx<0?next():prev();}
+},{passive:true});
+
+updateCounts();
+startRun(false);
+
+</script>
+</body>
+</html>

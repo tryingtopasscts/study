@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Formula Match — AV Math Drill</title>
+<style>
+:root{
+  --bg:#0f1117; --bg2:#13161e; --surface:#1a1e2a; --border:#252c3f; --border2:#2e3650;
+  --accent:#5b9cf6; --accent2:#93bbfc; --accent-dim:#1a2f54;
+  --amber:#f5a623; --amber-dim:#2a1f0a; --teal:#2dd4bf; --red:#f87171; --red-dim:#2c1416;
+  --purple:#a78bfa; --green:#34d399; --green-dim:#0f2a22;
+  --text:#dde3f0; --text2:#8e9abf; --text3:#4e5a7a;
+  --mono:'IBM Plex Mono',Consolas,monospace; --serif:'Fraunces',Georgia,serif; --sans:'DM Sans',-apple-system,'Segoe UI',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:18px;line-height:1.6;-webkit-tap-highlight-color:transparent}
+main{max-width:720px;margin:0 auto;padding:1.3rem 1.1rem 3rem}
+header{margin-bottom:.85rem}
+.kicker{font-family:var(--mono);font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:.5rem}
+.kicker a{color:inherit;text-decoration:none}
+.kicker a:hover{text-decoration:underline}
+h1{font-family:var(--serif);font-weight:700;font-size:1.5rem;line-height:1.2}
+.lede{color:var(--text2);font-size:.86rem;margin-top:.3rem}
+
+.chip-row{display:flex;gap:.4rem;margin:.7rem 0 .55rem;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none;
+  -webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 32px),transparent);
+  mask-image:linear-gradient(90deg,#000 calc(100% - 32px),transparent)}
+.chip-row::-webkit-scrollbar{display:none}
+.chip{font-family:var(--sans);font-size:.78rem;font-weight:500;background:var(--surface);border:1px solid var(--border2);
+  color:var(--text2);border-radius:99px;padding:.3rem .78rem;cursor:pointer;transition:all .15s;white-space:nowrap;flex:0 0 auto}
+.chip:hover{border-color:var(--accent)}
+.chip.on{background:var(--accent-dim);border-color:var(--accent);color:var(--accent2)}
+.chip .n{font-family:var(--mono);font-size:.72rem;opacity:.75;margin-left:.3rem}
+.chip[disabled]{opacity:.35;cursor:not-allowed}
+.chip[disabled]:hover{border-color:var(--border2)}
+
+.size-row{display:flex;align-items:center;gap:.4rem;margin:0 0 .7rem;font-family:var(--mono);font-size:.72rem;color:var(--text3)}
+.size-row .chip{padding:.22rem .62rem;font-family:var(--mono);font-size:.72rem}
+
+.btn{font-family:var(--sans);font-weight:500;font-size:.86rem;background:var(--surface);color:var(--text);
+  border:1px solid var(--border2);border-radius:10px;padding:.55rem 1.05rem;cursor:pointer;transition:all .15s}
+.btn:hover{background:var(--accent-dim);border-color:var(--accent)}
+.btn.small{font-size:.78rem;padding:.35rem .75rem}
+.btn.primary{background:var(--accent-dim);border-color:var(--accent);color:var(--accent2);font-weight:700;padding:.62rem 1.7rem;font-size:.95rem}
+
+/* ---- the scoreboard strip ----
+   Time counts up, so a bad round has a visible cost. Misses sit next to it
+   because a fast round bought with wrong taps is not actually a good round. */
+.score{display:flex;align-items:baseline;gap:1.1rem;font-family:var(--mono);font-size:.8rem;color:var(--text3);
+  border:1px solid var(--border);background:var(--bg2);border-radius:12px;padding:.5rem .9rem;margin-bottom:.8rem}
+.score .v{color:var(--text);font-size:1.05rem;font-weight:600;letter-spacing:.02em}
+.score .v.warn{color:var(--red)}
+.score .best{margin-left:auto;color:var(--text3)}
+.score .best b{color:var(--amber);font-weight:600}
+
+/* ---- the board ----
+   Two independently shuffled columns. Concepts left, formulas right — the
+   column a tile sits in is itself a hint, which is why the formulas are the
+   side that carries the confusable near-duplicates. */
+.board{display:grid;grid-template-columns:1fr 1fr;gap:.55rem;align-items:start}
+.col{display:flex;flex-direction:column;gap:.55rem}
+.col-head{font-family:var(--mono);font-size:.64rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text3);
+  padding-left:.2rem;margin-bottom:-.15rem}
+
+.tile{position:relative;width:100%;text-align:left;cursor:pointer;
+  background:var(--surface);border:1px solid var(--border2);border-radius:12px;
+  padding:.62rem .75rem;min-height:56px;display:flex;align-items:center;
+  color:var(--text);font-family:var(--sans);font-size:.82rem;line-height:1.35;
+  transition:background .15s,border-color .15s,transform .12s,opacity .25s}
+.tile:hover{border-color:var(--accent)}
+.tile.rt{font-family:var(--mono);font-size:.79rem;color:var(--accent2);letter-spacing:-.01em}
+.tile.sel{background:var(--accent-dim);border-color:var(--accent);color:var(--accent2)}
+.tile.hit{background:var(--green-dim);border-color:var(--green);color:var(--green)}
+.tile.miss{background:var(--red-dim);border-color:var(--red);color:var(--red);animation:shake .32s}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-5px)}40%{transform:translateX(5px)}60%{transform:translateX(-3px)}80%{transform:translateX(3px)}}
+/* a solved pair does not vanish — it dims in place, so the board stays a
+   readable record of what you have already pinned down */
+.tile.done{opacity:.32;pointer-events:none;background:var(--green-dim);border-color:rgba(52,211,153,.3);color:var(--green)}
+.tile.done::after{content:'✓';position:absolute;top:.3rem;right:.45rem;font-family:var(--mono);font-size:.62rem;color:var(--green)}
+
+/* ---- end of round ---- */
+.result{background:var(--bg2);border:1px solid var(--accent);border-radius:16px;padding:1.3rem 1.2rem;text-align:center}
+.result h2{font-family:var(--serif);font-size:1.5rem;font-weight:700;color:var(--accent2);line-height:1.2}
+.result .bigtime{font-family:var(--mono);font-size:2.4rem;font-weight:600;color:var(--text);margin:.35rem 0 .1rem;letter-spacing:.02em}
+.result .sub{color:var(--text2);font-size:.85rem}
+.result .pb{display:inline-block;font-family:var(--mono);font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--amber);background:var(--amber-dim);border:1px solid rgba(245,166,35,.35);border-radius:99px;padding:.2rem .7rem;margin-top:.5rem}
+.result .again{margin-top:1.1rem;display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap}
+
+/* the review list is the actual study payload — the trap note from the
+   flashcard deck, shown only for the pairs you got wrong */
+.review{margin-top:1.2rem;text-align:left;border-top:1px solid var(--border);padding-top:1rem}
+.review h3{font-family:var(--mono);font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--red);margin-bottom:.6rem}
+.rv{border:1px solid var(--border);border-radius:11px;padding:.6rem .8rem;margin-bottom:.5rem;background:var(--surface)}
+.rv .rv-l{font-size:.84rem;color:var(--text)}
+.rv .rv-r{font-family:var(--mono);font-size:.79rem;color:var(--accent2);margin-top:.15rem}
+.rv .rv-n{font-size:.76rem;line-height:1.45;color:var(--amber);margin-top:.45rem;padding-top:.45rem;border-top:1px dashed rgba(245,166,35,.28)}
+.rv .rv-n b{color:var(--amber)}
+.clean{color:var(--green);font-size:.85rem;margin-top:1rem;font-family:var(--mono)}
+
+.kbd-hint{font-family:var(--mono);font-size:.72rem;color:var(--text3);text-align:center;margin-top:1.1rem;line-height:1.7}
+kbd{background:var(--surface);border:1px solid var(--border2);border-radius:5px;padding:.05rem .35rem;font-size:.7rem}
+footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--border);font-size:.78rem;color:var(--text3);line-height:1.6}
+footer a{color:var(--accent)}
+
+@media (max-width:430px){
+  body{font-size:17px}
+  .board{gap:.42rem}
+  .col{gap:.42rem}
+  .tile{padding:.55rem .6rem;font-size:.76rem;min-height:52px}
+  .tile.rt{font-size:.73rem}
+  .score{gap:.8rem;padding:.45rem .7rem}
+}
+@media (prefers-reduced-motion:reduce){
+  .tile,.tile.miss{transition:none;animation:none}
+}
+</style>
+</head>
+<body>
+<main>
+
+<header>
+  <div class="kicker"><a href="../index.html">← CTS Study Console</a> · Drill</div>
+  <h1>Formula Match</h1>
+  <p class="lede">Pin every concept to its formula, against the clock. Flashcards show you one formula at a time; this puts the confusable ones side by side and makes you tell them apart.</p>
+</header>
+
+<div class="chip-row" id="filters">
+  <button class="chip on" data-f="all">All <span class="n" id="n-all"></span></button>
+  <button class="chip" data-f="F">Foundations <span class="n" id="n-F"></span></button>
+  <button class="chip" data-f="E">Electrical <span class="n" id="n-E"></span></button>
+  <button class="chip" data-f="D">Decibels <span class="n" id="n-D"></span></button>
+  <button class="chip" data-f="L">Loudspeakers <span class="n" id="n-L"></span></button>
+  <button class="chip" data-f="A">Audio <span class="n" id="n-A"></span></button>
+  <button class="chip" data-f="V">Video &amp; light <span class="n" id="n-V"></span></button>
+  <button class="chip" data-f="N">Cable &amp; install <span class="n" id="n-N"></span></button>
+</div>
+
+<div class="size-row">
+  <span>Pairs per round</span>
+  <button class="chip" data-s="6">6</button>
+  <button class="chip on" data-s="8">8</button>
+  <button class="chip" data-s="10">10</button>
+  <button class="btn small" id="newBtn" style="margin-left:auto">New round</button>
+</div>
+
+<div class="score" id="scoreBar">
+  <span>time <span class="v" id="clock">0:00</span></span>
+  <span>matched <span class="v" id="matchedN">0/8</span></span>
+  <span>misses <span class="v" id="missN">0</span></span>
+  <span class="best" id="bestOut"></span>
+</div>
+
+<div id="stage">
+  <div class="board" id="board">
+    <div class="col" id="colL"><div class="col-head">Concept</div></div>
+    <div class="col" id="colR"><div class="col-head">Formula / value</div></div>
+  </div>
+</div>
+
+<div class="kbd-hint" id="kbdHint">
+  Tap a concept, then its formula — or the other way round.<br>
+  <kbd>esc</kbd> clears the selection &nbsp;·&nbsp; <kbd>n</kbd> starts a new round
+</div>
+
+<footer>
+  70 pairs, curated from the <a href="av-math-flashcards.html">AV Math Flashcards</a> deck — the cards whose answer is a real formula or a hard number.
+  Prose cards (“round only at the end”, the cost-terminology ladder) are left out: matching cannot test them fairly.
+  Missed pairs come back with the flashcard's trap note attached. Best times are stored in this browser only.
+</footer>
+
+</main>
+
+<script>
+/* ============ the pool ============
+   Curated from the CARDS deck in av-math-flashcards.html. Three edits were made
+   on the way across, all for the same reason — a matching tile must not contain
+   its own answer:
+     · Cards whose face restated the title were re-cut ("The 80% rule /
+       80% of rated capacity" became "20 A circuit / 16 A").
+     · Multi-value cards were split, because one tile holding four reference
+       levels tests nothing ("0.775 V · 1.0 V · 1 mW · 20 µPa" is now four pairs,
+       and they are far harder apart than together).
+     · Prose answers were dropped rather than reworded.
+   `n` is the trap note, surfaced only if you miss the pair. */
+const PAIRS = [
+
+/* ---- Foundations ---- */
+{d:'F', l:'Order of operations', r:'PEMDAS', n:'<b>Trap:</b> × and ÷ share one rank, and so do + and −. Work each pair <b>left to right</b> — multiply does not outrank divide.'},
+{d:'F', l:'Area of a rectangle', r:'W × L'},
+{d:'F', l:'Perimeter of a rectangle', r:'2 × (W + L)', n:'<b>Trap:</b> forgetting to double gives exactly half the perimeter — and half is always on the answer list.'},
+{d:'F', l:'Volume of a room', r:'W × L × H'},
+{d:'F', l:'1 inch, in millimetres', r:'25.4 mm'},
+{d:'F', l:'1 foot, in metres', r:'0.3048 m'},
+{d:'F', l:'1 kilogram, in pounds', r:'2.205 lb'},
+{d:'F', l:'1 foot-candle, in lux', r:'10.76 lux', n:'Because there are <b>10.76 ft² in one m²</b>. Lux pairs with metres, foot-candles with feet — mixing them is the classic ANSI-lumens error.'},
+{d:'F', l:'log(2)', r:'0.301', n:'One doubling. × 10 → <b>+3 dB</b> (power). × 20 → <b>+6 dB</b> (voltage or distance).'},
+{d:'F', l:'log(8)', r:'0.903', n:'8 = 2×2×2, so log(8) is three lots of 0.301.'},
+
+/* ---- Electrical ---- */
+{d:'E', l:'Ohm’s Law, solved for current', r:'I = V / R', n:'Cover the quantity you want in the triangle; what remains is your formula.'},
+{d:'E', l:'Power, from current and voltage', r:'P = I × V'},
+{d:'E', l:'Power, from voltage and resistance', r:'P = V² / R', n:'This form is why voltage uses a <b>20</b> in dB math — log(x²) = 2·log(x).'},
+{d:'E', l:'Power, from current and resistance', r:'P = I² R'},
+{d:'E', l:'Max planned load on a 20 A circuit', r:'16 A', n:'The 80% rule. A circuit’s rating is not its working budget.'},
+{d:'E', l:'Cable-run resistance, for voltage drop', r:'R = rate × 2 × distance', n:'<b>Trap:</b> current travels out <b>and back</b>. Double the one-way run before applying the ohms-per-foot rate.'},
+{d:'E', l:'Heat load in Btu, from watts', r:'watts × 3.4', n:'Amplifiers are excluded from this figure — they get calculated separately.'},
+{d:'E', l:'Heat load in kilojoules, from watts', r:'watts × 3.6'},
+
+/* ---- Decibels ---- */
+{d:'D', l:'dB formula for POWER', r:'10 log(P₁ / P_ref)', n:'Coefficient <b>10</b> — power is the odd one out. The mnemonic: <b>power stands alone</b>.'},
+{d:'D', l:'dB formula for VOLTAGE', r:'20 log(V₁ / V_ref)', n:'Voltage relates to power by a square (P = V²/R), and log(x²) = 2·log(x) — the doubled log turns the 10 into a 20.'},
+{d:'D', l:'dB formula for DISTANCE', r:'20 log(D₁ / D₂)', n:'<b>Trap:</b> it is a <b>ratio</b> of two distances — never multiply them. <b>Original</b> distance on top, so moving away comes out negative.'},
+{d:'D', l:'dB back into a POWER ratio', r:'10^(dB / 10)', n:'<b>Trap:</b> divide by the coefficient <b>first</b>, then press 10^x. Never raise 10 to the raw dB value. 6 dB → 10^0.6 = 3.98×.'},
+{d:'D', l:'dB back into a VOLTAGE ratio', r:'10^(dB / 20)', n:'Same move, coefficient 20. 6 dB → <b>2.0×</b>.'},
+{d:'D', l:'Doubling distance from a source', r:'−6 dB', n:'Inverse square law — energy drops to <b>one quarter</b> at double the distance.'},
+{d:'D', l:'Doubling amplifier power', r:'+3 dB', n:'10 × log(2) = 3.01. Ten times the power = <b>+10 dB</b>.'},
+{d:'D', l:'Smallest loudness change a listener notices', r:'±3 dB', n:'The just-noticeable difference. Same number as a power doubling — which is exactly the point.'},
+{d:'D', l:'Doubling the number of open mics', r:'−3 dB gain before feedback', n:'Every doubling of open mics (NOM) costs another 3 dB.'},
+{d:'D', l:'0 dB SPL references', r:'20 µPa', n:'The threshold of human hearing — <b>not</b> silence.'},
+{d:'D', l:'0 dBu references', r:'0.775 V', n:'dBu, dBV and SPL are 20-log — they are all voltages or pressures.'},
+{d:'D', l:'0 dBV references', r:'1.0 V'},
+{d:'D', l:'0 dBm references', r:'1 mW', n:'<b>Trap:</b> dBm is the one that references <b>power</b>, so it is <b>10-log</b> while its dBu/dBV neighbours are 20-log.'},
+{d:'D', l:'A 10× increase in watts', r:'+10 dB', n:'<b>Trap:</b> the ratio alone never tells you the answer — you need to know what is being measured.'},
+{d:'D', l:'A 10× increase in volts', r:'+20 dB', n:'Identical ratio to the watts case, different coefficient.'},
+{d:'D', l:'Program audio above background noise', r:'at least 25 dB', n:'Max noise = <b>target − 25</b>. A 70 dB SPL(A) speech target allows 45 dB SPL(A) of noise.'},
+
+/* ---- Loudspeakers ---- */
+{d:'L', l:'Loudspeakers wired in series', r:'Z_T = Z₁ + Z₂ + …', n:'Just add. The total is always <b>larger</b> than the largest.'},
+{d:'L', l:'Parallel — identical loudspeakers', r:'Z_T = Z₁ / N', n:'One speaker’s impedance divided by the count. Always <b>smaller</b> than the smallest.'},
+{d:'L', l:'Parallel — mixed loudspeakers', r:'1/Z_T = 1/Z₁ + 1/Z₂ + …', n:'<b>Trap:</b> flip, add, then <b>flip the sum back over</b>. That last flip is the step people skip.'},
+{d:'L', l:'SPL change from a power change', r:'ΔSPL = 10 log(P₂ / P₁)', n:'Solve for the watts you need: <b>P₂ = P₁ × 10^(ΔSPL/10)</b>.'},
+{d:'L', l:'“90 dB SPL, 1 W @ 1 m” describes', r:'loudspeaker sensitivity', n:'SPL from a known power at a known distance — your starting reference for every SPL budget.'},
+
+/* ---- Audio ---- */
+{d:'A', l:'Wavelength', r:'λ = v / f'},
+{d:'A', l:'Speed of sound in air', r:'343 m/s', n:'At sea level, 20 °C.'},
+{d:'A', l:'An octave is', r:'a doubling of frequency'},
+{d:'A', l:'Counting octaves between two frequencies', r:'log(f₂/f₁) ÷ log(2)', n:'20 Hz to 20 kHz is about <b>10 octaves</b>.'},
+{d:'A', l:'Digital audio bandwidth', r:'sample rate × bit depth × channels', n:'Result in bits per second.'},
+{d:'A', l:'Nyquist–Shannon minimum sample rate', r:'> 2 × highest frequency', n:'Capturing 20 kHz needs a rate above 40 kHz — hence CD’s 44.1 kHz.'},
+
+/* ---- Video & light ---- */
+{d:'V', l:'Width of a 16:9 screen, from its diagonal', r:'D × 0.8716', n:'A 90 in display is 78.4 in wide.'},
+{d:'V', l:'Height of a 16:9 screen, from its diagonal', r:'D × 0.4903'},
+{d:'V', l:'Aspect ratio, from dimensions', r:'AR = W / H', n:'H = W ÷ AR &nbsp;·&nbsp; W = H × AR.'},
+{d:'V', l:'16:9 as a decimal', r:'1.7778', n:'<b>Trap:</b> use four decimal places — 1.78 drifts enough to miss the offered answer.'},
+{d:'V', l:'Screen diagonal, from width and height', r:'A² + B² = C²', n:'Pythagorean theorem: width² + height² = diagonal².'},
+{d:'V', l:'Throw distance', r:'screen width × throw ratio', n:'Ratio 2.0 × a 4 m wide image = projector sits <b>8 m</b> back. Verify against the projector manual for a real design.'},
+{d:'V', l:'ANSI lumen rating', r:'SH × SW × AI', n:'Screen height × width × the <b>average of nine</b> illuminance readings. Lux pairs with m², foot-candles with ft² — mismatch and you are off by 10.76×.'},
+{d:'V', l:'DISCAS %EH', r:'element height / image height', n:'Basic Decision Making. ADM viewing instead requires resolving a <b>single pixel</b>.'},
+{d:'V', l:'Minimum contrast for full-motion video', r:'80:1', n:'Driven mostly by <b>ambient room light</b>, which lifts the black level.'},
+{d:'V', l:'Average seated eye height', r:'1.2 m (48 in)', n:'The standard constant for checking whether heads block the screen.'},
+{d:'V', l:'Light remaining at double the distance', r:'25%', n:'<b>Trap:</b> read whether the question wants what <b>remains</b> (25%) or what was <b>lost</b> (75%). Both are on the answer list.'},
+{d:'V', l:'Chroma factors for 4:4:4, 4:2:2, 4:2:0', r:'3, 2 and 1.5', n:'<b>Trap:</b> the factor is <b>never</b> the first number in the name. Count samples per 4 pixels, divide by 4: 12/4, 8/4, 6/4.'},
+{d:'V', l:'Uncompressed 4K60, 8-bit, 4:4:4', r:'≈ 11.94 Gbps', n:'W × H × fps × bit depth × subsampling factor. More than a 10 Gb link carries — which is why real video is compressed.'},
+
+/* ---- Cable & install ---- */
+{d:'N', l:'PoE device power', r:'V × I', n:'Convert mA → A first.'},
+{d:'N', l:'PoE switch headroom over total load', r:'× 1.2', n:'<b>Trap:</b> “120% of load” (×1.2) and “load it to 80%” (÷0.8 = ×1.25) are <b>different numbers</b>. Read which one is asked.'},
+{d:'N', l:'Copper channel limit', r:'100 m / 328 ft', n:'The <b>whole channel</b> — permanent link plus both patch cords.'},
+{d:'N', l:'Permanent link limit', r:'90 m', n:'Longer patch cords mean a <b>shorter</b> permanent link — never a longer channel.'},
+{d:'N', l:'RF spectrum range', r:'3 kHz – 300 GHz', n:'<b>Trap:</b> it has a <b>floor</b>, not just a ceiling. Answers that only bound the top miss the 3 kHz.'},
+{d:'N', l:'Max conduit fill, 3 or more cables', r:'40%', n:'Of the conduit’s interior cross-sectional area.'},
+{d:'N', l:'Minimum cable bend radius', r:'4 × cable diameter'},
+{d:'N', l:'Safety factor for overhead-flown loads', r:'5 : 1', n:'A 40 kg display needs a mount rated for <b>200 kg</b>.'},
+{d:'N', l:'RS-485 / DMX512 device count', r:'32 devices'},
+{d:'N', l:'RS-485 / DMX512 termination', r:'120 Ω', n:'<b>Trap:</b> 75 Ω is video coax, not the data bus. Terminate at <b>both ends</b>.'},
+{d:'N', l:'Real dimension from a 1:50 drawing', r:'measured × 50', n:'One of the few places you genuinely <b>do</b> multiply — check ratio vs. product before every formula.'},
+{d:'N', l:'AFF, on a drawing', r:'Above Finished Floor', n:'A <b>mounting height</b>, measured up from the finished floor line.'},
+
+];
+
+const ORDER=['F','E','D','L','A','V','N'];
+const SECTIONS={F:'Foundations',E:'Electrical',D:'Decibels',L:'Loudspeakers',
+                A:'Audio',V:'Video & light',N:'Cable & install'};
+
+/* ============ state ============ */
+const $=id=>document.getElementById(id);
+let deck='all', size=8;
+let round=[], sel=null, matched=0, misses=0, missedIds=new Set(), locked=false;
+let t0=0, tick=null, running=false;
+/* pairs already drawn this visit, so repeated rounds rotate through the pool
+   instead of re-serving the same eight */
+let seen=new Set();
+
+const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const pool=d=>d==='all'?PAIRS.slice():PAIRS.filter(p=>p.d===d);
+const fmt=ms=>{const s=Math.floor(ms/1000);return Math.floor(s/60)+':'+String(s%60).padStart(2,'0');};
+
+/* best times are a nicety, not state the drill depends on — every access is
+   guarded so a locked-down browser just hides the row */
+const bestKey=()=>'ctsmatch.best.'+deck+'.'+size;
+function getBest(){try{const v=localStorage.getItem(bestKey());return v?+v:null;}catch(e){return null;}}
+function setBest(ms){try{localStorage.setItem(bestKey(),String(ms));}catch(e){}}
+function showBest(){const b=getBest();$('bestOut').innerHTML=b?('best <b>'+fmt(b)+'</b>'):'';}
+
+/* ============ setup ============ */
+function counts(){
+  $('n-all').textContent=PAIRS.length;
+  ORDER.forEach(k=>{$('n-'+k).textContent=pool(k).length;});
+}
+
+/* a deck smaller than the requested round size clamps rather than erroring —
+   Loudspeakers only has 5 pairs and still deserves to be playable */
+function effSize(){return Math.min(size,pool(deck).length);}
+
+const SIZES=[6,8,10];
+function syncSizeChips(){
+  const max=pool(deck).length;
+  const chips=[...document.querySelectorAll('.size-row .chip')];
+  const fits=chips.some(c=>+c.dataset.s<=max);
+  chips.forEach((c,k)=>{
+    /* Loudspeakers holds only 5 pairs, so no listed size fits it. Rather than
+       grey out every option, the first chip relabels itself to the deck's
+       actual size — the round is the whole deck. */
+    if(!fits&&k===0){c.disabled=false;c.textContent=max;c.classList.add('on');return;}
+    c.textContent=SIZES[k];
+    c.disabled=SIZES[k]>max;
+    c.classList.toggle('on',SIZES[k]===Math.min(size,max));
+  });
+}
+
+function draw(){
+  const p=pool(deck), n=effSize();
+  let fresh=p.filter(x=>!seen.has(x));
+  if(fresh.length<n){seen=new Set();fresh=p.slice();}
+  const picked=shuffle(fresh).slice(0,n);
+  picked.forEach(x=>seen.add(x));
+  return picked;
+}
+
+/* ============ a round ============ */
+function start(){
+  round=draw();
+  sel=null;matched=0;misses=0;missedIds=new Set();locked=false;
+  running=false;clearInterval(tick);
+  $('clock').textContent='0:00';
+  $('clock').classList.remove('warn');
+  $('missN').textContent='0';
+  $('missN').classList.remove('warn');
+  $('matchedN').textContent='0/'+round.length;
+  $('scoreBar').style.display='';
+  $('kbdHint').style.display='';
+  showBest();
+
+  const L=shuffle(round.map((p,i)=>i)), R=shuffle(round.map((p,i)=>i));
+  $('stage').innerHTML=
+    '<div class="board" id="board">'+
+      '<div class="col"><div class="col-head">Concept</div>'+
+        L.map(i=>tile(i,'l',round[i].l)).join('')+
+      '</div>'+
+      '<div class="col"><div class="col-head">Formula / value</div>'+
+        R.map(i=>tile(i,'r',round[i].r)).join('')+
+      '</div>'+
+    '</div>';
+  $('stage').querySelectorAll('.tile').forEach(t=>t.addEventListener('click',()=>pick(t)));
+}
+
+const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const tile=(i,side,txt)=>
+  '<button class="tile'+(side==='r'?' rt':'')+'" data-i="'+i+'" data-side="'+side+'">'+esc(txt)+'</button>';
+
+function startClock(){
+  if(running)return;
+  running=true;t0=Date.now();
+  tick=setInterval(()=>{$('clock').textContent=fmt(Date.now()-t0);},250);
+}
+
+function pick(t){
+  if(locked||t.classList.contains('done'))return;
+  startClock();
+  const i=+t.dataset.i, side=t.dataset.side;
+
+  if(!sel){sel={t,i,side};t.classList.add('sel');return;}
+  if(sel.t===t){t.classList.remove('sel');sel=null;return;}
+  /* tapping a second tile on the same side just moves the selection —
+     it is a correction, not a wrong answer, so it costs nothing */
+  if(sel.side===side){sel.t.classList.remove('sel');sel={t,i,side};t.classList.add('sel');return;}
+
+  const a=sel.t,b=t;sel=null;
+  a.classList.remove('sel');
+
+  if(a.dataset.i===b.dataset.i){
+    a.classList.add('hit');b.classList.add('hit');
+    matched++;
+    $('matchedN').textContent=matched+'/'+round.length;
+    setTimeout(()=>{
+      a.classList.remove('hit');b.classList.remove('hit');
+      a.classList.add('done');b.classList.add('done');
+      if(matched===round.length)finish();
+    },340);
+  }else{
+    locked=true;
+    misses++;
+    missedIds.add(+a.dataset.i);missedIds.add(+b.dataset.i);
+    $('missN').textContent=misses;
+    $('missN').classList.add('warn');
+    a.classList.add('miss');b.classList.add('miss');
+    setTimeout(()=>{a.classList.remove('miss');b.classList.remove('miss');locked=false;},430);
+  }
+}
+
+function finish(){
+  clearInterval(tick);running=false;
+  const ms=Date.now()-t0;
+  const prev=getBest();
+  /* a personal best has to be clean — a fast round bought with six wrong taps
+     is not a time worth chasing */
+  const pb=misses===0&&(prev===null||ms<prev);
+  if(pb)setBest(ms);
+
+  const wrong=[...missedIds].map(i=>round[i]);
+  $('scoreBar').style.display='none';
+  $('kbdHint').style.display='none';
+  $('stage').innerHTML=
+    '<div class="result">'+
+      '<h2>'+(misses===0?'Clean sweep':'Round complete')+'</h2>'+
+      '<div class="bigtime">'+fmt(ms)+'</div>'+
+      '<div class="sub">'+round.length+' pairs · '+
+        (misses===0?'no misses':misses+(misses===1?' miss':' misses'))+
+        ' · '+(deck==='all'?'all decks':SECTIONS[deck])+'</div>'+
+      (pb?'<div class="pb">new best'+(prev!==null?' — was '+fmt(prev):'')+'</div>':'')+
+      (misses>0&&prev!==null?'<div class="pb" style="color:var(--text3);background:none;border-color:var(--border2)">best clean run '+fmt(prev)+'</div>':'')+
+      '<div class="again">'+
+        '<button class="btn primary" id="againBtn">New round →</button>'+
+      '</div>'+
+      (wrong.length?
+        '<div class="review"><h3>'+wrong.length+' to look at again</h3>'+
+          wrong.map(p=>
+            '<div class="rv"><div class="rv-l">'+esc(p.l)+'</div>'+
+            '<div class="rv-r">'+esc(p.r)+'</div>'+
+            (p.n?'<div class="rv-n">'+p.n+'</div>':'')+'</div>'
+          ).join('')+
+        '</div>'
+        :'<div class="clean">Every pair first try.</div>')+
+    '</div>';
+  $('againBtn').addEventListener('click',start);
+}
+
+/* ============ controls ============ */
+document.querySelectorAll('#filters .chip').forEach(c=>c.addEventListener('click',()=>{
+  deck=c.dataset.f;
+  document.querySelectorAll('#filters .chip').forEach(x=>x.classList.toggle('on',x.dataset.f===deck));
+  syncSizeChips();
+  start();
+}));
+document.querySelectorAll('.size-row .chip').forEach(c=>c.addEventListener('click',()=>{
+  if(c.disabled)return;
+  size=+c.dataset.s;
+  syncSizeChips();
+  start();
+}));
+$('newBtn').addEventListener('click',start);
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'&&sel){sel.t.classList.remove('sel');sel=null;}
+  else if(e.key==='n'||e.key==='N')start();
+});
+
+counts();
+syncSizeChips();
+start();
+
+</script>
+</body>
+</html>

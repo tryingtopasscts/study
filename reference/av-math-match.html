@@ -165,8 +165,8 @@ footer a{color:var(--accent)}
 </div>
 
 <footer>
-  70 pairs, curated from the <a href="av-math-flashcards.html">AV Math Flashcards</a> deck — the cards whose answer is a real formula or a hard number.
-  Prose cards (“round only at the end”, the cost-terminology ladder) are left out: matching cannot test them fairly.
+  64 pairs, curated from the <a href="av-math-flashcards.html">AV Math Flashcards</a> deck — the cards whose answer is a real formula, or a constant no formula can hand you.
+  Prose cards (“round only at the end”, the cost-terminology ladder) are left out: matching cannot test them fairly, and so are derived numbers — if a formula already in this deck produces it, the formula is the thing worth drilling.
   Missed pairs come back with the flashcard's trap note attached. Best times are stored in this browser only.
 </footer>
 
@@ -178,11 +178,20 @@ footer a{color:var(--accent)}
    on the way across, all for the same reason — a matching tile must not contain
    its own answer:
      · Cards whose face restated the title were re-cut ("The 80% rule /
-       80% of rated capacity" became "20 A circuit / 16 A").
+       80% of rated capacity" became "Max planned load / rated capacity × 0.8").
      · Multi-value cards were split, because one tile holding four reference
        levels tests nothing ("0.775 V · 1.0 V · 1 mW · 20 µPa" is now four pairs,
        and they are far harder apart than together).
      · Prose answers were dropped rather than reworded.
+   A fourth rule came later, and it is the reason this pool is smaller than the
+   deck: no pair whose answer is a number a formula already in here would hand
+   you. −6 dB per doubling of distance, +3 dB per doubling of watts, +10/+20 dB
+   for a 10× ratio, 1.7778 for 16:9, log(8), 25% light at 2× distance, ≈11.94
+   Gbps for 4K60 — all dropped, or re-cut into the equation that produces them.
+   Knowing 20·log(D₁/D₂) is the skill; −6 dB is only its most common output.
+   Constants that no formula can derive — log(2), 343 m/s, 25.4 mm, the dBu/dBV/
+   dBm/SPL references, 90 m, 40% conduit fill, 80:1 — stay, because those really
+   do have to be memorised.
    `n` is the trap note, surfaced only if you miss the pair. */
 const PAIRS = [
 
@@ -196,14 +205,13 @@ const PAIRS = [
 {d:'F', l:'1 kilogram, in pounds', r:'2.205 lb'},
 {d:'F', l:'1 foot-candle, in lux', r:'10.76 lux', n:'Because there are <b>10.76 ft² in one m²</b>. Lux pairs with metres, foot-candles with feet — mixing them is the classic ANSI-lumens error.'},
 {d:'F', l:'log(2)', r:'0.301', n:'One doubling. × 10 → <b>+3 dB</b> (power). × 20 → <b>+6 dB</b> (voltage or distance).'},
-{d:'F', l:'log(8)', r:'0.903', n:'8 = 2×2×2, so log(8) is three lots of 0.301.'},
 
 /* ---- Electrical ---- */
 {d:'E', l:'Ohm’s Law, solved for current', r:'I = V / R', n:'Cover the quantity you want in the triangle; what remains is your formula.'},
 {d:'E', l:'Power, from current and voltage', r:'P = I × V'},
 {d:'E', l:'Power, from voltage and resistance', r:'P = V² / R', n:'This form is why voltage uses a <b>20</b> in dB math — log(x²) = 2·log(x).'},
 {d:'E', l:'Power, from current and resistance', r:'P = I² R'},
-{d:'E', l:'Max planned load on a 20 A circuit', r:'16 A', n:'The 80% rule. A circuit’s rating is not its working budget.'},
+{d:'E', l:'Max planned load on a circuit', r:'rated capacity × 0.8', n:'The 80% rule. A circuit’s rating is not its working budget — a 20 A circuit plans to 16 A.'},
 {d:'E', l:'Cable-run resistance, for voltage drop', r:'R = rate × 2 × distance', n:'<b>Trap:</b> current travels out <b>and back</b>. Double the one-way run before applying the ohms-per-foot rate.'},
 {d:'E', l:'Heat load in Btu, from watts', r:'watts × 3.4', n:'Amplifiers are excluded from this figure — they get calculated separately.'},
 {d:'E', l:'Heat load in kilojoules, from watts', r:'watts × 3.6'},
@@ -214,16 +222,12 @@ const PAIRS = [
 {d:'D', l:'dB formula for DISTANCE', r:'20 log(D₁ / D₂)', n:'<b>Trap:</b> it is a <b>ratio</b> of two distances — never multiply them. <b>Original</b> distance on top, so moving away comes out negative.'},
 {d:'D', l:'dB back into a POWER ratio', r:'10^(dB / 10)', n:'<b>Trap:</b> divide by the coefficient <b>first</b>, then press 10^x. Never raise 10 to the raw dB value. 6 dB → 10^0.6 = 3.98×.'},
 {d:'D', l:'dB back into a VOLTAGE ratio', r:'10^(dB / 20)', n:'Same move, coefficient 20. 6 dB → <b>2.0×</b>.'},
-{d:'D', l:'Doubling distance from a source', r:'−6 dB', n:'Inverse square law — energy drops to <b>one quarter</b> at double the distance.'},
-{d:'D', l:'Doubling amplifier power', r:'+3 dB', n:'10 × log(2) = 3.01. Ten times the power = <b>+10 dB</b>.'},
 {d:'D', l:'Smallest loudness change a listener notices', r:'±3 dB', n:'The just-noticeable difference. Same number as a power doubling — which is exactly the point.'},
 {d:'D', l:'Doubling the number of open mics', r:'−3 dB gain before feedback', n:'Every doubling of open mics (NOM) costs another 3 dB.'},
 {d:'D', l:'0 dB SPL references', r:'20 µPa', n:'The threshold of human hearing — <b>not</b> silence.'},
 {d:'D', l:'0 dBu references', r:'0.775 V', n:'dBu, dBV and SPL are 20-log — they are all voltages or pressures.'},
 {d:'D', l:'0 dBV references', r:'1.0 V'},
 {d:'D', l:'0 dBm references', r:'1 mW', n:'<b>Trap:</b> dBm is the one that references <b>power</b>, so it is <b>10-log</b> while its dBu/dBV neighbours are 20-log.'},
-{d:'D', l:'A 10× increase in watts', r:'+10 dB', n:'<b>Trap:</b> the ratio alone never tells you the answer — you need to know what is being measured.'},
-{d:'D', l:'A 10× increase in volts', r:'+20 dB', n:'Identical ratio to the watts case, different coefficient.'},
 {d:'D', l:'Program audio above background noise', r:'at least 25 dB', n:'Max noise = <b>target − 25</b>. A 70 dB SPL(A) speech target allows 45 dB SPL(A) of noise.'},
 
 /* ---- Loudspeakers ---- */
@@ -245,16 +249,15 @@ const PAIRS = [
 {d:'V', l:'Width of a 16:9 screen, from its diagonal', r:'D × 0.8716', n:'A 90 in display is 78.4 in wide.'},
 {d:'V', l:'Height of a 16:9 screen, from its diagonal', r:'D × 0.4903'},
 {d:'V', l:'Aspect ratio, from dimensions', r:'AR = W / H', n:'H = W ÷ AR &nbsp;·&nbsp; W = H × AR.'},
-{d:'V', l:'16:9 as a decimal', r:'1.7778', n:'<b>Trap:</b> use four decimal places — 1.78 drifts enough to miss the offered answer.'},
 {d:'V', l:'Screen diagonal, from width and height', r:'A² + B² = C²', n:'Pythagorean theorem: width² + height² = diagonal².'},
 {d:'V', l:'Throw distance', r:'screen width × throw ratio', n:'Ratio 2.0 × a 4 m wide image = projector sits <b>8 m</b> back. Verify against the projector manual for a real design.'},
 {d:'V', l:'ANSI lumen rating', r:'SH × SW × AI', n:'Screen height × width × the <b>average of nine</b> illuminance readings. Lux pairs with m², foot-candles with ft² — mismatch and you are off by 10.76×.'},
 {d:'V', l:'DISCAS %EH', r:'element height / image height', n:'Basic Decision Making. ADM viewing instead requires resolving a <b>single pixel</b>.'},
 {d:'V', l:'Minimum contrast for full-motion video', r:'80:1', n:'Driven mostly by <b>ambient room light</b>, which lifts the black level.'},
 {d:'V', l:'Average seated eye height', r:'1.2 m (48 in)', n:'The standard constant for checking whether heads block the screen.'},
-{d:'V', l:'Light remaining at double the distance', r:'25%', n:'<b>Trap:</b> read whether the question wants what <b>remains</b> (25%) or what was <b>lost</b> (75%). Both are on the answer list.'},
+{d:'V', l:'Illuminance at a new distance', r:'E₂ = E₁ × (D₁ / D₂)²', n:'Inverse square law — the same law that costs sound 6 dB per doubling. At 2× the distance, 25% remains. <b>Trap:</b> read whether the question wants what <b>remains</b> (25%) or what was <b>lost</b> (75%).'},
 {d:'V', l:'Chroma factors for 4:4:4, 4:2:2, 4:2:0', r:'3, 2 and 1.5', n:'<b>Trap:</b> the factor is <b>never</b> the first number in the name. Count samples per 4 pixels, divide by 4: 12/4, 8/4, 6/4.'},
-{d:'V', l:'Uncompressed 4K60, 8-bit, 4:4:4', r:'≈ 11.94 Gbps', n:'W × H × fps × bit depth × subsampling factor. More than a 10 Gb link carries — which is why real video is compressed.'},
+{d:'V', l:'Uncompressed video bandwidth', r:'W × H × fps × bit depth × chroma factor', n:'Over HDMI, multiply again by <b>1.25</b> for TMDS overhead. 4K60 8-bit 4:4:4 lands at ≈ 11.94 Gbps — more than a 10 Gb link carries, which is why real video is compressed.'},
 
 /* ---- Cable & install ---- */
 {d:'N', l:'PoE device power', r:'V × I', n:'Convert mA → A first.'},

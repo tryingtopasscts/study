@@ -74,7 +74,7 @@ h1{font-family:var(--serif);font-weight:700;font-size:1.5rem;line-height:1.2}
 .ch-table{width:100%;border-collapse:collapse;text-align:left;margin-top:.2rem}
 .ch-table td{padding:.36rem .1rem;border-bottom:1px solid var(--border);vertical-align:baseline}
 .ch-table tr:last-child td{border-bottom:0}
-.ch-table td.n{font-size:.8rem;color:var(--text2);width:43%;padding-right:.7rem}
+.ch-table td.n{font-size:.8rem;color:var(--text2);width:37%;padding-right:.7rem}
 .ch-table td.f{font-family:var(--mono);font-size:.76rem;color:var(--accent2);line-height:1.4}
 
 .fc-hint{font-family:var(--mono);font-size:.7rem;color:var(--text3);position:absolute;bottom:.8rem;left:0;right:0;
@@ -1046,14 +1046,14 @@ const CARDS = [
 {d:'F', t:'Rounding', c:'Foundations', q:'In a multi-step problem, when should you round?',
  a:'<span class="big">Only the final result</span>Carry full precision through every intermediate step.', viz:'rounding',
  n:'Rounding at each step compounds the error, and the compounded value is often one of the offered answers.'},
-{d:'F', t:'Area & perimeter', c:'Foundations', q:'Area and perimeter of a rectangle?',
+{d:'F', t:'Area & perimeter', c:'Foundations', f:'Area = W × L &nbsp;·&nbsp; Perimeter = 2 × (W + L)', q:'Area and perimeter of a rectangle?',
  a:'<span class="big">Area = W × L</span>Perimeter = <b>2 × (W + L)</b> — you walk all four sides.', viz:'rect',
  n:'<b>Trap:</b> forgetting to double gives exactly half the perimeter — and half is always on the answer list.'},
 {d:'F', t:'Volume', c:'Foundations', q:'Volume of a room?',
  a:'<span class="big">W × L × H</span>Three dimensions, three factors.', viz:'volume'},
 {d:'F', t:'Unit conversions', c:'Foundations', q:'1 inch = ? mm &nbsp;·&nbsp; 1 foot = ? m &nbsp;·&nbsp; 1 kg = ? lb',
  a:'<span class="big">25.4 mm · 0.3048 m · 2.205 lb</span>The three conversions worth having cold.', viz:'units'},
-{d:'F', t:'Foot-candles ↔ lux', c:'Foundations', q:'1 foot-candle = how many lux — and why that number?',
+{d:'F', t:'Foot-candles ↔ lux', c:'Foundations', f:'1 fc = 10.76 lux &nbsp;·&nbsp; because 1 m² = 10.76 ft²', q:'1 foot-candle = how many lux — and why that number?',
  a:'<span class="big">10.76 lux</span>Because there are <b>10.76 ft² in one m²</b>. Same light, smaller tiles.', viz:'fclux',
  n:'Lux pairs with metres, foot-candles pair with feet. Mixing them is the classic ANSI-lumens error.'},
 {d:'F', t:'log(2)', c:'Foundations', q:'log(2) ≈ ?',
@@ -1066,18 +1066,18 @@ const CARDS = [
  a:'<span class="big">Do the same thing to both sides</span>To get I out of V = I × R, divide <b>both</b> sides by R.', viz:'balance'},
 
 /* ---- Electrical ---- */
-{d:'E', t:'Ohm’s Law', c:'Electrical', q:'Ohm’s Law, solved for current:',
+{d:'E', t:'Ohm’s Law', c:'Electrical', f:'I = V / R &nbsp;·&nbsp; V = I × R &nbsp;·&nbsp; R = V / I', q:'Ohm’s Law, solved for current:',
  a:'<span class="big">I = V / R</span>Amps = volts ÷ ohms. Rearranged: V = IR, R = V/I.', viz:'ohm',
  n:'Cover the quantity you want in the triangle; what remains is your formula.'},
-{d:'E', t:'Power formula', c:'Electrical', q:'The power formula — all three forms:',
+{d:'E', t:'Power formula', c:'Electrical', f:'P = I × V &nbsp;·&nbsp; P = V² / R &nbsp;·&nbsp; P = I² R', q:'The power formula — all three forms:',
  a:'<span class="big">P = I × V</span>Also <b>P = V² / R</b> and <b>P = I² R</b>.', viz:'powertri',
  n:'The V²/R form is why voltage uses a 20 in dB math — hold onto it.'},
-{d:'E', t:'The 80% rule', c:'Electrical', q:'Maximum planned load on any circuit?',
+{d:'E', t:'The 80% rule', c:'Electrical', f:'max planned load = rated capacity × 0.8', q:'Maximum planned load on any circuit?',
  a:'<span class="big">80% of rated capacity</span>A 20 A circuit carries no more than <b>16 A</b> of planned load.', viz:'circuit80'},
-{d:'E', t:'Voltage drop', c:'Electrical', q:'Voltage drop over a long cable run — what is R?',
+{d:'E', t:'Voltage drop', c:'Electrical', f:'V<sub>drop</sub> = I × R<sub>total</sub> &nbsp;·&nbsp; R<sub>total</sub> = rate × 2 × distance', q:'Voltage drop over a long cable run — what is R?',
  a:'<span class="big">R = rate × 2 × distance</span>Then V<sub>drop</sub> = I × R.', viz:'vdrop',
  n:'<b>Trap:</b> current travels out <b>and back</b>. Double the one-way run before applying the ohms-per-foot rate.'},
-{d:'E', t:'Heat load', c:'Electrical', q:'Heat load in Btu from electrical draw?',
+{d:'E', t:'Heat load', c:'Electrical', f:'Btu = watts × 3.4 &nbsp;·&nbsp; kJ = watts × 3.6', q:'Heat load in Btu from electrical draw?',
  a:'<span class="big">Btu = watts × 3.4</span>Kilojoule version: watts × <b>3.6</b>.', viz:'heat',
  n:'Amplifiers are excluded from this figure — they get calculated separately.'},
 
@@ -1107,7 +1107,7 @@ const CARDS = [
  a:'<span class="big">±3 dB</span>The smallest SPL change most listeners reliably perceive.', viz:'jnd'},
 {d:'D', t:'Doubling open mics (NOM)', c:'Decibels', q:'Doubling the number of open microphones (NOM) costs…',
  a:'<span class="big">−3 dB gain before feedback</span>Every doubling of open mics costs another 3 dB.', viz:'nom'},
-{d:'D', t:'0 dB SPL', c:'Decibels', q:'0 dB SPL represents…',
+{d:'D', t:'0 dB SPL', c:'Decibels', f:'threshold of hearing — reference pressure 20 µPa', q:'0 dB SPL represents…',
  a:'<span class="big">The threshold of human hearing</span>Reference pressure of <b>20 micropascals</b>. Not silence.', viz:'spl0'},
 {d:'D', t:'Reference levels', c:'Decibels', q:'0 dBu, 0 dBV, 0 dBm and 0 dB SPL reference what?',
  a:'<span class="big">0.775 V · 1.0 V · 1 mW · 20 µPa</span>dBu, dBV and SPL are 20-log; <b>dBm is 10-log</b> — it references power.', viz:'refs'},
@@ -1117,7 +1117,7 @@ const CARDS = [
 {d:'D', t:'Ratios below 1', c:'Decibels', q:'A ratio less than 1 always produces…',
  a:'<span class="big">A negative dB result — a loss</span>Free answer-checker at the end of every dB problem.', viz:'negdb',
  n:'If the sign does not match the story the question told, you flipped the fraction.'},
-{d:'D', t:'Speech above noise', c:'Decibels', q:'How far above background noise should program audio sit?',
+{d:'D', t:'Speech above noise', c:'Decibels', f:'program − background ≥ 25 dB &nbsp;·&nbsp; max noise = target − 25', q:'How far above background noise should program audio sit?',
  a:'<span class="big">At least 25 dB</span>Max noise = <b>target − 25</b>. A 70 dB SPL(A) speech target allows 45 dB SPL(A) of noise.', viz:'speech25'},
 
 /* ---- Loudspeakers ---- */
@@ -1128,30 +1128,30 @@ const CARDS = [
 {d:'L', t:'Parallel impedance — mixed', c:'Loudspeakers', q:'Parallel impedance — mixed loudspeakers:',
  a:'<span class="big">1/Z_T = 1/Z₁ + 1/Z₂ + …</span>Flip, add, then <b>flip the sum back over</b>.', viz:'parmixed',
  n:'<b>Trap:</b> the last flip is the step people skip — leaving the reciprocal as the answer.'},
-{d:'L', t:'Power for an SPL increase', c:'Loudspeakers', q:'Watts needed for a required SPL increase?',
+{d:'L', t:'Power for an SPL increase', c:'Loudspeakers', f:'ΔSPL = 10 log(P₂ / P₁) &nbsp;·&nbsp; P₂ = P₁ × 10^(ΔSPL/10)', q:'Watts needed for a required SPL increase?',
  a:'<span class="big">ΔSPL = 10 log(P₂ / P₁)</span>Solve for P₂: <b>P₂ = P₁ × 10^(ΔSPL/10)</b>.', viz:'amppow'},
-{d:'L', t:'Loudspeaker sensitivity', c:'Loudspeakers', q:'What does “90 dB SPL, 1 W @ 1 m” describe?',
+{d:'L', t:'Loudspeaker sensitivity', c:'Loudspeakers', f:'dB SPL at 1 W / 1 m — the reference every SPL budget starts from', q:'What does “90 dB SPL, 1 W @ 1 m” describe?',
  a:'<span class="big">Loudspeaker sensitivity</span>The SPL produced from a known power at a known distance — your starting reference.', viz:'sens'},
 
 /* ---- Audio ---- */
-{d:'A', t:'Wavelength', c:'Audio', q:'Wavelength formula:',
+{d:'A', t:'Wavelength', c:'Audio', f:'λ = v / f &nbsp;·&nbsp; v = 343 m/s in air', q:'Wavelength formula:',
  a:'<span class="big">λ = v / f</span>Speed of sound in air: <b>343 m/s</b> (sea level, 20 °C).', viz:'wavelength'},
-{d:'A', t:'Octaves', c:'Audio', q:'An octave is… and how do you count them?',
+{d:'A', t:'Octaves', c:'Audio', f:'octaves = log(f₂ / f₁) ÷ log(2)', q:'An octave is… and how do you count them?',
  a:'<span class="big">A doubling of frequency</span>Octaves = <b>log(f₂/f₁) ÷ log(2)</b>. 20 Hz to 20 kHz is about <b>10 octaves</b>.', viz:'octave'},
-{d:'A', t:'Digital audio bandwidth', c:'Audio', q:'Digital audio bandwidth:',
+{d:'A', t:'Digital audio bandwidth', c:'Audio', f:'BW = sample rate × bit depth × channels', q:'Digital audio bandwidth:',
  a:'<span class="big">BW = sample rate × bit depth × channels</span>Result in bits per second.', viz:'audiobw'},
 {d:'A', t:'Nyquist–Shannon theorem', c:'Audio', q:'Nyquist–Shannon sampling theorem:',
  a:'<span class="big">Sample rate &gt; 2 × highest frequency</span>Capturing 20 kHz needs a rate above 40 kHz — hence CD’s 44.1 kHz.', viz:'nyquist'},
 
 /* ---- Video & light ---- */
-{d:'V', t:'Diagonal → width & height', c:'Video', q:'Width and height of a 16:9 screen, from its diagonal:',
+{d:'V', t:'Diagonal → width & height', c:'Video', f:'W = D × 0.8716 &nbsp;·&nbsp; H = D × 0.4903', q:'Width and height of a 16:9 screen, from its diagonal:',
  a:'<span class="big">W = D × 0.8716</span>H = D × <b>0.4903</b>. A 90 in display is 78.4 in wide.', viz:'diag169'},
-{d:'V', t:'Aspect ratio', c:'Video', q:'Aspect ratio from dimensions:',
+{d:'V', t:'Aspect ratio', c:'Video', f:'AR = W / H &nbsp;·&nbsp; H = W ÷ AR &nbsp;·&nbsp; W = H × AR', q:'Aspect ratio from dimensions:',
  a:'<span class="big">AR = W / H</span>H = W ÷ AR &nbsp;·&nbsp; W = H × AR.', viz:'ar',
  n:'Use four decimal places for 16:9 (<b>1.7778</b>) — 1.78 drifts enough to miss the offered answer.'},
-{d:'V', t:'Screen diagonal', c:'Video', q:'Screen diagonal from width and height:',
+{d:'V', t:'Screen diagonal', c:'Video', f:'W² + H² = D²', q:'Screen diagonal from width and height:',
  a:'<span class="big">A² + B² = C²</span>Pythagorean theorem: width² + height² = diagonal².', viz:'pythag'},
-{d:'V', t:'Throw distance', c:'Video', q:'Estimating throw distance:',
+{d:'V', t:'Throw distance', c:'Video', f:'D = screen width × throw ratio', q:'Estimating throw distance:',
  a:'<span class="big">D = screen width × throw ratio</span>Ratio 2.0 × a 4 m wide image = projector sits <b>8 m</b> back.', viz:'throw_',
  n:'Always verify against the projector manual’s own formula for the real design.'},
 {d:'V', t:'ANSI lumens', c:'Video', q:'ANSI lumen rating formula:',
@@ -1163,36 +1163,36 @@ const CARDS = [
  a:'<span class="big">80:1</span>Driven mostly by <b>ambient room light</b>, which lifts the black level.', viz:'contrast'},
 {d:'V', t:'Seated eye height', c:'Video', q:'Average seated eye height for sightlines:',
  a:'<span class="big">1.2 m (48 in)</span>The standard constant for checking whether heads block the screen.', viz:'eyeheight'},
-{d:'V', t:'Light at double distance', c:'Video', q:'Illumination at double the distance from a source?',
+{d:'V', t:'Light at double distance', c:'Video', f:'E₂ = E₁ × (D₁ / D₂)² &nbsp;·&nbsp; 25% remains at 2× distance', q:'Illumination at double the distance from a source?',
  a:'<span class="big">25% remains</span>Which is a <b>75% decrease</b>. Inverse square law applies to light too.', viz:'lightfall',
  n:'<b>Trap:</b> read whether the question wants what <b>remains</b> or what was <b>lost</b>. Both numbers are on the answer list.'},
-{d:'V', t:'Chroma subsampling', c:'Video', q:'Chroma subsampling factors for 4:4:4, 4:2:2 and 4:2:0?',
+{d:'V', t:'Chroma subsampling', c:'Video', f:'4:4:4 = 3 &nbsp;·&nbsp; 4:2:2 = 2 &nbsp;·&nbsp; 4:2:0 = 1.5', q:'Chroma subsampling factors for 4:4:4, 4:2:2 and 4:2:0?',
  a:'<span class="big">3, 2 and 1.5</span>Count samples per 4 pixels, divide by 4: 12/4, 8/4, 6/4.', viz:'chroma',
  n:'<b>Trap:</b> the factor is <b>never</b> the first number in the name.'},
-{d:'V', t:'Uncompressed 4K bitrate', c:'Video', q:'Uncompressed 4K (3840×2160, 60 fps, 8-bit, 4:4:4) needs roughly…',
+{d:'V', t:'Uncompressed 4K bitrate', c:'Video', f:'W × H × fps × bit depth × chroma factor &nbsp;·&nbsp; × 1.25 over HDMI', q:'Uncompressed 4K (3840×2160, 60 fps, 8-bit, 4:4:4) needs roughly…',
  a:'<span class="big">≈ 11.94 Gbps</span>W × H × fps × bit depth × subsampling factor.', viz:'fourk',
  n:'More than a 10 Gb link can carry — which is exactly why real video is compressed.'},
 
 /* ---- Cable & install ---- */
-{d:'N', t:'PoE power budget', c:'Networks', q:'PoE: how do you size the switch?',
+{d:'N', t:'PoE power budget', c:'Networks', f:'device W = V × I &nbsp;·&nbsp; switch rating = total load × 1.2', q:'PoE: how do you size the switch?',
  a:'<span class="big">Device power = V × I</span>Total the loads, then add headroom: <b>× 1.2</b>.', viz:'poe',
  n:'“120% of load” (×1.2) and “load it to 80%” (÷0.8 = ×1.25) are <b>different numbers</b>. Read which one is asked. Convert mA → A first.'},
-{d:'N', t:'The 100-metre channel', c:'Networks', q:'The 100-metre copper limit applies to what, exactly?',
+{d:'N', t:'The 100-metre channel', c:'Networks', f:'permanent link (≤ 90 m) + both patch cords ≤ 100 m', q:'The 100-metre copper limit applies to what, exactly?',
  a:'<span class="big">The whole channel</span>Permanent link (≤ <b>90 m</b>) + both patch cords ≤ <b>100 m / 328 ft</b>.', viz:'channel100',
  n:'Longer patch cords mean a <b>shorter</b> permanent link — never a longer channel.'},
 {d:'N', t:'RF spectrum', c:'RF / Wireless', q:'What is the frequency range of the RF spectrum?',
  a:'<span class="big">3 kHz – 300 GHz</span>It has a <b>floor</b>, not just a ceiling.', viz:'rf',
  n:'<b>Trap:</b> answers that only bound the top ("up to 300 GHz") miss the 3 kHz floor.'},
-{d:'N', t:'Conduit fill', c:'Cabling', q:'Max conduit fill with 3 or more cables:',
+{d:'N', t:'Conduit fill', c:'Cabling', f:'≤ 40% of the conduit’s interior cross-sectional area', q:'Max conduit fill with 3 or more cables:',
  a:'<span class="big">40%</span>Of the conduit’s interior cross-sectional area.', viz:'conduit'},
-{d:'N', t:'Cable bend radius', c:'Cabling', q:'Minimum safe cable bend radius:',
+{d:'N', t:'Cable bend radius', c:'Cabling', f:'bend radius ≥ 4 × cable diameter', q:'Minimum safe cable bend radius:',
  a:'<span class="big">4 × cable diameter</span>Tighter bends risk damaging conductors or shielding.', viz:'bend'},
-{d:'N', t:'Rigging safety factor', c:'Rigging', q:'Safety factor for overhead-flown loads:',
+{d:'N', t:'Rigging safety factor', c:'Rigging', f:'required rating = load × 5', q:'Safety factor for overhead-flown loads:',
  a:'<span class="big">5 : 1</span>A 40 kg display needs a mount rated for <b>200 kg</b>.', viz:'rig'},
 {d:'N', t:'RS-485 / DMX512', c:'Control', q:'RS-485 / DMX512: device count and termination?',
  a:'<span class="big">32 devices · 120 Ω</span>Terminate with 120 Ω at <b>both ends</b> of the line.', viz:'rs485',
  n:'<b>Trap:</b> 75 Ω is video coax, not the data bus.'},
-{d:'N', t:'Drawing scale', c:'Drawings', q:'A drawing is 1:50 scale. How do you get the real dimension?',
+{d:'N', t:'Drawing scale', c:'Drawings', f:'real dimension = measured × scale factor', q:'A drawing is 1:50 scale. How do you get the real dimension?',
  a:'<span class="big">measured × 50</span>Multiply what you measure on the page by the scale factor.', viz:'scale',
  n:'This is one of the few places you genuinely <b>do</b> multiply — check ratio vs. product before every formula.'},
 {d:'N', t:'AFF', c:'Drawings', q:'On a drawing: what does AFF mean?',
@@ -1222,10 +1222,14 @@ let filter='all', queue=[], pos=0;
 
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 
-// the headline answer already on each card is the chart's formula column,
-// so the section overview can never drift out of step with the cards
+// The chart column falls back to the card's headline answer, so a card can
+// never be missing from the overview. But a headline is the one-line version:
+// "P = I × V" leaves out P = V²/R and P = I²R, and the voltage-drop headline
+// gives the R step without the V = I × R it feeds. Where a card carries more
+// than one formula, `f` spells the whole set out for the overview — the chart
+// is meant to be the section's complete formula list, not a card index.
 const BIG=/<span class="big">([\s\S]*?)<\/span>/;
-const formulaOf=c=>{const m=BIG.exec(c.a);return m?m[1]:c.a.replace(/<[^>]*>/g,'');};
+const formulaOf=c=>{if(c.f)return c.f;const m=BIG.exec(c.a);return m?m[1]:c.a.replace(/<[^>]*>/g,'');};
 
 function updateCounts(){
   $('n-all').textContent=CARDS.length;

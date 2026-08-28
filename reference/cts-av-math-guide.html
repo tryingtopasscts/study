@@ -394,7 +394,7 @@ The 10.76 in the foot-candle conversion is not a coincidence — it's the number
 <ul class="where"><li><strong>Area</strong> comes back in square units (ft², m²) · <strong>perimeter</strong> in plain length units · <strong>volume</strong> in cubic units</li><li>Rearranged for a missing side: <strong>L = Area ÷ W</strong></li></ul>
 </div>
 <div class="callout watchout"><span class="label">Watch Out</span>
-Perimeter is <strong>2 × (W + H)</strong>, not W + H. Forgetting the doubling gives exactly half the right answer — and half is always one of the options. For a screen 2.50 m wide and 1.80 m high: 2 × (2.50 + 1.80) = <strong>8.60 m</strong>, not 4.30 m.</div>
+Perimeter is <strong>2 × (W + L)</strong> — or 2 × (W + H) for a screen — not just W + L. Forgetting the doubling gives exactly half the right answer — and half is always one of the options. For a screen 2.50 m wide and 1.80 m high: 2 × (2.50 + 1.80) = <strong>8.60 m</strong>, not 4.30 m.</div>
 
 <div class="worked" data-worked>
 <div class="wtitle">Worked Example — The Measurement Nobody Wrote Down</div>
@@ -753,8 +753,12 @@ Electricity in a wire behaves like water in a pipe. <strong>Voltage</strong> is 
 <div class="callout keyterm"><span class="label">Key Term</span>
 <strong>Impedance (Z)</strong> — the opposition to current flow in an <em>AC</em> circuit, measured in ohms just like resistance. Audio circuits are AC, which is why loudspeaker math uses Z instead of R. The arithmetic works the same way.</div>
 
+<div class="formula-box"><div class="fname">The 80% Rule — Circuit Planning</div>
+<div class="formula">Max planned load = rated capacity × 0.8</div>
+<ul class="where"><li><strong>Rated capacity</strong> — the breaker's rating, in amps (a 20 A branch circuit)</li><li><strong>Max planned load</strong> — the most you may design onto it (20 × 0.8 = <strong>16 A</strong>)</li><li>Read backwards, it also sizes the circuit: <strong>required capacity = load ÷ 0.8</strong></li></ul>
+</div>
 <div class="callout spec"><span class="label">Spec</span>
-<strong>The 80% rule:</strong> when planning an electrical system, never plan to exceed <strong>80 percent</strong> of the rated current capacity of any circuit. A 20 A branch circuit should be loaded to no more than 16 A.</div>
+<strong>The 80% rule:</strong> when planning an electrical system, never plan to exceed <strong>80 percent</strong> of the rated current capacity of any circuit. A rating is not a working budget.</div>
 
 <div class="worked" data-worked>
 <div class="wtitle">Worked Example — Chaining Both Laws</div>
@@ -783,10 +787,16 @@ Electricity in a wire behaves like water in a pipe. <strong>Voltage</strong> is 
 <div class="plain"><span class="label">In Plain English</span>
 Cable is not a perfect conductor — it has a small resistance per unit of length. Push current through it and Ohm's law does what it always does: some voltage is consumed by the <em>wire itself</em> and never reaches the device. Over a metre this is nothing. Over 25 metres to a remotely-powered transmitter, it can drop the device below its operating tolerance.</div>
 
-<div class="formula-box"><div class="fname">Voltage Drop</div>
-<div class="formula">V<sub>drop</sub> = I × R<sub>total</sub><span style="display:block;font-size:15px;margin-top:10px;color:var(--muted)">where R<sub>total</sub> = resistance-per-unit-length × (2 × one-way distance)</span></div>
-<ul class="where"><li><strong>I</strong> — the current the device draws</li><li><strong>The doubling is not optional.</strong> Current flows out to the device <em>and back</em>, so the conductor length is twice the distance on the drawing.</li></ul>
+<div class="formula-box"><div class="fname">Voltage Drop — Step 1: Cable Resistance</div>
+<div class="formula">R<sub>total</sub> = r × (2 × D)</div>
+<ul class="where"><li><strong>R<sub>total</sub></strong> — resistance of the whole cable run, in ohms (Ω)</li><li><strong>r</strong> — the cable's resistance <em>rate</em>, in ohms per unit length (e.g. 0.0062 Ω/ft for 18 AWG)</li><li><strong>D</strong> — the one-way distance shown on the drawing</li><li><strong>The 2 is not optional.</strong> Current flows out to the device <em>and back</em>, so the conductor is twice the distance you were given.</li></ul>
 </div>
+
+<div class="formula-box"><div class="fname">Voltage Drop — Step 2: Ohm's Law</div>
+<div class="formula">V<sub>drop</sub> = I × R<sub>total</sub></div>
+<ul class="where"><li><strong>V<sub>drop</sub></strong> — volts lost in the cable, in volts (V)</li><li><strong>I</strong> — the current the device draws, in amps (A)</li><li><strong>R<sub>total</sub></strong> — from step 1 above</li></ul>
+</div>
+<p>Two follow-ups get asked so often they are worth treating as part of the formula. <strong>Voltage at the device</strong> is <span class="mono">V<sub>device</sub> = V<sub>supply</sub> − V<sub>drop</sub></span>. <strong>Tolerance</strong> is a percentage of the <em>supply</em> voltage, not of the drop: <span class="mono">V<sub>allowed</sub> = V<sub>supply</sub> × tolerance %</span>, and the run passes when <span class="mono">V<sub>drop</sub> ≤ V<sub>allowed</sub></span>. A 5% tolerance on a 12 V supply permits 0.6 V.</p>
 
 <div class="callout watchout"><span class="label">Watch Out</span>
 Two hidden steps hide in every voltage-drop question, and the distractors are built from skipping them. <strong>One:</strong> a figure like "0.0062 ohms per foot" is a <em>rate</em>, not a resistance — multiply it by the length first. <strong>Two:</strong> use the round-trip length. Miss the doubling and your answer is exactly half of right, which will be sitting in the options waiting for you.</div>
@@ -1107,8 +1117,18 @@ Sanity checks that catch most impedance mistakes: <strong>series total is always
 <p>This is the classic multi-step CTS problem. You're given a loudspeaker <strong>sensitivity</strong> rating (e.g., "92 dB SPL, 1 W @ 1 m"), a listener distance, and a target SPL. The plan is always the same two steps:</p>
 <ol>
 <li><strong>Distance step:</strong> use the inverse square law to find the SPL at the listener with just 1 watt in.</li>
-<li><strong>Power step:</strong> find how many watts it takes to make up the shortfall, using <span class="mono">SPL increase = 10 × log(P₂ / P₁)</span>.</li>
+<li><strong>Power step:</strong> find how many watts it takes to make up the shortfall, using the formula below.</li>
 </ol>
+
+<div class="formula-box"><div class="fname">Power Change → SPL Change</div>
+<div class="formula">ΔSPL = 10 × log(<span class="frac"><span class="top">P₂</span><span class="bot">P₁</span></span>)</div>
+<ul class="where"><li><strong>ΔSPL</strong> — the change in level, in dB</li><li><strong>P₁</strong> — the power you start from, in watts (usually the 1 W of the sensitivity rating)</li><li><strong>P₂</strong> — the power you end up at, in watts</li><li>Power, so the coefficient is <strong>10</strong>, not 20.</li></ul>
+</div>
+
+<div class="formula-box"><div class="fname">Solved for the Watts You Need</div>
+<div class="formula">P₂ = P₁ × 10<sup>(ΔSPL ÷ 10)</sup></div>
+<ul class="where"><li>The same formula rearranged — this is the form the exam question actually wants, because it asks for watts.</li><li><strong>Divide by 10 first</strong>, then press 10<sup>x</sup>. Never raise 10 to the raw dB figure.</li><li>Sanity check with the shortcuts: +3 dB doubles the watts, +10 dB is ten times the watts.</li></ul>
+</div>
 
 <div class="diagram">
 <svg viewBox="0 0 720 240" role="img" aria-label="Two-step amplifier power plan: distance loss, then power to make up the shortfall">
@@ -1278,8 +1298,9 @@ The <strong>Nyquist–Shannon sampling theorem</strong>: the sample rate must be
 </div>
 
 <h3>Video Bandwidth</h3>
-<div class="formula-box">
-<div class="formula">Horizontal Pixels &times; Vertical Pixels &times; Frame Rate &times; Bit Depth &times; Subsampling Factor &times; Transport Overhead</div>
+<div class="formula-box"><div class="fname">Video Bandwidth</div>
+<div class="formula" style="font-size:19px">BW = H<sub>px</sub> &times; V<sub>px</sub> &times; fps &times; bit depth &times; subsampling factor &times; transport overhead</div>
+<ul class="where"><li><strong>H<sub>px</sub> &times; V<sub>px</sub></strong> &mdash; the pixels on one frame (3840 &times; 2160 for 4K)</li><li><strong>fps</strong> &mdash; frames per second</li><li><strong>Bit depth</strong> &mdash; bits per colour sample (8, 10, 12)</li><li><strong>Subsampling factor</strong> &mdash; 3, 2 or 1.5 &mdash; <em>not</em> the first number of the ratio</li><li><strong>Transport overhead</strong> &mdash; &times; 1.25 over HDMI for TMDS encoding; leave it out when the question says uncompressed baseband</li><li>Result is in <strong>bits per second</strong>. Divide by 1,000,000,000 for Gbps.</li></ul>
 </div>
 <p>Build it from the smallest component outward:</p>
 <ol>
@@ -1416,9 +1437,9 @@ Here is why that factor is 3 and not 4, which makes the whole table stop being a
 
 <h3>PoE Power Budget</h3>
 <p>Determine how much power you need, and whether the switch or midspan can deliver it at <strong>no more than 80%</strong> of its power rating.</p>
-<div class="formula-box">
-<div class="formula">Device Power = Voltage &times; Current</div>
-<div class="formula">Switch Rating Required = Total Device Power &times; 1.2</div>
+<div class="formula-box"><div class="fname">PoE Power Budget</div>
+<div class="formula" style="font-size:19px">Device power = V &times; I<br>Switch rating required = total device power &times; 1.2</div>
+<ul class="where"><li><strong>V</strong> &mdash; the PoE supply voltage, in volts (48 V is typical)</li><li><strong>I</strong> &mdash; the device's current draw, in <strong>amps</strong> &mdash; convert milliamps first (185 mA = 0.185 A)</li><li><strong>&times; 1.2</strong> &mdash; 20% headroom on the total. The other framing, "load the switch to no more than 80% of its rating," is <strong>&divide; 0.8 = &times; 1.25</strong> &mdash; a different number.</li><li>Answer both halves: the wattage <em>and</em> the PoE port count.</li></ul>
 </div>
 <div class="worked" data-worked>
 <div class="wtitle">Worked Example — PoE Power Budget</div>
@@ -1437,8 +1458,9 @@ Here is why that factor is 3 and not 4, which makes the whole table stop being a
 
 <h3>The 100-Metre Channel</h3>
 <p>The 100 m (328 ft) copper maximum applies to the <strong>entire channel</strong> &mdash; permanent link plus both patch cords. TIA sets the permanent link at a maximum of <strong>90 m</strong>, leaving <strong>10 m</strong> for the two patch cords.</p>
-<div class="formula-box">
-<div class="formula">Permanent Link + Patch Cord 1 + Patch Cord 2 &le; 100 m (328 ft)</div>
+<div class="formula-box"><div class="fname">The Copper Channel Budget</div>
+<div class="formula">Permanent link + patch cord 1 + patch cord 2 &le; 100 m (328 ft)</div>
+<ul class="where"><li><strong>Permanent link</strong> &mdash; the fixed horizontal run, <strong>&le; 90 m</strong> by TIA</li><li><strong>Patch cords</strong> &mdash; both ends together, the remaining <strong>10 m</strong></li><li>Rearranged for the usual question: <strong>permanent link &le; 100 m &minus; (both patch cords)</strong></li></ul>
 </div>
 <div class="tbl-wrap"><table>
   <tr><th>Permanent Link</th><th>Patch #1</th><th>Patch #2</th><th>Channel Total</th></tr>
@@ -1660,6 +1682,11 @@ Units must match: if the light readings are in <strong>lux</strong>, screen area
 
 <h3>Light Falls Off by the Inverse Square Law Too</h3>
 <p>The same inverse square law that costs sound 6 dB per doubling of distance governs light. Double the distance from a lamp and the same light spreads over four times the area, so the illuminance at any point drops to <strong>one quarter</strong>.</p>
+
+<div class="formula-box"><div class="fname">Inverse Square Law — Illuminance</div>
+<div class="formula">E₂ = E₁ × <span class="frac"><span class="top">D₁²</span><span class="bot">D₂²</span></span></div>
+<ul class="where"><li><strong>E₁</strong> — illuminance at the original distance, in lux or foot-candles</li><li><strong>E₂</strong> — illuminance at the new distance, in the same unit</li><li><strong>D₁</strong> — the original distance &nbsp;·&nbsp; <strong>D₂</strong> — the new distance</li><li>The <strong>original</strong> distance goes on top, exactly as it does in dB = 20 log(D₁/D₂) — so moving away gives a fraction less than 1.</li></ul>
+</div>
 <div class="callout watchout"><span class="label">Watch Out</span>
 Read whether the question asks what <em>remains</em> or what is <em>lost</em> — both numbers are always in the options. At double the distance, <strong>25% remains</strong>, which means illumination has <strong>decreased by 75%</strong>. Same physics, two phrasings, and the wrong one is right there waiting. "Decreases by" means subtract from 100.</div>
 <div class="tbl-wrap"><table>
@@ -1973,7 +2000,7 @@ An equipment rack is, thermodynamically, a space heater with features. Once the 
 <tr><th>What</th><th>Formula</th><th>Remember</th></tr>
 <tr><td>Ohm's law</td><td>I = V / R</td><td>V = IR · R = V/I</td></tr>
 <tr><td>Power</td><td>P = I × V</td><td>Also P = V²/R, P = I²R</td></tr>
-<tr><td>Voltage drop</td><td>V<sub>drop</sub> = I × R<sub>total</sub></td><td>R = rate/length × <strong>2 ×</strong> distance</td></tr>
+<tr><td>Voltage drop</td><td>V<sub>drop</sub> = I × R<sub>total</sub></td><td>R<sub>total</sub> = r × (<strong>2 ×</strong> distance)</td></tr>
 <tr><td>Area · perimeter · volume</td><td>W×L · 2(W+L) · W×L×H</td><td>Perimeter doubles the sum</td></tr>
 <tr><td>Diagonal → width (16:9)</td><td>D × 0.8716</td><td>Height = D × 0.4903</td></tr>
 <tr><td>Octaves between 2 frequencies</td><td>log(f₂/f₁) ÷ log(2)</td><td>Or count doublings · 20 Hz-20 kHz = 10</td></tr>
@@ -1997,6 +2024,12 @@ An equipment rack is, thermodynamically, a space heater with features. Once the 
 <tr><td>Wavelength</td><td>λ = v / f</td><td>v = 343 m/s in air</td></tr>
 <tr><td>Audio bandwidth</td><td>BW = SR × bits × ch</td><td>Nyquist: SR &gt; 2× max freq</td></tr>
 <tr><td>Heat load (Btu)</td><td>Btu = W<sub>E</sub> × 3.4</td><td>kJ = W<sub>E</sub> × 3.6</td></tr>
+<tr><td>Video bandwidth</td><td>H<sub>px</sub> × V<sub>px</sub> × fps × bits × chroma</td><td>× 1.25 for HDMI/TMDS overhead</td></tr>
+<tr><td>Chroma subsampling factor</td><td>4:4:4 = 3 · 4:2:2 = 2 · 4:2:0 = 1.5</td><td>Never the first number of the ratio</td></tr>
+<tr><td>PoE power budget</td><td>Device W = V × I · switch = total × 1.2</td><td>mA → A first · “80% of rating” is ÷ 0.8</td></tr>
+<tr><td>Copper channel</td><td>Link + both patch cords ≤ 100 m</td><td>Permanent link ≤ 90 m</td></tr>
+<tr><td>Illuminance at a new distance</td><td>E₂ = E₁ × (D₁/D₂)²</td><td>Original distance on top</td></tr>
+<tr><td>Voltage at the device</td><td>V<sub>supply</sub> − V<sub>drop</sub></td><td>Tolerance = V<sub>supply</sub> × %</td></tr>
 <tr><td>Circuit planning</td><td>Max load = capacity × 0.8</td><td>The 80% rule</td></tr>
 <tr><td>RF spectrum</td><td>3 kHz – 300 GHz</td><td>Has a floor, not just a ceiling</td></tr>
 <tr><td>Conduit fill (3+ cables)</td><td>≤ 40% of interior area</td><td>—</td></tr>
@@ -2181,14 +2214,15 @@ spkCalc();bwCalc();twCalc();lmCalc();htCalc();dbCalc();
 const cards=[
 {t:'Electrical',q:'Ohm\u2019s law — solve for current',a:'I = V / R',x:'Amps = volts ÷ ohms. Rearranged: V = IR, R = V/I.'},
 {t:'Electrical',q:'The power formula',a:'P = I × V',x:'Watts = amps × volts. Also P = V²/R and P = I²R.'},
-{t:'Electrical',q:'Maximum planned load on any circuit',a:'80% of rated capacity',x:'A 20 A circuit should carry no more than 16 A of planned load.'},
-{t:'Electrical',q:'Voltage drop over a cable run',a:'V = I × R, with R = rate × 2 × distance',x:'Current goes out AND back, so double the one-way run before applying the ohms-per-foot rate.'},
+{t:'Electrical',q:'Maximum planned load on any circuit',a:'Max load = rated capacity × 0.8',x:'The 80% rule. A 20 A circuit carries no more than 16 A of planned load. Sizing a circuit for a known load runs it backwards: capacity = load ÷ 0.8.'},
+{t:'Electrical',q:'Voltage drop over a cable run',a:'R_total = r × (2 × D), then V_drop = I × R_total',x:'Two steps, and both get skipped. The ohms-per-foot figure is a rate, not a resistance — multiply it by the length. And current goes out AND back, so double the one-way run first.'},
+{t:'Electrical',q:'Voltage the device actually sees, and the tolerance test',a:'V_device = V_supply − V_drop',x:'Tolerance is a percentage of the SUPPLY voltage: allowed = V_supply × %. A 5% tolerance on 12 V permits 0.6 V of drop.'},
 {t:'Foundations',q:'Perimeter of a rectangle',a:'2 × (W + L)',x:'Forgetting to double gives exactly half — and half is always an option.'},
 {t:'Foundations',q:'1 inch = ? mm · 1 foot-candle = ? lux',a:'25.4 mm · 10.76 lux',x:'10.76 is the number of square feet in a square metre — that is why it is the fc/lux factor.'},
 {t:'Video',q:'Width of a 16:9 screen from its diagonal',a:'Diagonal × 0.8716',x:'Height = diagonal × 0.4903. A 90 in display is 78.4 in wide.'},
 {t:'Video',q:'Minimum contrast ratio for full-motion video',a:'80:1',x:'Driven mostly by ambient room light, which lifts the black level.'},
 {t:'Video',q:'Average seated eye height for sightlines',a:'1.2 m (48 in)',x:'The standard constant for checking whether heads block the screen.'},
-{t:'Video',q:'Illumination at double the distance from a source',a:'25% remains — a 75% decrease',x:'Inverse square law. Read whether the question wants what remains or what was lost.'},
+{t:'Video',q:'Illuminance at a new distance from a source',a:'E₂ = E₁ × (D₁ / D₂)²',x:'Inverse square law — original distance on top, same as dB = 20 log(D₁/D₂). At double the distance 25% remains, i.e. a 75% decrease; read which one the question wants.'},
 {t:'Audio',q:'An octave is…',a:'A doubling of frequency',x:'Octaves = log(f₂/f₁) ÷ log(2). 20 Hz to 20 kHz is about 10 octaves.'},
 {t:'Audio',q:'How far above background noise should program audio sit?',a:'At least 25 dB',x:'So a 70 dB SPL(A) speech target allows a maximum 45 dB SPL(A) noise floor.'},
 {t:'Decibels',q:'dB change for POWER',a:'dB = 10 × log(P₁ / P_r)',x:'Multiplier 10 — power is the odd one out.'},
@@ -2218,6 +2252,9 @@ const cards=[
 {t:'Video',q:'Chroma subsampling factors: 4:4:4, 4:2:2, 4:2:0',a:'3, 2 and 1.5',x:'Count samples per 4 pixels and divide by 4: 12/4 = 3, 8/4 = 2, 6/4 = 1.5. The factor is never the first number in the name.'},
 {t:'Video',q:'Uncompressed 4K (3840×2160, 60 fps, 8-bit, 4:4:4) needs roughly…',a:'≈ 11.94 Gbps',x:'W × H × fps × bit depth × subsampling factor. More than a 10 Gb link — which is why all real video is compressed.'},
 {t:'Video',q:'ANSI lumen rating formula',a:'L = SH × SW × AI',x:'Screen height × width × the average of nine illuminance readings. Lux pairs with m², foot-candles with ft².'},
+{t:'Video',q:'Video bandwidth formula',a:'H_px × V_px × fps × bit depth × chroma factor',x:'Result in bits per second. Over HDMI, multiply again by 1.25 for TMDS overhead.'},
+{t:'Networking',q:'PoE power budget',a:'Device W = V × I, then switch rating = total × 1.2',x:'Convert mA to A first. "120% of load" (× 1.2) and "load it to 80%" (÷ 0.8 = × 1.25) are different numbers — read which one is asked.'},
+{t:'Networking',q:'The 100 m copper limit applies to what, exactly?',a:'Permanent link + both patch cords ≤ 100 m',x:'The whole channel. TIA caps the permanent link at 90 m, leaving 10 m for the cords. Longer cords mean a shorter link, never a longer channel.'},
 {t:'Video',q:'DISCAS BDM sizing metric',a:'%EH = element height / image height',x:'ADM viewing instead requires resolving a single pixel.'},
 {t:'Audio',q:'Wavelength formula',a:'λ = v / f',x:'Speed of sound in air: 343 m/s (sea level, 20 °C).'},
 {t:'Audio',q:'Digital audio bandwidth',a:'BW = sample rate × bit depth × channels',x:'Result in bits per second.'},

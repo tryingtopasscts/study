@@ -70,12 +70,32 @@ h1{font-family:var(--serif);font-weight:700;font-size:1.5rem;line-height:1.2}
 
 /* section overview: every formula in the section, in one table */
 .ch-title{font-family:var(--serif);font-size:1.45rem;font-weight:700;color:var(--accent2);line-height:1.2}
-.ch-sub{font-family:var(--mono);font-size:.72rem;color:var(--text3);margin-top:-.3rem}
+.ch-sub{font-family:var(--mono);font-size:.72rem;color:var(--text3);margin-top:-.3rem;
+  line-height:1.6;max-width:34ch;text-wrap:balance}
 .ch-table{width:100%;border-collapse:collapse;text-align:left;margin-top:.2rem}
 .ch-table td{padding:.36rem .1rem;border-bottom:1px solid var(--border);vertical-align:baseline}
 .ch-table tr:last-child td{border-bottom:0}
 .ch-table td.n{font-size:.8rem;color:var(--text2);width:37%;padding-right:.7rem}
 .ch-table td.f{font-family:var(--mono);font-size:.76rem;color:var(--accent2);line-height:1.4}
+/* A section overview mixes three different kinds of thing, and the Decibels
+   list is where that stops being survivable: six formulas, seven memorised
+   numbers and three tells, previously all in one undifferentiated run. The
+   groups are colour-coded as well as labelled — blue you derive, amber you
+   memorise, grey you just have to recognise. */
+.ch-table tr.grp td{font-family:var(--mono);font-size:.6rem;letter-spacing:.15em;text-transform:uppercase;
+  padding:.75rem .1rem .28rem;border-bottom:1px solid var(--border2)}
+.ch-table tr.grp:first-child td{padding-top:.1rem}
+.ch-table tr.grp .cnt{opacity:.6;letter-spacing:.06em;margin-left:.4rem}
+.ch-table tr.g-f td{color:var(--accent2)}
+.ch-table tr.g-n td{color:var(--amber)}
+.ch-table tr.g-r td{color:var(--text3)}
+.ch-table td.f.k-n{color:var(--amber)}
+.ch-table td.f.k-r{font-family:var(--sans);font-size:.8rem;color:var(--text2)}
+/* a section can open with a reference graphic above its list — only
+   Electrical uses one so far, for the two cover-up triangles */
+.ch-art{width:100%;max-width:330px;margin:.15rem auto 0}
+.ch-art svg{width:100%;height:auto;display:block}
+.ch-art[hidden]{display:none}
 
 .fc-hint{font-family:var(--mono);font-size:.7rem;color:var(--text3);position:absolute;bottom:.8rem;left:0;right:0;
   display:flex;justify-content:space-between;align-items:baseline;gap:.6rem;padding:0 1.25rem;pointer-events:none}
@@ -170,7 +190,7 @@ footer a{color:var(--accent2)}
 <header>
   <div class="kicker"><a href="../index.html">← CTS Study Console</a> · Drill</div>
   <h1>AV Math Flashcards</h1>
-  <p class="lede">Every AV Math formula and hard number, drawn. Nothing graded, counted, or saved.</p>
+  <p class="lede">Every AV Math formula and hard number, drawn. Each section opens with an overview that keeps the two apart — what you derive, what you memorise. Nothing graded, counted, or saved.</p>
 </header>
 
 <div class="chip-row" id="filters">
@@ -207,6 +227,7 @@ footer a{color:var(--accent2)}
     <div class="face" id="faceChart" hidden>
       <div class="ch-title" id="chTitle"></div>
       <div class="ch-sub" id="chSub"></div>
+      <div class="ch-art" id="chArt" hidden></div>
       <table class="ch-table"><tbody id="chBody"></tbody></table>
     </div>
 
@@ -1036,14 +1057,45 @@ cost: `<svg viewBox="0 0 340 150" aria-hidden="true">
 };
 
 
+/* ============ section-overview art ============
+   Keyed by section letter, rendered above the overview list. Electrical is the
+   one section whose whole formula set falls out of two pictures, so the
+   cover-up triangles belong on its overview rather than only on the two
+   individual cards. */
+const ART = {
+
+E: `<svg viewBox="0 0 330 178" aria-hidden="true">
+  <path class="ac" style="fill:var(--surface)" d="M84 16 L142 106 L26 106 Z"/>
+  <line class="thin" x1="49" y1="66" x2="119" y2="66"/>
+  <line class="thin" x1="84" y1="66" x2="84" y2="106"/>
+  <text class="t-big t-ac" x="84" y="56" text-anchor="middle" font-size="21">V</text>
+  <text class="t-big" x="65" y="95" text-anchor="middle" font-size="17">I</text>
+  <text class="t-big" x="104" y="95" text-anchor="middle" font-size="17">R</text>
+  <text class="t-dim" x="84" y="123" text-anchor="middle">Ohm’s law</text>
+
+  <path class="am" style="fill:var(--surface)" d="M246 16 L304 106 L188 106 Z"/>
+  <line class="thin" x1="211" y1="66" x2="281" y2="66"/>
+  <line class="thin" x1="246" y1="66" x2="246" y2="106"/>
+  <text class="t-big t-am" x="246" y="56" text-anchor="middle" font-size="21">P</text>
+  <text class="t-big" x="227" y="95" text-anchor="middle" font-size="17">I</text>
+  <text class="t-big" x="266" y="95" text-anchor="middle" font-size="17">V</text>
+  <text class="t-dim" x="246" y="123" text-anchor="middle">power</text>
+
+  <text class="t-ac" x="165" y="146" text-anchor="middle">cover what you want — what’s left is the formula</text>
+  <text class="t-dim" x="165" y="162" text-anchor="middle">side by side → multiply &#160;·&#160; one over the other → divide</text>
+  <text class="t-dim" x="165" y="175" text-anchor="middle">P = V²/R and P = I²R come from combining the two</text>
+</svg>`
+
+};
+
 /* ============ the deck ============ */
 const CARDS = [
 
 /* ---- Foundations ---- */
-{d:'F', t:'Order of operations', c:'Foundations', q:'Order of operations — the full running order?',
+{d:'F', t:'Order of operations', k:'r', c:'Foundations', q:'Order of operations — the full running order?',
  a:'<span class="big">PEMDAS</span>Parentheses → Exponents → Multiply/Divide → Add/Subtract.', viz:'pemdas',
  n:'<b>Trap:</b> × and ÷ share one rank, and so do + and −. Work each pair <b>left to right</b> — multiply does not outrank divide.'},
-{d:'F', t:'Rounding', c:'Foundations', q:'In a multi-step problem, when should you round?',
+{d:'F', t:'Rounding', k:'r', c:'Foundations', q:'In a multi-step problem, when should you round?',
  a:'<span class="big">Only the final result</span>Carry full precision through every intermediate step.', viz:'rounding',
  n:'Rounding at each step compounds the error, and the compounded value is often one of the offered answers.'},
 {d:'F', t:'Area & perimeter', c:'Foundations', f:'Area = W × L &nbsp;·&nbsp; Perimeter = 2 × (W + L)', q:'Area and perimeter of a rectangle?',
@@ -1051,18 +1103,18 @@ const CARDS = [
  n:'<b>Trap:</b> forgetting to double gives exactly half the perimeter — and half is always on the answer list.'},
 {d:'F', t:'Volume', c:'Foundations', q:'Volume of a room?',
  a:'<span class="big">W × L × H</span>Three dimensions, three factors.', viz:'volume'},
-{d:'F', t:'Unit conversions', c:'Foundations', q:'1 inch = ? mm &nbsp;·&nbsp; 1 foot = ? m &nbsp;·&nbsp; 1 kg = ? lb',
+{d:'F', t:'Unit conversions', k:'n', c:'Foundations', q:'1 inch = ? mm &nbsp;·&nbsp; 1 foot = ? m &nbsp;·&nbsp; 1 kg = ? lb',
  a:'<span class="big">25.4 mm · 0.3048 m · 2.205 lb</span>The three conversions worth having cold.', viz:'units'},
-{d:'F', t:'Foot-candles ↔ lux', c:'Foundations', f:'1 fc = 10.76 lux &nbsp;·&nbsp; because 1 m² = 10.76 ft²', q:'1 foot-candle = how many lux — and why that number?',
+{d:'F', t:'Foot-candles ↔ lux', k:'n', c:'Foundations', f:'1 fc = 10.76 lux &nbsp;·&nbsp; because 1 m² = 10.76 ft²', q:'1 foot-candle = how many lux — and why that number?',
  a:'<span class="big">10.76 lux</span>Because there are <b>10.76 ft² in one m²</b>. Same light, smaller tiles.', viz:'fclux',
  n:'Lux pairs with metres, foot-candles pair with feet. Mixing them is the classic ANSI-lumens error.'},
-{d:'F', t:'log(2)', c:'Foundations', q:'log(2) ≈ ?',
+{d:'F', t:'log(2)', k:'n', c:'Foundations', q:'log(2) ≈ ?',
  a:'<span class="big">0.301</span>One doubling. Everything in dB math traces back to this number.', viz:'log2',
  n:'× 10 → <b>+3 dB</b> (power doubling). × 20 → <b>+6 dB</b> (voltage or distance doubling).'},
-{d:'F', t:'log(8)', c:'Foundations', q:'log(8) ≈ ? — without a calculator',
+{d:'F', t:'log(8)', k:'n', c:'Foundations', q:'log(8) ≈ ? — without a calculator',
  a:'<span class="big">0.903</span>8 = 2×2×2, so log(8) = three lots of 0.301.', viz:'log8',
  n:'Logs turn <b>multiplication into addition</b>. That is the entire reason the decibel exists.'},
-{d:'F', t:'Rearranging a formula', c:'Foundations', q:'How do you rearrange a formula safely?',
+{d:'F', t:'Rearranging a formula', k:'r', c:'Foundations', q:'How do you rearrange a formula safely?',
  a:'<span class="big">Do the same thing to both sides</span>To get I out of V = I × R, divide <b>both</b> sides by R.', viz:'balance'},
 
 /* ---- Electrical ---- */
@@ -1089,32 +1141,32 @@ const CARDS = [
 {d:'D', t:'dB — distance', c:'Decibels', q:'dB formula for DISTANCE:',
  a:'<span class="big">dB = 20 log(D₁ / D₂)</span><b>Original</b> distance on top — moving away must come out negative.', viz:'invsq',
  n:'<b>Trap:</b> it is a <b>ratio</b> of two distances. Never multiply them.'},
-{d:'D', t:'10-log vs 20-log', c:'Decibels', q:'The single question that decides 10-log vs. 20-log:',
+{d:'D', t:'10-log vs 20-log', k:'r', c:'Decibels', q:'The single question that decides 10-log vs. 20-log:',
  a:'<span class="big">“Am I comparing watts?”</span>Yes → 10 log. No (volts, distance, pressure) → 20 log.', viz:'decide',
  n:'The mnemonic: <b>power stands alone</b>.'},
-{d:'D', t:'Why 20 for voltage', c:'Decibels', q:'Why do voltage and distance use 20 instead of 10?',
+{d:'D', t:'Why 20 for voltage', k:'r', c:'Decibels', q:'Why do voltage and distance use 20 instead of 10?',
  a:'<span class="big">They relate to power by a square</span>P = V²/R, and log(x²) = 2·log(x). The doubled log turns the 10 into a 20.', viz:'square'},
 {d:'D', t:'dB → power ratio', c:'Decibels', q:'Converting dB back into a POWER ratio:',
  a:'<span class="big">ratio = 10^(dB / 10)</span>6 dB → 10^0.6 = <b>3.98×</b> the power.', viz:'back10',
  n:'<b>Trap:</b> divide by the coefficient <b>first</b>, then press 10^x. Never raise 10 to the raw dB value.'},
 {d:'D', t:'dB → voltage ratio', c:'Decibels', q:'Converting dB back into a VOLTAGE or DISTANCE ratio:',
  a:'<span class="big">ratio = 10^(dB / 20)</span>Same move, coefficient 20. 6 dB → <b>2.0×</b>.', viz:'back20'},
-{d:'D', t:'Doubling distance', c:'Decibels', q:'Doubling the distance from a sound source changes SPL by…',
+{d:'D', t:'Doubling distance', k:'n', c:'Decibels', q:'Doubling the distance from a sound source changes SPL by…',
  a:'<span class="big">−6 dB</span>Inverse square law — energy drops to <b>one quarter</b> at double distance.', viz:'invsq'},
-{d:'D', t:'Doubling amplifier power', c:'Decibels', q:'Doubling amplifier power changes SPL by…',
+{d:'D', t:'Doubling amplifier power', k:'n', c:'Decibels', q:'Doubling amplifier power changes SPL by…',
  a:'<span class="big">+3 dB</span>10 × log(2) = 3.01. Ten times the power = <b>+10 dB</b>.', viz:'pow3'},
-{d:'D', t:'Just-noticeable difference', c:'Decibels', q:'A just-noticeable change in loudness is about…',
+{d:'D', t:'Just-noticeable difference', k:'n', c:'Decibels', q:'A just-noticeable change in loudness is about…',
  a:'<span class="big">±3 dB</span>The smallest SPL change most listeners reliably perceive.', viz:'jnd'},
-{d:'D', t:'Doubling open mics (NOM)', c:'Decibels', q:'Doubling the number of open microphones (NOM) costs…',
+{d:'D', t:'Doubling open mics (NOM)', k:'n', c:'Decibels', q:'Doubling the number of open microphones (NOM) costs…',
  a:'<span class="big">−3 dB gain before feedback</span>Every doubling of open mics costs another 3 dB.', viz:'nom'},
-{d:'D', t:'0 dB SPL', c:'Decibels', f:'threshold of hearing — reference pressure 20 µPa', q:'0 dB SPL represents…',
+{d:'D', t:'0 dB SPL', k:'n', c:'Decibels', f:'threshold of hearing — reference pressure 20 µPa', q:'0 dB SPL represents…',
  a:'<span class="big">The threshold of human hearing</span>Reference pressure of <b>20 micropascals</b>. Not silence.', viz:'spl0'},
-{d:'D', t:'Reference levels', c:'Decibels', q:'0 dBu, 0 dBV, 0 dBm and 0 dB SPL reference what?',
+{d:'D', t:'Reference levels', k:'n', c:'Decibels', q:'0 dBu, 0 dBV, 0 dBm and 0 dB SPL reference what?',
  a:'<span class="big">0.775 V · 1.0 V · 1 mW · 20 µPa</span>dBu, dBV and SPL are 20-log; <b>dBm is 10-log</b> — it references power.', viz:'refs'},
-{d:'D', t:'A 10× ratio in dB', c:'Decibels', q:'A 10× increase gives how many dB — in watts, and in volts?',
+{d:'D', t:'A 10× ratio in dB', k:'n', c:'Decibels', q:'A 10× increase gives how many dB — in watts, and in volts?',
  a:'<span class="big">+10 dB power · +20 dB voltage</span>Identical ratio, different coefficient.', viz:'tenx',
  n:'A favourite exam trap: the ratio alone never tells you the answer — you need to know what is being measured.'},
-{d:'D', t:'Ratios below 1', c:'Decibels', q:'A ratio less than 1 always produces…',
+{d:'D', t:'Ratios below 1', k:'r', c:'Decibels', q:'A ratio less than 1 always produces…',
  a:'<span class="big">A negative dB result — a loss</span>Free answer-checker at the end of every dB problem.', viz:'negdb',
  n:'If the sign does not match the story the question told, you flipped the fraction.'},
 {d:'D', t:'Speech above noise', c:'Decibels', f:'program − background ≥ 25 dB &nbsp;·&nbsp; max noise = target − 25', q:'How far above background noise should program audio sit?',
@@ -1130,7 +1182,7 @@ const CARDS = [
  n:'<b>Trap:</b> the last flip is the step people skip — leaving the reciprocal as the answer.'},
 {d:'L', t:'Power for an SPL increase', c:'Loudspeakers', f:'ΔSPL = 10 log(P₂ / P₁) &nbsp;·&nbsp; P₂ = P₁ × 10^(ΔSPL/10)', q:'Watts needed for a required SPL increase?',
  a:'<span class="big">ΔSPL = 10 log(P₂ / P₁)</span>Solve for P₂: <b>P₂ = P₁ × 10^(ΔSPL/10)</b>.', viz:'amppow'},
-{d:'L', t:'Loudspeaker sensitivity', c:'Loudspeakers', f:'dB SPL at 1 W / 1 m — the reference every SPL budget starts from', q:'What does “90 dB SPL, 1 W @ 1 m” describe?',
+{d:'L', t:'Loudspeaker sensitivity', k:'r', c:'Loudspeakers', f:'dB SPL at 1 W / 1 m — the reference every SPL budget starts from', q:'What does “90 dB SPL, 1 W @ 1 m” describe?',
  a:'<span class="big">Loudspeaker sensitivity</span>The SPL produced from a known power at a known distance — your starting reference.', viz:'sens'},
 
 /* ---- Audio ---- */
@@ -1159,14 +1211,14 @@ const CARDS = [
  n:'Lux pairs with m², foot-candles with ft². Mismatch the pair and you are off by 10.76×.'},
 {d:'V', t:'DISCAS %EH', c:'Video', q:'DISCAS BDM sizing metric:',
  a:'<span class="big">%EH = element height / image height</span>ADM viewing instead requires resolving a <b>single pixel</b>.', viz:'discas'},
-{d:'V', t:'Minimum contrast', c:'Video', q:'Minimum contrast ratio for full-motion video:',
+{d:'V', t:'Minimum contrast', k:'n', c:'Video', q:'Minimum contrast ratio for full-motion video:',
  a:'<span class="big">80:1</span>Driven mostly by <b>ambient room light</b>, which lifts the black level.', viz:'contrast'},
-{d:'V', t:'Seated eye height', c:'Video', q:'Average seated eye height for sightlines:',
+{d:'V', t:'Seated eye height', k:'n', c:'Video', q:'Average seated eye height for sightlines:',
  a:'<span class="big">1.2 m (48 in)</span>The standard constant for checking whether heads block the screen.', viz:'eyeheight'},
 {d:'V', t:'Light at double distance', c:'Video', f:'E₂ = E₁ × (D₁ / D₂)² &nbsp;·&nbsp; 25% remains at 2× distance', q:'Illumination at double the distance from a source?',
  a:'<span class="big">25% remains</span>Which is a <b>75% decrease</b>. Inverse square law applies to light too.', viz:'lightfall',
  n:'<b>Trap:</b> read whether the question wants what <b>remains</b> or what was <b>lost</b>. Both numbers are on the answer list.'},
-{d:'V', t:'Chroma subsampling', c:'Video', f:'4:4:4 = 3 &nbsp;·&nbsp; 4:2:2 = 2 &nbsp;·&nbsp; 4:2:0 = 1.5', q:'Chroma subsampling factors for 4:4:4, 4:2:2 and 4:2:0?',
+{d:'V', t:'Chroma subsampling', k:'n', c:'Video', f:'4:4:4 = 3 &nbsp;·&nbsp; 4:2:2 = 2 &nbsp;·&nbsp; 4:2:0 = 1.5', q:'Chroma subsampling factors for 4:4:4, 4:2:2 and 4:2:0?',
  a:'<span class="big">3, 2 and 1.5</span>Count samples per 4 pixels, divide by 4: 12/4, 8/4, 6/4.', viz:'chroma',
  n:'<b>Trap:</b> the factor is <b>never</b> the first number in the name.'},
 {d:'V', t:'Uncompressed 4K bitrate', c:'Video', f:'W × H × fps × bit depth × chroma factor &nbsp;·&nbsp; × 1.25 over HDMI', q:'Uncompressed 4K (3840×2160, 60 fps, 8-bit, 4:4:4) needs roughly…',
@@ -1177,33 +1229,33 @@ const CARDS = [
 {d:'N', t:'PoE power budget', c:'Networks', f:'device W = V × I &nbsp;·&nbsp; switch rating = total load × 1.2', q:'PoE: how do you size the switch?',
  a:'<span class="big">Device power = V × I</span>Total the loads, then add headroom: <b>× 1.2</b>.', viz:'poe',
  n:'“120% of load” (×1.2) and “load it to 80%” (÷0.8 = ×1.25) are <b>different numbers</b>. Read which one is asked. Convert mA → A first.'},
-{d:'N', t:'The 100-metre channel', c:'Networks', f:'permanent link (≤ 90 m) + both patch cords ≤ 100 m', q:'The 100-metre copper limit applies to what, exactly?',
+{d:'N', t:'The 100-metre channel', k:'n', c:'Networks', f:'permanent link (≤ 90 m) + both patch cords ≤ 100 m', q:'The 100-metre copper limit applies to what, exactly?',
  a:'<span class="big">The whole channel</span>Permanent link (≤ <b>90 m</b>) + both patch cords ≤ <b>100 m / 328 ft</b>.', viz:'channel100',
  n:'Longer patch cords mean a <b>shorter</b> permanent link — never a longer channel.'},
-{d:'N', t:'RF spectrum', c:'RF / Wireless', q:'What is the frequency range of the RF spectrum?',
+{d:'N', t:'RF spectrum', k:'n', c:'RF / Wireless', q:'What is the frequency range of the RF spectrum?',
  a:'<span class="big">3 kHz – 300 GHz</span>It has a <b>floor</b>, not just a ceiling.', viz:'rf',
  n:'<b>Trap:</b> answers that only bound the top ("up to 300 GHz") miss the 3 kHz floor.'},
-{d:'N', t:'Conduit fill', c:'Cabling', f:'≤ 40% of the conduit’s interior cross-sectional area', q:'Max conduit fill with 3 or more cables:',
+{d:'N', t:'Conduit fill', k:'n', c:'Cabling', f:'≤ 40% of the conduit’s interior cross-sectional area', q:'Max conduit fill with 3 or more cables:',
  a:'<span class="big">40%</span>Of the conduit’s interior cross-sectional area.', viz:'conduit'},
 {d:'N', t:'Cable bend radius', c:'Cabling', f:'bend radius ≥ 4 × cable diameter', q:'Minimum safe cable bend radius:',
  a:'<span class="big">4 × cable diameter</span>Tighter bends risk damaging conductors or shielding.', viz:'bend'},
 {d:'N', t:'Rigging safety factor', c:'Rigging', f:'required rating = load × 5', q:'Safety factor for overhead-flown loads:',
  a:'<span class="big">5 : 1</span>A 40 kg display needs a mount rated for <b>200 kg</b>.', viz:'rig'},
-{d:'N', t:'RS-485 / DMX512', c:'Control', q:'RS-485 / DMX512: device count and termination?',
+{d:'N', t:'RS-485 / DMX512', k:'n', c:'Control', q:'RS-485 / DMX512: device count and termination?',
  a:'<span class="big">32 devices · 120 Ω</span>Terminate with 120 Ω at <b>both ends</b> of the line.', viz:'rs485',
  n:'<b>Trap:</b> 75 Ω is video coax, not the data bus.'},
 {d:'N', t:'Drawing scale', c:'Drawings', f:'real dimension = measured × scale factor', q:'A drawing is 1:50 scale. How do you get the real dimension?',
  a:'<span class="big">measured × 50</span>Multiply what you measure on the page by the scale factor.', viz:'scale',
  n:'This is one of the few places you genuinely <b>do</b> multiply — check ratio vs. product before every formula.'},
-{d:'N', t:'AFF', c:'Drawings', q:'On a drawing: what does AFF mean?',
+{d:'N', t:'AFF', k:'r', c:'Drawings', q:'On a drawing: what does AFF mean?',
  a:'<span class="big">Above Finished Floor</span>A <b>mounting height</b>, measured up from the finished floor line.', viz:'aff'},
 
 /* ---- Budget ---- */
-{d:'B', t:'GC markup', c:'Budget', q:'Typical GC markup on an AV subcontract:',
+{d:'B', t:'GC markup', k:'n', c:'Budget', q:'Typical GC markup on an AV subcontract:',
  a:'<span class="big">~5–10%+</span>On a $2M AV system, roughly <b>$100k–$200k</b> added.', viz:'gcmark'},
-{d:'B', t:'Contingency budget', c:'Budget', q:'A 5–10% contingency budget fits what kind of project?',
+{d:'B', t:'Contingency budget', k:'n', c:'Budget', q:'A 5–10% contingency budget fits what kind of project?',
  a:'<span class="big">$500k+ and 1 year+</span>Big, long projects carry formal contingency.', viz:'conting'},
-{d:'B', t:'Cost terminology ladder', c:'Budget', q:'What cost figure comes before detailed design — and what follows it?',
+{d:'B', t:'Cost terminology ladder', k:'r', c:'Budget', q:'What cost figure comes before detailed design — and what follows it?',
  a:'<span class="big">Opinion of probable cost</span>→ <b>estimate</b> → <b>quote</b>, in increasing detail and enforceability.', viz:'cost'}
 ];
 
@@ -1256,13 +1308,40 @@ function startRun(shuffled){
   render(1);
 }
 
+// Three kinds of row, in the order you should learn them: derive it, memorise
+// it, recognise it. `k` is absent on formulas because most cards are formulas.
+// The singular is spelled out rather than derived — "Rules & concepts" does
+// not singularise by dropping its last letter.
+const KINDS=[['f','Formulas','formula'],
+             ['n','Numbers to know','number to know'],
+             ['r','Rules & concepts','rule or concept']];
+
 function renderChart(c){
   const rows=CARDS.filter(x=>x.d===c.d);
+  const of=k=>rows.filter(r=>(r.k||'f')===k);
   $('chTitle').textContent=SECTIONS[c.d];
-  $('chSub').textContent=`every formula in this section · ${rows.length} cards ahead`;
-  $('chBody').innerHTML=rows.map(r=>
-    `<tr><td class="n">${r.t}</td><td class="f">${formulaOf(r)}</td></tr>`).join('');
-  return `${rows.length} formulas`;   // the title already names the section
+
+  // the sub-line names the actual mix, so you know before scrolling whether
+  // this section is something to work out or something to remember
+  $('chSub').textContent=KINDS.map(([k,label,one])=>{
+    const n=of(k).length;
+    return n?`${n} ${n===1?one:label.toLowerCase()}`:null;
+  }).filter(Boolean).join(' · ')+` · ${rows.length} cards ahead`;
+
+  const art=$('chArt');
+  art.innerHTML=ART[c.d]||'';
+  art.hidden=!ART[c.d];
+
+  let html='';
+  for(const [k,label] of KINDS){
+    const group=of(k);
+    if(!group.length)continue;
+    html+=`<tr class="grp g-${k}"><td colspan="2">${label}<span class="cnt">${group.length}</span></td></tr>`;
+    html+=group.map(r=>
+      `<tr><td class="n">${r.t}</td><td class="f k-${k}">${formulaOf(r)}</td></tr>`).join('');
+  }
+  $('chBody').innerHTML=html;
+  return `${rows.length} cards`;   // the title already names the section
 }
 
 function renderCard(c){

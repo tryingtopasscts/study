@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Name That Formula — AV Math Drill</title>
+<style>
+:root{
+  --bg:#0f1117; --bg2:#13161e; --surface:#1a1e2a; --border:#252c3f; --border2:#2e3650;
+  --accent:#5b9cf6; --accent2:#93bbfc; --accent-dim:#1a2f54;
+  --amber:#f5a623; --amber-dim:#2a1f0a; --teal:#2dd4bf; --red:#f87171; --red-dim:#2c1416;
+  --purple:#a78bfa; --green:#34d399; --green-dim:#0f2a22;
+  --text:#dde3f0; --text2:#8e9abf; --text3:#4e5a7a;
+  --mono:'IBM Plex Mono',Consolas,monospace; --serif:'Fraunces',Georgia,serif; --sans:'DM Sans',-apple-system,'Segoe UI',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:18px;line-height:1.6;-webkit-tap-highlight-color:transparent}
+main{max-width:720px;margin:0 auto;padding:1.3rem 1.1rem 3rem}
+header{margin-bottom:.85rem}
+.kicker{font-family:var(--mono);font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:.5rem}
+.kicker a{color:inherit;text-decoration:none}
+.kicker a:hover{text-decoration:underline}
+h1{font-family:var(--serif);font-weight:700;font-size:1.5rem;line-height:1.2}
+.lede{color:var(--text2);font-size:.86rem;margin-top:.3rem}
+
+.chip-row{display:flex;gap:.4rem;margin:.7rem 0 .55rem;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none;
+  -webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 32px),transparent);
+  mask-image:linear-gradient(90deg,#000 calc(100% - 32px),transparent)}
+.chip-row::-webkit-scrollbar{display:none}
+.chip{font-family:var(--sans);font-size:.78rem;font-weight:500;background:var(--surface);border:1px solid var(--border2);
+  color:var(--text2);border-radius:99px;padding:.3rem .78rem;cursor:pointer;transition:all .15s;white-space:nowrap;flex:0 0 auto}
+.chip:hover{border-color:var(--accent)}
+.chip.on{background:var(--accent-dim);border-color:var(--accent);color:var(--accent2)}
+.chip .n{font-family:var(--mono);font-size:.72rem;opacity:.75;margin-left:.3rem}
+
+.btn{font-family:var(--sans);font-weight:500;font-size:.86rem;background:var(--surface);color:var(--text);
+  border:1px solid var(--border2);border-radius:10px;padding:.55rem 1.05rem;cursor:pointer;transition:all .15s;
+  text-decoration:none;display:inline-block}
+.btn:hover{background:var(--accent-dim);border-color:var(--accent)}
+.btn.small{font-size:.78rem;padding:.35rem .75rem}
+.btn.primary{background:var(--accent-dim);border-color:var(--accent);color:var(--accent2);font-weight:700}
+
+.score{display:flex;align-items:baseline;gap:1.1rem;font-family:var(--mono);font-size:.8rem;color:var(--text3);
+  border:1px solid var(--border);background:var(--bg2);border-radius:12px;padding:.5rem .9rem;margin-bottom:.8rem}
+.score .v{color:var(--text);font-size:1.05rem;font-weight:600;letter-spacing:.02em}
+.score .v.warn{color:var(--red)}
+.score .right{margin-left:auto}
+.progress{height:3px;background:var(--surface);border-radius:99px;overflow:hidden;margin-bottom:.9rem}
+.progress div{height:100%;background:var(--accent);transition:width .3s}
+
+/* ---- the question ----
+   Selection only. No arithmetic is ever required and no option is a number,
+   because the skill being drilled is reading a stem and reaching for the right
+   tool — which is the step that actually goes wrong under time pressure. */
+.q{background:var(--bg2);border:1px solid var(--border2);border-radius:16px;padding:1.1rem 1rem 1.2rem}
+.q-tag{font-family:var(--mono);font-size:.63rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:.45rem}
+.q-stem{font-size:.96rem;line-height:1.55;color:var(--text)}
+.q-ask{font-family:var(--mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin:.9rem 0 .5rem}
+
+.opts{display:flex;flex-direction:column;gap:.45rem}
+.opt{position:relative;width:100%;text-align:left;cursor:pointer;
+  background:var(--surface);border:1px solid var(--border2);border-radius:12px;
+  padding:.6rem .75rem .6rem 2.3rem;color:var(--text);
+  font-family:var(--mono);font-size:.82rem;line-height:1.4;
+  transition:background .15s,border-color .15s}
+.opt:hover{border-color:var(--accent)}
+.opt .lt{position:absolute;left:.7rem;top:.6rem;font-size:.7rem;color:var(--text3);font-weight:600}
+.opt.prose{font-family:var(--sans);font-size:.84rem}
+.opt.right{background:var(--green-dim);border-color:var(--green);color:var(--green)}
+.opt.right .lt{color:var(--green)}
+.opt.wrong{background:var(--red-dim);border-color:var(--red);color:var(--red);animation:shake .32s}
+.opt.wrong .lt{color:var(--red)}
+.opt.dim{opacity:.4}
+.opts.locked .opt{cursor:default;pointer-events:none}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-5px)}40%{transform:translateX(5px)}60%{transform:translateX(-3px)}80%{transform:translateX(3px)}}
+
+.why{font-size:.83rem;line-height:1.55;color:var(--amber);background:var(--amber-dim);
+  border:1px solid rgba(245,166,35,.35);border-radius:11px;padding:.65rem .8rem;margin-top:.9rem}
+.why b{color:var(--amber)}
+.why em{color:var(--amber);font-style:italic}
+.why .lbl{font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;
+  display:block;color:var(--amber);opacity:.75;margin-bottom:.25rem}
+/* the arithmetic is shown, never asked for — it is there to prove the formula
+   choice was the whole job */
+.why .m{display:block;font-family:var(--mono);font-size:.78rem;color:var(--accent2);
+  background:var(--bg2);border-radius:7px;padding:.3rem .55rem;margin:.4rem 0;overflow-x:auto}
+.after{display:flex;gap:.5rem;margin-top:.9rem;align-items:center;flex-wrap:wrap}
+.verdict{font-family:var(--mono);font-size:.8rem;font-weight:600}
+.verdict.ok{color:var(--green)}
+.verdict.bad{color:var(--red)}
+.spacer{margin-left:auto}
+
+/* ---- end of run ---- */
+.result{background:var(--bg2);border:1px solid var(--accent);border-radius:16px;padding:1.3rem 1.2rem;text-align:center}
+.result h2{font-family:var(--serif);font-size:1.5rem;font-weight:700;color:var(--accent2);line-height:1.2}
+.result .bignum{font-family:var(--mono);font-size:2.4rem;font-weight:600;color:var(--text);margin:.35rem 0 .1rem}
+.result .sub{color:var(--text2);font-size:.85rem}
+.result .again{margin-top:1.1rem;display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap}
+.review{margin-top:1.2rem;text-align:left;border-top:1px solid var(--border);padding-top:1rem}
+.review h3{font-family:var(--mono);font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--red);margin-bottom:.6rem}
+.rv{border:1px solid var(--border);border-radius:11px;padding:.6rem .8rem;margin-bottom:.5rem;background:var(--surface)}
+.rv .rv-s{font-size:.8rem;color:var(--text2);line-height:1.45}
+.rv .rv-a{font-family:var(--mono);font-size:.79rem;color:var(--green);margin-top:.35rem}
+.rv .rv-y{font-family:var(--mono);font-size:.76rem;color:var(--red);margin-top:.15rem;text-decoration:line-through;opacity:.75}
+.clean{color:var(--green);font-size:.85rem;margin-top:1rem;font-family:var(--mono)}
+
+.kbd-hint{font-family:var(--mono);font-size:.72rem;color:var(--text3);text-align:center;margin-top:1.1rem;line-height:1.7}
+kbd{background:var(--surface);border:1px solid var(--border2);border-radius:5px;padding:.05rem .35rem;font-size:.7rem}
+footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--border);font-size:.78rem;color:var(--text3);line-height:1.6}
+footer a{color:var(--accent)}
+
+@media (max-width:430px){
+  body{font-size:17px}
+  .opt{font-size:.78rem;padding:.55rem .6rem .55rem 2.1rem}
+  .opt.prose{font-size:.8rem}
+  .score{gap:.8rem;padding:.45rem .7rem}
+}
+@media (prefers-reduced-motion:reduce){
+  .opt,.opt.wrong{transition:none;animation:none}
+}
+</style>
+</head>
+<body>
+<main>
+
+<header>
+  <div class="kicker"><a href="../index.html">← CTS Study Console</a> · Drill</div>
+  <h1>Name That Formula</h1>
+  <p class="lede">Read the stem, pick the tool. No arithmetic, and no option is ever a number — the only thing being tested is whether you reach for the right formula, which is the step that actually goes wrong under time pressure.</p>
+</header>
+
+<div class="chip-row" id="filters">
+  <button class="chip on" data-f="all">All <span class="n" id="n-all"></span></button>
+  <button class="chip" data-f="F">Foundations <span class="n" id="n-F"></span></button>
+  <button class="chip" data-f="E">Electrical <span class="n" id="n-E"></span></button>
+  <button class="chip" data-f="D">Decibels <span class="n" id="n-D"></span></button>
+  <button class="chip" data-f="L">Loudspeakers <span class="n" id="n-L"></span></button>
+  <button class="chip" data-f="A">Audio <span class="n" id="n-A"></span></button>
+  <button class="chip" data-f="V">Video &amp; light <span class="n" id="n-V"></span></button>
+  <button class="chip" data-f="N">Cable &amp; install <span class="n" id="n-N"></span></button>
+</div>
+
+<div class="score" id="scoreBar">
+  <span>correct <span class="v" id="okN">0/0</span></span>
+  <span class="right"><span class="v" id="pctN">—</span></span>
+</div>
+<div class="progress"><div id="pbar" style="width:0"></div></div>
+
+<div id="stage"></div>
+
+<div class="kbd-hint">
+  <kbd>1</kbd>–<kbd>4</kbd> answer &nbsp;·&nbsp; <kbd>enter</kbd> next
+</div>
+
+<footer>
+  Stems follow the shape of real exam questions — decoy values, hidden second steps, and the occasional one that wants a decision rather than a number.
+  Several are drawn from the practice bank; the rest are built from the worked examples in the <a href="cts-av-math-guide.html">AV Math Guide</a>.
+  Once you can name the formula every time, <a href="av-math-builder.html">Formula Builder</a> is where you assemble it.
+</footer>
+
+</main>
+
+<script>
+/* ============ the bank ============
+   Two rules hold across every question, and they are what make this a
+   selection drill rather than a slow quiz:
+
+     · No option is a bare number. The answer list is formulas and courses of
+       action, so there is nothing to compute your way toward — you either
+       recognise the tool or you do not.
+     · Wrong options are the neighbouring formula, not noise. The distance
+       formula sits next to the power formula; the one-step answer sits next
+       to the two-step one; 4x sits next to 5x.
+
+   `w` is the worked arithmetic, shown afterwards. It is never required — it
+   is there to make the point that naming the formula was the whole job. */
+const BANK = [
+
+/* ---- Foundations ---- */
+{d:'F', s:'After a site visit the room length was never written down. You know the width is 35 ft and the ceiling is 8 ft, and the documentation lists the total floor area as 980 sq ft. What is the length?',
+ o:['Area = W × L, rearranged for L','Volume = W × L × H, rearranged for L','Perimeter = 2 × (W + L)','A² + B² = C²'],c:0,
+ w:'980 ÷ 35 = 28 ft',
+ e:'<b>Floor area</b> is width × length. The 8 ft ceiling belongs to volume and is a decoy — a room measurement you are not asked about is nearly always there to pull you into the wrong formula.'},
+{d:'F', s:'A client wants trim moulding run around the full edge of a room that measures 6 m by 4 m. How much do you order?',
+ o:['W × L','2 × (W + L)','W + L','W × L × H'],c:1,
+ w:'2 × (6 + 4) = 20 m',
+ e:'"Around the full edge" is perimeter — you walk all four sides. <b>Trap:</b> W + L gives exactly half, and half is always sitting in the options.'},
+{d:'F', s:'A room is 8 m wide with a 3 m ceiling and encloses 240 m³. How long is it?',
+ o:['Area = W × L','Volume = W × L × H, rearranged for L','2 × (W + L)','Volume ÷ perimeter'],c:1,
+ w:'240 ÷ (8 × 3) = 10 m',
+ e:'Cubic metres in the stem means volume, and volume is the only formula with three dimensions in it. Let the <b>units you were handed</b> pick the formula.'},
+{d:'F', s:'A light meter reads 46 foot-candles, but the screen has been measured in square metres and the calculation ahead needs lux. What do you do first?',
+ o:['× 10.76','÷ 10.76','× 3.4','× 0.3048'],c:0,
+ w:'46 × 10.76 ≈ 495 lux',
+ e:'Lux pairs with metres, foot-candles with feet. 10.76 is the number of <b>square feet in a square metre</b>, so converting between them <em>is</em> converting the area unit. Lux numbers are always the bigger ones, because a square foot is a small patch — that alone tells you which way the factor goes.'},
+
+/* ---- Electrical ---- */
+{d:'E', s:'A device operates at 24 volts and consumes 72 watts of power. What is the current flowing through the device?',
+ o:['I = V / R','I = P / V','P = I × V','V = I × R'],c:1,
+ w:'72 ÷ 24 = 3 A',
+ e:'The ask is current, and the givens are watts and volts — no resistance appears anywhere in the stem. So it is the power formula rearranged, not Ohm’s law. Let the units you were actually handed choose the rearrangement for you.'},
+{d:'E', s:'A wall-mounted assistive listening transmitter has its 12 V, 1.8 A DC supply in the rack 25 feet away. The 18 AWG wire is rated 0.0062 ohms per foot. What is the voltage drop?',
+ o:['V = I × R, using 25 ft × 0.0062','V = I × R, but double the run and convert the per-foot rate first','I = P / V','20 log(D₁ / D₂)'],c:1,
+ w:'25 × 2 = 50 ft → 50 × 0.0062 = 0.31 Ω → 1.8 × 0.31 = 0.558 V',
+ e:'Ohm’s law is the easy part; the <b>hidden steps</b> are the question. Current flows out <em>and back</em>, so the conductor is 50 ft, and an ohms-per-foot figure is a rate that has to become a real resistance first. The un-doubled option gives exactly half the right answer, and it is always offered.'},
+{d:'E', s:'Each of several identical devices draws 300 W from a 120 V outlet. How many can you plan onto a single 20 A branch circuit?',
+ o:['P = I × V, once','I = P / V, then rated capacity × 0.8','Rated capacity × 1.25','20 A ÷ 300 W'],c:1,
+ w:'300 ÷ 120 = 2.5 A each · 20 × 0.8 = 16 A usable · 16 ÷ 2.5 = 6.4 → 6 devices',
+ e:'A chain: watts to amps, then the derating rule. <b>Round down</b> at the end — you cannot plug in 0.4 of a device, and rounding up overloads the circuit.'},
+{d:'E', s:'When planning loads, what is the maximum you should put on a 20 A branch circuit?',
+ o:['The full 20 A','Rated capacity × 0.8','Rated capacity × 5','P = I × V'],c:1,
+ w:'20 × 0.8 = 16 A',
+ e:'"Maximum planned" is the trigger phrase for the derating rule. The full rated value is always offered, because answering with it is the natural mistake — a rating is not a working budget.'},
+{d:'E', s:'A rack of equipment totals 1,800 W. The mechanical engineer asks what heat load the HVAC has to remove, in Btu per hour.',
+ o:['Watts × 3.4','Watts × 3.6','Watts × 0.8','P = V² / R'],c:0,
+ w:'1,800 × 3.4 = 6,120 Btu/h',
+ e:'<b>Trap:</b> 3.6 is the neighbouring constant and produces <em>kilojoules</em> per hour. Both are offered on purpose. Note also that neither figure accounts for amplifier heat — amplifiers are calculated separately.'},
+{d:'E', s:'An amplifier channel drives an 8 ohm load with 40 volts across it. What power is being delivered?',
+ o:['P = I × V','P = V² / R','P = I² × R','I = V / R'],c:1,
+ w:'40² ÷ 8 = 1,600 ÷ 8 = 200 W',
+ e:'You were handed volts and ohms and asked for watts — no current anywhere. That is the fingerprint of the V²/R hybrid. P = I × V is unusable here without first finding I, which is a longer route to the same place.'},
+{d:'E', s:'A device’s current draw and its internal resistance are both on the spec sheet. What power does it dissipate?',
+ o:['P = V² / R','P = I² × R','I = V / R','V = I × R'],c:1,
+ w:'The partner hybrid: amps and ohms in, watts out',
+ e:'The mirror image of the previous one. Two hybrids exist precisely so that any pair of values you are given can reach watts in one step — pick the one whose letters match your givens.'},
+
+/* ---- Decibels ---- */
+{d:'D', s:'A cluster loudspeaker is mounted 9 m above the floor. The distance from the cluster to the D2 listener is 20 m, and to the D3 listener 40 m. What is the decibel difference between the D3 and D2 positions?',
+ o:['20 log(D₁ / D₂) — the distance formula','10 log(P₁ / P_ref) — the power formula','λ = v / f — wavelength','No formula — this is a judgment question'],c:0,
+ w:'20 log(40 / 20) = 20 log(2) = 6 dB',
+ e:'Metres in, decibels out. That combination is only ever the distance formula. The 9 m mounting height is a pure <b>decoy</b> — no distance formula needs three lengths.'},
+{d:'D', s:'An amplifier’s output is raised from 100 W to 400 W. What is the change in level?',
+ o:['10 log(P₂ / P₁)','20 log(P₂ / P₁)','10^(dB / 10)','λ = v / f'],c:0,
+ w:'10 log(400 / 100) = 10 log(4) ≈ 6 dB',
+ e:'Watts are the one quantity that uses <b>10</b>. The mnemonic is <em>power stands alone</em>: volts, distance and pressure all use 20, and only power does not.'},
+{d:'D', s:'A preamplifier lifts a signal from 0.775 V to 7.75 V. How much gain is that, in dB?',
+ o:['10 log(V₂ / V₁)','20 log(V₂ / V₁)','10^(dB / 20)','V = I × R'],c:1,
+ w:'20 log(7.75 / 0.775) = 20 log(10) = 20 dB',
+ e:'Volts, so the coefficient is <b>20</b> — voltage relates to power by a square, and log(x²) = 2·log(x) turns the 10 into a 20. Notice the same 10× ratio would be +10 dB if it were watts: the ratio alone never tells you the answer.'},
+{d:'D', s:'A measurement is reported as 12 dB of gain. You need to state it as a voltage ratio instead.',
+ o:['10^(dB / 10)','10^(dB / 20)','20 log(V₁ / V_ref)','log(2)'],c:1,
+ w:'10^(12 / 20) = 10^0.6 ≈ 3.98× the voltage',
+ e:'Going backwards from dB is the antilog, and the coefficient carries over: voltage used 20, so you divide by 20. <b>Trap:</b> divide <em>first</em>, then press 10^x — never raise 10 to the raw dB value.'},
+{d:'D', s:'A signal path is measured to attenuate by 9 dB. Express that as a power ratio.',
+ o:['10^(dB / 10)','10^(dB / 20)','10 log(P₁ / P_ref)','No formula — 9 dB is already a ratio'],c:0,
+ w:'10^(−9 / 10) = 10^−0.9 ≈ 0.126, about one eighth of the power',
+ e:'Power going backwards, so divide by 10. Because it is an attenuation the exponent is negative and the ratio must come out <b>below 1</b> — that sign check is a free answer-verifier at the end of every dB problem.'},
+{d:'D', s:'The design target for a lecture hall is 68 dB SPL(A) of speech at the listener. What is the highest ambient noise level the room may have?',
+ o:['Target − 25 dB','Target × 0.8','20 log(D₁ / D₂)','Target + 25 dB'],c:0,
+ w:'68 − 25 = 43 dB SPL(A) maximum noise',
+ e:'Program audio has to sit at least <b>25 dB</b> above the noise floor to stay intelligible. <b>Trap:</b> adding instead of subtracting is offered, and it inverts the whole answer.'},
+{d:'D', s:'A room is switched from 2 open microphones to 8 open microphones. What happens to the gain before feedback?',
+ o:['−3 dB per doubling of open mics','−6 dB per doubling of open mics','10 log(P₁ / P_ref)','Nothing — NOM affects level, not feedback'],c:0,
+ w:'2 → 4 → 8 is two doublings: −3 − 3 = −6 dB of gain before feedback',
+ e:'Every doubling of NOM costs another 3 dB. <b>Trap:</b> −6 dB per doubling belongs to <em>distance</em>, not microphone count — the two rules use the same word and different numbers.'},
+{d:'D', s:'You finish a decibel calculation and the result comes out negative. What does that tell you?',
+ o:['The ratio was less than 1, so it is a loss','You used the wrong coefficient','Distance formulas always go negative','Decibels cannot be negative — recalculate'],c:0,
+ w:'Any ratio below 1 has a negative log, so the dB result is negative',
+ e:'This is the free answer-checker. If the sign does not match the story the question told — a signal that was amplified coming out negative, or one that travelled further coming out positive — you <b>flipped the fraction</b>.'},
+{d:'D', s:'Two sound pressure levels are being compared. Which coefficient does the decibel formula take?',
+ o:['10, because SPL is a level','20, because pressure is not power','Either — the coefficient cancels','10 for the first, 20 for the second'],c:1,
+ w:'dB = 20 log(P₁ / P₂) for pressure',
+ e:'One question decides it every time: <b>"am I comparing watts?"</b> Yes → 10. Anything else — volts, distance, pressure → 20. dB SPL is a pressure ratio, so it takes the 20.'},
+
+/* ---- Loudspeakers ---- */
+{d:'L', s:'Three 4-ohm loudspeakers are wired in series. What is the total impedance?',
+ o:['Z_T = Z₁ / N','1/Z_T = 1/Z₁ + 1/Z₂ + 1/Z₃','I = V / R','Z_T = Z₁ + Z₂ + Z₃'],c:3,
+ w:'4 + 4 + 4 = 12 Ω',
+ e:'The word "series" does all the work. There is a sanity check built into the wiring: series totals are always <b>larger</b> than the biggest single speaker, parallel totals always <b>smaller</b> than the smallest. An answer that breaks that rule means you used the wrong formula.'},
+{d:'L', s:'Four identical 8-ohm loudspeakers are wired in parallel. What is the total impedance?',
+ o:['Z_T = Z₁ / N','Z_T = Z₁ + Z₂ + …','Z_T = Z₁ × N','1/Z_T = 1/Z₁ + 1/Z₂ + …'],c:0,
+ w:'8 ÷ 4 = 2 Ω',
+ e:'Identical speakers in parallel collapse to a division — the reciprocal formula would give the same answer but does far more work. The last option is right for <em>mixed</em> impedances and is offered because it is not wrong, merely unnecessary.'},
+{d:'L', s:'An 8-ohm and a 4-ohm loudspeaker are wired in parallel. What is the total impedance?',
+ o:['Z_T = Z₁ / N','1/Z_T = 1/Z₁ + 1/Z₂, then flip the sum back','Z_T = Z₁ + Z₂','Z_T = Z₁ × Z₂'],c:1,
+ w:'1/8 + 1/4 = 0.375 → 1 ÷ 0.375 = 2.67 Ω',
+ e:'Different impedances rule out the shortcut. <b>Trap:</b> the last flip is the step people skip — leaving 0.375 as the answer. Check it against the rule: 2.67 Ω is smaller than the smallest speaker, so it is plausible.'},
+{d:'L', s:'A loudspeaker is rated 92 dB SPL, 1 W @ 1 m. The farthest listener sits 8 m away, and the design target at that seat is 70 dB of speech with 10 dB of headroom. How much amplifier power is required?',
+ o:['10 log(P₁ / P_ref), once','20 log(D₁ / D₂), once','Distance loss first, then 10^(shortfall / 10)','L = SH × SW × AI'],c:2,
+ w:'20 log(1/8) = −18 dB → 92 − 18 = 74 dB at the seat · target 70 + 10 = 80 → 6 dB short → 10^(6/10) ≈ 4 W',
+ e:'Three signals that a <b>chain</b> is coming: a sensitivity anchor, a distance, and a target with headroom. The headroom is not decoration — leaving it out gives 74 dB against a 70 dB target and the wrong conclusion that you already have enough power.'},
+{d:'L', s:'A loudspeaker produces 88 dB SPL with 1 watt at the listener position. The design calls for 97 dB at that same position. How many watts?',
+ o:['P₂ = P₁ × 10^(ΔSPL / 10)','P₂ = P₁ × 10^(ΔSPL / 20)','P₂ = P₁ × ΔSPL','20 log(D₁ / D₂)'],c:0,
+ w:'97 − 88 = 9 dB → 1 × 10^(9/10) ≈ 7.9 W',
+ e:'Same position, so distance never enters it — this is purely the power step. Watts means the coefficient is <b>10</b>. Check with the shortcuts: 9 dB is three doublings, 1 → 2 → 4 → 8 W. Close enough to confirm.'},
+
+/* ---- Audio ---- */
+{d:'A', s:'What is the wavelength of a 100 Hz tone in air?',
+ o:['λ = v / f','λ = f / v','λ = v × f','octaves = log(f₂/f₁) ÷ log(2)'],c:0,
+ w:'343 ÷ 100 = 3.43 m',
+ e:'A single frequency in, a length out. The speed of sound is the constant you supply yourself. Check by feel: low frequencies are <b>long</b> — if a bass note comes out in centimetres, you divided the wrong way round.'},
+{d:'A', s:'A system runs 48 kHz sampling at 24-bit depth across 2 channels. What bandwidth does it require?',
+ o:['SR × bit depth × channels','SR ÷ bit depth','λ = v / f','SR × 2 (Nyquist)'],c:0,
+ w:'48,000 × 24 × 2 = 2,304,000 bps ≈ 2.3 Mbps',
+ e:'Three multiplicands handed over together is the bandwidth fingerprint. Nyquist is the neighbouring idea but a different question — it sets the sample rate you <em>need</em>, it does not compute bandwidth.'},
+{d:'A', s:'The highest frequency a system must capture is 15 kHz. What is the minimum usable sample rate?',
+ o:['Sample rate > 2 × highest frequency','Sample rate > highest frequency ÷ 2','SR × bit depth × channels','λ = v / f'],c:0,
+ w:'2 × 15,000 = 30,000, so a rate above 30 kHz',
+ e:'Nyquist–Shannon. Capturing 20 kHz needs a rate above 40 kHz, which is exactly why CD landed on <b>44.1 kHz</b> rather than 40 — the extra margin is the filter’s room to work.'},
+{d:'A', s:'How many octaves lie between 250 Hz and 4 kHz?',
+ o:['log(f₂ / f₁) ÷ log(2)','log(f₂ / f₁) ÷ log(10)','20 log(f₂ / f₁)','f₂ − f₁'],c:0,
+ w:'log(4000/250) ÷ log(2) = log(16) ÷ 0.301 = 4 octaves',
+ e:'An octave is a <b>doubling</b>, which is why log(2) is the divisor. You can also just count: 250 → 500 → 1k → 2k → 4k is four doublings. The formula is for when the numbers are not so friendly.'},
+
+/* ---- Video & light ---- */
+{d:'V', s:'What is the aspect ratio of a screen that has a height of 29.5 in and a diagonal of 60 in?',
+ o:['AR = W / H, straight away','A² + B² = C² first, then AR = W / H','H = W / AR','%EH = element height / image height'],c:1,
+ w:'29.5² + b² = 60² → b ≈ 52.3 · 52.3 ÷ 29.5 ≈ 1.77 = 16:9',
+ e:'Aspect ratio needs width and height, but you were given height and <em>diagonal</em>. Being one value short of the formula you want is the <b>two-step tell</b> — and any two of width, height and diagonal produce the third through Pythagoras.'},
+{d:'V', s:'A 65-inch 16:9 display is being specified and the installer needs its width for the mount layout.',
+ o:['Diagonal × 0.8716','Diagonal × 0.4903','Diagonal × 1.7778','Diagonal ÷ 2'],c:0,
+ w:'65 × 0.8716 ≈ 56.7 in wide',
+ e:'<b>Trap:</b> 0.4903 is the <em>height</em> constant sitting right beside it in the options, and 1.7778 is the aspect ratio itself. All three are 16:9 numbers, and only one of them is the width.'},
+{d:'V', s:'A 16:9 screen is 3.0 m wide. What is its height?',
+ o:['W × AR','W ÷ AR','W × 0.8716','A² + B² = C²'],c:1,
+ w:'3.0 ÷ 1.7778 ≈ 1.69 m',
+ e:'Height is the smaller number, so the aspect ratio must <b>divide</b>. Sanity-check every AR answer against that: if your height came out bigger than your width, you multiplied when you should have divided.'},
+{d:'V', s:'A projector with a 2.0 throw ratio lens fills a 4 m wide screen. What is the throw distance?',
+ o:['D = SW × TR','D = SW / TR','L = SH × SW × AI','AR = W / H'],c:0,
+ w:'4 × 2.0 = 8 m back from the screen',
+ e:'Throw ratio is defined against <b>width</b> — never height, never diagonal. For a real design, verify against the projector manual’s own formula rather than the generic one.'},
+{d:'V', s:'A 16:9 screen is 2.44 m wide. Nine incident readings across a full-white field average 509 lux. What is the projector’s ANSI lumen output?',
+ o:['L = SH × SW × AI, straight away','Get height from the aspect ratio first, then L = SH × SW × AI','L = diagonal × AI','AI × 9'],c:1,
+ w:'2.44 ÷ 1.7778 = 1.372 m high · 1.372 × 2.44 × 509 ≈ 1,704 lumens',
+ e:'The formula needs screen <b>height</b> and you were only given width — but you were also told 16:9, which is the missing link. Being handed an aspect ratio you seem not to need is a reliable sign of a chained problem.'},
+{d:'V', s:'A luminaire is raised from 2 m above a work surface to 6 m above it. What happens to the illuminance at that surface?',
+ o:['E₂ = E₁ × (D₁ / D₂)²','E₂ = E₁ × (D₂ / D₁)²','E₂ = E₁ ÷ 3','20 log(D₁ / D₂)'],c:0,
+ w:'(2/6)² = 1/9, so about 11% remains — an 89% decrease',
+ e:'Inverse square, with the <b>original</b> distance on top so that moving away produces a fraction below 1. <b>Trap:</b> read whether the question wants what <em>remains</em> or what was <em>lost</em> — both numbers will be in the options.'},
+{d:'V', s:'You need to confirm that an uncompressed 4K60 8-bit 4:4:4 feed will fit inside a 10 Gb link.',
+ o:['H × V × fps × bit depth × chroma factor','H × V × fps × bit depth','SR × bit depth × channels','H × V × 4'],c:0,
+ w:'3840 × 2160 × 60 × 8 × 3 ≈ 11.94 Gbps — it does not fit',
+ e:'The chroma factor is the piece people drop, and it is a large multiplier. <b>Trap:</b> the factor for 4:4:4 is <b>3</b>, never the first number of the name. Over HDMI you would multiply again by 1.25 for TMDS overhead.'},
+{d:'V', s:'A room is being assessed for whether full-motion video will be watchable with the lights on.',
+ o:['Compare measured contrast against the 80:1 minimum','L = SH × SW × AI','%EH = element height / image height','20 log(D₁ / D₂)'],c:0,
+ w:'Full-motion video needs at least 80:1',
+ e:'Contrast, not brightness, is what ambient light destroys — stray light lifts the <b>black level</b>, and the black level is what sets the ratio. A brighter projector does not fix a room that is too bright.'},
+
+/* ---- Cable & install ---- */
+{d:'N', s:'A 60 kg loudspeaker cluster will be flown overhead. What should the mount be rated for?',
+ o:['No multiplier — rate it for the load itself','Load × 4','Load × 5','Load × 0.8'],c:2,
+ w:'60 × 5 = 300 kg',
+ e:'"Flown overhead" plus "rated for" means the safety factor. Note the neighbouring multiplier: <b>4×</b> belongs to cable bend radius, <b>5×</b> to rigging. Two small integers, two unrelated rules, frequently swapped in the options.'},
+{d:'N', s:'What is the minimum safe bend radius for a cable with an 8 mm outer diameter?',
+ o:['OD × 5','OD × 0.4','OD ÷ 4','OD × 4'],c:3,
+ w:'8 × 4 = 32 mm',
+ e:'Check which measurement you were handed — the rule is four times the <b>diameter</b>. A stem that quotes a radius instead is doing it deliberately, and the 5× option is the rigging factor wandering in.'},
+{d:'N', s:'On a 1:20 drawing, a hallway measures 15 cm. What is its real-world length?',
+ o:['Drawn ÷ scale factor','Drawn × 0.8','Drawn × scale factor','A² + B² = C²'],c:2,
+ w:'15 × 20 = 300 cm = 3 m',
+ e:'Real is always bigger than drawn, so the operation must be multiplication. The division option exists purely to catch a reflex — this is one of the few places in AV math where you genuinely <b>do</b> multiply by a ratio.'},
+{d:'N', s:'A system has 4 encoders at 48 V / 185 mA and 12 decoders at 48 V / 140 mA, all powered over Ethernet. What switch do you specify?',
+ o:['V × I per device, total them, then × 1.2','V × I per device, total them, then × 0.8','Total device power, unchanged','P = V² / R per device'],c:0,
+ w:'8.88 W × 4 + 6.72 W × 12 = 116.16 W → × 1.2 ≈ 139 W across at least 16 PoE ports',
+ e:'<b>Trap:</b> "120% of load" is × 1.2, while "load the switch to no more than 80% of its rating" is ÷ 0.8 = × 1.25. Both framings appear in real documentation. And convert <b>mA to A first</b> — that slip is the most common error in the whole calculation.'},
+{d:'N', s:'A horizontal run is being planned. The patch cords at the two ends will total 8 m. What is the longest the permanent link may be?',
+ o:['100 m, regardless of the patch cords','100 m − both patch cords','90 m + both patch cords','100 m + both patch cords'],c:1,
+ w:'100 − 8 = 92 m — but TIA caps the permanent link at 90 m, so 90 m',
+ e:'The 100 m limit is the <b>whole channel</b>, patch cords included. Longer cords mean a <b>shorter</b> permanent link, never a longer channel. Note the second cap here: even with short cords, the permanent link itself never exceeds 90 m.'},
+{d:'N', s:'While surveying a conference room for a system upgrade, an engineer measures 55 dB SPL A-weighted of ambient noise when the room is empty. How should they proceed?',
+ o:['20 log(D₁ / D₂)','Compare against the 80% rule','No formula — the options are courses of action, not values','10 log(P₁ / P_ref)'],c:2,
+ w:'Nothing to calculate — the answer list was never numeric',
+ e:'A stem stuffed with units that wants a decision, not a number. The giveaway is the answer list itself: sentences rather than values. <b>Always glance at the options before you start calculating</b> — it costs two seconds and saves you from solving a problem nobody asked.'}
+
+];
+
+/* ============ state ============ */
+const $=id=>document.getElementById(id);
+const ORDER=['F','E','D','L','A','V','N'];
+const SECTIONS={F:'Foundations',E:'Electrical',D:'Decibels',L:'Loudspeakers',
+                A:'Audio',V:'Video & light',N:'Cable & install'};
+const LETTERS=['A','B','C','D'];
+
+let deck='all', run=[], pos=0, ok=0, answered=0, locked=false, wrongList=[];
+
+const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const pool=d=>d==='all'?BANK.slice():BANK.filter(q=>q.d===d);
+
+function counts(){
+  $('n-all').textContent=BANK.length;
+  ORDER.forEach(k=>{$('n-'+k).textContent=pool(k).length;});
+}
+
+/* Options are shuffled per question, so the correct answer never settles into
+   a position you could learn instead of the formula. */
+function prepare(q){
+  const opts=q.o.map((text,i)=>({text,correct:i===q.c}));
+  shuffle(opts);
+  return {q,opts,answer:opts.findIndex(o=>o.correct)};
+}
+
+function startRun(){
+  run=shuffle(pool(deck)).map(prepare);
+  pos=0;ok=0;answered=0;wrongList=[];
+  updateScore();
+  renderQ();
+}
+
+function updateScore(){
+  $('okN').textContent=ok+'/'+answered;
+  $('pctN').textContent=answered?Math.round(ok/answered*100)+'%':'—';
+  $('pbar').style.width=(run.length?pos/run.length*100:0)+'%';
+}
+
+/* an option that reads as a sentence gets the sans face — a formula and a
+   course of action should not look like the same kind of thing */
+const isProse=t=>!/[=×÷^()]|log|√/.test(t);
+
+function renderQ(){
+  if(pos>=run.length){renderResult();return;}
+  const {q,opts}=run[pos];
+  locked=false;
+  $('stage').innerHTML=
+    '<div class="q">'+
+      '<div class="q-tag">'+SECTIONS[q.d]+' &middot; '+(pos+1)+' of '+run.length+'</div>'+
+      '<div class="q-stem">'+q.s+'</div>'+
+      '<div class="q-ask">Which formula does this call for?</div>'+
+      '<div class="opts" id="opts">'+opts.map(function(o,i){
+        return '<button class="opt'+(isProse(o.text)?' prose':'')+'" data-i="'+i+'">'+
+               '<span class="lt">'+LETTERS[i]+'</span>'+o.text+'</button>';
+      }).join('')+'</div>'+
+      '<div id="after"></div>'+
+    '</div>';
+  $('opts').querySelectorAll('[data-i]').forEach(function(el){
+    el.addEventListener('click',function(){answer(+el.dataset.i);});
+  });
+}
+
+function answer(i){
+  if(locked)return;
+  locked=true;
+  const item=run[pos], {q,opts,answer:right}=item;
+  const correct=i===right;
+  answered++;
+  if(correct)ok++; else {item.picked=i;wrongList.push(item);}
+  updateScore();
+
+  const box=$('opts');
+  box.classList.add('locked');
+  box.querySelectorAll('[data-i]').forEach(function(el){
+    const k=+el.dataset.i;
+    if(k===right)el.classList.add('right');
+    else if(k===i)el.classList.add('wrong');
+    else el.classList.add('dim');
+  });
+
+  $('after').innerHTML=
+    '<div class="why"><span class="lbl">'+(correct?'why that one':'why it was the other one')+'</span>'+
+      q.e+'<span class="m">'+q.w+'</span></div>'+
+    '<div class="after"><span class="verdict '+(correct?'ok':'bad')+'">'+
+      (correct?'✓ correct':'✗ not this time')+'</span>'+
+      '<button class="btn primary spacer" id="nextBtn">'+(pos+1<run.length?'Next →':'Finish →')+'</button></div>';
+  $('nextBtn').addEventListener('click',function(){pos++;updateScore();renderQ();});
+}
+
+function renderResult(){
+  const total=run.length;
+  const pct=total?Math.round(ok/total*100):0;
+  const heading=pct===100?'Every one':pct>=80?'Strong run':pct>=60?'Getting there':'Worth another pass';
+  const review=wrongList.length
+    ? '<div class="review"><h3>Missed</h3>'+wrongList.map(function(item){
+        return '<div class="rv"><div class="rv-s">'+item.q.s+'</div>'+
+               '<div class="rv-a">→ '+item.opts[item.answer].text+'</div>'+
+               '<div class="rv-y">you picked '+item.opts[item.picked].text+'</div></div>';
+      }).join('')+'</div>'
+    : '<div class="clean">Clean run — you named every one.</div>';
+
+  $('pbar').style.width='100%';
+  $('stage').innerHTML=
+    '<div class="result">'+
+      '<h2>'+heading+'</h2>'+
+      '<div class="bignum">'+ok+'/'+total+'</div>'+
+      '<div class="sub">'+pct+'% named correctly</div>'+
+      '<div class="again">'+
+        '<button class="btn primary" id="againBtn">Run it again</button>'+
+        '<a class="btn" href="av-math-builder.html">Formula Builder →</a>'+
+      '</div>'+
+      review+
+    '</div>';
+  $('againBtn').addEventListener('click',startRun);
+}
+
+/* ============ events ============ */
+document.querySelectorAll('#filters .chip').forEach(function(c){
+  c.addEventListener('click',function(){
+    document.querySelectorAll('#filters .chip').forEach(x=>x.classList.remove('on'));
+    c.classList.add('on');
+    deck=c.dataset.f;
+    startRun();
+  });
+});
+
+addEventListener('keydown',function(e){
+  if(e.key>='1'&&e.key<='4'&&!locked){answer(+e.key-1);e.preventDefault();return;}
+  if(e.key==='Enter'){
+    const b=$('nextBtn')||$('againBtn');
+    if(b){b.click();e.preventDefault();}
+  }
+});
+
+counts();
+startRun();
+</script>
+</body>
+</html>

@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Formula Builder — AV Math Drill</title>
+<style>
+:root{
+  --bg:#0f1117; --bg2:#13161e; --surface:#1a1e2a; --border:#252c3f; --border2:#2e3650;
+  --accent:#5b9cf6; --accent2:#93bbfc; --accent-dim:#1a2f54;
+  --amber:#f5a623; --amber-dim:#2a1f0a; --teal:#2dd4bf; --red:#f87171; --red-dim:#2c1416;
+  --purple:#a78bfa; --green:#34d399; --green-dim:#0f2a22;
+  --text:#dde3f0; --text2:#8e9abf; --text3:#4e5a7a;
+  --mono:'IBM Plex Mono',Consolas,monospace; --serif:'Fraunces',Georgia,serif; --sans:'DM Sans',-apple-system,'Segoe UI',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:18px;line-height:1.6;-webkit-tap-highlight-color:transparent}
+main{max-width:720px;margin:0 auto;padding:1.3rem 1.1rem 3rem}
+header{margin-bottom:.85rem}
+.kicker{font-family:var(--mono);font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:.5rem}
+.kicker a{color:inherit;text-decoration:none}
+.kicker a:hover{text-decoration:underline}
+h1{font-family:var(--serif);font-weight:700;font-size:1.5rem;line-height:1.2}
+.lede{color:var(--text2);font-size:.86rem;margin-top:.3rem}
+
+.chip-row{display:flex;gap:.4rem;margin:.7rem 0 .55rem;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none;
+  -webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 32px),transparent);
+  mask-image:linear-gradient(90deg,#000 calc(100% - 32px),transparent)}
+.chip-row::-webkit-scrollbar{display:none}
+.chip{font-family:var(--sans);font-size:.78rem;font-weight:500;background:var(--surface);border:1px solid var(--border2);
+  color:var(--text2);border-radius:99px;padding:.3rem .78rem;cursor:pointer;transition:all .15s;white-space:nowrap;flex:0 0 auto}
+.chip:hover{border-color:var(--accent)}
+.chip.on{background:var(--accent-dim);border-color:var(--accent);color:var(--accent2)}
+.chip .n{font-family:var(--mono);font-size:.72rem;opacity:.75;margin-left:.3rem}
+
+.btn{font-family:var(--sans);font-weight:500;font-size:.86rem;background:var(--surface);color:var(--text);
+  border:1px solid var(--border2);border-radius:10px;padding:.55rem 1.05rem;cursor:pointer;transition:all .15s;
+  text-decoration:none;display:inline-block}
+.btn:hover{background:var(--accent-dim);border-color:var(--accent)}
+.btn.small{font-size:.78rem;padding:.35rem .75rem}
+.btn.primary{background:var(--accent-dim);border-color:var(--accent);color:var(--accent2);font-weight:700}
+
+.score{display:flex;align-items:baseline;gap:1.1rem;font-family:var(--mono);font-size:.8rem;color:var(--text3);
+  border:1px solid var(--border);background:var(--bg2);border-radius:12px;padding:.5rem .9rem;margin-bottom:.8rem}
+.score .v{color:var(--text);font-size:1.05rem;font-weight:600;letter-spacing:.02em}
+.score .v.warn{color:var(--red)}
+.score .right{margin-left:auto}
+
+/* ---- the puzzle ----
+   The prompt names the formula in words; the slate is that formula with its
+   operands removed. Everything you might need is already a tile, so the whole
+   drill is recognition. There is nothing to spell, and nothing to phrase "the
+   way the answer expects" — being right is enough. */
+.puz{background:var(--bg2);border:1px solid var(--border2);border-radius:16px;padding:1.1rem 1rem 1.2rem}
+.puz-tag{font-family:var(--mono);font-size:.63rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:.35rem}
+.puz-q{font-size:1.02rem;font-weight:500;line-height:1.4;color:var(--text)}
+.puz-hint{font-size:.8rem;color:var(--text3);margin-top:.25rem}
+
+.slate{font-family:var(--mono);font-size:1.02rem;line-height:2.6;color:var(--text);
+  background:var(--surface);border:1px solid var(--border);border-radius:12px;
+  padding:.85rem .8rem;margin:.9rem 0 .2rem;text-align:center;
+  overflow-x:auto;white-space:nowrap;scrollbar-width:thin}
+.slate.ok{border-color:var(--green);background:var(--green-dim)}
+.slate.bad{animation:shake .32s}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-5px)}40%{transform:translateX(5px)}60%{transform:translateX(-3px)}80%{transform:translateX(3px)}}
+
+/* a blank is a button whether it is empty or filled, so the gesture that
+   changes your mind is the same one that filled it */
+.slot{display:inline-block;min-width:58px;padding:.05rem .45rem;margin:0 .1rem;cursor:pointer;
+  font-family:var(--mono);font-size:.9rem;color:var(--text3);
+  background:var(--bg);border:1px dashed var(--border2);border-radius:8px;
+  transition:background .14s,border-color .14s,color .14s;vertical-align:middle}
+.slot:hover{border-color:var(--accent)}
+.slot.active{border-color:var(--accent);border-style:solid;background:var(--accent-dim);color:var(--accent2)}
+.slot.full{border-style:solid;border-color:var(--accent);background:var(--accent-dim);color:var(--accent2);font-weight:600}
+.slot.right{border-style:solid;border-color:var(--green);background:var(--green-dim);color:var(--green);font-weight:600}
+.slot.wrong{border-style:solid;border-color:var(--red);background:var(--red-dim);color:var(--red);font-weight:600}
+
+.bank-head{font-family:var(--mono);font-size:.63rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text3);margin:1rem 0 .5rem}
+.bank{display:flex;flex-wrap:wrap;gap:.45rem}
+.tok{font-family:var(--mono);font-size:.82rem;cursor:pointer;
+  background:var(--surface);border:1px solid var(--border2);border-radius:10px;
+  padding:.45rem .75rem;color:var(--text);transition:all .14s;position:relative;
+  min-width:3.1rem;text-align:center}
+.tok:hover{border-color:var(--accent);background:var(--accent-dim)}
+.tok.used{opacity:.2;pointer-events:none}
+.tok .kb{position:absolute;top:-.5rem;left:-.35rem;font-size:.56rem;color:var(--text3);
+  background:var(--bg);border:1px solid var(--border2);border-radius:4px;padding:0 .26rem;line-height:1.65}
+
+.actions{display:flex;gap:.5rem;margin-top:1rem;flex-wrap:wrap;align-items:center}
+.verdict{font-family:var(--mono);font-size:.8rem;font-weight:600}
+.verdict.ok{color:var(--green)}
+.verdict.bad{color:var(--red)}
+.spacer{margin-left:auto}
+
+/* the note is the payload — shown on a miss, and again on a correct answer,
+   because the reason is worth reading even when you got it right */
+.note{font-size:.83rem;line-height:1.5;color:var(--amber);background:var(--amber-dim);
+  border:1px solid rgba(245,166,35,.35);border-radius:11px;padding:.6rem .8rem;margin-top:.85rem;width:100%}
+.note b{color:var(--amber)}
+.note .lbl{font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;
+  display:block;color:var(--amber);opacity:.75;margin-bottom:.22rem}
+
+/* ---- end of run ---- */
+.result{background:var(--bg2);border:1px solid var(--accent);border-radius:16px;padding:1.3rem 1.2rem;text-align:center}
+.result h2{font-family:var(--serif);font-size:1.5rem;font-weight:700;color:var(--accent2);line-height:1.2}
+.result .bignum{font-family:var(--mono);font-size:2.4rem;font-weight:600;color:var(--text);margin:.35rem 0 .1rem}
+.result .sub{color:var(--text2);font-size:.85rem}
+.result .again{margin-top:1.1rem;display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap}
+.review{margin-top:1.2rem;text-align:left;border-top:1px solid var(--border);padding-top:1rem}
+.review h3{font-family:var(--mono);font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--red);margin-bottom:.6rem}
+.rv{border:1px solid var(--border);border-radius:11px;padding:.6rem .8rem;margin-bottom:.5rem;background:var(--surface)}
+.rv .rv-l{font-size:.84rem;color:var(--text)}
+.rv .rv-r{font-family:var(--mono);font-size:.79rem;color:var(--accent2);margin-top:.15rem;overflow-x:auto}
+.rv .rv-n{font-size:.76rem;line-height:1.45;color:var(--amber);margin-top:.45rem;padding-top:.45rem;border-top:1px dashed rgba(245,166,35,.28)}
+.rv .rv-n b{color:var(--amber)}
+.clean{color:var(--green);font-size:.85rem;margin-top:1rem;font-family:var(--mono)}
+
+.kbd-hint{font-family:var(--mono);font-size:.72rem;color:var(--text3);text-align:center;margin-top:1.1rem;line-height:1.7}
+kbd{background:var(--surface);border:1px solid var(--border2);border-radius:5px;padding:.05rem .35rem;font-size:.7rem}
+footer{margin-top:2rem;padding-top:1rem;border-top:1px solid var(--border);font-size:.78rem;color:var(--text3);line-height:1.6}
+footer a{color:var(--accent)}
+
+@media (max-width:430px){
+  body{font-size:17px}
+  .slate{font-size:.92rem;padding:.75rem .55rem;line-height:2.5}
+  .slot{min-width:52px;font-size:.85rem}
+  .tok{font-size:.78rem;padding:.4rem .62rem;min-width:2.8rem}
+  .score{gap:.8rem;padding:.45rem .7rem}
+}
+@media (prefers-reduced-motion:reduce){
+  .slot,.tok,.slate.bad{transition:none;animation:none}
+}
+</style>
+</head>
+<body>
+<main>
+
+<header>
+  <div class="kicker"><a href="../index.html">← CTS Study Console</a> · Drill</div>
+  <h1>Formula Builder</h1>
+  <p class="lede">Assemble each formula from a bank of parts. Nothing to type, so nothing gets marked wrong for phrasing — you either reach for the right piece or you don't. The spare tiles in every bank are the specific wrong pieces the exam offers.</p>
+</header>
+
+<div class="chip-row" id="filters">
+  <button class="chip on" data-f="all">All <span class="n" id="n-all"></span></button>
+  <button class="chip" data-f="F">Foundations <span class="n" id="n-F"></span></button>
+  <button class="chip" data-f="E">Electrical <span class="n" id="n-E"></span></button>
+  <button class="chip" data-f="D">Decibels <span class="n" id="n-D"></span></button>
+  <button class="chip" data-f="L">Loudspeakers <span class="n" id="n-L"></span></button>
+  <button class="chip" data-f="A">Audio <span class="n" id="n-A"></span></button>
+  <button class="chip" data-f="V">Video &amp; light <span class="n" id="n-V"></span></button>
+  <button class="chip" data-f="N">Cable &amp; install <span class="n" id="n-N"></span></button>
+</div>
+
+<div class="score" id="scoreBar">
+  <span>built <span class="v" id="doneN">0/0</span></span>
+  <span>first try <span class="v" id="cleanN">0</span></span>
+  <span class="right">misses <span class="v" id="missN">0</span></span>
+</div>
+
+<div id="stage"></div>
+
+<div class="kbd-hint">
+  Tap a tile to drop it in the highlighted blank &middot; tap a filled blank to take it back<br>
+  <kbd>1</kbd>–<kbd>9</kbd> pick a tile &nbsp;·&nbsp; <kbd>backspace</kbd> undo &nbsp;·&nbsp; <kbd>enter</kbd> next
+</div>
+
+<footer>
+  Built from the formula cards in the <a href="av-math-flashcards.html">AV Math Flashcards</a> deck — the ones you derive, not the ones you memorise.
+  Every distractor is a real confusion from the <a href="cts-av-math-guide.html">AV Math Guide</a>: the neighbouring coefficient, the reciprocal left unflipped, the multiplier that belongs to a different rule.
+  No history is kept — the run resets on reload.
+</footer>
+
+</main>
+
+<script>
+/* ============ the puzzles ============
+   Each puzzle is a template with numbered blanks, plus the tokens that may
+   fill them. Two rules make this work with no typing at all:
+
+     1. `a[i]` is the SET of tokens accepted in blank i, not one string. Where
+        operands commute (P = I x V), every blank accepts every operand, so
+        either order is marked correct. You are never wrong for ordering.
+     2. Tiles are physical: each entry becomes one tile, consumed when placed.
+        That is what stops "I x I" from satisfying a pair of blanks that both
+        accept I and V — there is only one I tile in the bank.
+
+   `b` holds the distractors, chosen to be the specific wrong tile the guide
+   warns about rather than filler: 20 beside 10, 3.6 beside 3.4, x4 (bend
+   radius) beside x5 (rigging), 1.25 beside 1.2, 0.4903 beside 0.8716. */
+const PUZZLES = [
+
+/* ---- Foundations ---- */
+{d:'F', t:'Area of a rectangle', q:'Build the area of a rectangle.',
+ f:'Area = {0} &times; {1}', a:[['W','L'],['W','L']], b:['H','2'],
+ n:'Area is two dimensions, so it comes back in <b>square</b> units. The H tile belongs to volume.'},
+{d:'F', t:'Perimeter of a rectangle', q:'Build the perimeter of a rectangle.',
+ f:'Perimeter = {0} &times; ({1} + {2})', a:[['2'],['W','L'],['W','L']], b:['H','4'],
+ n:'<b>Trap:</b> dropping the 2 gives exactly half the perimeter — and half is always on the answer list. You walk all four sides.'},
+{d:'F', t:'Volume of a room', q:'Build the volume of a room.',
+ f:'Volume = {0} &times; {1} &times; {2}', a:[['W','L','H'],['W','L','H'],['W','L','H']], b:['2','AR'],
+ n:'Three dimensions, three factors, cubic units out.'},
+
+/* ---- Electrical ---- */
+{d:'E', t:'Ohm’s law, solved for current', q:'Build Ohm’s law solved for current.',
+ f:'I = {0} / {1}', a:[['V'],['R']], b:['P','I'],
+ n:'Cover the quantity you want in the triangle. V sits above I and R, so covering I leaves V over R.'},
+{d:'E', t:'Ohm’s law, solved for voltage', q:'Build Ohm’s law solved for voltage.',
+ f:'V = {0} &times; {1}', a:[['I','R'],['I','R']], b:['P','V'],
+ n:'Same triangle, different thumb. I and R sit <b>side by side</b>, and side by side means multiply.'},
+{d:'E', t:'Power, from current and voltage', q:'Build the power formula.',
+ f:'P = {0} &times; {1}', a:[['I','V'],['I','V']], b:['R','P'],
+ n:'Watts = amps &times; volts. Rearranged it gives I = P/V, which is the form most exam stems actually want.'},
+{d:'E', t:'Power, from voltage and resistance', q:'Build power from voltage and resistance.',
+ f:'P = {0}² / {1}', a:[['V'],['R']], b:['I','P'],
+ n:'This is the form that explains the <b>20</b> in dB math: power goes as voltage <em>squared</em>, and log(x²) = 2&middot;log(x).'},
+{d:'E', t:'Power, from current and resistance', q:'Build power from current and resistance.',
+ f:'P = {0}² &times; {1}', a:[['I'],['R']], b:['V','P'],
+ n:'The partner of P = V²/R. Use whichever pair of values the stem actually handed you.'},
+{d:'E', t:'The 80% rule', q:'Build the maximum planned load on a circuit.',
+ f:'Max planned load = {0} &times; {1}', a:[['rated capacity','0.8'],['rated capacity','0.8']], b:['1.2','1.25'],
+ n:'A 20 A circuit plans to 16 A. <b>Trap:</b> 1.25 is the same idea from the other end — sizing a circuit <em>for</em> a known load is &divide; 0.8, which is &times; 1.25.'},
+{d:'E', t:'Voltage drop, step 1', q:'Build the resistance of a cable run, for a voltage-drop problem.',
+ f:'R<sub>total</sub> = {0} &times; ({1} &times; {2})', a:[['r (Ω per foot)'],['2','D (one-way)'],['2','D (one-way)']], b:['I','4'],
+ n:'<b>Two hidden steps live here.</b> The ohms-per-foot figure is a <em>rate</em>, not a resistance — multiply it by length. And current flows out <b>and back</b>, so the conductor is twice the distance on the drawing.'},
+{d:'E', t:'Voltage drop, step 2', q:'Build the voltage lost in the cable, once you have its resistance.',
+ f:'V<sub>drop</sub> = {0} &times; {1}', a:[['I','R<sub>total</sub>'],['I','R<sub>total</sub>']], b:['V<sub>supply</sub>','2'],
+ n:'Once the run is a real resistance, this is the plainest possible V = I &times; R. Nothing exotic happens in step 2 — all the difficulty was in step 1.'},
+{d:'E', t:'Voltage at the device', q:'Build the voltage the far device actually receives.',
+ f:'V<sub>device</sub> = {0} &minus; {1}', a:[['V<sub>supply</sub>'],['V<sub>drop</sub>']], b:['I','R<sub>total</sub>'],
+ n:'The second half of most voltage-drop questions. Tolerance is a percentage of the <b>supply</b> voltage, not of the drop: 5% of 12 V permits 0.6 V.'},
+{d:'E', t:'Heat load in Btu', q:'Build the heat load in Btu per hour.',
+ f:'Btu = {0} &times; {1}', a:[['watts','3.4'],['watts','3.4']], b:['3.6','1.2'],
+ n:'<b>Trap:</b> 3.6 sits right beside it and belongs to the <b>kilojoule</b> version. Neither figure accounts for amplifier heat.'},
+{d:'E', t:'Heat load in kilojoules', q:'Build the heat load in kilojoules per hour.',
+ f:'kJ = {0} &times; {1}', a:[['watts','3.6'],['watts','3.6']], b:['3.4','5'],
+ n:'Same watts, metric unit, neighbouring constant. 3.4 is Btu, 3.6 is kJ.'},
+
+/* ---- Decibels ---- */
+{d:'D', t:'dB for POWER', q:'Build the decibel formula for a power ratio.',
+ f:'dB = {0} &times; log({1} / {2})', a:[['10'],['P₁'],['P<sub>ref</sub>']], b:['20','2'],
+ n:'Coefficient <b>10</b> — power is the odd one out. The mnemonic: <b>power stands alone</b>.'},
+{d:'D', t:'dB for VOLTAGE', q:'Build the decibel formula for a voltage ratio.',
+ f:'dB = {0} &times; log({1} / {2})', a:[['20'],['V₁'],['V<sub>ref</sub>']], b:['10','2'],
+ n:'Coefficient <b>20</b>, because voltage relates to power by a square. Every non-watt quantity uses 20.'},
+{d:'D', t:'dB for DISTANCE', q:'Build the decibel formula for a change of distance.',
+ f:'dB = {0} &times; log({1} / {2})', a:[['20'],['D₁ (original)'],['D₂ (new)']], b:['10','D₁ × D₂'],
+ n:'<b>Trap:</b> the <b>original</b> distance goes on top, so moving away produces a negative. And it is a <b>ratio</b> of two distances — never a product.'},
+{d:'D', t:'dB back to a POWER ratio', q:'Build the antilog that turns dB back into a power ratio.',
+ f:'power ratio = {0}^(dB / {1})', a:[['10'],['10']], b:['20','2'],
+ n:'<b>Trap:</b> divide by the coefficient <b>first</b>, then press 10^x. Never raise 10 to the raw dB value. 6 dB → 10^0.6 = 3.98&times;.'},
+{d:'D', t:'dB back to a VOLTAGE ratio', q:'Build the antilog that turns dB back into a voltage or distance ratio.',
+ f:'ratio = {0}^(dB / {1})', a:[['10'],['20']], b:['2','0.301'],
+ n:'Same move, coefficient 20. 6 dB → 10^0.3 = 2.0&times; the voltage.'},
+{d:'D', t:'Speech above the noise', q:'Build the highest background noise a speech target allows.',
+ f:'max noise = {0} &minus; {1}', a:[['target SPL'],['25 dB']], b:['15 dB','+25 dB'],
+ n:'Program audio must sit at least <b>25 dB</b> above the noise floor. A 70 dB SPL(A) target allows 45 dB SPL(A) of noise.'},
+
+/* ---- Loudspeakers ---- */
+{d:'L', t:'Series impedance', q:'Build the total impedance of loudspeakers in series.',
+ f:'Z<sub>T</sub> = {0} + {1} + …', a:[['Z₁','Z₂'],['Z₁','Z₂']], b:['1/Z₁','N'],
+ n:'Just add. The total is always <b>larger</b> than the largest single speaker — a free check on your answer.'},
+{d:'L', t:'Parallel impedance, identical speakers', q:'Build the total impedance of N identical loudspeakers in parallel.',
+ f:'Z<sub>T</sub> = {0} / {1}', a:[['Z₁'],['N']], b:['Z₂','1/Z₁'],
+ n:'Always <b>smaller</b> than the smallest single speaker. Four 8 Ω boxes in parallel give 2 Ω.'},
+{d:'L', t:'Parallel impedance, mixed speakers', q:'Build the total impedance of mixed loudspeakers in parallel.',
+ f:'1 / Z<sub>T</sub> = {0} + {1} + …', a:[['1/Z₁','1/Z₂'],['1/Z₁','1/Z₂']], b:['Z₁','N'],
+ n:'<b>Trap:</b> notice the left side is 1/Z<sub>T</sub>, not Z<sub>T</sub>. Flip, add, then <b>flip the sum back over</b> — that last flip is the step people skip.'},
+{d:'L', t:'SPL change from a power change', q:'Build the SPL change produced by a change in amplifier power.',
+ f:'ΔSPL = {0} &times; log({1} / {2})', a:[['10'],['P₂ (new)'],['P₁ (old)']], b:['20','2'],
+ n:'Watts, so the coefficient is <b>10</b>. Here the <em>new</em> power goes on top — more power has to read as a gain.'},
+{d:'L', t:'Watts needed for an SPL increase', q:'Build the power required to gain a given number of dB.',
+ f:'P₂ = {0} &times; {1}^({2} / {3})', a:[['P₁'],['10'],['ΔSPL'],['10']], b:['20','P₂'],
+ n:'The rearranged form, and the one the question actually asks for. Check it against the shortcut: +3 dB doubles the watts, +10 dB is ten times.'},
+
+/* ---- Audio ---- */
+{d:'A', t:'Wavelength', q:'Build the wavelength of a sound.',
+ f:'λ = {0} / {1}', a:[['v (343 m/s)'],['f']], b:['λ','2'],
+ n:'Speed over frequency. Low frequencies are <b>long</b> — if a bass note comes out in centimetres you divided the wrong way round.'},
+{d:'A', t:'Octaves between two frequencies', q:'Build the number of octaves between two frequencies.',
+ f:'octaves = log({0} / {1}) &divide; log({2})', a:[['f₂'],['f₁'],['2']], b:['10','0.301'],
+ n:'An octave is a <b>doubling</b>, which is why log(2) is the divisor. 20 Hz to 20 kHz is about 10 octaves.'},
+{d:'A', t:'Digital audio bandwidth', q:'Build the bandwidth of a digital audio stream.',
+ f:'BW = {0} &times; {1} &times; {2}',
+ a:[['sample rate','bit depth','channels'],['sample rate','bit depth','channels'],['sample rate','bit depth','channels']], b:['2','fps'],
+ n:'Result is in <b>bits per second</b>. The 2 tile belongs to Nyquist, which sets the sample rate rather than computing bandwidth.'},
+{d:'A', t:'Nyquist–Shannon minimum', q:'Build the minimum sample rate for a given highest frequency.',
+ f:'sample rate &gt; {0} &times; {1}', a:[['2','highest frequency'],['2','highest frequency']], b:['bit depth','10'],
+ n:'Capturing 20 kHz needs a rate above 40 kHz — which is exactly why CD landed on 44.1 kHz rather than 40.'},
+
+/* ---- Video & light ---- */
+{d:'V', t:'Aspect ratio', q:'Build the aspect ratio of a screen.',
+ f:'AR = {0} / {1}', a:[['W'],['H']], b:['D','AR'],
+ n:'Width over height. Use four decimals for 16:9 (<b>1.7778</b>) — 1.78 drifts far enough to miss the offered answer.'},
+{d:'V', t:'Height from the aspect ratio', q:'Build screen height from width and aspect ratio.',
+ f:'H = {0} / {1}', a:[['W'],['AR']], b:['D','H'],
+ n:'And the other way round: W = H &times; AR. Whichever value you are missing, the AR connects the two you have.'},
+{d:'V', t:'Screen diagonal', q:'Build the Pythagorean relationship for a screen.',
+ f:'{0}² + {1}² = {2}²', a:[['W','H'],['W','H'],['D']], b:['AR','0.8716'],
+ n:'Any two of width, height and diagonal produce the third. A stem that hands you height and diagonal is a <b>two-step</b> question in disguise.'},
+{d:'V', t:'16:9 width from the diagonal', q:'Build the width of a 16:9 screen from its diagonal.',
+ f:'W = {0} &times; {1}', a:[['D','0.8716'],['D','0.8716']], b:['0.4903','1.7778'],
+ n:'<b>Trap:</b> 0.4903 is the <b>height</b> constant sitting right beside it. A 90 in display is 78.4 in wide.'},
+{d:'V', t:'16:9 height from the diagonal', q:'Build the height of a 16:9 screen from its diagonal.',
+ f:'H = {0} &times; {1}', a:[['D','0.4903'],['D','0.4903']], b:['0.8716','1.7778'],
+ n:'The partner constant. Both come from Pythagoras on a 16:9 rectangle — they only save you the working.'},
+{d:'V', t:'Throw distance', q:'Build the throw distance of a projector.',
+ f:'D = {0} &times; {1}', a:[['screen width','throw ratio'],['screen width','throw ratio']], b:['screen height','AR'],
+ n:'Throw ratio is defined against <b>width</b>, never height or diagonal. Verify against the projector manual for a real design.'},
+{d:'V', t:'ANSI lumen rating', q:'Build the ANSI lumen rating of a projector.',
+ f:'L = {0} &times; {1} &times; {2}',
+ a:[['SH','SW','AI (avg of 9)'],['SH','SW','AI (avg of 9)'],['SH','SW','AI (avg of 9)']], b:['centre reading','1.25'],
+ n:'<b>Trap:</b> the centre reading is the brightest one and is never the answer — ANSI insists on the <b>average of nine</b>. Lux pairs with m², foot-candles with ft².'},
+{d:'V', t:'DISCAS %EH', q:'Build the percent element height used by DISCAS.',
+ f:'%EH = {0} / {1}', a:[['element height'],['image height']], b:['image width','screen diagonal'],
+ n:'Basic Decision Making sizing. ADM viewing is the stricter test — it requires resolving a <b>single pixel</b>.'},
+{d:'V', t:'Illuminance at a new distance', q:'Build the inverse square law for light.',
+ f:'E₂ = {0} &times; ({1} / {2})²', a:[['E₁'],['D₁ (original)'],['D₂ (new)']], b:['E₂','20'],
+ n:'Original distance on top, exactly as in dB = 20 log(D₁/D₂). At double the distance <b>25% remains</b> — which the exam may also word as a 75% decrease.'},
+{d:'V', t:'Video bandwidth', q:'Build the bandwidth of an uncompressed video signal. The pixel count is already in place.',
+ f:'BW = (H<sub>px</sub> &times; V<sub>px</sub>) &times; {0} &times; {1} &times; {2}',
+ a:[['fps','bit depth','chroma factor'],['fps','bit depth','chroma factor'],['fps','bit depth','chroma factor']], b:['channels','sample rate'],
+ n:'Over HDMI, multiply again by <b>1.25</b> for TMDS overhead. <b>Trap:</b> the chroma factor is 3 / 2 / 1.5 — never the first number of the 4:4:4 name.'},
+
+/* ---- Cable & install ---- */
+{d:'N', t:'PoE device power', q:'Build the power drawn by one PoE device.',
+ f:'device power = {0} &times; {1}', a:[['V','I'],['V','I']], b:['1.2','R'],
+ n:'Just the power formula wearing a network hat. Convert <b>mA to A first</b> — that slip is the most common error in the whole calculation.'},
+{d:'N', t:'PoE switch rating', q:'Build the switch rating you should specify.',
+ f:'switch rating = {0} &times; {1}', a:[['total device power','1.2'],['total device power','1.2']], b:['1.25','0.8'],
+ n:'<b>Trap:</b> “120% of load” is &times; 1.2. “Load the switch to no more than 80% of its rating” is &divide; 0.8 = &times; <b>1.25</b>. Both framings appear in real documentation — read which one is asked.'},
+{d:'N', t:'Minimum cable bend radius', q:'Build the minimum safe bend radius for a cable.',
+ f:'min bend radius = {0} &times; {1}', a:[['4','cable diameter'],['4','cable diameter']], b:['5','cable radius'],
+ n:'<b>Trap:</b> 4&times; is cabling, 5&times; is rigging — two small integers, two unrelated rules, routinely swapped in the options. And it is four times the <b>diameter</b>.'},
+{d:'N', t:'Rigging safety factor', q:'Build the rating required for an overhead-flown load.',
+ f:'required rating = {0} &times; {1}', a:[['load weight','5'],['load weight','5']], b:['4','0.8'],
+ n:'5:1 for anything flown overhead. A 40 kg display needs a mount rated for 200 kg. The 4 tile belongs to bend radius.'},
+{d:'N', t:'Drawing scale', q:'Build the real-world dimension from a scaled drawing.',
+ f:'real dimension = {0} &times; {1}', a:[['measured','scale factor'],['measured','scale factor']], b:['0.8','2'],
+ n:'Real is always <b>bigger</b> than drawn, so the operation has to be multiplication. On a 1:50 drawing, multiply by 50.'}
+
+];
+
+/* ============ state ============ */
+const $=id=>document.getElementById(id);
+const ORDER=['F','E','D','L','A','V','N'];
+const SECTIONS={F:'Foundations',E:'Electrical',D:'Decibels',L:'Loudspeakers',
+                A:'Audio',V:'Video & light',N:'Cable & install'};
+
+let deck='all', run=[], pos=0, solved=0, cleanSolves=0, misses=0;
+let slots=[], bank=[], active=0, tries=0, locked=false, missedThisRun=[];
+
+const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const pool=d=>d==='all'?PUZZLES.slice():PUZZLES.filter(p=>p.d===d);
+
+function counts(){
+  $('n-all').textContent=PUZZLES.length;
+  ORDER.forEach(k=>{$('n-'+k).textContent=pool(k).length;});
+}
+
+/* Build the tile list. Every label the puzzle can accept appears at least
+   once; a label that several blanks each demand on its own (the two 10s in
+   10^(dB/10)) appears once per blank that demands it. Then the distractors. */
+function tilesFor(p){
+  const need={}, order=[];
+  p.a.forEach(set=>{
+    set.forEach(tok=>{ if(!(tok in need)){need[tok]=0;order.push(tok);} });
+    if(set.length===1)need[set[0]]++;          // a blank that only this token fits
+  });
+  const out=[];
+  order.forEach(tok=>{ const n=Math.max(1,need[tok]); for(let i=0;i<n;i++)out.push(tok); });
+  (p.b||[]).forEach(tok=>out.push(tok));
+  return shuffle(out.map((label,i)=>({label,id:i,used:false})));
+}
+
+/* ============ a run ============ */
+function startRun(){
+  run=shuffle(pool(deck));
+  pos=0;solved=0;cleanSolves=0;misses=0;missedThisRun=[];
+  updateScore();
+  loadPuzzle();
+}
+
+function updateScore(){
+  $('doneN').textContent=solved+'/'+run.length;
+  $('cleanN').textContent=cleanSolves;
+  const m=$('missN');m.textContent=misses;m.classList.toggle('warn',misses>0);
+}
+
+function loadPuzzle(){
+  if(pos>=run.length){renderResult();return;}
+  const p=run[pos];
+  slots=p.a.map(()=>null);
+  bank=tilesFor(p);
+  active=0;tries=0;locked=false;
+  render();
+}
+
+function render(){
+  const p=run[pos];
+  const slate=p.f.replace(/\{(\d+)\}/g,(_,n)=>{
+    const i=+n, t=slots[i];
+    const cls=t?'slot full':(i===active?'slot active':'slot');
+    return '<button class="'+cls+'" data-slot="'+i+'">'+(t?t.label:'&nbsp;&nbsp;')+'</button>';
+  });
+
+  $('stage').innerHTML=
+    '<div class="puz">'+
+      '<div class="puz-tag">'+SECTIONS[p.d]+' &middot; '+(pos+1)+' of '+run.length+'</div>'+
+      '<div class="puz-q">'+p.q+'</div>'+
+      '<div class="puz-hint">'+p.t+'</div>'+
+      '<div class="slate" id="slate">'+slate+'</div>'+
+      '<div class="bank-head">Component bank</div>'+
+      '<div class="bank" id="bank">'+bank.map(function(t,i){
+        return '<button class="tok'+(t.used?' used':'')+'" data-tok="'+t.id+'">'+
+               (i<9?'<span class="kb">'+(i+1)+'</span>':'')+t.label+'</button>';
+      }).join('')+'</div>'+
+      '<div class="actions" id="actions"></div>'+
+    '</div>';
+
+  $('slate').querySelectorAll('[data-slot]').forEach(function(el){
+    el.addEventListener('click',function(){pickSlot(+el.dataset.slot);});
+  });
+  $('bank').querySelectorAll('[data-tok]').forEach(function(el){
+    el.addEventListener('click',function(){place(+el.dataset.tok);});
+  });
+}
+
+function pickSlot(i){
+  if(locked)return;
+  if(slots[i]){                                  // taking a tile back out
+    const t=bank.find(x=>x.id===slots[i].id);
+    if(t)t.used=false;
+    slots[i]=null;
+  }
+  active=i;
+  render();
+}
+
+function place(id){
+  if(locked)return;
+  const tile=bank.find(t=>t.id===id);
+  if(!tile||tile.used)return;
+  if(slots[active]){                             // replacing whatever was there
+    const old=bank.find(x=>x.id===slots[active].id);
+    if(old)old.used=false;
+  }
+  tile.used=true;
+  slots[active]=tile;
+  const next=slots.findIndex(s=>!s);
+  if(next!==-1)active=next;
+  render();
+  if(slots.every(Boolean))setTimeout(check,200);
+}
+
+function undo(){
+  if(locked)return;
+  let i=slots.findIndex(s=>!s);                   // first empty
+  i=(i===-1?slots.length:i)-1;                    // the one before it
+  if(i>=0)pickSlot(i);
+}
+
+/* A fill is correct when every blank holds a token its own accepted set
+   allows. Because tiles are consumed, that is also enough to guarantee the
+   operands are distinct wherever they need to be. */
+function check(){
+  const p=run[pos];
+  const right=slots.map((t,i)=>p.a[i].indexOf(t.label)!==-1);
+  const allRight=right.every(Boolean);
+  locked=true;
+
+  const slate=$('slate');
+  slate.querySelectorAll('[data-slot]').forEach(function(el){
+    const i=+el.dataset.slot;
+    el.classList.remove('full','active');
+    el.classList.add(right[i]?'right':'wrong');
+  });
+
+  const acts=$('actions');
+  if(allRight){
+    slate.classList.add('ok');
+    solved++;
+    if(tries===0)cleanSolves++;
+    updateScore();
+    acts.innerHTML='<span class="verdict ok">✓ built it'+(tries===0?', first try':'')+'</span>'+
+      '<button class="btn primary spacer" id="nextBtn">'+(pos+1<run.length?'Next →':'Finish →')+'</button>'+
+      '<div class="note"><span class="lbl">why</span>'+p.n+'</div>';
+    $('nextBtn').addEventListener('click',nextPuzzle);
+  }else{
+    slate.classList.add('bad');
+    tries++;misses++;
+    if(tries===1)missedThisRun.push(p);
+    updateScore();
+    acts.innerHTML='<span class="verdict bad">not yet — the red blanks are wrong</span>'+
+      '<button class="btn small spacer" id="retryBtn">Try again</button>'+
+      (tries>=2?'<button class="btn small" id="revealBtn">Show me</button>':'')+
+      '<div class="note"><span class="lbl">the trap</span>'+p.n+'</div>';
+    $('retryBtn').addEventListener('click',function(){
+      // hand back only the wrong tiles; anything already right stays put
+      slots.forEach(function(t,i){
+        if(p.a[i].indexOf(t.label)===-1){
+          const b=bank.find(x=>x.id===t.id);
+          if(b)b.used=false;
+          slots[i]=null;
+        }
+      });
+      const n=slots.findIndex(s=>!s);
+      active=n===-1?0:n;
+      locked=false;
+      render();
+    });
+    if(tries>=2)$('revealBtn').addEventListener('click',reveal);
+  }
+}
+
+/* Fill every blank with an accepted token, never reusing one that an earlier
+   blank already took — the same "tiles are physical" rule the player works to. */
+function solutionLabels(p){
+  const taken=[];
+  return p.a.map(function(set){
+    const pick=set.find(l=>taken.indexOf(l)===-1);
+    const label=pick===undefined?set[0]:pick;
+    taken.push(label);
+    return label;
+  });
+}
+
+function reveal(){
+  const p=run[pos];
+  slots=solutionLabels(p).map(label=>({label,id:-1}));
+  locked=true;
+  render();
+  $('slate').classList.add('ok');
+  $('slate').querySelectorAll('[data-slot]').forEach(function(el){
+    el.classList.remove('full','active');el.classList.add('right');
+  });
+  $('actions').innerHTML='<span class="verdict bad">shown — come back to this one</span>'+
+    '<button class="btn primary spacer" id="nextBtn">'+(pos+1<run.length?'Next →':'Finish →')+'</button>'+
+    '<div class="note"><span class="lbl">the trap</span>'+p.n+'</div>';
+  $('nextBtn').addEventListener('click',nextPuzzle);
+}
+
+function nextPuzzle(){pos++;loadPuzzle();}
+
+function renderResult(){
+  const total=run.length;
+  const pct=total?Math.round(cleanSolves/total*100):0;
+  const heading=pct===100?'Perfect run':pct>=80?'Strong run':pct>=60?'Getting there':'Worth another pass';
+  const review=missedThisRun.length
+    ? '<div class="review"><h3>Missed at least once</h3>'+missedThisRun.map(function(p){
+        const sol=solutionLabels(p);
+        return '<div class="rv"><div class="rv-l">'+p.t+'</div>'+
+               '<div class="rv-r">'+p.f.replace(/\{(\d+)\}/g,(_,n)=>sol[+n])+'</div>'+
+               '<div class="rv-n">'+p.n+'</div></div>';
+      }).join('')+'</div>'
+    : '<div class="clean">Clean run — nothing to review.</div>';
+
+  $('stage').innerHTML=
+    '<div class="result">'+
+      '<h2>'+heading+'</h2>'+
+      '<div class="bignum">'+cleanSolves+'/'+total+'</div>'+
+      '<div class="sub">built first try &middot; '+misses+' miss'+(misses===1?'':'es')+' along the way</div>'+
+      '<div class="again">'+
+        '<button class="btn primary" id="againBtn">Run it again</button>'+
+        '<a class="btn" href="av-math-pick.html">Name That Formula →</a>'+
+      '</div>'+
+      review+
+    '</div>';
+  $('againBtn').addEventListener('click',startRun);
+}
+
+/* ============ events ============ */
+document.querySelectorAll('#filters .chip').forEach(function(c){
+  c.addEventListener('click',function(){
+    document.querySelectorAll('#filters .chip').forEach(x=>x.classList.remove('on'));
+    c.classList.add('on');
+    deck=c.dataset.f;
+    startRun();
+  });
+});
+
+addEventListener('keydown',function(e){
+  if(e.key>='1'&&e.key<='9'){
+    const i=+e.key-1;
+    if(!locked&&bank[i]&&!bank[i].used){place(bank[i].id);e.preventDefault();}
+    return;
+  }
+  if(e.key==='Backspace'){undo();e.preventDefault();return;}
+  if(e.key==='Enter'){
+    const b=$('nextBtn')||$('retryBtn')||$('againBtn');
+    if(b){b.click();e.preventDefault();}
+  }
+});
+
+counts();
+startRun();
+</script>
+</body>
+</html>

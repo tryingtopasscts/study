@@ -382,15 +382,31 @@ ohm: `<svg viewBox="0 0 320 150" aria-hidden="true">
   <text class="t-dim" x="160" y="144" text-anchor="middle">cover the one you want — I = V / R</text>
 </svg>`,
 
-powertri: `<svg viewBox="0 0 340 150" aria-hidden="true">
-  <path class="am" d="M170 14 L252 110 L88 110 Z"/>
-  <line class="thin" x1="120" y1="70" x2="220" y2="70"/>
-  <line class="thin" x1="170" y1="70" x2="170" y2="110"/>
-  <text class="t-big t-am" x="170" y="56" text-anchor="middle" font-size="22">P</text>
-  <text class="t-big" x="144" y="98" text-anchor="middle" font-size="18">I</text>
-  <text class="t-big" x="197" y="98" text-anchor="middle" font-size="18">V</text>
-  <text class="t-dim" x="170" y="132" text-anchor="middle">P = I × V</text>
-  <text class="t-ac" x="170" y="148" text-anchor="middle">also P = V² / R · P = I² R</text>
+powertri: `<svg viewBox="0 0 340 228" aria-hidden="true">
+  <path class="am" d="M170 10 L232 96 L108 96 Z"/>
+  <line class="thin" x1="132" y1="62" x2="208" y2="62"/>
+  <line class="thin" x1="170" y1="62" x2="170" y2="96"/>
+  <text class="t-big t-am" x="170" y="50" text-anchor="middle" font-size="20">P</text>
+  <text class="t-big" x="151" y="88" text-anchor="middle" font-size="16">I</text>
+  <text class="t-big" x="190" y="88" text-anchor="middle" font-size="16">V</text>
+  <text class="t-dim" x="170" y="112" text-anchor="middle">P = I × V</text>
+
+  <path class="gr" d="M85 132 L135 205 L35 205 Z"/>
+  <line class="thin" x1="57" y1="175" x2="113" y2="175"/>
+  <line class="thin" x1="85" y1="175" x2="85" y2="205"/>
+  <text class="t-big t-gr" x="85" y="167" text-anchor="middle" font-size="16">V²</text>
+  <text class="t-big" x="70" y="198" text-anchor="middle" font-size="13">P</text>
+  <text class="t-big" x="100" y="198" text-anchor="middle" font-size="13">R</text>
+  <text class="t-dim" x="85" y="221" text-anchor="middle">P = V² / R</text>
+
+  <path class="pu" d="M255 132 L305 205 L205 205 Z"/>
+  <line class="thin" x1="227" y1="175" x2="283" y2="175"/>
+  <line class="thin" x1="255" y1="175" x2="255" y2="205"/>
+  <text class="t-big t-pu" x="255" y="167" text-anchor="middle" font-size="16">P</text>
+  <text class="t-big" x="240" y="198" text-anchor="middle" font-size="13">I²</text>
+  <text class="t-big" x="270" y="198" text-anchor="middle" font-size="13">R</text>
+  <text class="t-dim" x="255" y="221" text-anchor="middle">P = I² × R</text>
+
 </svg>`,
 
 circuit80: `<svg viewBox="0 0 340 150" aria-hidden="true">
@@ -1062,29 +1078,46 @@ cost: `<svg viewBox="0 0 340 150" aria-hidden="true">
    Keyed by section letter, rendered above the overview list. Electrical is the
    one section whose whole formula set falls out of two pictures, so the
    cover-up triangles belong on its overview rather than only on the two
-   individual cards. */
+   individual cards. All four are drawn, including the pair people never think
+   of as triangles: P = V²/R reads off a triangle with V² on top, and
+   P = I²R off the ordinary shape with P on top. */
 const ART = {
 
-E: `<svg viewBox="0 0 330 178" aria-hidden="true">
-  <path class="ac" style="fill:var(--surface)" d="M84 16 L142 106 L26 106 Z"/>
-  <line class="thin" x1="49" y1="66" x2="119" y2="66"/>
-  <line class="thin" x1="84" y1="66" x2="84" y2="106"/>
-  <text class="t-big t-ac" x="84" y="56" text-anchor="middle" font-size="21">V</text>
-  <text class="t-big" x="65" y="95" text-anchor="middle" font-size="17">I</text>
-  <text class="t-big" x="104" y="95" text-anchor="middle" font-size="17">R</text>
-  <text class="t-dim" x="84" y="123" text-anchor="middle">Ohm’s law</text>
+E: `<svg viewBox="0 0 330 300" aria-hidden="true">
+  <path class="ac" style="fill:var(--surface)" d="M84 14 L142 104 L26 104 Z"/>
+  <line class="thin" x1="49" y1="64" x2="119" y2="64"/>
+  <line class="thin" x1="84" y1="64" x2="84" y2="104"/>
+  <text class="t-big t-ac" x="84" y="54" text-anchor="middle" font-size="21">V</text>
+  <text class="t-big" x="65" y="94" text-anchor="middle" font-size="17">I</text>
+  <text class="t-big" x="104" y="94" text-anchor="middle" font-size="17">R</text>
+  <text class="t-dim" x="84" y="121" text-anchor="middle">Ohm’s law · V = I × R</text>
 
-  <path class="am" style="fill:var(--surface)" d="M246 16 L304 106 L188 106 Z"/>
-  <line class="thin" x1="211" y1="66" x2="281" y2="66"/>
-  <line class="thin" x1="246" y1="66" x2="246" y2="106"/>
-  <text class="t-big t-am" x="246" y="56" text-anchor="middle" font-size="21">P</text>
-  <text class="t-big" x="227" y="95" text-anchor="middle" font-size="17">I</text>
-  <text class="t-big" x="266" y="95" text-anchor="middle" font-size="17">V</text>
-  <text class="t-dim" x="246" y="123" text-anchor="middle">power</text>
+  <path class="am" style="fill:var(--surface)" d="M246 14 L304 104 L188 104 Z"/>
+  <line class="thin" x1="211" y1="64" x2="281" y2="64"/>
+  <line class="thin" x1="246" y1="64" x2="246" y2="104"/>
+  <text class="t-big t-am" x="246" y="54" text-anchor="middle" font-size="21">P</text>
+  <text class="t-big" x="227" y="94" text-anchor="middle" font-size="17">I</text>
+  <text class="t-big" x="266" y="94" text-anchor="middle" font-size="17">V</text>
+  <text class="t-dim" x="246" y="121" text-anchor="middle">power · P = I × V</text>
 
-  <text class="t-ac" x="165" y="146" text-anchor="middle">cover what you want — what’s left is the formula</text>
-  <text class="t-dim" x="165" y="162" text-anchor="middle">side by side → multiply &#160;·&#160; one over the other → divide</text>
-  <text class="t-dim" x="165" y="175" text-anchor="middle">P = V²/R and P = I²R come from combining the two</text>
+  <path class="gr" style="fill:var(--surface)" d="M84 150 L142 240 L26 240 Z"/>
+  <line class="thin" x1="49" y1="200" x2="119" y2="200"/>
+  <line class="thin" x1="84" y1="200" x2="84" y2="240"/>
+  <text class="t-big t-gr" x="84" y="190" text-anchor="middle" font-size="21">V²</text>
+  <text class="t-big" x="65" y="230" text-anchor="middle" font-size="17">P</text>
+  <text class="t-big" x="104" y="230" text-anchor="middle" font-size="17">R</text>
+  <text class="t-dim" x="84" y="257" text-anchor="middle">cover P · P = V² / R</text>
+
+  <path class="pu" style="fill:var(--surface)" d="M246 150 L304 240 L188 240 Z"/>
+  <line class="thin" x1="211" y1="200" x2="281" y2="200"/>
+  <line class="thin" x1="246" y1="200" x2="246" y2="240"/>
+  <text class="t-big t-pu" x="246" y="190" text-anchor="middle" font-size="21">P</text>
+  <text class="t-big" x="227" y="230" text-anchor="middle" font-size="17">I²</text>
+  <text class="t-big" x="266" y="230" text-anchor="middle" font-size="17">R</text>
+  <text class="t-dim" x="246" y="257" text-anchor="middle">cover P · P = I² × R</text>
+
+  <text class="t-ac" x="165" y="280" text-anchor="middle">cover what you want — what’s left is the formula</text>
+  <text class="t-dim" x="165" y="296" text-anchor="middle">side by side → multiply &#160;·&#160; one over the other → divide</text>
 </svg>`
 
 };
@@ -1124,7 +1157,7 @@ const CARDS = [
  n:'Cover the quantity you want in the triangle; what remains is your formula.'},
 {d:'E', t:'Power formula', c:'Electrical', f:'P = I × V &nbsp;·&nbsp; P = V² / R &nbsp;·&nbsp; P = I² R', q:'The power formula — all three forms:',
  a:'<span class="big">P = I × V</span>Also <b>P = V² / R</b> and <b>P = I² R</b>.', viz:'powertri',
- n:'The V²/R form is why voltage uses a 20 in dB math — hold onto it.'},
+ n:'All three are cover-up triangles. <b>Watch the middle one:</b> because P = V²/R, it is <b>V²</b> that sits on top, not P. Draw that one with P on top and every rearrangement comes out inverted. The V²/R form is also why voltage uses a 20 in dB math.'},
 {d:'E', t:'The 80% rule', c:'Electrical', f:'max planned load = rated capacity × 0.8', q:'Maximum planned load on any circuit?',
  a:'<span class="big">80% of rated capacity</span>A 20 A circuit carries no more than <b>16 A</b> of planned load.', viz:'circuit80'},
 {d:'E', t:'Voltage drop', c:'Electrical', f:'V<sub>drop</sub> = I × R<sub>total</sub> &nbsp;·&nbsp; R<sub>total</sub> = rate × 2 × distance', q:'Voltage drop over a long cable run — what is R?',

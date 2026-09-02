@@ -731,23 +731,41 @@ Electricity in a wire behaves like water in a pipe. <strong>Voltage</strong> is 
 <p>Rearranged: <span class="mono">I = P / V</span> and <span class="mono">V = P / I</span>. Combining the two laws also gives useful hybrids like <span class="mono">P = V² / R</span> and <span class="mono">P = I² × R</span> — handy when you know two values but neither formula fits directly.</p>
 
 <div class="diagram">
-<svg viewBox="0 0 640 250" role="img" aria-label="Cover-up triangles for Ohm's law and the power formula">
+<svg viewBox="0 0 640 500" role="img" aria-label="Four cover-up triangles: Ohm's law, the power formula, and the two power hybrids">
   <polygon points="160,30 40,210 280,210" class="dg-fill-panel"/>
   <line x1="100" y1="120" x2="220" y2="120" class="dg-border"/>
   <line x1="160" y1="120" x2="160" y2="210" class="dg-border"/>
-  <text x="160" y="95" text-anchor="middle" class="dm dt dbig">V</text>
+  <text x="160" y="95" text-anchor="middle" class="dm damber dbig">V</text>
   <text x="127" y="180" text-anchor="middle" class="dm dteal dbig">I</text>
   <text x="194" y="180" text-anchor="middle" class="dm dred dbig">R</text>
-  <text x="160" y="238" text-anchor="middle" class="dsmall">Ohm's law</text>
+  <text x="160" y="238" text-anchor="middle" class="dsmall">Ohm's law &#8212; V = I × R</text>
+
   <polygon points="480,30 360,210 600,210" class="dg-fill-panel"/>
   <line x1="420" y1="120" x2="540" y2="120" class="dg-border"/>
   <line x1="480" y1="120" x2="480" y2="210" class="dg-border"/>
   <text x="480" y="95" text-anchor="middle" class="dm dt dbig">P</text>
   <text x="447" y="180" text-anchor="middle" class="dm dteal dbig">I</text>
   <text x="514" y="180" text-anchor="middle" class="dm damber dbig">V</text>
-  <text x="480" y="238" text-anchor="middle" class="dsmall">Power</text>
+  <text x="480" y="238" text-anchor="middle" class="dsmall">Power &#8212; P = I × V</text>
+
+  <polygon points="160,290 40,470 280,470" class="dg-fill-panel"/>
+  <line x1="100" y1="380" x2="220" y2="380" class="dg-border"/>
+  <line x1="160" y1="380" x2="160" y2="470" class="dg-border"/>
+  <text x="160" y="355" text-anchor="middle" class="dm damber dbig">V²</text>
+  <text x="127" y="440" text-anchor="middle" class="dm dt dbig">P</text>
+  <text x="194" y="440" text-anchor="middle" class="dm dred dbig">R</text>
+  <text x="160" y="498" text-anchor="middle" class="dsmall">Cover P → P = V² / R</text>
+
+  <polygon points="480,290 360,470 600,470" class="dg-fill-panel"/>
+  <line x1="420" y1="380" x2="540" y2="380" class="dg-border"/>
+  <line x1="480" y1="380" x2="480" y2="470" class="dg-border"/>
+  <text x="480" y="355" text-anchor="middle" class="dm dt dbig">P</text>
+  <text x="447" y="440" text-anchor="middle" class="dm dteal dbig">I²</text>
+  <text x="514" y="440" text-anchor="middle" class="dm dred dbig">R</text>
+  <text x="480" y="498" text-anchor="middle" class="dsmall">Cover P → P = I² × R</text>
 </svg>
-<div class="dcap">The cover-up trick: put a thumb over the letter you're solving for, and the layout of the two that remain <em>is</em> the formula. Cover I → V sits over R, so <span class="mono">I = V ÷ R</span>. Cover V → I and R sit side by side, so <span class="mono">V = I × R</span>. Works identically on the power triangle.</div>
+<div class="dcap">The cover-up trick: put a thumb over the letter you're solving for, and the layout of the two that remain <em>is</em> the formula. Cover I → V sits over R, so <span class="mono">I = V ÷ R</span>. Cover V → I and R sit side by side, so <span class="mono">V = I × R</span>. The same reading works on all four.
+<br><br><strong>The two hybrids are triangles too</strong>, and the V²/R one (bottom left) is the one people draw wrong. Since P = V²/R, it is <strong>V² that sits on top</strong> — not P. Read it and every rearrangement falls out: cover P for <span class="mono">P = V² / R</span>, cover R for <span class="mono">R = V² / P</span>, cover V² for <span class="mono">V² = P × R</span>. The I²R triangle is the ordinary shape with P on top, because there P really is the product.</div></div>
 </div>
 
 <div class="callout keyterm"><span class="label">Key Term</span>

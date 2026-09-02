@@ -39,6 +39,11 @@ h1{font-family:var(--serif);font-weight:700;font-size:1.5rem;line-height:1.2}
 .btn:hover{background:var(--accent-dim);border-color:var(--accent)}
 .btn.small{font-size:.78rem;padding:.35rem .75rem}
 .btn.primary{background:var(--accent-dim);border-color:var(--accent);color:var(--accent2);font-weight:700}
+.btn[disabled]{opacity:.35;cursor:not-allowed}
+.chip[disabled]{opacity:.35;cursor:not-allowed}
+.chip[disabled]:hover{border-color:var(--border2)}
+.size-row{display:flex;align-items:center;gap:.4rem;margin:0 0 .8rem;font-family:var(--mono);font-size:.72rem;color:var(--text3)}
+.size-row .chip{padding:.22rem .62rem;font-family:var(--mono);font-size:.72rem}
 
 .score{display:flex;align-items:baseline;gap:1.1rem;font-family:var(--mono);font-size:.8rem;color:var(--text3);
   border:1px solid var(--border);background:var(--bg2);border-radius:12px;padding:.5rem .9rem;margin-bottom:.8rem}
@@ -140,6 +145,14 @@ footer a{color:var(--accent)}
   <button class="chip" data-f="N">Cable &amp; install <span class="n" id="n-N"></span></button>
 </div>
 
+<div class="size-row">
+  <span>Stems per run</span>
+  <button class="chip on" data-s="10">10</button>
+  <button class="chip" data-s="20">20</button>
+  <button class="chip" data-s="all">All</button>
+  <button class="btn small" id="newBtn" style="margin-left:auto">New run</button>
+</div>
+
 <div class="score" id="scoreBar">
   <span>correct <span class="v" id="okN">0/0</span></span>
   <span class="right"><span class="v" id="pctN">—</span></span>
@@ -149,7 +162,7 @@ footer a{color:var(--accent)}
 <div id="stage"></div>
 
 <div class="kbd-hint">
-  <kbd>1</kbd>–<kbd>4</kbd> answer &nbsp;·&nbsp; <kbd>enter</kbd> next
+  <kbd>1</kbd>–<kbd>4</kbd> answer &nbsp;·&nbsp; <kbd>enter</kbd> next &nbsp;·&nbsp; <kbd>n</kbd> new run
 </div>
 
 <footer>
@@ -360,7 +373,154 @@ const BANK = [
 {d:'N', s:'While surveying a conference room for a system upgrade, an engineer measures 55 dB SPL A-weighted of ambient noise when the room is empty. How should they proceed?',
  o:['20 log(D₁ / D₂)','Compare against the 80% rule','No formula — the options are courses of action, not values','10 log(P₁ / P_ref)'],c:2,
  w:'Nothing to calculate — the answer list was never numeric',
- e:'A stem stuffed with units that wants a decision, not a number. The giveaway is the answer list itself: sentences rather than values. <b>Always glance at the options before you start calculating</b> — it costs two seconds and saves you from solving a problem nobody asked.'}
+ e:'A stem stuffed with units that wants a decision, not a number. The giveaway is the answer list itself: sentences rather than values. <b>Always glance at the options before you start calculating</b> — it costs two seconds and saves you from solving a problem nobody asked.'},
+
+/* ---- Foundations ---- */
+{d:'F', s:'A room measures 30 ft by 24 ft with a 10 ft ceiling. The acoustician asks for the room volume.',
+ o:['W × L × H','W × L','2 × (W + L)','W × L ÷ H'],c:0,
+ w:'30 × 24 × 10 = 7,200 cu ft',
+ e:'Volume is the only formula here with three dimensions in it, and the answer comes back in <b>cubic</b> units. Reverberation and HVAC questions both want volume, so here the ceiling height is a given rather than a decoy.'},
+{d:'F', s:'A bracket is specified at 216 mm but the structural drawings are all in inches.',
+ o:['÷ 25.4','× 25.4','× 0.3048','× 10.76'],c:0,
+ w:'216 ÷ 25.4 ≈ 8.5 in',
+ e:'One inch is 25.4 mm, so millimetres are the <b>bigger</b> number and getting to inches has to divide. Sanity-check the direction every time: if your answer came out larger than the millimetre figure, you multiplied.'},
+
+/* ---- Electrical ---- */
+{d:'E', s:'A 120 V circuit feeds a device drawing 4.5 A. What power does it consume?',
+ o:['P = I × V','I = P / V','P = V² / R','V = I × R'],c:0,
+ w:'4.5 × 120 = 540 W',
+ e:'Amps and volts in, watts out — the power formula in its plain form. The other options are the same relationships rearranged for quantities you were not asked about.'},
+{d:'E', s:'A DSP drawing 1.4 A at 24 V is added to a rack that already dissipates 1,150 W. What is the new heat load in Btu per hour?',
+ o:['Watts × 3.4, using the existing rack total','P = I × V for the DSP, add it to the rack total, then × 3.4','P = I × V for the DSP, then × 3.6','Watts × 3.4, then × 0.8'],c:1,
+ w:'1.4 × 24 = 33.6 W · 1,150 + 33.6 = 1,183.6 W · × 3.4 ≈ 4,024 Btu/h',
+ e:'A three-step chain, and the first step is the one that gets skipped — the DSP is quoted in <em>amps</em>, so it has to become watts before it can join a watt total. Only then does the heat constant apply.'},
+{d:'E', s:'You are given a device’s power draw and the supply voltage, and asked what resistance it presents.',
+ o:['R = V / I directly','I = P / V first, then R = V / I','P = I² × R','R = P / V'],c:1,
+ w:'Two steps: current from the power formula, then Ohm’s law',
+ e:'No single formula connects watts and volts straight to ohms, so this is a <b>two-step</b> question. Being one value short of the formula you want is the standard tell that a chain is coming.'},
+{d:'E', s:'A camera 40 ft from its supply shows a calculated voltage drop of 1.1 V. The supply is 12 V and the device tolerates 5%. Does the run pass?',
+ o:['Compare the drop against V_supply × 0.05','Compare the drop against V_drop × 0.05','Compare the drop against V_supply × 0.8','No comparison needed — any drop under 2 V passes'],c:0,
+ w:'12 × 0.05 = 0.6 V allowed · 1.1 V > 0.6 V, so it fails',
+ e:'Tolerance is always a percentage of the <b>supply</b> voltage, never of the drop itself. <b>Trap:</b> the second option computes 5% of 1.1 V, which is meaningless but looks like arithmetic. Read what the percentage is a percentage <em>of</em>.'},
+{d:'E', s:'A planned load comes to 14 A. What capacity must the branch circuit have?',
+ o:['Load × 0.8','Load ÷ 0.8','Load × 5','No derating — a 14 A circuit'],c:1,
+ w:'14 ÷ 0.8 = 17.5 A, so a 20 A circuit',
+ e:'This is the 80% rule run <b>backwards</b>. Going from a rating to a budget multiplies by 0.8; going from a budget to the rating you need divides by it. Both directions are examinable, and the wrong one is always offered.'},
+
+/* ---- Decibels ---- */
+{d:'D', s:'A microphone output measures 0.1 V. The reference for dBu is 0.775 V. Express the level in dBu.',
+ o:['10 log(V₁ / V_ref)','20 log(V₁ / V_ref)','10^(dB / 20)','V = I × R'],c:1,
+ w:'20 log(0.1 / 0.775) = 20 log(0.129) ≈ −17.8 dBu',
+ e:'dBu is a <b>voltage</b> reference, so it takes the 20. Note the ratio is below 1, so the answer must come out negative — that sign is your free check.'},
+{d:'D', s:'A listener moves from 4 m to 16 m from a loudspeaker. What is the level change?',
+ o:['20 log(D₁ / D₂)','10 log(D₁ / D₂)','20 log(D₂ / D₁)','E₂ = E₁ × (D₁ / D₂)²'],c:0,
+ w:'20 log(4 / 16) = 20 log(0.25) = −12 dB',
+ e:'Original distance on top, so moving away comes out negative. <b>Trap:</b> the inverse square option is the same physics for <em>light</em> — correct idea, wrong units for a question that wants decibels.'},
+{d:'D', s:'A spec sheet quotes a figure in dBm and you need it as a power in milliwatts.',
+ o:['10^(dB / 10), referenced to 1 mW','10^(dB / 20), referenced to 1 mW','10^(dB / 20), referenced to 0.775 V','20 log(P₁ / P_ref)'],c:0,
+ w:'0 dBm = 1 mW, and every 10 dB is a factor of ten',
+ e:'<b>Trap:</b> dBm is the odd one out among the reference levels. dBu and dBV are voltages and use 20; dBm references <b>power</b> (1 mW) and uses 10. Its neighbours in the options are the voltage versions.'},
+{d:'D', s:'A second identical loudspeaker is added, playing the same signal at the same level as the first.',
+ o:['10 log(P₂ / P₁) — the acoustic power doubled','20 log(P₂ / P₁) — the pressure doubled','No change — it is the same signal','20 log(D₁ / D₂)'],c:0,
+ w:'10 log(2) ≈ +3 dB',
+ e:'Two sources means twice the acoustic <b>power</b>, and power takes the 10 — so +3 dB, not +6. The 20-log option is offered because doubling the <em>voltage</em> into one speaker really would give +6, and the two cases are easy to blur.'},
+{d:'D', s:'You are told the SPL at 2 m is 94 dB, and asked for the SPL at 12 m.',
+ o:['20 log(D₁ / D₂), then apply the result to the starting SPL','20 log(D₁ / D₂) — that is the answer','10 log(D₁ / D₂), then apply it to the starting SPL','Subtract the distances, then multiply by six'],c:0,
+ w:'20 log(2/12) = −15.6 dB · 94 − 15.6 ≈ 78.4 dB SPL',
+ e:'The formula returns a <b>change</b>, not a level. The question asked for a level, so there is a second step. Answering with the bare −15.6 is the most common miss on this shape of question, and it is always offered.'},
+{d:'D', s:'An amplifier gain control is turned up and the output rises by 3 dB.',
+ o:['10^(dB / 10) — the power ratio','10^(dB / 20) — the power ratio','10 log(P₂ / P₁)','No formula — 3 dB is not a ratio'],c:0,
+ w:'10^(3/10) = 10^0.3 ≈ 2, so the watts doubled',
+ e:'Going from dB back to a ratio is the antilog, and watts carry the 10. <b>Trap:</b> the second option puts the voltage coefficient on a power question — it would give you the <em>voltage</em> ratio, a different number.'},
+{d:'D', s:'A distributed system must deliver 72 dB SPL(A) of program. The empty room measures 52 dB SPL(A) of ambient noise. Is the design viable?',
+ o:['Compare the difference against the 25 dB headroom rule','20 log(D₁ / D₂)','10 log(P₁ / P_ref)','Add the two levels together'],c:0,
+ w:'72 − 52 = 20 dB of headroom — short of 25, so no',
+ e:'Program has to sit at least <b>25 dB</b> above the noise floor. <b>Trap:</b> adding two SPL figures is never how levels combine, but it looks like arithmetic and it is always on the list.'},
+
+/* ---- Loudspeakers ---- */
+{d:'L', s:'Two 16-ohm loudspeakers are wired in parallel, and that pair is then wired in series with a single 8-ohm loudspeaker.',
+ o:['Add all three impedances','Collapse the parallel pair first, then add the series speaker','Reciprocals of all three, then flip the sum','Divide the total by three'],c:1,
+ w:'16 ÷ 2 = 8 Ω for the pair · 8 + 8 = 16 Ω total',
+ e:'Mixed wiring is solved <b>innermost first</b>, exactly like brackets in arithmetic. Collapse the parallel group to a single value, then treat it as one speaker in the series sum.'},
+{d:'L', s:'Six 8-ohm loudspeakers will be wired in parallel onto an amplifier rated for a 4-ohm minimum load.',
+ o:['Z_T = Z₁ / N, then compare against the amplifier minimum','Z_T = Z₁ + Z₂ + … , then compare','Z_T = Z₁ × N, then compare','No calculation — parallel wiring never drops below an amp minimum'],c:0,
+ w:'8 ÷ 6 = 1.33 Ω — far below the 4 Ω minimum, so this damages the amplifier',
+ e:'Identical speakers in parallel divide. The point of the question is the comparison afterwards: parallel totals fall <b>below the smallest speaker</b>, and stacking enough of them takes any amplifier under its rated minimum.'},
+{d:'L', s:'A loudspeaker rated 95 dB SPL, 1 W @ 1 m is heard from 4 m away, still with one watt driving it.',
+ o:['20 log(D₁ / D₂), applied to the sensitivity','10 log(D₁ / D₂), applied to the sensitivity','ΔSPL = 10 log(P₂ / P₁)','L = SH × SW × AI'],c:0,
+ w:'20 log(1/4) = −12 dB · 95 − 12 = 83 dB SPL',
+ e:'The power never changes, so this is purely the distance step. Sensitivity is quoted <b>at 1 m</b>, which is what makes it the reference distance — that 1 is the D₁ in the ratio.'},
+
+/* ---- Audio ---- */
+{d:'A', s:'Room mode analysis needs the physical length of a 60 Hz standing wave in air.',
+ o:['λ = v / f','λ = f / v','λ = v × f','octaves = log(f₂ / f₁) ÷ log(2)'],c:0,
+ w:'343 ÷ 60 ≈ 5.7 m',
+ e:'Speed over frequency, with the speed of sound supplied by you. A 5.7 m wave is comparable to the room itself, which is precisely why low frequencies cause modal problems and high ones do not.'},
+{d:'A', s:'A networked audio stream carries 96 kHz sampling at 24-bit depth across 8 channels.',
+ o:['SR × bit depth × channels','SR × bit depth ÷ channels','SR × 2 (Nyquist)','H × V × fps × bit depth'],c:0,
+ w:'96,000 × 24 × 8 = 18,432,000 bps ≈ 18.4 Mbps',
+ e:'Three multiplicands handed over together is the audio bandwidth fingerprint. <b>Trap:</b> the last option is the <em>video</em> bandwidth formula, which shares the bit-depth term and nothing else.'},
+{d:'A', s:'A crossover point is specified as two octaves above 500 Hz. What frequency is that?',
+ o:['Double it once per octave','Multiply by ten per octave','log(f₂ / f₁) ÷ log(2)','Add two to the frequency'],c:0,
+ w:'500 → 1,000 → 2,000 Hz',
+ e:'An octave is a doubling, so going <em>up</em> octaves multiplies by 2 each time. The log formula is the same relationship run backwards — it counts octaves between two known frequencies rather than finding one from a count.'},
+
+/* ---- Video & light ---- */
+{d:'V', s:'A 16:9 image is 1.5 m high. How wide is it?',
+ o:['W = H × AR','W = H ÷ AR','W = D × 0.8716','A² + B² = C²'],c:0,
+ w:'1.5 × 1.7778 ≈ 2.67 m',
+ e:'Width is the bigger number, so the aspect ratio must <b>multiply</b>. That direction check settles every AR question: if your width came out smaller than your height, you divided when you should have multiplied.'},
+{d:'V', s:'A custom screen measures 2.4 m wide by 1.35 m high, and a product search needs its diagonal.',
+ o:['A² + B² = C²','AR = W / H','D × 0.8716','W × H'],c:0,
+ w:'√(2.4² + 1.35²) = √(5.76 + 1.82) ≈ 2.75 m',
+ e:'Two sides of a right triangle, asking for the third. The 0.8716 shortcut runs the <em>other</em> way — diagonal to width — so it cannot help here even though this screen happens to be 16:9.'},
+{d:'V', s:'A projector in a booth 12.5 m from the screen must fill an image 5 m wide. What lens do you need?',
+ o:['Throw ratio = D / SW','D = SW × TR','SW = D × TR','L = SH × SW × AI'],c:0,
+ w:'12.5 ÷ 5 = a 2.5:1 throw ratio lens',
+ e:'The throw formula rearranged. You were given the distance and the width and asked for the <b>ratio</b> — the one arrangement nobody has memorised, but it falls straight out of D = SW × TR.'},
+{d:'V', s:'Nine incident readings are taken across a full-white field. The stem also mentions that the centre reading is 700 lux, the brightest of the set.',
+ o:['Use the average of the nine readings','Use the 700 lux centre reading','Use the highest and lowest, averaged','Multiply the centre reading by nine'],c:0,
+ w:'ANSI defines the AI term as the mean of all nine points',
+ e:'The centre reading is always the brightest and is <b>never</b> the answer — projectors are hottest in the middle, which is exactly why ANSI insists on nine points. A stem that volunteers the centre value is baiting you with it.'},
+{d:'V', s:'A 1080p60 stream is carried at 10-bit with 4:2:0 chroma subsampling. Which multiplier does the subsampling contribute to the bandwidth?',
+ o:['The subsampling factor, which is 1.5','The first number of the name, which is 4','The last number of the name, which is 0','None — 4:2:0 is uncompressed'],c:0,
+ w:'Six samples per four pixels: 6 ÷ 4 = 1.5',
+ e:'The factor is samples per pixel: count the samples across four pixels and divide by four. 4:4:4 gives 12/4 = 3, 4:2:2 gives 8/4 = 2, 4:2:0 gives 6/4 = 1.5. <b>Trap:</b> it is never the first number of the name.'},
+{d:'V', s:'The farthest viewer in a classroom sits 9 m from a display that will show detailed spreadsheets.',
+ o:['%EH — the DISCAS basic decision making method','%EH does not apply — spreadsheets are analytical content, so ADM does','L = SH × SW × AI','20 log(D₁ / D₂)'],c:1,
+ w:'ADM requires resolving a single pixel at the farthest seat',
+ e:'DISCAS splits by <b>what the content demands</b>. Basic Decision Making covers general viewing and sizes by element height; Analytical Decision Making covers content read in detail — spreadsheets, drawings, medical images — and requires resolving a single pixel. Both of the first two options name %EH, so the discriminator is the content, not the formula.'},
+
+/* ---- Cable & install ---- */
+{d:'N', s:'On a 1:25 rack elevation, a device measures 4 cm of rack face on the page.',
+ o:['Drawn × scale factor','Drawn ÷ scale factor','Drawn × 0.8','Drawn + scale factor'],c:0,
+ w:'4 × 25 = 100 cm = 1 m of rack face',
+ e:'Real is bigger than drawn, so multiply. Worth a sanity check afterwards: 1 m of rack is about 22 rack units, which is a believable device stack — an answer of 1.6 mm would not be.'},
+{d:'N', s:'A 28 kg projector will be flown on a 6 kg mount, lag-bolted to structure overhead.',
+ o:['Projector weight × 5','Projector and mount together × 5','Projector weight × 4','Projector and mount together × 0.8'],c:1,
+ w:'(28 + 6) × 5 = 170 kg',
+ e:'The safety factor applies to the <b>whole suspended load</b>, and the mount is part of what is hanging up there. Leaving out the hardware’s own weight is the classic under-spec, and the 4× option is the bend-radius multiplier wandering in from cabling.'},
+{d:'N', s:'A Cat6A run has an 82 m permanent link with a 5 m patch cord at each end.',
+ o:['Sum all three and compare against 100 m','Compare the permanent link against 100 m on its own','Compare the permanent link against 90 m and ignore the cords','Sum all three and compare against 90 m'],c:0,
+ w:'82 + 5 + 5 = 92 m — inside the 100 m channel, and the link is inside 90 m',
+ e:'The 100 m limit is the <b>whole channel</b>, patch cords included; 90 m is the separate cap on the permanent link alone. Both have to hold, and this run satisfies each of them.'},
+{d:'N', s:'Two cables already run through a conduit and a third is being pulled in.',
+ o:['The 40% fill limit applies once there are three or more','The 40% fill limit only starts above four cables','Fill is counted by cable count, not cross-sectional area','No limit applies to conduit under two inches'],c:0,
+ w:'Combined cable cross-section ≤ 40% of the conduit’s interior area',
+ e:'Three is exactly where the 40% rule starts. And it is limited by <b>cross-sectional area</b>, not by how many cables — cables need free space to shed heat and to be pulled without stripping their jackets.'},
+{d:'N', s:'A lighting designer wants 40 fixtures on a single DMX512 line.',
+ o:['Fine — DMX512 supports 512 devices','RS-485 caps a segment at 32 devices, so it needs a splitter or repeater','Fine, provided the line is terminated at 120 Ω','Fine, provided the run stays under 100 m'],c:1,
+ w:'DMX512 runs on RS-485: 32 devices per segment',
+ e:'<b>Trap:</b> the 512 in the name is the number of <em>channels</em>, not devices — and one fixture typically consumes several channels. The electrical limit is RS-485’s 32 unit loads per segment. Termination and length are real rules too, but neither one rescues a 40-device segment.'},
+{d:'N', s:'An 11 mm outer-diameter cable has to be dressed around a corner in a rack.',
+ o:['OD × 4','OD × 5','OD ÷ 4','Radius × 4'],c:0,
+ w:'11 × 4 = 44 mm minimum bend radius',
+ e:'Four times the <b>outer diameter</b>. <b>Trap:</b> the last option quietly swaps diameter for radius, which halves the answer, and the 5× option is the rigging safety factor.'},
+{d:'N', s:'A drawing calls out a display at 1525 AFF.',
+ o:['A mounting height, measured up from the finished floor','A scale note — the drawing is 1:1525','A cable length allowance','A part number for the mount'],c:0,
+ w:'1525 mm above finished floor — a typical display centre height',
+ e:'AFF is <b>Above Finished Floor</b>: a mounting height taken from the floor as it will be when the room is done, not from the slab. The scale-note distractor is there because NTS and AFF live in the same corner of a drawing.'}
+
 
 ];
 
@@ -371,7 +531,11 @@ const SECTIONS={F:'Foundations',E:'Electrical',D:'Decibels',L:'Loudspeakers',
                 A:'Audio',V:'Video & light',N:'Cable & install'};
 const LETTERS=['A','B','C','D'];
 
-let deck='all', run=[], pos=0, ok=0, answered=0, locked=false, wrongList=[];
+let deck='all', size=10, run=[], pos=0, ok=0, answered=0, locked=false, wrongList=[];
+/* stems already served this visit, so a second run rotates through the pool
+   instead of re-asking the ten you just did. Reset when it runs dry, or when
+   the section filter changes the pool underneath it. */
+let seen=new Set();
 
 const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
 const pool=d=>d==='all'?BANK.slice():BANK.filter(q=>q.d===d);
@@ -389,8 +553,36 @@ function prepare(q){
   return {q,opts,answer:opts.findIndex(o=>o.correct)};
 }
 
+/* a run is a random slice of the section, not the whole thing in order —
+   short runs you actually finish beat a 76-stem marathon you abandon */
+function effSize(){
+  const n=pool(deck).length;
+  return size==='all'?n:Math.min(size,n);
+}
+
+function draw(){
+  const p=pool(deck), n=effSize();
+  let fresh=p.filter(q=>!seen.has(q));
+  if(fresh.length<n){seen=new Set();fresh=p.slice();}
+  const picked=shuffle(fresh).slice(0,n);
+  picked.forEach(q=>seen.add(q));
+  return picked;
+}
+
+function syncSizeChips(){
+  const max=pool(deck).length;
+  if(size!=='all'&&size>max)size='all';
+  document.querySelectorAll('.size-row .chip').forEach(function(c){
+    const v=c.dataset.s;
+    if(v==='all'){c.disabled=false;c.textContent='All ('+max+')';}
+    else c.disabled=(+v>max);
+    c.classList.toggle('on',String(size)===v);
+  });
+}
+
 function startRun(){
-  run=shuffle(pool(deck)).map(prepare);
+  syncSizeChips();
+  run=draw().map(prepare);
   pos=0;ok=0;answered=0;wrongList=[];
   updateScore();
   renderQ();
@@ -486,16 +678,29 @@ document.querySelectorAll('#filters .chip').forEach(function(c){
     document.querySelectorAll('#filters .chip').forEach(x=>x.classList.remove('on'));
     c.classList.add('on');
     deck=c.dataset.f;
+    seen=new Set();          // a different pool, so the rotation starts over
     startRun();
   });
 });
+
+document.querySelectorAll('.size-row .chip').forEach(function(c){
+  c.addEventListener('click',function(){
+    if(c.disabled)return;
+    size=c.dataset.s==='all'?'all':+c.dataset.s;
+    startRun();
+  });
+});
+
+document.getElementById('newBtn').addEventListener('click',startRun);
 
 addEventListener('keydown',function(e){
   if(e.key>='1'&&e.key<='4'&&!locked){answer(+e.key-1);e.preventDefault();return;}
   if(e.key==='Enter'){
     const b=$('nextBtn')||$('againBtn');
     if(b){b.click();e.preventDefault();}
+    return;
   }
+  if(e.key==='n'||e.key==='N'){startRun();e.preventDefault();}
 });
 
 counts();

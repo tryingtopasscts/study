@@ -89,6 +89,24 @@ h1{font-family:var(--serif);font-weight:700;font-size:1.5rem;line-height:1.2}
    choice was the whole job */
 .why .m{display:block;font-family:var(--mono);font-size:.78rem;color:var(--accent2);
   background:var(--bg2);border-radius:7px;padding:.3rem .55rem;margin:.4rem 0;overflow-x:auto}
+/* ---- the path ----
+   Only chained questions carry one. It appears after you answer, never before:
+   spotting that a question has a second step is itself the skill being drilled,
+   so a badge up front would give the game away. */
+.path{background:var(--surface);border:1px solid var(--accent);border-radius:11px;
+  padding:.7rem .85rem;margin-top:.7rem}
+.path .lbl{font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--accent2);display:flex;align-items:baseline;gap:.5rem;margin-bottom:.45rem}
+.path .lbl .badge{background:var(--accent-dim);border:1px solid var(--accent);border-radius:99px;
+  padding:.05rem .45rem;letter-spacing:.1em}
+.path ol{margin:0;padding-left:1.15rem}
+.path li{font-size:.82rem;line-height:1.5;color:var(--text2);margin:.22rem 0}
+.path li b{color:var(--accent2)}
+.path li em{color:var(--amber);font-style:normal;font-weight:600}
+.path .more{font-size:.78rem;margin-top:.5rem;padding-top:.45rem;border-top:1px dashed var(--border2)}
+.path .more a{color:var(--accent2)}
+.rv .rv-c{font-family:var(--mono);font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--accent2);margin-top:.3rem}
 .after{display:flex;gap:.5rem;margin-top:.9rem;align-items:center;flex-wrap:wrap}
 .verdict{font-family:var(--mono);font-size:.8rem;font-weight:600}
 .verdict.ok{color:var(--green)}
@@ -131,7 +149,7 @@ footer a{color:var(--accent)}
 <header>
   <div class="kicker"><a href="../index.html">← CTS Study Console</a> · Drill</div>
   <h1>Name That Formula</h1>
-  <p class="lede">Read the stem, pick the tool. No arithmetic, and no option is ever a number — the only thing being tested is whether you reach for the right formula, which is the step that actually goes wrong under time pressure.</p>
+  <p class="lede">Read the stem, pick the tool. No arithmetic, and no option is ever a number — the only thing being tested is whether you reach for the right formula, which is the step that actually goes wrong under time pressure. Twelve of these need <em>two</em> formulas; they show you the path once you have answered. If finding that path is the part that stings, read <a href="av-math-chains.html" style="color:var(--accent2)">Finding the Path</a> first.</p>
 </header>
 
 <div class="chip-row" id="filters">
@@ -169,6 +187,7 @@ footer a{color:var(--accent)}
   Stems follow the shape of real exam questions — decoy values, hidden second steps, and the occasional one that wants a decision rather than a number.
   Several are drawn from the practice bank; the rest are built from the worked examples in the <a href="cts-av-math-guide.html">AV Math Guide</a>.
   Once you can name the formula every time, <a href="av-math-builder.html">Formula Builder</a> is where you assemble it.
+  For the multi-step ones — the twelve that need two formulas rather than one — <a href="av-math-chains.html">Finding the Path</a> is the strategy for working out which two, and in what order.
 </footer>
 
 </main>
@@ -214,10 +233,12 @@ const BANK = [
  e:'The ask is current, and the givens are watts and volts — no resistance appears anywhere in the stem. So it is the power formula rearranged, not Ohm’s law. Let the units you were actually handed choose the rearrangement for you.'},
 {d:'E', s:'A wall-mounted assistive listening transmitter has its 12 V, 1.8 A DC supply in the rack 25 feet away. The 18 AWG wire is rated 0.0062 ohms per foot. What is the voltage drop?',
  o:['V = I × R, using 25 ft × 0.0062','V = I × R, but double the run and convert the per-foot rate first','I = P / V','20 log(D₁ / D₂)'],c:1,
+ st:['Double the one-way run &mdash; 25 ft becomes 50 ft of conductor','Turn the rate into a resistance &mdash; 50 &times; 0.0062 = 0.31 &#937;','Ohm&rsquo;s law &mdash; 1.8 &times; 0.31 = 0.558 V','Compare against what tolerance allows &mdash; 12 &times; 0.05 = 0.6 V'],
  w:'25 × 2 = 50 ft → 50 × 0.0062 = 0.31 Ω → 1.8 × 0.31 = 0.558 V',
  e:'Ohm’s law is the easy part; the <b>hidden steps</b> are the question. Current flows out <em>and back</em>, so the conductor is 50 ft, and an ohms-per-foot figure is a rate that has to become a real resistance first. The un-doubled option gives exactly half the right answer, and it is always offered.'},
 {d:'E', s:'Each of several identical devices draws 300 W from a 120 V outlet. How many can you plan onto a single 20 A branch circuit?',
  o:['P = I × V, once','I = P / V, then rated capacity × 0.8','Rated capacity × 1.25','20 A ÷ 300 W'],c:1,
+ st:['Watts to amps, per device &mdash; 300 &divide; 120 = 2.5 A','Usable capacity &mdash; 20 &times; 0.8 = 16 A','Divide, and round <b>down</b> &mdash; 16 &divide; 2.5 = 6.4 &rarr; 6 devices'],
  w:'300 ÷ 120 = 2.5 A each · 20 × 0.8 = 16 A usable · 16 ÷ 2.5 = 6.4 → 6 devices',
  e:'A chain: watts to amps, then the derating rule. <b>Round down</b> at the end — you cannot plug in 0.4 of a device, and rounding up overloads the circuit.'},
 {d:'E', s:'When planning loads, what is the maximum you should put on a 20 A branch circuit?',
@@ -286,10 +307,12 @@ const BANK = [
  e:'Identical speakers in parallel collapse to a division — the reciprocal formula would give the same answer but does far more work. The last option is right for <em>mixed</em> impedances and is offered because it is not wrong, merely unnecessary.'},
 {d:'L', s:'An 8-ohm and a 4-ohm loudspeaker are wired in parallel. What is the total impedance?',
  o:['Z_T = Z₁ / N','1/Z_T = 1/Z₁ + 1/Z₂, then flip the sum back','Z_T = Z₁ + Z₂','Z_T = Z₁ × Z₂'],c:1,
+ st:['Add the reciprocals &mdash; 1/8 + 1/4 = 0.375','Flip the sum back over &mdash; 1 &divide; 0.375 = 2.67 &#937;','Check it &mdash; smaller than the smallest speaker, so it is plausible'],
  w:'1/8 + 1/4 = 0.375 → 1 ÷ 0.375 = 2.67 Ω',
  e:'Different impedances rule out the shortcut. <b>Trap:</b> the last flip is the step people skip — leaving 0.375 as the answer. Check it against the rule: 2.67 Ω is smaller than the smallest speaker, so it is plausible.'},
 {d:'L', s:'A loudspeaker is rated 92 dB SPL, 1 W @ 1 m. The farthest listener sits 8 m away, and the design target at that seat is 70 dB of speech with 10 dB of headroom. How much amplifier power is required?',
  o:['10 log(P₁ / P_ref), once','20 log(D₁ / D₂), once','Distance loss first, then 10^(shortfall / 10)','L = SH × SW × AI'],c:2,
+ st:['Distance loss &mdash; 20 log(1/8) = &minus;18 dB','SPL at the seat on 1 W &mdash; 92 &minus; 18 = 74 dB','Target <em>with</em> headroom &mdash; 70 + 10 = 80 dB','Shortfall &mdash; 80 &minus; 74 = 6 dB','Watts to buy it back &mdash; 10^(6/10) &asymp; 4 W'],
  w:'20 log(1/8) = −18 dB → 92 − 18 = 74 dB at the seat · target 70 + 10 = 80 → 6 dB short → 10^(6/10) ≈ 4 W',
  e:'Three signals that a <b>chain</b> is coming: a sensitivity anchor, a distance, and a target with headroom. The headroom is not decoration — leaving it out gives 74 dB against a 70 dB target and the wrong conclusion that you already have enough power.'},
 {d:'L', s:'A loudspeaker produces 88 dB SPL with 1 watt at the listener position. The design calls for 97 dB at that same position. How many watts?',
@@ -318,6 +341,7 @@ const BANK = [
 /* ---- Video & light ---- */
 {d:'V', s:'What is the aspect ratio of a screen that has a height of 29.5 in and a diagonal of 60 in?',
  o:['AR = W / H, straight away','A² + B² = C² first, then AR = W / H','H = W / AR','%EH = element height / image height'],c:1,
+ st:['Pythagoras for the missing width &mdash; &radic;(60&sup2; &minus; 29.5&sup2;) &asymp; 52.3 in','Now the aspect ratio &mdash; 52.3 &divide; 29.5 &asymp; 1.77, which is 16:9'],
  w:'29.5² + b² = 60² → b ≈ 52.3 · 52.3 ÷ 29.5 ≈ 1.77 = 16:9',
  e:'Aspect ratio needs width and height, but you were given height and <em>diagonal</em>. Being one value short of the formula you want is the <b>two-step tell</b> — and any two of width, height and diagonal produce the third through Pythagoras.'},
 {d:'V', s:'A 65-inch 16:9 display is being specified and the installer needs its width for the mount layout.',
@@ -334,6 +358,7 @@ const BANK = [
  e:'Throw ratio is defined against <b>width</b> — never height, never diagonal. For a real design, verify against the projector manual’s own formula rather than the generic one.'},
 {d:'V', s:'A 16:9 screen is 2.44 m wide. Nine incident readings across a full-white field average 509 lux. What is the projector’s ANSI lumen output?',
  o:['L = SH × SW × AI, straight away','Get height from the aspect ratio first, then L = SH × SW × AI','L = diagonal × AI','AI × 9'],c:1,
+ st:['Height from the aspect ratio &mdash; 2.44 &divide; 1.7778 = 1.372 m','Now the lumen formula &mdash; 1.372 &times; 2.44 &times; 509 &asymp; 1,704 lm'],
  w:'2.44 ÷ 1.7778 = 1.372 m high · 1.372 × 2.44 × 509 ≈ 1,704 lumens',
  e:'The formula needs screen <b>height</b> and you were only given width — but you were also told 16:9, which is the missing link. Being handed an aspect ratio you seem not to need is a reliable sign of a chained problem.'},
 {d:'V', s:'A luminaire is raised from 2 m above a work surface to 6 m above it. What happens to the illuminance at that surface?',
@@ -364,6 +389,7 @@ const BANK = [
  e:'Real is always bigger than drawn, so the operation must be multiplication. The division option exists purely to catch a reflex — this is one of the few places in AV math where you genuinely <b>do</b> multiply by a ratio.'},
 {d:'N', s:'A system has 4 encoders at 48 V / 185 mA and 12 decoders at 48 V / 140 mA, all powered over Ethernet. What switch do you specify?',
  o:['V × I per device, total them, then × 1.2','V × I per device, total them, then × 0.8','Total device power, unchanged','P = V² / R per device'],c:0,
+ st:['Milliamps to amps first &mdash; 185 mA = 0.185 A','Watts per device &mdash; 48 &times; 0.185 = 8.88 W and 48 &times; 0.140 = 6.72 W','Multiply by the counts and sum &mdash; 35.52 + 80.64 = 116.16 W','Add headroom &mdash; &times; 1.2 &asymp; 139 W','Answer the other half too &mdash; at least 16 PoE ports'],
  w:'8.88 W × 4 + 6.72 W × 12 = 116.16 W → × 1.2 ≈ 139 W across at least 16 PoE ports',
  e:'<b>Trap:</b> "120% of load" is × 1.2, while "load the switch to no more than 80% of its rating" is ÷ 0.8 = × 1.25. Both framings appear in real documentation. And convert <b>mA to A first</b> — that slip is the most common error in the whole calculation.'},
 {d:'N', s:'A horizontal run is being planned. The patch cords at the two ends will total 8 m. What is the longest the permanent link may be?',
@@ -392,10 +418,12 @@ const BANK = [
  e:'Amps and volts in, watts out — the power formula in its plain form. The other options are the same relationships rearranged for quantities you were not asked about.'},
 {d:'E', s:'A DSP drawing 1.4 A at 24 V is added to a rack that already dissipates 1,150 W. What is the new heat load in Btu per hour?',
  o:['Watts × 3.4, using the existing rack total','P = I × V for the DSP, add it to the rack total, then × 3.4','P = I × V for the DSP, then × 3.6','Watts × 3.4, then × 0.8'],c:1,
+ st:['The odd unit out &mdash; the DSP is in amps, so 1.4 &times; 24 = 33.6 W','Now everything is watts &mdash; 1,150 + 33.6 = 1,183.6 W','Heat constant last &mdash; &times; 3.4 &asymp; 4,024 Btu/h'],
  w:'1.4 × 24 = 33.6 W · 1,150 + 33.6 = 1,183.6 W · × 3.4 ≈ 4,024 Btu/h',
  e:'A three-step chain, and the first step is the one that gets skipped — the DSP is quoted in <em>amps</em>, so it has to become watts before it can join a watt total. Only then does the heat constant apply.'},
 {d:'E', s:'You are given a device’s power draw and the supply voltage, and asked what resistance it presents.',
  o:['R = V / I directly','I = P / V first, then R = V / I','P = I² × R','R = P / V'],c:1,
+ st:['Notice nothing turns watts and volts straight into ohms','So produce the missing input &mdash; I = P &divide; V','Then the formula you wanted all along &mdash; R = V &divide; I'],
  w:'Two steps: current from the power formula, then Ohm’s law',
  e:'No single formula connects watts and volts straight to ohms, so this is a <b>two-step</b> question. Being one value short of the formula you want is the standard tell that a chain is coming.'},
 {d:'E', s:'A camera 40 ft from its supply shows a calculated voltage drop of 1.1 V. The supply is 12 V and the device tolerates 5%. Does the run pass?',
@@ -426,6 +454,7 @@ const BANK = [
  e:'Two sources means twice the acoustic <b>power</b>, and power takes the 10 — so +3 dB, not +6. The 20-log option is offered because doubling the <em>voltage</em> into one speaker really would give +6, and the two cases are easy to blur.'},
 {d:'D', s:'You are told the SPL at 2 m is 94 dB, and asked for the SPL at 12 m.',
  o:['20 log(D₁ / D₂), then apply the result to the starting SPL','20 log(D₁ / D₂) — that is the answer','10 log(D₁ / D₂), then apply it to the starting SPL','Subtract the distances, then multiply by six'],c:0,
+ st:['The formula returns a <b>change</b> &mdash; 20 log(2/12) = &minus;15.6 dB','The ask wanted a <b>level</b>, so apply it &mdash; 94 &minus; 15.6 &asymp; 78.4 dB SPL'],
  w:'20 log(2/12) = −15.6 dB · 94 − 15.6 ≈ 78.4 dB SPL',
  e:'The formula returns a <b>change</b>, not a level. The question asked for a level, so there is a second step. Answering with the bare −15.6 is the most common miss on this shape of question, and it is always offered.'},
 {d:'D', s:'An amplifier gain control is turned up and the output rises by 3 dB.',
@@ -440,10 +469,12 @@ const BANK = [
 /* ---- Loudspeakers ---- */
 {d:'L', s:'Two 16-ohm loudspeakers are wired in parallel, and that pair is then wired in series with a single 8-ohm loudspeaker.',
  o:['Add all three impedances','Collapse the parallel pair first, then add the series speaker','Reciprocals of all three, then flip the sum','Divide the total by three'],c:1,
+ st:['Innermost group first &mdash; 16 &divide; 2 = 8 &#937; for the pair','Treat it as one speaker in the series sum &mdash; 8 + 8 = 16 &#937;'],
  w:'16 ÷ 2 = 8 Ω for the pair · 8 + 8 = 16 Ω total',
  e:'Mixed wiring is solved <b>innermost first</b>, exactly like brackets in arithmetic. Collapse the parallel group to a single value, then treat it as one speaker in the series sum.'},
 {d:'L', s:'Six 8-ohm loudspeakers will be wired in parallel onto an amplifier rated for a 4-ohm minimum load.',
  o:['Z_T = Z₁ / N, then compare against the amplifier minimum','Z_T = Z₁ + Z₂ + … , then compare','Z_T = Z₁ × N, then compare','No calculation — parallel wiring never drops below an amp minimum'],c:0,
+ st:['Parallel total &mdash; 8 &divide; 6 = 1.33 &#937;','The ask was whether it is safe &mdash; 1.33 &#937; is under the 4 &#937; minimum, so no'],
  w:'8 ÷ 6 = 1.33 Ω — far below the 4 Ω minimum, so this damages the amplifier',
  e:'Identical speakers in parallel divide. The point of the question is the comparison afterwards: parallel totals fall <b>below the smallest speaker</b>, and stacking enough of them takes any amplifier under its rated minimum.'},
 {d:'L', s:'A loudspeaker rated 95 dB SPL, 1 W @ 1 m is heard from 4 m away, still with one watt driving it.',
@@ -636,9 +667,15 @@ function answer(i){
     else el.classList.add('dim');
   });
 
+  const path = q.st ?
+    '<div class="path"><span class="lbl"><span class="badge">chained</span>'+q.st.length+
+      ' steps — the path</span><ol>'+q.st.map(x=>'<li>'+x+'</li>').join('')+'</ol>'+
+      '<div class="more">Could not see the route? <a href="av-math-chains.html">Finding the Path</a> '+
+      'is the procedure for working it out backwards from the ask.</div></div>' : '';
+
   $('after').innerHTML=
     '<div class="why"><span class="lbl">'+(correct?'why that one':'why it was the other one')+'</span>'+
-      q.e+'<span class="m">'+q.w+'</span></div>'+
+      q.e+'<span class="m">'+q.w+'</span></div>'+path+
     '<div class="after"><span class="verdict '+(correct?'ok':'bad')+'">'+
       (correct?'✓ correct':'✗ not this time')+'</span>'+
       '<button class="btn primary spacer" id="nextBtn">'+(pos+1<run.length?'Next →':'Finish →')+'</button></div>';
@@ -653,7 +690,9 @@ function renderResult(){
     ? '<div class="review"><h3>Missed</h3>'+wrongList.map(function(item){
         return '<div class="rv"><div class="rv-s">'+item.q.s+'</div>'+
                '<div class="rv-a">→ '+item.opts[item.answer].text+'</div>'+
-               '<div class="rv-y">you picked '+item.opts[item.picked].text+'</div></div>';
+               '<div class="rv-y">you picked '+item.opts[item.picked].text+'</div>'+
+               (item.q.st?'<div class="rv-c">chained · '+item.q.st.length+' steps</div>':'')+
+               '</div>';
       }).join('')+'</div>'
     : '<div class="clean">Clean run — you named every one.</div>';
 
@@ -666,6 +705,7 @@ function renderResult(){
       '<div class="again">'+
         '<button class="btn primary" id="againBtn">Run it again</button>'+
         '<a class="btn" href="av-math-builder.html">Formula Builder →</a>'+
+        '<a class="btn" href="av-math-chains.html">Finding the Path →</a>'+
       '</div>'+
       review+
     '</div>';

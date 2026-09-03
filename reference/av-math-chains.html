@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Finding the Path — AV Math Strategy</title>
+<style>
+:root{
+  --bg:#0f1117; --bg2:#13161e; --surface:#1a1e2a; --border:#252c3f; --border2:#2e3650;
+  --accent:#5b9cf6; --accent2:#93bbfc; --accent-dim:#1a2f54;
+  --amber:#f5a623; --amber-dim:#2a1f0a; --teal:#2dd4bf; --red:#f87171; --red-dim:#2c1416;
+  --purple:#a78bfa; --green:#34d399; --green-dim:#0f2a22;
+  --text:#dde3f0; --text2:#8e9abf; --text3:#4e5a7a;
+  --mono:'IBM Plex Mono',Consolas,monospace; --serif:'Fraunces',Georgia,serif; --sans:'DM Sans',-apple-system,'Segoe UI',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:18px;line-height:1.65;-webkit-tap-highlight-color:transparent}
+main{max-width:760px;margin:0 auto;padding:1.3rem 1.1rem 4rem}
+header{margin-bottom:1.1rem}
+.kicker{font-family:var(--mono);font-size:.78rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:.5rem}
+.kicker a{color:inherit;text-decoration:none}
+.kicker a:hover{text-decoration:underline}
+h1{font-family:var(--serif);font-weight:700;font-size:1.75rem;line-height:1.15}
+.lede{color:var(--text2);font-size:.92rem;margin-top:.45rem}
+
+h2{font-family:var(--serif);font-size:1.3rem;font-weight:700;color:var(--accent2);line-height:1.2;
+  margin:2.4rem 0 .3rem;scroll-margin-top:1rem}
+h2 .num{font-family:var(--mono);font-size:.7rem;color:var(--text3);display:block;letter-spacing:.14em;
+  text-transform:uppercase;font-weight:400;margin-bottom:.3rem}
+h3{font-family:var(--sans);font-size:1rem;font-weight:700;color:var(--text);margin:1.5rem 0 .4rem}
+p{margin:.7rem 0;font-size:.93rem}
+.sub{color:var(--text2);font-size:.88rem;margin-top:.1rem}
+strong{color:var(--text);font-weight:700}
+em{color:var(--accent2);font-style:italic}
+code,.mono{font-family:var(--mono);font-size:.86em;color:var(--accent2);
+  background:var(--surface);border-radius:5px;padding:.08rem .34rem}
+
+/* ---- the table of contents ---- */
+.toc{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:.85rem 1rem;margin:1.2rem 0 0}
+.toc ol{margin:0;padding-left:1.15rem}
+.toc li{font-size:.86rem;margin:.22rem 0;color:var(--text2)}
+.toc a{color:var(--accent2);text-decoration:none}
+.toc a:hover{text-decoration:underline}
+
+/* ---- the numbered procedure ---- */
+.steps{counter-reset:st;margin:1.1rem 0}
+.step{position:relative;counter-increment:st;background:var(--bg2);border:1px solid var(--border2);
+  border-radius:13px;padding:.85rem 1rem .9rem 3.1rem;margin-bottom:.6rem}
+.step::before{content:counter(st);position:absolute;left:.9rem;top:.85rem;
+  font-family:var(--mono);font-size:1.05rem;font-weight:700;color:var(--accent2)}
+.step b{color:var(--text);display:block;font-size:.95rem;margin-bottom:.15rem}
+.step p{margin:.3rem 0 0;font-size:.87rem;color:var(--text2)}
+.step.pivot{border-color:var(--accent);background:var(--accent-dim)}
+.step.pivot::before{color:var(--accent2)}
+
+/* ---- tables ---- */
+.tbl-wrap{overflow-x:auto;margin:1rem 0;border:1px solid var(--border);border-radius:12px}
+table{width:100%;border-collapse:collapse;font-size:.84rem;min-width:520px}
+th{background:var(--surface);color:var(--text3);font-family:var(--mono);font-size:.66rem;
+  letter-spacing:.1em;text-transform:uppercase;text-align:left;padding:.55rem .7rem;font-weight:500;
+  border-bottom:1px solid var(--border2)}
+td{padding:.5rem .7rem;border-bottom:1px solid var(--border);vertical-align:top;color:var(--text2)}
+tr:last-child td{border-bottom:0}
+td.f{font-family:var(--mono);font-size:.8rem;color:var(--accent2)}
+td.q{color:var(--text);font-weight:500}
+tbody tr.grp td{background:var(--surface);color:var(--amber);font-family:var(--mono);font-size:.66rem;
+  letter-spacing:.12em;text-transform:uppercase}
+
+/* ---- callouts ---- */
+.call{border-radius:12px;padding:.75rem .9rem;margin:1rem 0;font-size:.88rem;line-height:1.55}
+.call .lbl{font-family:var(--mono);font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;
+  display:block;margin-bottom:.28rem;opacity:.85}
+.call.key{background:var(--accent-dim);border:1px solid var(--accent);color:var(--accent2)}
+.call.key .lbl{color:var(--accent2)}
+.call.key strong{color:#fff}
+.call.warn{background:var(--amber-dim);border:1px solid rgba(245,166,35,.4);color:var(--amber)}
+.call.warn .lbl{color:var(--amber)}
+.call.warn strong{color:var(--amber)}
+.call.warn em{color:var(--amber)}
+.call.stop{background:var(--red-dim);border:1px solid rgba(248,113,113,.4);color:var(--red)}
+.call.stop .lbl{color:var(--red)}
+.call.stop strong{color:var(--red)}
+
+/* ---- the tells ---- */
+.tell{border-left:3px solid var(--amber);background:var(--bg2);border-radius:0 11px 11px 0;
+  padding:.7rem .9rem;margin:.6rem 0}
+.tell b{color:var(--amber);font-size:.9rem}
+.tell p{margin:.2rem 0 0;font-size:.86rem;color:var(--text2)}
+
+/* ---- the chain cards ----
+   Each is a route you can recognise on sight. The steps are the payload; the
+   wrong turn underneath is the specific way this particular chain gets fumbled. */
+.chain{background:var(--bg2);border:1px solid var(--border2);border-radius:14px;padding:.9rem 1rem;margin:.7rem 0}
+.chain .cname{font-family:var(--sans);font-weight:700;font-size:.95rem;color:var(--text)}
+.chain .ctrig{font-size:.82rem;color:var(--text2);margin-top:.15rem}
+.chain .ctrig b{color:var(--accent2);font-weight:600}
+.flow{display:flex;flex-wrap:wrap;align-items:center;gap:.3rem;margin:.65rem 0 .1rem}
+.flow .box{font-family:var(--mono);font-size:.76rem;background:var(--surface);border:1px solid var(--border2);
+  border-radius:8px;padding:.28rem .55rem;color:var(--accent2)}
+.flow .box.start{border-color:var(--text3);color:var(--text2)}
+.flow .box.end{border-color:var(--green);color:var(--green);background:var(--green-dim)}
+.flow .arw{color:var(--text3);font-family:var(--mono);font-size:.8rem}
+.chain .cwrong{font-size:.82rem;color:var(--red);margin-top:.55rem;padding-top:.5rem;
+  border-top:1px dashed rgba(248,113,113,.28)}
+.chain .cwrong b{color:var(--red)}
+
+/* ---- worked search ---- */
+.search{background:var(--surface);border:1px solid var(--border2);border-radius:13px;padding:.9rem 1rem;margin:1rem 0}
+.search .sq{font-size:.89rem;color:var(--text);margin-bottom:.6rem}
+.sline{font-family:var(--mono);font-size:.82rem;padding:.3rem 0 .3rem .9rem;border-left:2px solid var(--border2);
+  color:var(--text2);position:relative}
+.sline.have{border-left-color:var(--green);color:var(--green)}
+.sline.miss{border-left-color:var(--red);color:var(--red)}
+.sline.found{border-left-color:var(--accent);color:var(--accent2);font-weight:600}
+.sline .tag{color:var(--text3);font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;margin-right:.5rem}
+
+.diagram{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:1rem .8rem .7rem;margin:1.2rem 0}
+.diagram svg{width:100%;height:auto;display:block}
+.dcap{font-size:.82rem;color:var(--text2);line-height:1.5;margin-top:.7rem;padding-top:.6rem;border-top:1px solid var(--border)}
+svg text{font-family:var(--mono);fill:var(--text2);font-size:11px}
+svg .t-t{fill:var(--text);font-weight:600}
+svg .t-ac{fill:var(--accent2);font-weight:600}
+svg .t-gr{fill:var(--green);font-weight:600}
+svg .t-am{fill:var(--amber);font-weight:600}
+svg .t-dim{fill:var(--text3);font-size:9.5px}
+svg .bx{fill:var(--surface);stroke:var(--border2);stroke-width:1.5}
+svg .bx-ac{fill:var(--accent-dim);stroke:var(--accent);stroke-width:1.5}
+svg .bx-gr{fill:var(--green-dim);stroke:var(--green);stroke-width:1.5}
+svg .ln{stroke:var(--text3);stroke-width:1.6;fill:none}
+svg .ln-ac{stroke:var(--accent);stroke-width:1.8;fill:none}
+
+footer{margin-top:3rem;padding-top:1.1rem;border-top:1px solid var(--border);font-size:.8rem;color:var(--text3);line-height:1.7}
+footer a{color:var(--accent)}
+.nextrow{display:flex;gap:.5rem;flex-wrap:wrap;margin:1.6rem 0 0}
+.btn{font-family:var(--sans);font-weight:500;font-size:.86rem;background:var(--surface);color:var(--text);
+  border:1px solid var(--border2);border-radius:10px;padding:.55rem 1.05rem;cursor:pointer;
+  text-decoration:none;display:inline-block;transition:all .15s}
+.btn:hover{background:var(--accent-dim);border-color:var(--accent)}
+.btn.primary{background:var(--accent-dim);border-color:var(--accent);color:var(--accent2);font-weight:700}
+
+@media (max-width:430px){
+  body{font-size:17px}
+  h1{font-size:1.5rem}
+  h2{font-size:1.15rem}
+  .step{padding-left:2.8rem}
+}
+</style>
+</head>
+<body>
+<main>
+
+<header>
+  <div class="kicker"><a href="../index.html">← CTS Study Console</a> · Strategy</div>
+  <h1>Finding the Path</h1>
+  <p class="lede">Knowing every formula still leaves one problem: working out <em>which</em> ones, in <em>what order</em>. This is the procedure for that — how to find a route you have never seen before, the five signals that a second step is coming, and the dozen chains that actually turn up.</p>
+
+  <div class="toc">
+    <ol>
+      <li><a href="#backwards">Work backwards, never forwards</a></li>
+      <li><a href="#produces">The backward lookup: what produces this?</a></li>
+      <li><a href="#tells">Five tells that a second step is coming</a></li>
+      <li><a href="#catalogue">The chain catalogue</a></li>
+      <li><a href="#worked">Watching the search run</a></li>
+      <li><a href="#running">Running a chain without losing it</a></li>
+      <li><a href="#nopath">When there is no path at all</a></li>
+    </ol>
+  </div>
+</header>
+
+<h2 id="backwards"><span class="num">One</span>Work backwards, never forwards</h2>
+
+<p>The instinct is to start from the numbers you were given and see what you can make. That is the wrong direction, and it is why multi-step questions feel impossible. Forwards, your givens combine into dozens of things you could compute, almost all of them useless. There is no signal telling you which branch leads anywhere.</p>
+
+<p>Backwards, the search is tiny. <strong>Start at the ask.</strong> Usually only one or two formulas in the whole of AV math produce the quantity you were asked for. Pick one, look at what it needs, and check that against your givens. Anything you are missing becomes a smaller question of exactly the same shape — and you repeat.</p>
+
+<div class="call key"><span class="lbl">the whole method</span>
+<strong>What produces the ask? What does that need? Do I have it?</strong> If yes, you are done. If no, the missing input is your new ask — go round again. Two laps solves essentially every chained question on the exam.</div>
+
+<div class="diagram">
+<svg viewBox="0 0 360 372" role="img" aria-label="The backward search loop: start at the ask, find the formula that produces it, check its inputs, and repeat on whatever is missing">
+  <rect class="bx-ac" x="81" y="14" width="200" height="44" rx="9"/>
+  <text class="t-ac" x="181" y="34" text-anchor="middle">THE ASK</text>
+  <text class="t-dim" x="181" y="49" text-anchor="middle">last sentence · note the unit</text>
+
+  <path class="ln-ac" d="M181 58 L181 74"/>
+  <path class="ln-ac" d="M176 68 L181 78 L186 68"/>
+
+  <rect class="bx" x="52" y="80" width="258" height="44" rx="9"/>
+  <text class="t-t" x="181" y="100" text-anchor="middle">what formula PRODUCES it?</text>
+  <text class="t-dim" x="181" y="115" text-anchor="middle">the table in section 2</text>
+
+  <path class="ln-ac" d="M181 124 L181 140"/>
+  <path class="ln-ac" d="M176 134 L181 144 L186 134"/>
+
+  <rect class="bx" x="40" y="146" width="282" height="44" rx="9"/>
+  <text class="t-t" x="181" y="166" text-anchor="middle">do I have every input it needs?</text>
+  <text class="t-dim" x="181" y="181" text-anchor="middle">compare with the givens, units and all</text>
+
+  <path class="ln" d="M181 190 L181 208 M78 208 L288 208"/>
+  <path class="ln-ac" d="M78 208 L78 226"/>
+  <path class="ln-ac" d="M73 220 L78 230 L83 220"/>
+  <path class="ln" d="M288 208 L288 226"/>
+  <path class="ln" d="M283 220 L288 230 L293 220"/>
+  <text class="t-am" x="58" y="204" text-anchor="middle">no</text>
+  <text class="t-gr" x="308" y="204" text-anchor="middle">yes</text>
+
+  <rect class="bx-ac" x="20" y="230" width="126" height="56" rx="9"/>
+  <text class="t-ac" x="83" y="252" text-anchor="middle">the missing input</text>
+  <text class="t-ac" x="83" y="270" text-anchor="middle">is the new ask</text>
+
+  <rect class="bx-gr" x="212" y="230" width="136" height="56" rx="9"/>
+  <text class="t-gr" x="280" y="252" text-anchor="middle">solve — you</text>
+  <text class="t-gr" x="280" y="270" text-anchor="middle">have the path</text>
+
+  <path class="ln-ac" d="M83 286 L83 316 L8 316 L8 36 L75 36" stroke-dasharray="5 4"/>
+  <path class="ln-ac" d="M69 31 L79 36 L69 41"/>
+  <text class="t-dim" x="181" y="336" text-anchor="middle">each lap replaces your question with an easier one</text>
+  <text class="t-dim" x="181" y="352" text-anchor="middle">two laps is the deepest the exam ever goes</text>
+</svg>
+<div class="dcap">The loop is the entire strategy. Each lap either finishes the problem or replaces your question with a strictly easier one, so it cannot wander — unlike working forwards, which has nothing to aim at. In practice the exam never needs more than two laps, which is why a chained question is only ever two formulas deep.</div>
+</div>
+
+<div class="steps">
+  <div class="step"><b>Name the ask, and its unit</b>
+    <p>Read the last sentence first. Write the unit down — ohms, watts, dB SPL, metres. The unit is what you are hunting for, and half the wrong answers are the right number in the wrong unit.</p></div>
+  <div class="step"><b>List the givens, with units</b>
+    <p>Sweep back through the stem and collect only numbers that arrive with a unit attached. Room names and client details are scenery.</p></div>
+  <div class="step pivot"><b>Ask what produces the ask</b>
+    <p>Not "what can I do with these numbers" — <em>what formula ends in the thing I want.</em> Section 2 is the lookup for this, and it is deliberately organised by output rather than by input.</p></div>
+  <div class="step pivot"><b>Check that formula's inputs against your givens</b>
+    <p>All present → one step, substitute and go. One missing → that missing value is now your ask, and you go back to step 3 for it. Something left over → a decoy, or the bridge you have not spotted yet.</p></div>
+  <div class="step"><b>Run the chain forwards, labelling every intermediate</b>
+    <p>Only now do you calculate, in the reverse of the order you searched. Write each intermediate on its own line with its unit attached.</p></div>
+</div>
+
+<h2 id="produces"><span class="num">Two</span>The backward lookup: what produces this?</h2>
+<p class="sub">The <a href="cts-av-math-guide.html#decoder">AV Math Guide</a> has the forward table — givens on the left, formula on the right. That one settles single-step questions. This is the same knowledge inverted, and inverted is the direction you need when the path is not obvious.</p>
+
+<div class="tbl-wrap"><table>
+<tr><th>You are asked for</th><th>Produced by</th><th>Which needs</th></tr>
+
+<tr class="grp"><td colspan="3">Electrical</td></tr>
+<tr><td class="q">Current (A)</td><td class="f">I = V / R</td><td>volts + ohms</td></tr>
+<tr><td class="q"></td><td class="f">I = P / V</td><td>watts + volts</td></tr>
+<tr><td class="q">Voltage (V)</td><td class="f">V = I × R</td><td>amps + ohms</td></tr>
+<tr><td class="q"></td><td class="f">V = P / I</td><td>watts + amps</td></tr>
+<tr><td class="q">Resistance (Ω)</td><td class="f">R = V / I</td><td>volts + amps &mdash; <em>note: nothing produces ohms from watts and volts directly</em></td></tr>
+<tr><td class="q">Power (W)</td><td class="f">P = I × V</td><td>amps + volts</td></tr>
+<tr><td class="q"></td><td class="f">P = V² / R</td><td>volts + ohms</td></tr>
+<tr><td class="q"></td><td class="f">P = I² × R</td><td>amps + ohms</td></tr>
+<tr><td class="q">Max planned load (A)</td><td class="f">rating × 0.8</td><td>the breaker rating</td></tr>
+<tr><td class="q">Circuit size needed (A)</td><td class="f">load ÷ 0.8</td><td>the planned load</td></tr>
+<tr><td class="q">Cable resistance (Ω)</td><td class="f">r × (2 × D)</td><td>ohms-per-length + one-way distance</td></tr>
+<tr><td class="q">Voltage drop (V)</td><td class="f">V<sub>drop</sub> = I × R<sub>total</sub></td><td>amps + the cable's <em>total</em> resistance</td></tr>
+<tr><td class="q">Heat load (Btu/h)</td><td class="f">watts × 3.4</td><td>the total equipment watts</td></tr>
+
+<tr class="grp"><td colspan="3">Decibels &amp; loudspeakers</td></tr>
+<tr><td class="q">A level <em>change</em> (dB)</td><td class="f">10 log(P₁ / P₂)</td><td>two powers</td></tr>
+<tr><td class="q"></td><td class="f">20 log(V₁ / V₂)</td><td>two voltages</td></tr>
+<tr><td class="q"></td><td class="f">20 log(D₁ / D₂)</td><td>two distances</td></tr>
+<tr><td class="q">A level <em>itself</em> (dB SPL)</td><td class="f">reference SPL + the change</td><td>a known SPL + a dB change &mdash; <em>this is the step people skip</em></td></tr>
+<tr><td class="q">A ratio (×)</td><td class="f">10^(dB / 10)</td><td>a dB figure, for power</td></tr>
+<tr><td class="q"></td><td class="f">10^(dB / 20)</td><td>a dB figure, for volts or distance</td></tr>
+<tr><td class="q">Amplifier power (W)</td><td class="f">P₂ = P₁ × 10^(ΔSPL / 10)</td><td>a starting power + a dB shortfall</td></tr>
+<tr><td class="q">Max background noise</td><td class="f">target − 25 dB</td><td>the speech target</td></tr>
+<tr><td class="q">Total impedance (Ω)</td><td class="f">Z₁ + Z₂ + …</td><td>series impedances</td></tr>
+<tr><td class="q"></td><td class="f">Z₁ / N</td><td>identical impedances in parallel</td></tr>
+<tr><td class="q"></td><td class="f">1/Z<sub>T</sub> = 1/Z₁ + 1/Z₂ …</td><td>mixed impedances in parallel</td></tr>
+
+<tr class="grp"><td colspan="3">Video, light &amp; audio</td></tr>
+<tr><td class="q">Screen height or width</td><td class="f">H = W ÷ AR &nbsp;·&nbsp; W = H × AR</td><td>the other dimension + the aspect ratio</td></tr>
+<tr><td class="q"></td><td class="f">A² + B² = C²</td><td>the other two of width / height / diagonal</td></tr>
+<tr><td class="q"></td><td class="f">D × 0.8716 &nbsp;·&nbsp; D × 0.4903</td><td>a 16:9 diagonal</td></tr>
+<tr><td class="q">Aspect ratio</td><td class="f">AR = W / H</td><td>width + height</td></tr>
+<tr><td class="q">Projector output (lm)</td><td class="f">L = SH × SW × AI</td><td>screen height + width + mean of nine readings</td></tr>
+<tr><td class="q">Throw distance (m)</td><td class="f">D = SW × TR</td><td>screen width + throw ratio</td></tr>
+<tr><td class="q">Throw ratio</td><td class="f">TR = D ÷ SW</td><td>distance + screen width</td></tr>
+<tr><td class="q">Illuminance at a distance</td><td class="f">E₂ = E₁ × (D₁ / D₂)²</td><td>a known illuminance + both distances</td></tr>
+<tr><td class="q">Wavelength (m)</td><td class="f">λ = v / f</td><td>a frequency (you supply 343 m/s)</td></tr>
+<tr><td class="q">Audio bandwidth (bps)</td><td class="f">SR × bits × channels</td><td>all three</td></tr>
+<tr><td class="q">Video bandwidth (bps)</td><td class="f">H × V × fps × bits × chroma</td><td>all five</td></tr>
+
+<tr class="grp"><td colspan="3">Install</td></tr>
+<tr><td class="q">Mount rating (kg)</td><td class="f">total suspended load × 5</td><td>everything hanging, hardware included</td></tr>
+<tr><td class="q">Min bend radius</td><td class="f">OD × 4</td><td>the cable's outer diameter</td></tr>
+<tr><td class="q">Switch rating (W)</td><td class="f">total device power × 1.2</td><td>the summed device watts</td></tr>
+<tr><td class="q">Real dimension</td><td class="f">drawn × scale factor</td><td>a page measurement + the scale</td></tr>
+</table></div>
+
+<div class="call key"><span class="lbl">read the middle column as a question</span>
+Every row is really asking <strong>"do you have these?"</strong> When the answer is no, you have not failed — you have just found your next ask. The Resistance row is the clearest case: nothing turns watts and volts straight into ohms, so a stem giving you those two and asking for ohms is <em>guaranteed</em> to be a two-stepper.</div>
+
+<h2 id="tells"><span class="num">Three</span>Five tells that a second step is coming</h2>
+<p>You often do not need to run the search at all — the stem announces itself. These are the five signals, in rough order of how often they show up.</p>
+
+<div class="tell"><b>1 · You are one input short</b>
+<p>You know the formula, you just cannot fill it. Asked for aspect ratio but handed height and <em>diagonal</em>: AR needs width, so something has to produce width first. This is the plain vanilla chain, and it is the most common of the five.</p></div>
+
+<div class="tell"><b>2 · A given is left over</b>
+<p>A number with a unit that your chosen formula does not consume. It is one of two things: a decoy, or the bridge into step two. Tell them apart by asking <strong>"is there a formula that takes this and produces something I need?"</strong> The 9 m ceiling in the gymnasium question produces nothing anyone wants — decoy. A 10 dB headroom figure sitting next to a target SPL feeds straight into the target — bridge.</p></div>
+
+<div class="tell"><b>3 · The units do not meet</b>
+<p>Lay your givens' units beside the ask's unit and look for a single formula spanning them. Watts + volts → ohms has no such formula. Amps → Btu has no such formula. When nothing spans the gap, a chain is not optional, it is forced.</p></div>
+
+<div class="tell"><b>4 · A phrase that implies a setup operation</b>
+<p>Some wording adds an operation before the formula can be used at all. <span class="mono">@ 1 W / 1 m</span> or "sensitivity" anchors a loudspeaker problem and always means two steps. "Ohms <em>per foot</em>" is a rate, not a resistance. "25 feet away" means 50 feet of conductor. "Plus 10 dB of headroom" changes the target before you compare to it. "Within tolerance" means calculate, then compare.</p></div>
+
+<div class="tell"><b>5 · Change versus level</b>
+<p>The most missed of the five. <span class="mono">20 log(D₁/D₂)</span> returns a <em>change</em> in dB. If the ask is a <em>level</em> — "what is the SPL at that seat" — the formula's output is an intermediate, not the answer, and you still have to apply it to the SPL you started from. The bare change is always offered as an option, and it is always wrong for a level question.</p></div>
+
+<div class="call warn"><span class="lbl">the sanity check that catches all five</span>
+Before writing an answer down, put its unit beside the ask's unit. A dB where the question wanted dB SPL, ohms where it wanted amps, a bare ratio where it wanted watts — every one of those is <strong>a step short</strong>, not a slip in arithmetic.</div>
+
+<h2 id="catalogue"><span class="num">Four</span>The chain catalogue</h2>
+<p class="sub">These are the routes that actually appear. Learn to recognise them on sight and most multi-step questions stop being a search at all — you spot the shape and run it.</p>
+
+<h3>Electrical</h3>
+
+<div class="chain">
+  <div class="cname">Watts and volts → how many fit on a circuit</div>
+  <div class="ctrig">Triggered by: a device rated in watts, a supply voltage, and <b>"how many"</b> or <b>"maximum planned"</b>.</div>
+  <div class="flow"><span class="box start">P, V</span><span class="arw">→</span><span class="box">I = P / V</span><span class="arw">→</span><span class="box">rating × 0.8</span><span class="arw">→</span><span class="box end">divide, round DOWN</span></div>
+  <div class="cwrong"><b>Wrong turn:</b> rounding up. You cannot install 0.4 of a device, and rounding up overloads the circuit. This is the one chain where the final step rounds down.</div>
+</div>
+
+<div class="chain">
+  <div class="cname">A device in amps joining a total in watts</div>
+  <div class="ctrig">Triggered by: one load quoted in <b>amps</b> while everything else is in <b>watts</b>, then a heat or capacity question.</div>
+  <div class="flow"><span class="box start">A, V</span><span class="arw">→</span><span class="box">P = I × V</span><span class="arw">→</span><span class="box">add to the total</span><span class="arw">→</span><span class="box end">× 3.4 for Btu</span></div>
+  <div class="cwrong"><b>Wrong turn:</b> applying the heat constant to the rack total and forgetting the new device, because it never looked like watts. Units that do not match across a list are always the first thing to reconcile.</div>
+</div>
+
+<div class="chain">
+  <div class="cname">Watts and volts → ohms</div>
+  <div class="ctrig">Triggered by: power and voltage given, resistance or impedance asked for. No single formula spans it.</div>
+  <div class="flow"><span class="box start">P, V</span><span class="arw">→</span><span class="box">I = P / V</span><span class="arw">→</span><span class="box end">R = V / I</span></div>
+  <div class="cwrong"><b>Wrong turn:</b> inventing <span class="mono">R = P / V</span>, which does not exist. If you cannot name the formula, you have not found the path — you have guessed one.</div>
+</div>
+
+<div class="chain">
+  <div class="cname">Voltage drop, end to end</div>
+  <div class="ctrig">Triggered by: <b>ohms per foot</b>, a distance, a current, and usually a tolerance percentage.</div>
+  <div class="flow"><span class="box start">r, D, I</span><span class="arw">→</span><span class="box">2 × D</span><span class="arw">→</span><span class="box">× r = R<sub>total</sub></span><span class="arw">→</span><span class="box">V = I × R</span><span class="arw">→</span><span class="box end">vs V<sub>supply</sub> × tol%</span></div>
+  <div class="cwrong"><b>Wrong turn:</b> two of them, and both are offered. Skipping the doubling gives exactly half. Taking the tolerance percentage of the <em>drop</em> instead of the <em>supply</em> gives a meaningless number that still looks like arithmetic.</div>
+</div>
+
+<h3>Decibels and loudspeakers</h3>
+
+<div class="chain">
+  <div class="cname">Distance change → a new SPL</div>
+  <div class="ctrig">Triggered by: a known SPL at one distance, and the ask naming a <b>level</b> at another.</div>
+  <div class="flow"><span class="box start">SPL₁, D₁, D₂</span><span class="arw">→</span><span class="box">20 log(D₁ / D₂)</span><span class="arw">→</span><span class="box end">apply to SPL₁</span></div>
+  <div class="cwrong"><b>Wrong turn:</b> answering with the change. −15.6 dB is a correct intermediate and a wrong answer; the question asked for a level, so the last step is not optional. This is tell #5 in the flesh.</div>
+</div>
+
+<div class="chain">
+  <div class="cname">Sensitivity → distance → watts</div>
+  <div class="ctrig">Triggered by: <b>"XX dB SPL, 1 W @ 1 m"</b> plus a listener distance plus a target, often with headroom. The signature multi-step question of the whole exam.</div>
+  <div class="flow"><span class="box start">sens, D, target</span><span class="arw">→</span><span class="box">20 log(1 / D)</span><span class="arw">→</span><span class="box">+ sensitivity = SPL at 1 W</span><span class="arw">→</span><span class="box">target + headroom</span><span class="arw">→</span><span class="box">shortfall</span><span class="arw">→</span><span class="box end">10^(shortfall / 10)</span></div>
+  <div class="cwrong"><b>Wrong turn:</b> dropping the headroom. Leaving it out compares 74 dB against a 70 dB target and concludes you already have enough power — a wrong answer that feels satisfying because it comes out clean.</div>
+</div>
+
+<div class="chain">
+  <div class="cname">Mixed series and parallel wiring</div>
+  <div class="ctrig">Triggered by: a described wiring topology with both words in it.</div>
+  <div class="flow"><span class="box start">the topology</span><span class="arw">→</span><span class="box">collapse the innermost group</span><span class="arw">→</span><span class="box end">combine outward</span></div>
+  <div class="cwrong"><b>Wrong turn:</b> adding everything, or reciprocal-ing everything. Solve it like brackets in arithmetic — innermost first, treating each collapsed group as a single speaker.</div>
+</div>
+
+<div class="chain">
+  <div class="cname">Parallel total → is the amplifier safe?</div>
+  <div class="ctrig">Triggered by: a speaker count, a parallel wiring, and an <b>amplifier minimum impedance</b>.</div>
+  <div class="flow"><span class="box start">Z, N</span><span class="arw">→</span><span class="box">Z₁ / N</span><span class="arw">→</span><span class="box end">compare vs the amp minimum</span></div>
+  <div class="cwrong"><b>Wrong turn:</b> stopping at the impedance. The ask was whether it is safe, so the comparison is the answer — the number is the intermediate.</div>
+</div>
+
+<div class="chain">
+  <div class="cname">Mixed parallel impedance</div>
+  <div class="ctrig">Triggered by: <b>different</b> impedances in parallel. The shortcut does not apply.</div>
+  <div class="flow"><span class="box start">Z₁, Z₂ …</span><span class="arw">→</span><span class="box">add the reciprocals</span><span class="arw">→</span><span class="box end">flip the sum back over</span></div>
+  <div class="cwrong"><b>Wrong turn:</b> leaving the reciprocal as the answer. Check it against the rule: a parallel total is always smaller than the smallest speaker. 0.375 Ω from an 8 and a 4 fails that instantly.</div>
+</div>
+
+<h3>Video and install</h3>
+
+<div class="chain">
+  <div class="cname">Height and diagonal → aspect ratio</div>
+  <div class="ctrig">Triggered by: any <b>two</b> of width / height / diagonal, with the ask needing the pair you do not have.</div>
+  <div class="flow"><span class="box start">H, D</span><span class="arw">→</span><span class="box">A² + B² = C²</span><span class="arw">→</span><span class="box end">AR = W / H</span></div>
+  <div class="cwrong"><b>Wrong turn:</b> dividing the two numbers you were handed. Height over diagonal is not an aspect ratio, but it produces a plausible-looking decimal.</div>
+</div>
+
+<div class="chain">
+  <div class="cname">Width and aspect ratio → ANSI lumens</div>
+  <div class="ctrig">Triggered by: an illuminance average and a screen <b>width only</b>, with the aspect ratio mentioned as if in passing.</div>
+  <div class="flow"><span class="box start">W, AR, AI</span><span class="arw">→</span><span class="box">H = W ÷ AR</span><span class="arw">→</span><span class="box end">L = SH × SW × AI</span></div>
+  <div class="cwrong"><b>Wrong turn:</b> missing that you were short a dimension at all. An aspect ratio you seem not to need is one of the most reliable signs of a chain.</div>
+</div>
+
+<div class="chain">
+  <div class="cname">Per-device power → switch specification</div>
+  <div class="ctrig">Triggered by: PoE devices quoted in <b>volts and milliamps</b>, several counts of them, and a switch to specify.</div>
+  <div class="flow"><span class="box start">V, mA, counts</span><span class="arw">→</span><span class="box">mA → A</span><span class="arw">→</span><span class="box">P = V × I each</span><span class="arw">→</span><span class="box">× count, sum</span><span class="arw">→</span><span class="box end">× 1.2, and count the ports</span></div>
+  <div class="cwrong"><b>Wrong turn:</b> leaving the current in milliamps, which lands you a thousand times off. And answering with watts alone when the ask wanted a switch — the port count is half the specification.</div>
+</div>
+
+<h2 id="worked"><span class="num">Five</span>Watching the search run</h2>
+<p>The procedure is easier to trust once you have seen it grind through a problem you could not see the route to. Here it is in full, twice.</p>
+
+<div class="search">
+  <div class="sq"><strong>"You are given a device's power draw and the supply voltage, and asked what resistance it presents."</strong></div>
+  <div class="sline"><span class="tag">ask</span>resistance, in ohms</div>
+  <div class="sline"><span class="tag">have</span>watts, volts</div>
+  <div class="sline"><span class="tag">lap 1</span>what produces ohms? &nbsp;R = V / I</div>
+  <div class="sline have"><span class="tag">needs</span>volts ✓ &mdash; I have that</div>
+  <div class="sline miss"><span class="tag">needs</span>amps ✗ &mdash; I do not</div>
+  <div class="sline"><span class="tag">new ask</span>amps</div>
+  <div class="sline"><span class="tag">lap 2</span>what produces amps? &nbsp;I = V / R needs ohms, which is what I am trying to find &mdash; dead end. &nbsp;I = P / V?</div>
+  <div class="sline have"><span class="tag">needs</span>watts ✓ &nbsp; volts ✓</div>
+  <div class="sline found"><span class="tag">path</span>I = P / V &nbsp;→&nbsp; R = V / I</div>
+</div>
+
+<p>Notice lap 2 rejecting <span class="mono">I = V / R</span> because it needs the very thing you are solving for. That is a circular branch, and spotting it is why the search terminates instead of going round forever. If every route into a quantity needs something downstream of it, you picked the wrong producer one lap earlier.</p>
+
+<div class="search">
+  <div class="sq"><strong>"A 16:9 screen is 2.44 m wide. Nine readings average 509 lux. What is the projector's ANSI lumen output?"</strong></div>
+  <div class="sline"><span class="tag">ask</span>lumens</div>
+  <div class="sline"><span class="tag">have</span>2.44 m of width, 509 lux, and the words "16:9"</div>
+  <div class="sline"><span class="tag">lap 1</span>what produces lumens? &nbsp;L = SH × SW × AI</div>
+  <div class="sline have"><span class="tag">needs</span>screen width ✓ &nbsp; average illuminance ✓</div>
+  <div class="sline miss"><span class="tag">needs</span>screen height ✗</div>
+  <div class="sline"><span class="tag">new ask</span>screen height</div>
+  <div class="sline"><span class="tag">lap 2</span>what produces height? &nbsp;H = W ÷ AR</div>
+  <div class="sline have"><span class="tag">needs</span>width ✓ &nbsp; aspect ratio ✓ &mdash; that is what "16:9" was for</div>
+  <div class="sline found"><span class="tag">path</span>H = W ÷ 1.7778 &nbsp;→&nbsp; L = SH × SW × AI</div>
+</div>
+
+<p>The aspect ratio was tell #2 — a given left over, which turned out to be the bridge rather than a decoy. You could not have known that reading forwards. Reading backwards, the search asked for a height and the only thing capable of producing one was sitting right there.</p>
+
+<h2 id="running"><span class="num">Six</span>Running a chain without losing it</h2>
+
+<p>Finding the path is most of the work, but chained questions punish sloppy execution harder than single-step ones, because a wrong intermediate cascades and <strong>the wrong intermediate is almost always an offered answer</strong>.</p>
+
+<div class="tell"><b>Write each intermediate on its own line, with its unit</b>
+<p><span class="mono">50 ft → 0.31 Ω → 0.558 V</span>. Three short lines beat one long expression held in your head, and if you slip you can see which stage did it rather than starting over.</p></div>
+
+<div class="tell"><b>Never round an intermediate</b>
+<p>Carry full precision and round once, at the end. Rounding at each stage compounds, and the compounded value is frequently one of the options — placed there deliberately.</p></div>
+
+<div class="tell"><b>Sanity-check every intermediate before using it</b>
+<p>A parallel impedance larger than the smallest speaker, a screen height larger than its width, an amplifier needing 4,000 W for a meeting room: catch it at the stage it happened. Feeding a nonsense intermediate into step two wastes the step and produces a confident wrong answer.</p></div>
+
+<div class="call stop"><span class="lbl">the trap this whole section exists for</span>
+<strong>Your intermediate result is on the answer list.</strong> Every chained question offers it. Seeing your number among the options is <em>not</em> confirmation you are finished — check it against the ask's unit first. A dB where dB SPL was wanted, an impedance where a yes/no was wanted, watts where a switch spec was wanted: all correct arithmetic, all marked wrong.</div>
+
+<h2 id="nopath"><span class="num">Seven</span>When there is no path at all</h2>
+
+<p>Some stems are stuffed with units and want no formula whatsoever. "An engineer measures 55 dB SPL A-weighted of ambient noise when the room is empty. How should they proceed?" — every number is real, and none of them is the point.</p>
+
+<p>The giveaway is never in the stem. It is in the options: <strong>sentences instead of values</strong>. So make it a habit to glance at the answer list before starting the search. It costs two seconds and it is the only defence against solving a problem nobody asked. The same glance catches the reverse case too — options that are all formulas tell you a calculation really is wanted, and options that pair a value with a verdict ("0.558 volts, and it is in tolerance") tell you the answer has two halves and both must be right.</p>
+
+<div class="call key"><span class="lbl">in one line</span>
+<strong>Read the ask. Read the options. Then search backwards from the ask, and stop only when your answer's unit matches the ask's unit.</strong></div>
+
+<div class="nextrow">
+  <a class="btn primary" href="av-math-pick.html">Drill it — Name That Formula →</a>
+  <a class="btn" href="av-math-builder.html">Formula Builder →</a>
+  <a class="btn" href="cts-av-math-guide.html">AV Math Guide →</a>
+</div>
+
+<footer>
+  This page covers <em>which</em> formula and <em>in what order</em>. The <a href="cts-av-math-guide.html">AV Math Guide</a> covers reading a single question — the ask-first sweep, the forward units table, trigger words, and how distractors are built — and every formula named here is derived and worked through there.
+  The chain catalogue is drawn from the twelve multi-step stems in <a href="av-math-pick.html">Name That Formula</a>, which flags each one and shows its path once you have answered.
+</footer>
+
+</main>
+</body>
+</html>

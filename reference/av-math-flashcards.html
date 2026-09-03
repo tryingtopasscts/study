@@ -89,6 +89,8 @@ h1{font-family:var(--serif);font-weight:700;font-size:1.5rem;line-height:1.2}
 .ch-table tr.g-f td{color:var(--accent2)}
 .ch-table tr.g-n td{color:var(--amber)}
 .ch-table tr.g-r td{color:var(--text3)}
+.ch-table tr.g-c td{color:var(--purple)}
+.ch-table td.f.k-c{color:var(--purple)}
 .ch-table td.f.k-n{color:var(--amber)}
 .ch-table td.f.k-r{font-family:var(--sans);font-size:.8rem;color:var(--text2)}
 /* a section can open with a reference graphic above its list — only
@@ -115,6 +117,36 @@ h1{font-family:var(--serif);font-weight:700;font-size:1.5rem;line-height:1.2}
 }
 .fc-note{font-size:.82rem;line-height:1.5;color:var(--amber);background:var(--amber-dim);border:1px solid rgba(245,166,35,.35);
   border-radius:10px;padding:.5rem .8rem;max-width:46ch}
+
+/* ---- worked examples ----
+   One or two per card, and deliberately one line each. A card you can read in
+   ten seconds is a card you will actually cycle through; a full worked solution
+   belongs in the guide, not on a flashcard. The problem is prose, the working
+   is mono, so the eye separates them without a label on every row. */
+.fc-ex{width:100%;max-width:46ch;text-align:left;border:1px solid var(--border2);background:var(--bg2);
+  border-radius:10px;padding:.5rem .75rem}
+.fc-ex .exlbl{font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--text3);display:block;margin-bottom:.3rem}
+.fc-ex .exrow{margin:.3rem 0}
+.fc-ex .exrow+.exrow{padding-top:.35rem;border-top:1px dashed var(--border)}
+.fc-ex .exp{font-size:.79rem;line-height:1.4;color:var(--text2)}
+.fc-ex .exw{font-family:var(--mono);font-size:.78rem;line-height:1.45;color:var(--green);margin-top:.12rem}
+.fc-ex .exw b{color:var(--green);font-weight:700}
+
+/* ---- chain cards ----
+   The only cards whose answer is a route rather than a formula, so they are
+   the only ones that show a numbered path and carry a badge. */
+.fc-badge{display:inline-block;font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--purple);background:rgba(167,139,250,.12);
+  border:1px solid rgba(167,139,250,.45);border-radius:99px;padding:.1rem .5rem;margin-bottom:.15rem}
+.fc-steps{width:100%;max-width:46ch;text-align:left;border:1px solid rgba(167,139,250,.4);
+  background:rgba(167,139,250,.07);border-radius:10px;padding:.55rem .8rem}
+.fc-steps .stlbl{font-family:var(--mono);font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--purple);display:block;margin-bottom:.3rem}
+.fc-steps ol{margin:0;padding-left:1.1rem}
+.fc-steps li{font-size:.79rem;line-height:1.45;color:var(--text2);margin:.18rem 0}
+.fc-steps li b{color:var(--purple)}
+.flashcard.is-chain{border-color:var(--purple)}
 .fc-note b{color:var(--amber)}
 .fc-viz{width:100%;max-width:320px;flex-shrink:0}
 .fc-viz svg{width:100%;height:auto;display:block}
@@ -190,7 +222,7 @@ footer a{color:var(--accent2)}
 <header>
   <div class="kicker"><a href="../index.html">← CTS Study Console</a> · Drill</div>
   <h1>AV Math Flashcards</h1>
-  <p class="lede">Every AV Math formula and hard number, drawn. Each section opens with an overview that keeps the two apart — what you derive, what you memorise. Nothing graded, counted, or saved.</p>
+  <p class="lede">Every AV Math formula and hard number, drawn, and each one worked through on a real example or two. Sections open with an overview that keeps the kinds apart — what you derive, what you memorise, what you just recognise, and the twelve <b style="color:var(--purple)">chains</b> that need two formulas rather than one. Nothing graded, counted, or saved.</p>
 </header>
 
 <div class="chip-row" id="filters">
@@ -221,6 +253,8 @@ footer a{color:var(--accent2)}
       <div class="fc-rule"></div>
       <div class="fc-viz" id="viz"></div>
       <div class="fc-a" id="aText"></div>
+      <div class="fc-steps" id="stepBox" style="display:none"></div>
+      <div class="fc-ex" id="exBox" style="display:none"></div>
       <div class="fc-note" id="noteBox" style="display:none"></div>
     </div>
 
@@ -245,7 +279,7 @@ footer a{color:var(--accent2)}
 <div class="kbd-hint"><span class="desk"><kbd>space</kbd> or <kbd>→</kbd> next &nbsp; <kbd>←</kbd> back<br></span>Tap the card's right half for the next card, its left half to go back — or swipe.</div>
 
 <footer>
-  Sourced from the <a href="cts-av-math-guide.html">AV Math Guide</a> formula cheat sheet.
+  Sourced from the <a href="cts-av-math-guide.html">AV Math Guide</a> formula cheat sheet; the chain cards come from the catalogue in <a href="av-math-chains.html">Finding the Path</a>, which is where the method for spotting them lives.
   No grading, no stats, no history — the deck loops forever and remembers nothing between visits.
   To be tested on this instead of shown it: <a href="av-math-match.html">Formula Match</a>, <a href="av-math-builder.html">Formula Builder</a>, <a href="av-math-pick.html">Name That Formula</a>.
   For the questions that need two formulas rather than one: <a href="av-math-chains.html">Finding the Path</a>.
@@ -1127,171 +1161,272 @@ E: `<svg viewBox="0 0 330 300" aria-hidden="true">
 const CARDS = [
 
 /* ---- Foundations ---- */
-{d:'F', t:'Order of operations', k:'r', c:'Foundations', q:'Order of operations — the full running order?',
+{d:'F', t:'Order of operations', k:'r', c:'Foundations', ex:[['2 + 3 &times; 4','multiply first &rarr; 2 + 12 = <b>14</b>, not 20'],['20 &divide; 5 &times; 2','same rank, left to right &rarr; 4 &times; 2 = <b>8</b>, not 2']], q:'Order of operations — the full running order?',
  a:'<span class="big">PEMDAS</span>Parentheses → Exponents → Multiply/Divide → Add/Subtract.', viz:'pemdas',
  n:'<b>Trap:</b> × and ÷ share one rank, and so do + and −. Work each pair <b>left to right</b> — multiply does not outrank divide.'},
-{d:'F', t:'Rounding', k:'r', c:'Foundations', q:'In a multi-step problem, when should you round?',
+{d:'F', t:'Rounding', k:'r', c:'Foundations', ex:[['2.44 &divide; 1.7778 &times; 2.44 &times; 509','carry it all &rarr; <b>1,704 lm</b>'],['the same, rounding 1.372 to 1.4 first','1.4 &times; 2.44 &times; 509 = 1,739 lm &mdash; <b>35 lm adrift, and offered</b>']], q:'In a multi-step problem, when should you round?',
  a:'<span class="big">Only the final result</span>Carry full precision through every intermediate step.', viz:'rounding',
  n:'Rounding at each step compounds the error, and the compounded value is often one of the offered answers.'},
-{d:'F', t:'Area & perimeter', c:'Foundations', f:'Area = W × L &nbsp;·&nbsp; Perimeter = 2 × (W + L)', q:'Area and perimeter of a rectangle?',
+{d:'F', t:'Area & perimeter', c:'Foundations', f:'Area = W × L &nbsp;·&nbsp; Perimeter = 2 × (W + L)', ex:[['A room 35 ft wide with 980 sq ft of floor &mdash; how long?','980 &divide; 35 = <b>28 ft</b>'],['Trim around a 6 &times; 4 m room','2 &times; (6 + 4) = <b>20 m</b>']], q:'Area and perimeter of a rectangle?',
  a:'<span class="big">Area = W × L</span>Perimeter = <b>2 × (W + L)</b> — you walk all four sides.', viz:'rect',
  n:'<b>Trap:</b> forgetting to double gives exactly half the perimeter — and half is always on the answer list.'},
-{d:'F', t:'Volume', c:'Foundations', q:'Volume of a room?',
+{d:'F', t:'Volume', c:'Foundations', ex:[['A 30 &times; 24 ft room, 10 ft ceiling','30 &times; 24 &times; 10 = <b>7,200 cu ft</b>'],['240 m&sup3;, 8 m wide, 3 m high &mdash; how long?','240 &divide; (8 &times; 3) = <b>10 m</b>']], q:'Volume of a room?',
  a:'<span class="big">W × L × H</span>Three dimensions, three factors.', viz:'volume'},
-{d:'F', t:'Unit conversions', k:'n', c:'Foundations', q:'1 inch = ? mm &nbsp;·&nbsp; 1 foot = ? m &nbsp;·&nbsp; 1 kg = ? lb',
+{d:'F', t:'Unit conversions', k:'n', c:'Foundations', ex:[['A 216 mm bracket, in inches','216 &divide; 25.4 = <b>8.5 in</b>'],['A 34 kg display, in pounds','34 &times; 2.205 = <b>75 lb</b>']], q:'1 inch = ? mm &nbsp;·&nbsp; 1 foot = ? m &nbsp;·&nbsp; 1 kg = ? lb',
  a:'<span class="big">25.4 mm · 0.3048 m · 2.205 lb</span>The three conversions worth having cold.', viz:'units'},
-{d:'F', t:'Foot-candles ↔ lux', k:'n', c:'Foundations', f:'1 fc = 10.76 lux &nbsp;·&nbsp; because 1 m² = 10.76 ft²', q:'1 foot-candle = how many lux — and why that number?',
+{d:'F', t:'Foot-candles ↔ lux', k:'n', c:'Foundations', f:'1 fc = 10.76 lux &nbsp;·&nbsp; because 1 m² = 10.76 ft²', ex:[['46 fc, in lux','46 &times; 10.76 = <b>495 lux</b>'],['800 lux, in foot-candles','800 &divide; 10.76 = <b>74 fc</b>']], q:'1 foot-candle = how many lux — and why that number?',
  a:'<span class="big">10.76 lux</span>Because there are <b>10.76 ft² in one m²</b>. Same light, smaller tiles.', viz:'fclux',
  n:'Lux pairs with metres, foot-candles pair with feet. Mixing them is the classic ANSI-lumens error.'},
-{d:'F', t:'log(2)', k:'n', c:'Foundations', q:'log(2) ≈ ?',
+{d:'F', t:'log(2)', k:'n', c:'Foundations', ex:[['Doubling the watts','10 &times; 0.301 = <b>+3 dB</b>'],['Doubling the volts','20 &times; 0.301 = <b>+6 dB</b>']], q:'log(2) ≈ ?',
  a:'<span class="big">0.301</span>One doubling. Everything in dB math traces back to this number.', viz:'log2',
  n:'× 10 → <b>+3 dB</b> (power doubling). × 20 → <b>+6 dB</b> (voltage or distance doubling).'},
-{d:'F', t:'log(8)', k:'n', c:'Foundations', q:'log(8) ≈ ? — without a calculator',
+{d:'F', t:'log(8)', k:'n', c:'Foundations', ex:[['Eight times the power','10 &times; 0.903 = <b>+9 dB</b>'],['Why 0.903?','8 = 2&sup3;, so 3 &times; 0.301 = <b>0.903</b>']], q:'log(8) ≈ ? — without a calculator',
  a:'<span class="big">0.903</span>8 = 2×2×2, so log(8) = three lots of 0.301.', viz:'log8',
  n:'Logs turn <b>multiplication into addition</b>. That is the entire reason the decibel exists.'},
-{d:'F', t:'Rearranging a formula', k:'r', c:'Foundations', q:'How do you rearrange a formula safely?',
+{d:'F', t:'Rearranging a formula', k:'r', c:'Foundations', ex:[['Get I out of V = I &times; R','divide <em>both</em> sides by R &rarr; <b>I = V / R</b>'],['Get P&#8322; out of &Delta;SPL = 10 log(P&#8322;/P&#8321;)','&divide; 10, then 10^x &rarr; <b>P&#8322; = P&#8321; &times; 10^(&Delta;SPL/10)</b>']], q:'How do you rearrange a formula safely?',
  a:'<span class="big">Do the same thing to both sides</span>To get I out of V = I × R, divide <b>both</b> sides by R.', viz:'balance'},
 
 /* ---- Electrical ---- */
-{d:'E', t:'Ohm’s Law', c:'Electrical', f:'I = V / R &nbsp;·&nbsp; V = I × R &nbsp;·&nbsp; R = V / I', q:'Ohm’s Law, solved for current:',
+{d:'E', t:'Ohm’s Law', c:'Electrical', f:'I = V / R &nbsp;·&nbsp; V = I × R &nbsp;·&nbsp; R = V / I', ex:[['24 V across 8 &#937;','24 &divide; 8 = <b>3 A</b>'],['1.8 A through 0.31 &#937;','1.8 &times; 0.31 = <b>0.558 V</b>']], q:'Ohm’s Law, solved for current:',
  a:'<span class="big">I = V / R</span>Amps = volts ÷ ohms. Rearranged: V = IR, R = V/I.', viz:'ohm',
  n:'Cover the quantity you want in the triangle; what remains is your formula.'},
-{d:'E', t:'Power formula', c:'Electrical', f:'P = I × V &nbsp;·&nbsp; P = V² / R &nbsp;·&nbsp; P = I² R', q:'The power formula — all three forms:',
+{d:'E', t:'Power formula', c:'Electrical', f:'P = I × V &nbsp;·&nbsp; P = V² / R &nbsp;·&nbsp; P = I² R', ex:[['4.5 A at 120 V','4.5 &times; 120 = <b>540 W</b>'],['40 V across an 8 &#937; load','40&sup2; &divide; 8 = <b>200 W</b>']], q:'The power formula — all three forms:',
  a:'<span class="big">P = I × V</span>Also <b>P = V² / R</b> and <b>P = I² R</b>.', viz:'powertri',
  n:'All three are cover-up triangles. <b>Watch the middle one:</b> because P = V²/R, it is <b>V²</b> that sits on top, not P. Draw that one with P on top and every rearrangement comes out inverted. The V²/R form is also why voltage uses a 20 in dB math.'},
-{d:'E', t:'The 80% rule', c:'Electrical', f:'max planned load = rated capacity × 0.8', q:'Maximum planned load on any circuit?',
+{d:'E', t:'The 80% rule', c:'Electrical', f:'max planned load = rated capacity × 0.8', ex:[['Most you may plan onto a 20 A circuit','20 &times; 0.8 = <b>16 A</b>'],['Circuit needed for a 14 A planned load','14 &divide; 0.8 = 17.5 &rarr; a <b>20 A</b> circuit']], q:'Maximum planned load on any circuit?',
  a:'<span class="big">80% of rated capacity</span>A 20 A circuit carries no more than <b>16 A</b> of planned load.', viz:'circuit80'},
-{d:'E', t:'Voltage drop', c:'Electrical', f:'V<sub>drop</sub> = I × R<sub>total</sub> &nbsp;·&nbsp; R<sub>total</sub> = rate × 2 × distance', q:'Voltage drop over a long cable run — what is R?',
+{d:'E', t:'Voltage drop', c:'Electrical', f:'V<sub>drop</sub> = I × R<sub>total</sub> &nbsp;·&nbsp; R<sub>total</sub> = rate × 2 × distance', ex:[['1.8 A, 25 ft away, 0.0062 &#937;/ft','50 ft &times; 0.0062 = 0.31 &#937; &rarr; 1.8 &times; 0.31 = <b>0.558 V</b>'],['Does that pass a 5% tolerance on 12 V?','12 &times; 0.05 = 0.6 V allowed &rarr; <b>just passes</b>']], q:'Voltage drop over a long cable run — what is R?',
  a:'<span class="big">R = rate × 2 × distance</span>Then V<sub>drop</sub> = I × R.', viz:'vdrop',
  n:'<b>Trap:</b> current travels out <b>and back</b>. Double the one-way run before applying the ohms-per-foot rate.'},
-{d:'E', t:'Heat load', c:'Electrical', f:'Btu = watts × 3.4 &nbsp;·&nbsp; kJ = watts × 3.6', q:'Heat load in Btu from electrical draw?',
+{d:'E', t:'Heat load', c:'Electrical', f:'Btu = watts × 3.4 &nbsp;·&nbsp; kJ = watts × 3.6', ex:[['A rack totalling 1,800 W','1,800 &times; 3.4 = <b>6,120 Btu/h</b>'],['The same rack in kilojoules','1,800 &times; 3.6 = <b>6,480 kJ/h</b>']], q:'Heat load in Btu from electrical draw?',
  a:'<span class="big">Btu = watts × 3.4</span>Kilojoule version: watts × <b>3.6</b>.', viz:'heat',
  n:'Amplifiers are excluded from this figure — they get calculated separately.'},
 
 /* ---- Decibels ---- */
-{d:'D', t:'dB — power', c:'Decibels', q:'dB formula for POWER:',
+{d:'D', t:'dB — power', c:'Decibels', ex:[['100 W up to 400 W','10 log(400/100) = 10 log(4) = <b>+6 dB</b>'],['1,000 W down to 100 W','10 log(0.1) = <b>&minus;10 dB</b>']], q:'dB formula for POWER:',
  a:'<span class="big">dB = 10 log(P₁ / P_ref)</span>Coefficient <b>10</b> — power is the odd one out.', viz:'db10'},
-{d:'D', t:'dB — voltage', c:'Decibels', q:'dB formula for VOLTAGE:',
+{d:'D', t:'dB — voltage', c:'Decibels', ex:[['0.775 V up to 7.75 V','20 log(10) = <b>+20 dB</b>'],['0.1 V referenced to 0.775 V','20 log(0.129) = <b>&minus;17.8 dBu</b>']], q:'dB formula for VOLTAGE:',
  a:'<span class="big">dB = 20 log(V₁ / V_ref)</span>New or measured voltage over the reference voltage.', viz:'db20'},
-{d:'D', t:'dB — distance', c:'Decibels', q:'dB formula for DISTANCE:',
+{d:'D', t:'dB — distance', c:'Decibels', ex:[['4 m out to 16 m','20 log(4/16) = 20 log(0.25) = <b>&minus;12 dB</b>'],['20 m out to 40 m','20 log(0.5) = <b>&minus;6 dB</b>']], q:'dB formula for DISTANCE:',
  a:'<span class="big">dB = 20 log(D₁ / D₂)</span><b>Original</b> distance on top — moving away must come out negative.', viz:'invsq',
  n:'<b>Trap:</b> it is a <b>ratio</b> of two distances. Never multiply them.'},
-{d:'D', t:'10-log vs 20-log', k:'r', c:'Decibels', q:'The single question that decides 10-log vs. 20-log:',
+{d:'D', t:'10-log vs 20-log', k:'r', c:'Decibels', ex:[['Two wattages','watts &rarr; <b>10 log</b>'],['Two distances, or two voltages, or two pressures','not watts &rarr; <b>20 log</b>']], q:'The single question that decides 10-log vs. 20-log:',
  a:'<span class="big">“Am I comparing watts?”</span>Yes → 10 log. No (volts, distance, pressure) → 20 log.', viz:'decide',
  n:'The mnemonic: <b>power stands alone</b>.'},
-{d:'D', t:'Why 20 for voltage', k:'r', c:'Decibels', q:'Why do voltage and distance use 20 instead of 10?',
+{d:'D', t:'Why 20 for voltage', k:'r', c:'Decibels', ex:[['P = V&sup2;/R, so power carries a squared voltage','log(x&sup2;) = 2 log(x), and 2 &times; 10 = <b>20</b>']], q:'Why do voltage and distance use 20 instead of 10?',
  a:'<span class="big">They relate to power by a square</span>P = V²/R, and log(x²) = 2·log(x). The doubled log turns the 10 into a 20.', viz:'square'},
-{d:'D', t:'dB → power ratio', c:'Decibels', q:'Converting dB back into a POWER ratio:',
+{d:'D', t:'dB → power ratio', c:'Decibels', ex:[['+6 dB of power','10^(6/10) = 10^0.6 = <b>3.98&times;</b>'],['&minus;9 dB of power','10^(&minus;0.9) = <b>0.126&times;</b>, about one eighth']], q:'Converting dB back into a POWER ratio:',
  a:'<span class="big">ratio = 10^(dB / 10)</span>6 dB → 10^0.6 = <b>3.98×</b> the power.', viz:'back10',
  n:'<b>Trap:</b> divide by the coefficient <b>first</b>, then press 10^x. Never raise 10 to the raw dB value.'},
-{d:'D', t:'dB → voltage ratio', c:'Decibels', q:'Converting dB back into a VOLTAGE or DISTANCE ratio:',
+{d:'D', t:'dB → voltage ratio', c:'Decibels', ex:[['+6 dB of voltage','10^(6/20) = 10^0.3 = <b>2.0&times;</b>'],['+12 dB of voltage','10^0.6 = <b>3.98&times;</b>']], q:'Converting dB back into a VOLTAGE or DISTANCE ratio:',
  a:'<span class="big">ratio = 10^(dB / 20)</span>Same move, coefficient 20. 6 dB → <b>2.0×</b>.', viz:'back20'},
-{d:'D', t:'Doubling distance', k:'n', c:'Decibels', q:'Doubling the distance from a sound source changes SPL by…',
+{d:'D', t:'Doubling distance', k:'n', c:'Decibels', ex:[['2 m out to 4 m','20 log(0.5) = <b>&minus;6 dB</b>'],['2 m out to 8 m &mdash; three doublings','&minus;6 &minus; 6 &minus; 6 = <b>&minus;18 dB</b>']], q:'Doubling the distance from a sound source changes SPL by…',
  a:'<span class="big">−6 dB</span>Inverse square law — energy drops to <b>one quarter</b> at double distance.', viz:'invsq'},
-{d:'D', t:'Doubling amplifier power', k:'n', c:'Decibels', q:'Doubling amplifier power changes SPL by…',
+{d:'D', t:'Doubling amplifier power', k:'n', c:'Decibels', ex:[['100 W to 200 W','10 log(2) = <b>+3 dB</b>'],['100 W to 1,000 W','10 log(10) = <b>+10 dB</b>']], q:'Doubling amplifier power changes SPL by…',
  a:'<span class="big">+3 dB</span>10 × log(2) = 3.01. Ten times the power = <b>+10 dB</b>.', viz:'pow3'},
-{d:'D', t:'Just-noticeable difference', k:'n', c:'Decibels', q:'A just-noticeable change in loudness is about…',
+{d:'D', t:'Just-noticeable difference', k:'n', c:'Decibels', ex:[['A 1 dB trim on a fader','below the JND &mdash; <b>most listeners hear nothing</b>'],['A 3 dB trim','at the JND &mdash; <b>just perceptible</b>, and it is double the power']], q:'A just-noticeable change in loudness is about…',
  a:'<span class="big">±3 dB</span>The smallest SPL change most listeners reliably perceive.', viz:'jnd'},
-{d:'D', t:'Doubling open mics (NOM)', k:'n', c:'Decibels', q:'Doubling the number of open microphones (NOM) costs…',
+{d:'D', t:'Doubling open mics (NOM)', k:'n', c:'Decibels', ex:[['2 open mics up to 8','two doublings &rarr; <b>&minus;6 dB</b> gain before feedback'],['1 mic up to 4','two doublings &rarr; <b>&minus;6 dB</b>']], q:'Doubling the number of open microphones (NOM) costs…',
  a:'<span class="big">−3 dB gain before feedback</span>Every doubling of open mics costs another 3 dB.', viz:'nom'},
-{d:'D', t:'0 dB SPL', k:'n', c:'Decibels', f:'threshold of hearing — reference pressure 20 µPa', q:'0 dB SPL represents…',
+{d:'D', t:'0 dB SPL', k:'n', c:'Decibels', f:'threshold of hearing — reference pressure 20 µPa', ex:[['A room measured at 0 dB SPL','the threshold of hearing, <b>not silence</b> &mdash; 20 &micro;Pa'],['Why SPL figures are almost never negative','below 0 dB SPL is <b>quieter than hearing</b>']], q:'0 dB SPL represents…',
  a:'<span class="big">The threshold of human hearing</span>Reference pressure of <b>20 micropascals</b>. Not silence.', viz:'spl0'},
-{d:'D', t:'Reference levels', k:'n', c:'Decibels', q:'0 dBu, 0 dBV, 0 dBm and 0 dB SPL reference what?',
+{d:'D', t:'Reference levels', k:'n', c:'Decibels', ex:[['0 dBu into a 0 dBV input','0.775 V vs 1.0 V &mdash; <b>about 2.2 dB apart</b>'],['Converting a dBm figure','references 1 mW, so it is <b>10-log</b>, unlike its neighbours']], q:'0 dBu, 0 dBV, 0 dBm and 0 dB SPL reference what?',
  a:'<span class="big">0.775 V · 1.0 V · 1 mW · 20 µPa</span>dBu, dBV and SPL are 20-log; <b>dBm is 10-log</b> — it references power.', viz:'refs'},
-{d:'D', t:'A 10× ratio in dB', k:'n', c:'Decibels', q:'A 10× increase gives how many dB — in watts, and in volts?',
+{d:'D', t:'A 10× ratio in dB', k:'n', c:'Decibels', ex:[['10&times; the watts','10 log(10) = <b>+10 dB</b>'],['10&times; the volts','20 log(10) = <b>+20 dB</b>']], q:'A 10× increase gives how many dB — in watts, and in volts?',
  a:'<span class="big">+10 dB power · +20 dB voltage</span>Identical ratio, different coefficient.', viz:'tenx',
  n:'A favourite exam trap: the ratio alone never tells you the answer — you need to know what is being measured.'},
-{d:'D', t:'Ratios below 1', k:'r', c:'Decibels', q:'A ratio less than 1 always produces…',
+{d:'D', t:'Ratios below 1', k:'r', c:'Decibels', ex:[['20 log(4/16)','ratio 0.25 &rarr; negative &rarr; <b>a loss, &minus;12 dB</b>'],['A signal that was amplified coming out negative','you <b>flipped the fraction</b>']], q:'A ratio less than 1 always produces…',
  a:'<span class="big">A negative dB result — a loss</span>Free answer-checker at the end of every dB problem.', viz:'negdb',
  n:'If the sign does not match the story the question told, you flipped the fraction.'},
-{d:'D', t:'Speech above noise', c:'Decibels', f:'program − background ≥ 25 dB &nbsp;·&nbsp; max noise = target − 25', q:'How far above background noise should program audio sit?',
+{d:'D', t:'Speech above noise', c:'Decibels', f:'program − background ≥ 25 dB &nbsp;·&nbsp; max noise = target − 25', ex:[['A 68 dB SPL(A) speech target','68 &minus; 25 = <b>43 dB SPL(A)</b> maximum noise'],['72 dB program in a 52 dB room','20 dB of headroom &mdash; <b>short of 25, so no</b>']], q:'How far above background noise should program audio sit?',
  a:'<span class="big">At least 25 dB</span>Max noise = <b>target − 25</b>. A 70 dB SPL(A) speech target allows 45 dB SPL(A) of noise.', viz:'speech25'},
 
 /* ---- Loudspeakers ---- */
-{d:'L', t:'Series impedance', c:'Loudspeakers', q:'Total impedance of loudspeakers in SERIES:',
+{d:'L', t:'Series impedance', c:'Loudspeakers', ex:[['Three 4 &#937; speakers in series','4 + 4 + 4 = <b>12 &#937;</b>'],['Check it','larger than the largest speaker &mdash; <b>plausible</b>']], q:'Total impedance of loudspeakers in SERIES:',
  a:'<span class="big">Z_T = Z₁ + Z₂ + …</span>Just add. The total is always <b>larger</b> than the largest.', viz:'series'},
-{d:'L', t:'Parallel impedance — identical', c:'Loudspeakers', q:'Parallel impedance — identical loudspeakers:',
+{d:'L', t:'Parallel impedance — identical', c:'Loudspeakers', ex:[['Four 8 &#937; speakers in parallel','8 &divide; 4 = <b>2 &#937;</b>'],['Six 8 &#937; on a 4 &#937; amp','8 &divide; 6 = 1.33 &#937; &mdash; <b>under the minimum, unsafe</b>']], q:'Parallel impedance — identical loudspeakers:',
  a:'<span class="big">Z_T = Z₁ / N</span>One speaker’s impedance divided by the count. Always <b>smaller</b> than the smallest.', viz:'parallel'},
-{d:'L', t:'Parallel impedance — mixed', c:'Loudspeakers', q:'Parallel impedance — mixed loudspeakers:',
+{d:'L', t:'Parallel impedance — mixed', c:'Loudspeakers', ex:[['An 8 &#937; and a 4 &#937; in parallel','1/8 + 1/4 = 0.375 &rarr; 1 &divide; 0.375 = <b>2.67 &#937;</b>'],['Check it','smaller than the smallest speaker &mdash; <b>plausible</b>']], q:'Parallel impedance — mixed loudspeakers:',
  a:'<span class="big">1/Z_T = 1/Z₁ + 1/Z₂ + …</span>Flip, add, then <b>flip the sum back over</b>.', viz:'parmixed',
  n:'<b>Trap:</b> the last flip is the step people skip — leaving the reciprocal as the answer.'},
-{d:'L', t:'Power for an SPL increase', c:'Loudspeakers', f:'ΔSPL = 10 log(P₂ / P₁) &nbsp;·&nbsp; P₂ = P₁ × 10^(ΔSPL/10)', q:'Watts needed for a required SPL increase?',
+{d:'L', t:'Power for an SPL increase', c:'Loudspeakers', f:'ΔSPL = 10 log(P₂ / P₁) &nbsp;·&nbsp; P₂ = P₁ × 10^(ΔSPL/10)', ex:[['1 W gives 88 dB, you need 97 dB','9 dB short &rarr; 1 &times; 10^(9/10) = <b>7.9 W</b>'],['Check with the shortcut','9 dB is three doublings &rarr; 1&rarr;2&rarr;4&rarr;<b>8 W</b> &check;']], q:'Watts needed for a required SPL increase?',
  a:'<span class="big">ΔSPL = 10 log(P₂ / P₁)</span>Solve for P₂: <b>P₂ = P₁ × 10^(ΔSPL/10)</b>.', viz:'amppow'},
-{d:'L', t:'Loudspeaker sensitivity', k:'r', c:'Loudspeakers', f:'dB SPL at 1 W / 1 m — the reference every SPL budget starts from', q:'What does “90 dB SPL, 1 W @ 1 m” describe?',
+{d:'L', t:'Loudspeaker sensitivity', k:'r', c:'Loudspeakers', f:'dB SPL at 1 W / 1 m — the reference every SPL budget starts from', ex:[['&ldquo;92 dB SPL, 1 W @ 1 m&rdquo;','your <b>anchor</b>: the SPL one watt buys at one metre'],['Same speaker at 4 m on 1 W','20 log(1/4) = &minus;12 &rarr; <b>80 dB SPL</b>']], q:'What does “90 dB SPL, 1 W @ 1 m” describe?',
  a:'<span class="big">Loudspeaker sensitivity</span>The SPL produced from a known power at a known distance — your starting reference.', viz:'sens'},
 
 /* ---- Audio ---- */
-{d:'A', t:'Wavelength', c:'Audio', f:'λ = v / f &nbsp;·&nbsp; v = 343 m/s in air', q:'Wavelength formula:',
+{d:'A', t:'Wavelength', c:'Audio', f:'λ = v / f &nbsp;·&nbsp; v = 343 m/s in air', ex:[['A 100 Hz tone','343 &divide; 100 = <b>3.43 m</b>'],['A 60 Hz room mode','343 &divide; 60 = <b>5.7 m</b> &mdash; room-sized, which is the problem']], q:'Wavelength formula:',
  a:'<span class="big">λ = v / f</span>Speed of sound in air: <b>343 m/s</b> (sea level, 20 °C).', viz:'wavelength'},
-{d:'A', t:'Octaves', c:'Audio', f:'octaves = log(f₂ / f₁) ÷ log(2)', q:'An octave is… and how do you count them?',
+{d:'A', t:'Octaves', c:'Audio', f:'octaves = log(f₂ / f₁) ÷ log(2)', ex:[['250 Hz up to 4 kHz','log(16) &divide; log(2) = <b>4 octaves</b>'],['Two octaves above 500 Hz','double twice &rarr; 1,000 &rarr; <b>2,000 Hz</b>']], q:'An octave is… and how do you count them?',
  a:'<span class="big">A doubling of frequency</span>Octaves = <b>log(f₂/f₁) ÷ log(2)</b>. 20 Hz to 20 kHz is about <b>10 octaves</b>.', viz:'octave'},
-{d:'A', t:'Digital audio bandwidth', c:'Audio', f:'BW = sample rate × bit depth × channels', q:'Digital audio bandwidth:',
+{d:'A', t:'Digital audio bandwidth', c:'Audio', f:'BW = sample rate × bit depth × channels', ex:[['48 kHz, 24-bit, 2 channels','48,000 &times; 24 &times; 2 = <b>2.3 Mbps</b>'],['96 kHz, 24-bit, 8 channels','96,000 &times; 24 &times; 8 = <b>18.4 Mbps</b>']], q:'Digital audio bandwidth:',
  a:'<span class="big">BW = sample rate × bit depth × channels</span>Result in bits per second.', viz:'audiobw'},
-{d:'A', t:'Nyquist–Shannon theorem', c:'Audio', q:'Nyquist–Shannon sampling theorem:',
+{d:'A', t:'Nyquist–Shannon theorem', c:'Audio', ex:[['Capturing up to 15 kHz','&gt; 2 &times; 15,000 = <b>above 30 kHz</b>'],['Why CD is 44.1 kHz, not 40','20 kHz needs &gt; 40 kHz &mdash; the rest is <b>filter margin</b>']], q:'Nyquist–Shannon sampling theorem:',
  a:'<span class="big">Sample rate &gt; 2 × highest frequency</span>Capturing 20 kHz needs a rate above 40 kHz — hence CD’s 44.1 kHz.', viz:'nyquist'},
 
 /* ---- Video & light ---- */
-{d:'V', t:'Diagonal → width & height', c:'Video', f:'W = D × 0.8716 &nbsp;·&nbsp; H = D × 0.4903', q:'Width and height of a 16:9 screen, from its diagonal:',
+{d:'V', t:'Diagonal → width & height', c:'Video', f:'W = D × 0.8716 &nbsp;·&nbsp; H = D × 0.4903', ex:[['A 65 in 16:9 display','65 &times; 0.8716 = <b>56.7 in wide</b>'],['Its height','65 &times; 0.4903 = <b>31.9 in high</b>']], q:'Width and height of a 16:9 screen, from its diagonal:',
  a:'<span class="big">W = D × 0.8716</span>H = D × <b>0.4903</b>. A 90 in display is 78.4 in wide.', viz:'diag169'},
-{d:'V', t:'Aspect ratio', c:'Video', f:'AR = W / H &nbsp;·&nbsp; H = W ÷ AR &nbsp;·&nbsp; W = H × AR', q:'Aspect ratio from dimensions:',
+{d:'V', t:'Aspect ratio', c:'Video', f:'AR = W / H &nbsp;·&nbsp; H = W ÷ AR &nbsp;·&nbsp; W = H × AR', ex:[['A 16:9 screen 3.0 m wide &mdash; how high?','3.0 &divide; 1.7778 = <b>1.69 m</b>'],['A 16:9 image 1.5 m high &mdash; how wide?','1.5 &times; 1.7778 = <b>2.67 m</b>']], q:'Aspect ratio from dimensions:',
  a:'<span class="big">AR = W / H</span>H = W ÷ AR &nbsp;·&nbsp; W = H × AR.', viz:'ar',
  n:'Use four decimal places for 16:9 (<b>1.7778</b>) — 1.78 drifts enough to miss the offered answer.'},
-{d:'V', t:'Screen diagonal', c:'Video', f:'W² + H² = D²', q:'Screen diagonal from width and height:',
+{d:'V', t:'Screen diagonal', c:'Video', f:'W² + H² = D²', ex:[['2.4 m wide by 1.35 m high','&radic;(5.76 + 1.82) = <b>2.75 m</b>'],['29.5 in high, 60 in diagonal &mdash; how wide?','&radic;(60&sup2; &minus; 29.5&sup2;) = <b>52.3 in</b>']], q:'Screen diagonal from width and height:',
  a:'<span class="big">A² + B² = C²</span>Pythagorean theorem: width² + height² = diagonal².', viz:'pythag'},
-{d:'V', t:'Throw distance', c:'Video', f:'D = screen width × throw ratio', q:'Estimating throw distance:',
+{d:'V', t:'Throw distance', c:'Video', f:'D = screen width × throw ratio', ex:[['A 2.0 lens on a 4 m wide screen','4 &times; 2.0 = <b>8 m back</b>'],['Booth 12.5 m back, 5 m screen &mdash; what lens?','12.5 &divide; 5 = a <b>2.5:1</b> lens']], q:'Estimating throw distance:',
  a:'<span class="big">D = screen width × throw ratio</span>Ratio 2.0 × a 4 m wide image = projector sits <b>8 m</b> back.', viz:'throw_',
  n:'Always verify against the projector manual’s own formula for the real design.'},
-{d:'V', t:'ANSI lumens', c:'Video', q:'ANSI lumen rating formula:',
+{d:'V', t:'ANSI lumens', c:'Video', ex:[['1.372 &times; 2.44 m screen, nine readings averaging 509 lux','1.372 &times; 2.44 &times; 509 = <b>1,704 lm</b>'],['Nine readings including a 700 lux centre','use the <b>average</b>, never the hot centre']], q:'ANSI lumen rating formula:',
  a:'<span class="big">L = SH × SW × AI</span>Screen height × width × the <b>average of nine</b> illuminance readings.', viz:'lumens',
  n:'Lux pairs with m², foot-candles with ft². Mismatch the pair and you are off by 10.76×.'},
-{d:'V', t:'DISCAS %EH', c:'Video', q:'DISCAS BDM sizing metric:',
+{d:'V', t:'DISCAS %EH', c:'Video', ex:[['12 mm text on a 1,350 mm tall image','12 &divide; 1350 = <b>0.9% EH</b>'],['Spreadsheets at the back of the room','detailed content &rarr; <b>ADM</b>, not BDM']], q:'DISCAS BDM sizing metric:',
  a:'<span class="big">%EH = element height / image height</span>ADM viewing instead requires resolving a <b>single pixel</b>.', viz:'discas'},
-{d:'V', t:'Minimum contrast', k:'n', c:'Video', q:'Minimum contrast ratio for full-motion video:',
+{d:'V', t:'Minimum contrast', k:'n', c:'Video', ex:[['A room measuring 60:1 with the lights on','below 80:1 &mdash; <b>not viable</b> for full-motion video'],['What fixes it','control the <b>ambient light</b>; a brighter projector will not']], q:'Minimum contrast ratio for full-motion video:',
  a:'<span class="big">80:1</span>Driven mostly by <b>ambient room light</b>, which lifts the black level.', viz:'contrast'},
-{d:'V', t:'Seated eye height', k:'n', c:'Video', q:'Average seated eye height for sightlines:',
+{d:'V', t:'Seated eye height', k:'n', c:'Video', ex:[['Checking whether row 3 blocks row 4','sightlines start at <b>1.2 m (48 in)</b> above the floor']], q:'Average seated eye height for sightlines:',
  a:'<span class="big">1.2 m (48 in)</span>The standard constant for checking whether heads block the screen.', viz:'eyeheight'},
-{d:'V', t:'Light at double distance', c:'Video', f:'E₂ = E₁ × (D₁ / D₂)² &nbsp;·&nbsp; 25% remains at 2× distance', q:'Illumination at double the distance from a source?',
+{d:'V', t:'Light at double distance', c:'Video', f:'E₂ = E₁ × (D₁ / D₂)² &nbsp;·&nbsp; 25% remains at 2× distance', ex:[['A lamp moved from 2 m to 6 m','(2/6)&sup2; = 1/9 &rarr; <b>11% remains</b>, an 89% drop'],['From 2 m to 4 m','(1/2)&sup2; = <b>25% remains</b> &mdash; a 75% decrease']], q:'Illumination at double the distance from a source?',
  a:'<span class="big">25% remains</span>Which is a <b>75% decrease</b>. Inverse square law applies to light too.', viz:'lightfall',
  n:'<b>Trap:</b> read whether the question wants what <b>remains</b> or what was <b>lost</b>. Both numbers are on the answer list.'},
-{d:'V', t:'Chroma subsampling', k:'n', c:'Video', f:'4:4:4 = 3 &nbsp;·&nbsp; 4:2:2 = 2 &nbsp;·&nbsp; 4:2:0 = 1.5', q:'Chroma subsampling factors for 4:4:4, 4:2:2 and 4:2:0?',
+{d:'V', t:'Chroma subsampling', k:'n', c:'Video', f:'4:4:4 = 3 &nbsp;·&nbsp; 4:2:2 = 2 &nbsp;·&nbsp; 4:2:0 = 1.5', ex:[['4:2:0','6 samples per 4 pixels &rarr; 6 &divide; 4 = <b>1.5</b>'],['4:4:4','12 &divide; 4 = <b>3</b> &mdash; never the 4 from the name']], q:'Chroma subsampling factors for 4:4:4, 4:2:2 and 4:2:0?',
  a:'<span class="big">3, 2 and 1.5</span>Count samples per 4 pixels, divide by 4: 12/4, 8/4, 6/4.', viz:'chroma',
  n:'<b>Trap:</b> the factor is <b>never</b> the first number in the name.'},
-{d:'V', t:'Uncompressed 4K bitrate', c:'Video', f:'W × H × fps × bit depth × chroma factor &nbsp;·&nbsp; × 1.25 over HDMI', q:'Uncompressed 4K (3840×2160, 60 fps, 8-bit, 4:4:4) needs roughly…',
+{d:'V', t:'Uncompressed 4K bitrate', c:'Video', f:'W × H × fps × bit depth × chroma factor &nbsp;·&nbsp; × 1.25 over HDMI', ex:[['3840 &times; 2160, 60 fps, 8-bit, 4:4:4','&times; 60 &times; 8 &times; 3 = <b>11.94 Gbps</b>'],['Will it fit a 10 Gb link?','<b>no</b> &mdash; and over HDMI add 25% more for TMDS']], q:'Uncompressed 4K (3840×2160, 60 fps, 8-bit, 4:4:4) needs roughly…',
  a:'<span class="big">≈ 11.94 Gbps</span>W × H × fps × bit depth × subsampling factor.', viz:'fourk',
  n:'More than a 10 Gb link can carry — which is exactly why real video is compressed.'},
 
 /* ---- Cable & install ---- */
-{d:'N', t:'PoE power budget', c:'Networks', f:'device W = V × I &nbsp;·&nbsp; switch rating = total load × 1.2', q:'PoE: how do you size the switch?',
+{d:'N', t:'PoE power budget', c:'Networks', f:'device W = V × I &nbsp;·&nbsp; switch rating = total load × 1.2', ex:[['An encoder at 48 V, 185 mA','0.185 A first &rarr; 48 &times; 0.185 = <b>8.88 W</b>'],['16 devices totalling 116 W','116 &times; 1.2 = <b>139 W across 16 PoE ports</b>']], q:'PoE: how do you size the switch?',
  a:'<span class="big">Device power = V × I</span>Total the loads, then add headroom: <b>× 1.2</b>.', viz:'poe',
  n:'“120% of load” (×1.2) and “load it to 80%” (÷0.8 = ×1.25) are <b>different numbers</b>. Read which one is asked. Convert mA → A first.'},
-{d:'N', t:'The 100-metre channel', k:'n', c:'Networks', f:'permanent link (≤ 90 m) + both patch cords ≤ 100 m', q:'The 100-metre copper limit applies to what, exactly?',
+{d:'N', t:'The 100-metre channel', k:'n', c:'Networks', f:'permanent link (≤ 90 m) + both patch cords ≤ 100 m', ex:[['82 m link with 5 m cords at each end','82 + 5 + 5 = 92 m &mdash; <b>compliant</b>'],['10 m of patch cord in total','link may be at most <b>90 m</b>, the TIA cap']], q:'The 100-metre copper limit applies to what, exactly?',
  a:'<span class="big">The whole channel</span>Permanent link (≤ <b>90 m</b>) + both patch cords ≤ <b>100 m / 328 ft</b>.', viz:'channel100',
  n:'Longer patch cords mean a <b>shorter</b> permanent link — never a longer channel.'},
-{d:'N', t:'RF spectrum', k:'n', c:'RF / Wireless', q:'What is the frequency range of the RF spectrum?',
+{d:'N', t:'RF spectrum', k:'n', c:'RF / Wireless', ex:[['Is 2 kHz inside the RF spectrum?','<b>no</b> &mdash; below the 3 kHz floor'],['Is 5 GHz Wi-Fi?','<b>yes</b> &mdash; comfortably inside 3 kHz&ndash;300 GHz']], q:'What is the frequency range of the RF spectrum?',
  a:'<span class="big">3 kHz – 300 GHz</span>It has a <b>floor</b>, not just a ceiling.', viz:'rf',
  n:'<b>Trap:</b> answers that only bound the top ("up to 300 GHz") miss the 3 kHz floor.'},
-{d:'N', t:'Conduit fill', k:'n', c:'Cabling', f:'≤ 40% of the conduit’s interior cross-sectional area', q:'Max conduit fill with 3 or more cables:',
+{d:'N', t:'Conduit fill', k:'n', c:'Cabling', f:'≤ 40% of the conduit’s interior cross-sectional area', ex:[['Three cables in one conduit','combined cross-section &le; <b>40%</b> of the interior area'],['A 2 in conduit, roughly 3.14 sq in inside','usable &asymp; <b>1.26 sq in</b> of cable']], q:'Max conduit fill with 3 or more cables:',
  a:'<span class="big">40%</span>Of the conduit’s interior cross-sectional area.', viz:'conduit'},
-{d:'N', t:'Cable bend radius', c:'Cabling', f:'bend radius ≥ 4 × cable diameter', q:'Minimum safe cable bend radius:',
+{d:'N', t:'Cable bend radius', c:'Cabling', f:'bend radius ≥ 4 × cable diameter', ex:[['An 11 mm OD cable','11 &times; 4 = <b>44 mm</b> minimum radius'],['An 8 mm OD cable','8 &times; 4 = <b>32 mm</b>']], q:'Minimum safe cable bend radius:',
  a:'<span class="big">4 × cable diameter</span>Tighter bends risk damaging conductors or shielding.', viz:'bend'},
-{d:'N', t:'Rigging safety factor', c:'Rigging', f:'required rating = load × 5', q:'Safety factor for overhead-flown loads:',
+{d:'N', t:'Rigging safety factor', c:'Rigging', f:'required rating = load × 5', ex:[['A 40 kg display','40 &times; 5 = <b>200 kg</b> mount rating'],['A 28 kg projector on a 6 kg mount','(28 + 6) &times; 5 = <b>170 kg</b> &mdash; count the hardware']], q:'Safety factor for overhead-flown loads:',
  a:'<span class="big">5 : 1</span>A 40 kg display needs a mount rated for <b>200 kg</b>.', viz:'rig'},
-{d:'N', t:'RS-485 / DMX512', k:'n', c:'Control', q:'RS-485 / DMX512: device count and termination?',
+{d:'N', t:'RS-485 / DMX512', k:'n', c:'Control', ex:[['40 fixtures on one DMX line','over the <b>32-device</b> cap &rarr; splitter or repeater'],['Terminating the run','<b>120 &#937;</b> at both ends &mdash; 75 &#937; is video coax']], q:'RS-485 / DMX512: device count and termination?',
  a:'<span class="big">32 devices · 120 Ω</span>Terminate with 120 Ω at <b>both ends</b> of the line.', viz:'rs485',
  n:'<b>Trap:</b> 75 Ω is video coax, not the data bus.'},
-{d:'N', t:'Drawing scale', c:'Drawings', f:'real dimension = measured × scale factor', q:'A drawing is 1:50 scale. How do you get the real dimension?',
+{d:'N', t:'Drawing scale', c:'Drawings', f:'real dimension = measured × scale factor', ex:[['15 cm on a 1:20 drawing','15 &times; 20 = 300 cm = <b>3 m</b>'],['4 cm on a 1:25 rack elevation','4 &times; 25 = <b>1 m</b> of rack face']], q:'A drawing is 1:50 scale. How do you get the real dimension?',
  a:'<span class="big">measured × 50</span>Multiply what you measure on the page by the scale factor.', viz:'scale',
  n:'This is one of the few places you genuinely <b>do</b> multiply — check ratio vs. product before every formula.'},
-{d:'N', t:'AFF', k:'r', c:'Drawings', q:'On a drawing: what does AFF mean?',
+{d:'N', t:'AFF', k:'r', c:'Drawings', ex:[['&ldquo;Display at 1525 AFF&rdquo;','centre <b>1525 mm above the finished floor</b>'],['Measured from the slab instead','wrong datum &mdash; <b>finished</b> floor includes the floor build-up']], q:'On a drawing: what does AFF mean?',
  a:'<span class="big">Above Finished Floor</span>A <b>mounting height</b>, measured up from the finished floor line.', viz:'aff'},
 
 /* ---- Budget ---- */
-{d:'B', t:'GC markup', k:'n', c:'Budget', q:'Typical GC markup on an AV subcontract:',
+{d:'B', t:'GC markup', k:'n', c:'Budget', ex:[['A $2M AV subcontract','5&ndash;10% &rarr; <b>$100k&ndash;$200k</b> added']], q:'Typical GC markup on an AV subcontract:',
  a:'<span class="big">~5–10%+</span>On a $2M AV system, roughly <b>$100k–$200k</b> added.', viz:'gcmark'},
-{d:'B', t:'Contingency budget', k:'n', c:'Budget', q:'A 5–10% contingency budget fits what kind of project?',
+{d:'B', t:'Contingency budget', k:'n', c:'Budget', ex:[['A $750k, 18-month project','fits the profile &rarr; carry <b>5&ndash;10%</b>'],['A $40k, six-week install','<b>too small</b> for formal contingency']], q:'A 5–10% contingency budget fits what kind of project?',
  a:'<span class="big">$500k+ and 1 year+</span>Big, long projects carry formal contingency.', viz:'conting'},
-{d:'B', t:'Cost terminology ladder', k:'r', c:'Budget', q:'What cost figure comes before detailed design — and what follows it?',
- a:'<span class="big">Opinion of probable cost</span>→ <b>estimate</b> → <b>quote</b>, in increasing detail and enforceability.', viz:'cost'}
+{d:'B', t:'Cost terminology ladder', k:'r', c:'Budget', ex:[['Asked for a number before design exists','an <b>opinion of probable cost</b>'],['Asked for a number after design is final','a <b>quote</b> &mdash; detailed and enforceable']], q:'What cost figure comes before detailed design — and what follows it?',
+ a:'<span class="big">Opinion of probable cost</span>→ <b>estimate</b> → <b>quote</b>, in increasing detail and enforceability.', viz:'cost'},
+
+/* ---- Chains ----
+   The twelve routes from the Finding the Path catalogue, carded so they turn up
+   in the deck alongside the formulas they are built from. `k:'c'` marks them, so
+   they group separately on the section overview and render their path as steps.
+   These are the only cards whose answer is a *route* rather than a formula. */
+{d:'E', k:'c', t:'Chain — watts and volts to a device count', c:'Electrical',
+ f:'I = P / V &nbsp;&rarr;&nbsp; rating &times; 0.8 &nbsp;&rarr;&nbsp; divide, round down',
+ q:'A device rated in watts, a supply voltage, and “how many fit on a 20 A circuit?”',
+ a:'<span class="big">Two formulas, three steps</span>Watts to amps, then the derating rule, then divide.',
+ st:['Watts to amps, per device &mdash; I = P &divide; V','Usable capacity &mdash; rating &times; 0.8','Divide, and round <b>down</b>'],
+ ex:[['300 W devices at 120 V, on a 20 A circuit','2.5 A each &middot; 16 A usable &middot; 16 &divide; 2.5 = 6.4 &rarr; <b>6 devices</b>']],
+ n:'<b>Wrong turn:</b> rounding up. You cannot install 0.4 of a device, and rounding up overloads the circuit. This is the one chain whose last step rounds <b>down</b>.'},
+
+{d:'E', k:'c', t:'Chain — a load in amps joining a total in watts', c:'Electrical',
+ f:'P = I &times; V &nbsp;&rarr;&nbsp; add to the total &nbsp;&rarr;&nbsp; &times; 3.4',
+ q:'One load quoted in amps while everything else is in watts, then a heat question.',
+ a:'<span class="big">Reconcile the units first</span>Nothing can be summed until every load is in the same unit.',
+ st:['The odd unit out &mdash; P = I &times; V for that device','Now everything is watts &mdash; add it to the total','Heat constant last &mdash; &times; 3.4 for Btu/h'],
+ ex:[['A 1.4 A / 24 V DSP added to a 1,150 W rack','33.6 W &middot; 1,183.6 W total &middot; &times; 3.4 = <b>4,024 Btu/h</b>']],
+ n:'<b>Wrong turn:</b> applying the heat constant to the rack total and forgetting the new device, because it never looked like watts. Units that do not match across a list are always the first thing to reconcile.'},
+
+{d:'E', k:'c', t:'Chain — watts and volts to ohms', c:'Electrical',
+ f:'I = P / V &nbsp;&rarr;&nbsp; R = V / I',
+ q:'Power and voltage given, resistance asked for. No single formula spans it.',
+ a:'<span class="big">Produce the missing input</span>Ohms needs volts <em>and amps</em>, so make the amps first.',
+ st:['Notice nothing turns watts and volts straight into ohms','Produce the missing input &mdash; I = P &divide; V','Then the formula you wanted &mdash; R = V &divide; I'],
+ ex:[['540 W at 120 V','I = 540 &divide; 120 = 4.5 A &rarr; R = 120 &divide; 4.5 = <b>26.7 &#937;</b>']],
+ n:'<b>Wrong turn:</b> inventing <b>R = P / V</b>, which does not exist. If you cannot name the formula, you have not found the path &mdash; you have guessed one.'},
+
+{d:'E', k:'c', t:'Chain — voltage drop, end to end', c:'Electrical',
+ f:'2 &times; D &nbsp;&rarr;&nbsp; &times; r &nbsp;&rarr;&nbsp; V = I &times; R &nbsp;&rarr;&nbsp; vs tolerance',
+ q:'Ohms per foot, a distance, a current, and usually a tolerance percentage.',
+ a:'<span class="big">Four steps, two of them hidden</span>The formula is trivial; the setup is the question.',
+ st:['Double the one-way run &mdash; current goes out <b>and back</b>','Turn the rate into a resistance &mdash; &times; ohms-per-foot','Ohm&rsquo;s law &mdash; V = I &times; R','Compare against V<sub>supply</sub> &times; tolerance%'],
+ ex:[['1.8 A, 25 ft away, 0.0062 &#937;/ft, 12 V, 5%','50 ft &middot; 0.31 &#937; &middot; 0.558 V vs 0.6 V allowed &rarr; <b>passes</b>']],
+ n:'<b>Two wrong turns, both offered.</b> Skipping the doubling gives exactly half. Taking the tolerance percentage of the <em>drop</em> instead of the <em>supply</em> gives a meaningless number that still looks like arithmetic.'},
+
+{d:'D', k:'c', t:'Chain — a distance change to a new SPL', c:'Decibels',
+ f:'20 log(D&#8321;/D&#8322;) &nbsp;&rarr;&nbsp; apply it to the starting SPL',
+ q:'A known SPL at one distance, and the ask names a <em>level</em> at another.',
+ a:'<span class="big">The formula returns a change</span>A change is not a level. Applying it is a second step.',
+ st:['Level change &mdash; 20 log(D&#8321; / D&#8322;)','The ask wanted a <b>level</b>, so apply the change to the SPL you were given'],
+ ex:[['94 dB SPL at 2 m &mdash; what at 12 m?','20 log(2/12) = &minus;15.6 dB &rarr; 94 &minus; 15.6 = <b>78.4 dB SPL</b>']],
+ n:'<b>Wrong turn:</b> answering with the change. &minus;15.6 dB is a correct intermediate and a wrong answer &mdash; and it is always on the option list.'},
+
+{d:'L', k:'c', t:'Chain — sensitivity to distance to watts', c:'Loudspeakers',
+ f:'20 log(1/D) &nbsp;&rarr;&nbsp; + sensitivity &nbsp;&rarr;&nbsp; target + headroom &nbsp;&rarr;&nbsp; 10^(short/10)',
+ q:'“XX dB SPL, 1 W @ 1 m” plus a listener distance plus a target, often with headroom.',
+ a:'<span class="big">The signature chained question</span>Distance loss first, then buy the shortfall back with watts.',
+ st:['Distance loss &mdash; 20 log(1 / D)','SPL at the seat on 1 W &mdash; add the loss to the sensitivity','Real target &mdash; target + headroom','Shortfall &mdash; target minus what 1 W delivers','Watts &mdash; 10^(shortfall / 10)'],
+ ex:[['92 dB @ 1 W/1 m, 8 m away, 70 dB target + 10 dB headroom','&minus;18 dB &middot; 74 dB on 1 W &middot; 80 dB needed &middot; 6 dB short &rarr; <b>&asymp; 4 W</b>']],
+ n:'<b>Wrong turn:</b> dropping the headroom. Leaving it out compares 74 dB against a 70 dB target and concludes you already have enough power &mdash; a wrong answer that feels satisfying because it comes out clean.'},
+
+{d:'L', k:'c', t:'Chain — mixed series and parallel wiring', c:'Loudspeakers',
+ f:'collapse the innermost group &nbsp;&rarr;&nbsp; combine outward',
+ q:'A described wiring topology with both “series” and “parallel” in it.',
+ a:'<span class="big">Innermost first</span>Solve it like brackets in arithmetic.',
+ st:['Collapse the innermost group to one value','Treat that value as a single speaker and combine outward'],
+ ex:[['Two 16 &#937; in parallel, that pair in series with an 8 &#937;','16 &divide; 2 = 8 &#937; &rarr; 8 + 8 = <b>16 &#937;</b>']],
+ n:'<b>Wrong turn:</b> adding everything, or taking reciprocals of everything. The topology dictates the order, and the order dictates which formula applies at each stage.'},
+
+{d:'L', k:'c', t:'Chain — parallel total, then is the amp safe?', c:'Loudspeakers',
+ f:'Z&#8321; / N &nbsp;&rarr;&nbsp; compare vs the amp minimum',
+ q:'A speaker count, parallel wiring, and an amplifier minimum impedance.',
+ a:'<span class="big">The number is the intermediate</span>The ask was whether it is safe, so the comparison is the answer.',
+ st:['Parallel total &mdash; Z&#8321; &divide; N','Compare it against the amplifier&rsquo;s rated minimum load'],
+ ex:[['Six 8 &#937; speakers on a 4 &#937; amplifier','8 &divide; 6 = 1.33 &#937; &rarr; under 4 &#937; &rarr; <b>unsafe</b>']],
+ n:'<b>Wrong turn:</b> stopping at the impedance. Parallel totals fall below the smallest speaker, and stacking enough of them takes any amplifier under its minimum.'},
+
+{d:'L', k:'c', t:'Chain — mixed parallel impedance', c:'Loudspeakers',
+ f:'add the reciprocals &nbsp;&rarr;&nbsp; flip the sum back over',
+ q:'<em>Different</em> impedances in parallel &mdash; the Z&#8321;/N shortcut does not apply.',
+ a:'<span class="big">Two steps, and the second gets skipped</span>The formula gives you 1/Z<sub>T</sub>, not Z<sub>T</sub>.',
+ st:['Add the reciprocals &mdash; 1/Z&#8321; + 1/Z&#8322; + &hellip;','<b>Flip the sum back over</b> to get Z<sub>T</sub>'],
+ ex:[['An 8 &#937; and a 4 &#937; in parallel','1/8 + 1/4 = 0.375 &rarr; 1 &divide; 0.375 = <b>2.67 &#937;</b>']],
+ n:'<b>Wrong turn:</b> leaving 0.375 as the answer. Check it against the rule &mdash; a parallel total is always smaller than the smallest speaker, and 0.375 &#937; fails that instantly.'},
+
+{d:'V', k:'c', t:'Chain — height and diagonal to aspect ratio', c:'Video',
+ f:'A&sup2; + B&sup2; = C&sup2; &nbsp;&rarr;&nbsp; AR = W / H',
+ q:'Any <em>two</em> of width / height / diagonal, with the ask needing the pair you do not have.',
+ a:'<span class="big">One value short</span>Aspect ratio needs width, so Pythagoras runs first.',
+ st:['Pythagoras for the missing dimension','Then the formula you actually wanted &mdash; AR = W / H'],
+ ex:[['29.5 in high, 60 in diagonal','&radic;(60&sup2; &minus; 29.5&sup2;) = 52.3 in &rarr; 52.3 &divide; 29.5 = <b>1.77, i.e. 16:9</b>']],
+ n:'<b>Wrong turn:</b> dividing the two numbers you were handed. Height over diagonal is not an aspect ratio, but it produces a plausible-looking decimal.'},
+
+{d:'V', k:'c', t:'Chain — width and aspect ratio to ANSI lumens', c:'Video',
+ f:'H = W &divide; AR &nbsp;&rarr;&nbsp; L = SH &times; SW &times; AI',
+ q:'An illuminance average and a screen <em>width only</em>, with the aspect ratio mentioned in passing.',
+ a:'<span class="big">The spare given is the bridge</span>The lumen formula needs a height you were never handed.',
+ st:['Height from the aspect ratio &mdash; H = W &divide; AR','Now the lumen formula &mdash; L = SH &times; SW &times; AI'],
+ ex:[['2.44 m wide, 16:9, nine readings averaging 509 lux','2.44 &divide; 1.7778 = 1.372 m &rarr; 1.372 &times; 2.44 &times; 509 = <b>1,704 lm</b>']],
+ n:'<b>Wrong turn:</b> missing that you were short a dimension at all. An aspect ratio you seem not to need is one of the most reliable signs of a chain.'},
+
+{d:'N', k:'c', t:'Chain — per-device power to a switch spec', c:'Networks',
+ f:'mA &rarr; A &nbsp;&rarr;&nbsp; P = V &times; I &nbsp;&rarr;&nbsp; &times; count, sum &nbsp;&rarr;&nbsp; &times; 1.2',
+ q:'PoE devices quoted in volts and milliamps, several counts of them, and a switch to specify.',
+ a:'<span class="big">Five steps, and two answers</span>The wattage <em>and</em> the port count are both the specification.',
+ st:['Milliamps to amps &mdash; before anything else','Watts per device &mdash; P = V &times; I','Multiply by the counts and sum them','Add headroom &mdash; &times; 1.2','Answer the other half too &mdash; the PoE port count'],
+ ex:[['4 encoders at 48 V/185 mA, 12 decoders at 48 V/140 mA','8.88 W and 6.72 W &middot; 116.16 W total &middot; &times; 1.2 = <b>139 W over &ge; 16 ports</b>']],
+ n:'<b>Wrong turn:</b> leaving the current in milliamps, which lands you a thousand times off. And answering with watts alone when the ask wanted a switch.'},
 ];
 
 
@@ -1349,7 +1484,8 @@ function startRun(shuffled){
 // not singularise by dropping its last letter.
 const KINDS=[['f','Formulas','formula'],
              ['n','Numbers to know','number to know'],
-             ['r','Rules & concepts','rule or concept']];
+             ['r','Rules & concepts','rule or concept'],
+             ['c','Chains','chain']];
 
 function renderChart(c){
   const rows=CARDS.filter(x=>x.d===c.d);
@@ -1380,9 +1516,26 @@ function renderChart(c){
 }
 
 function renderCard(c){
-  $('qText').innerHTML=c.q;
+  const chain=c.k==='c';
+  $('qText').innerHTML=(chain?'<span class="fc-badge">chained · '+c.st.length+' steps</span><br>':'')+c.q;
   $('aText').innerHTML=c.a;
   $('viz').innerHTML=c.viz?V[c.viz]:'';
+
+  // only chain cards carry a path; everything else answers in one move
+  const sb=$('stepBox');
+  if(chain){
+    sb.innerHTML='<span class="stlbl">the path</span><ol>'+
+      c.st.map(x=>'<li>'+x+'</li>').join('')+'</ol>';
+    sb.style.display='block';
+  }else sb.style.display='none';
+
+  const xb=$('exBox');
+  if(c.ex&&c.ex.length){
+    xb.innerHTML='<span class="exlbl">'+(c.ex.length>1?'worked examples':'worked example')+'</span>'+
+      c.ex.map(e=>'<div class="exrow"><div class="exp">'+e[0]+'</div><div class="exw">'+e[1]+'</div></div>').join('');
+    xb.style.display='block';
+  }else xb.style.display='none';
+
   const nb=$('noteBox');
   if(c.n){nb.innerHTML=c.n;nb.style.display='block';}else{nb.style.display='none';}
 }
@@ -1394,6 +1547,7 @@ function render(dir){
   card.classList.add(dir<0?'dealback':'deal');
 
   card.classList.toggle('is-chart',!!c.chart);
+  card.classList.toggle('is-chain',c.k==='c');
   $('faceCard').hidden=!!c.chart;
   $('faceChart').hidden=!c.chart;
   $('fcLabel').textContent=c.chart?'Section':'Card';

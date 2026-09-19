@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Last Mile — CTS Cram Sheet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=DM+Sans:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0f1117; --panel:#161a23; --panel2:#1c212e; --border:#2a3040;
+  --text:#e8eaf0; --muted:#9aa3b5; --faint:#6b7386;
+  --teal:#2dd4bf; --amber:#fbbf24; --red:#f87171; --purple:#a78bfa;
+  --blue:#60a5fa; --green:#4ade80;
+  --teal-bg:rgba(45,212,191,.08); --amber-bg:rgba(251,191,36,.08);
+  --red-bg:rgba(248,113,113,.08); --purple-bg:rgba(167,139,250,.08);
+  --blue-bg:rgba(96,165,250,.08); --green-bg:rgba(74,222,128,.08);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:18px;line-height:1.7}
+h1,h2,h3,h4{font-family:'Fraunces',serif;line-height:1.25}
+code,.mono{font-family:'IBM Plex Mono',monospace}
+
+#hamburger{position:fixed;top:18px;left:18px;z-index:1001;width:46px;height:46px;border-radius:10px;
+  background:var(--panel2);border:1px solid var(--border);color:var(--text);cursor:pointer;font-size:20px;
+  display:flex;align-items:center;justify-content:center;transition:left .3s ease}
+#hamburger.open{left:308px}
+#sidebar{position:fixed;top:0;left:0;height:100vh;width:290px;background:var(--panel);border-right:1px solid var(--border);
+  transform:translateX(-100%);transition:transform .3s ease;z-index:1000;overflow-y:auto;padding:24px 0 40px;font-size:16px}
+#sidebar.open{transform:translateX(0)}
+#backdrop{position:fixed;inset:0;background:rgba(0,0,0,.55);opacity:0;pointer-events:none;transition:opacity .3s;z-index:999}
+#backdrop.show{opacity:1;pointer-events:auto}
+#sidebar .side-title{font-family:'Fraunces',serif;font-size:19px;padding:8px 22px 14px;border-bottom:1px solid var(--border);color:var(--amber)}
+#sidebar nav{padding:12px 0}
+#sidebar a{display:block;padding:8px 22px;color:var(--muted);text-decoration:none;border-left:3px solid transparent;transition:.15s}
+#sidebar a:hover{color:var(--text);background:var(--panel2);border-left-color:var(--amber)}
+#sidebar .nav-group{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);padding:16px 22px 4px}
+#sidebar .num{font-family:'IBM Plex Mono',monospace;color:var(--faint);font-size:13px;margin-right:8px}
+
+main{max-width:880px;margin:0 auto;padding:80px 28px 120px}
+header.hero{text-align:center;margin-bottom:56px}
+header.hero .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:13px;letter-spacing:.22em;text-transform:uppercase;color:var(--amber);margin-bottom:14px}
+header.hero h1{font-size:54px;font-weight:700;margin-bottom:16px}
+header.hero p{color:var(--muted);max-width:640px;margin:0 auto;font-size:19px}
+section{margin-bottom:84px}
+section>h2{font-size:34px;margin-bottom:8px;padding-top:16px}
+section>.section-sub{color:var(--muted);margin-bottom:28px;font-size:17px}
+h3{font-size:23px;margin:38px 0 14px;color:var(--text)}
+h4{font-size:18.5px;margin:26px 0 10px;color:var(--teal);font-family:'DM Sans',sans-serif;font-weight:700}
+p{margin-bottom:14px}
+ul,ol{margin:0 0 16px 26px}
+li{margin-bottom:8px}
+strong{color:#fff}
+.divider{height:1px;background:var(--border);margin:56px 0}
+
+.fhead{display:flex;align-items:flex-start;gap:18px;padding-top:16px}
+.fhead .fnum{font-family:'IBM Plex Mono',monospace;font-size:44px;font-weight:600;color:var(--amber);line-height:1;opacity:.55;flex-shrink:0}
+.fhead h2{font-size:34px;margin-bottom:4px;padding-top:0}
+.fhead .ftag{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint)}
+
+.callout{border-radius:12px;padding:16px 20px;margin:22px 0;border:1px solid;font-size:16.5px}
+.callout .label{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.18em;text-transform:uppercase;display:block;margin-bottom:6px;font-weight:600}
+.callout.keyterm{background:var(--teal-bg);border-color:rgba(45,212,191,.35)}
+.callout.keyterm .label{color:var(--teal)}
+.callout.spec{background:var(--amber-bg);border-color:rgba(251,191,36,.35)}
+.callout.spec .label{color:var(--amber)}
+.callout.watchout{background:var(--red-bg);border-color:rgba(248,113,113,.35)}
+.callout.watchout .label{color:var(--red)}
+.callout.examtip{background:var(--purple-bg);border-color:rgba(167,139,250,.35)}
+.callout.examtip .label{color:var(--purple)}
+
+.plain{border-left:3px solid var(--blue);background:var(--blue-bg);border-radius:0 12px 12px 0;padding:14px 18px;margin:18px 0;font-size:16.5px}
+.plain .label{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--blue);display:block;margin-bottom:6px;font-weight:600}
+
+.xref{display:block;background:var(--panel);border:1px solid var(--border);border-left:4px solid var(--purple);border-radius:0 12px 12px 0;
+  padding:14px 18px;margin:22px 0;text-decoration:none;color:var(--text);font-size:16.5px;transition:.15s}
+.xref:hover{background:var(--panel2);border-left-color:var(--teal)}
+.xref .label{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--purple);display:block;margin-bottom:6px;font-weight:600}
+.xref .go{color:var(--teal);white-space:nowrap}
+.xref.big{border-left-color:var(--teal);background:linear-gradient(140deg,rgba(45,212,191,.08),var(--panel) 60%)}
+.xref.big .label{color:var(--teal)}
+
+.diagram{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:20px 16px 16px;margin:24px 0;text-align:center}
+.diagram svg{max-width:100%;height:auto}
+.diagram .dcap{font-size:14.5px;color:var(--muted);margin-top:12px;line-height:1.55;text-align:left;max-width:660px;margin-left:auto;margin-right:auto}
+.diagram text{font-family:'DM Sans',sans-serif;font-size:15px;fill:var(--muted)}
+.diagram text.dt{fill:var(--text)}
+.diagram text.dm{font-family:'IBM Plex Mono',monospace;font-size:14px}
+.diagram text.dteal{fill:var(--teal)}
+.diagram text.damber{fill:var(--amber)}
+.diagram text.dgreen{fill:var(--green)}
+.diagram text.dred{fill:var(--red)}
+.diagram text.dblue{fill:var(--blue)}
+.diagram text.dpurple{fill:var(--purple)}
+.diagram text.dsmall{font-size:12.5px}
+.dg-line{stroke:var(--faint);stroke-width:1.5;fill:none}
+.dg-border{stroke:var(--border);stroke-width:1.5;fill:none}
+.dg-teal{stroke:var(--teal);stroke-width:2;fill:none}
+.dg-amber{stroke:var(--amber);stroke-width:2;fill:none}
+.dg-blue{stroke:var(--blue);stroke-width:2;fill:none}
+.dg-green{stroke:var(--green);stroke-width:2;fill:none}
+.dg-red{stroke:var(--red);stroke-width:2;fill:none}
+.dg-purple{stroke:var(--purple);stroke-width:2;fill:none}
+.dg-dash{stroke-dasharray:5 5}
+.dg-fill-teal{fill:rgba(45,212,191,.14);stroke:var(--teal);stroke-width:1.5}
+.dg-fill-amber{fill:rgba(251,191,36,.14);stroke:var(--amber);stroke-width:1.5}
+.dg-fill-blue{fill:rgba(96,165,250,.14);stroke:var(--blue);stroke-width:1.5}
+.dg-fill-green{fill:rgba(74,222,128,.14);stroke:var(--green);stroke-width:1.5}
+.dg-fill-purple{fill:rgba(167,139,250,.14);stroke:var(--purple);stroke-width:1.5}
+.dg-fill-panel{fill:var(--panel2);stroke:var(--border);stroke-width:1.5}
+
+table{width:100%;border-collapse:collapse;margin:22px 0;font-size:16px}
+th{background:var(--panel2);color:var(--text);text-align:left;padding:11px 14px;font-weight:700;border-bottom:2px solid var(--border)}
+td{padding:10px 14px;border-bottom:1px solid var(--border);color:var(--muted)}
+td:first-child{color:var(--text)}
+tr:hover td{background:rgba(255,255,255,.02)}
+.tbl-wrap{overflow-x:auto}
+table.mono-1 td:first-child{font-family:'IBM Plex Mono',monospace;font-size:15px;color:var(--amber);white-space:nowrap}
+table.mono-2 td:nth-child(2){font-family:'IBM Plex Mono',monospace;font-size:15px;color:#fff}
+table.imp td:first-child{font-family:'IBM Plex Mono',monospace;font-size:17px;color:var(--teal);font-weight:600;white-space:nowrap}
+table.compact{font-size:15.5px}
+table.compact td,table.compact th{padding:8px 12px}
+
+.card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin:24px 0}
+.concept-card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:20px}
+.concept-card h4{font-size:17px;margin:0 0 8px;color:var(--teal)}
+.concept-card p{font-size:15.5px;color:var(--muted);margin:0}
+
+.quote{background:var(--panel);border:1px solid var(--border);border-left:4px solid var(--amber);border-radius:0 12px 12px 0;padding:18px 22px;margin:24px 0;font-size:16.5px;color:var(--muted)}
+.quote .qsrc{display:block;margin-top:10px;font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--faint)}
+.quote strong{color:var(--text)}
+
+/* heuristic rank list */
+.rank{counter-reset:rk;margin:24px 0}
+.rank .item{display:flex;gap:16px;background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:16px 20px;margin-bottom:12px;align-items:flex-start}
+.rank .item::before{counter-increment:rk;content:counter(rk);font-family:'IBM Plex Mono',monospace;font-size:22px;color:var(--amber);opacity:.6;flex-shrink:0;line-height:1.3}
+.rank .item h4{margin:0 0 5px;color:#fff;font-size:17.5px}
+.rank .item p{margin:0;font-size:15.5px;color:var(--muted)}
+
+/* phase flow */
+.phases{display:flex;flex-direction:column;gap:0;margin:26px 0}
+.phase{background:var(--panel);border:1px solid var(--border);border-left:4px solid var(--teal);border-radius:0 12px 12px 0;padding:18px 22px;margin-bottom:10px}
+.phase .pname{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--teal);margin-bottom:6px}
+.phase h4{margin:0 0 8px;color:#fff;font-size:19px}
+.phase .pdeliv{font-size:15px;color:var(--faint);margin-top:8px;font-family:'IBM Plex Mono',monospace}
+.phase.visit{border-left-color:var(--amber)}
+.phase.visit .pname{color:var(--amber)}
+
+.dump{background:var(--panel);border:1px dashed var(--amber);border-radius:14px;padding:24px 26px;margin:26px 0}
+.dump .dtitle{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--amber);margin-bottom:14px}
+.dump ul{margin-left:22px;font-size:16.5px;line-height:1.9}
+
+#quiz-area{margin-top:26px}
+.q-block{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:22px 24px;margin-bottom:20px}
+.q-block .qnum{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--faint);letter-spacing:.14em;margin-bottom:8px}
+.q-block .qtag{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--amber);letter-spacing:.12em;float:right}
+.q-block .qtext{font-weight:500;color:#fff;margin-bottom:14px}
+.q-opt{display:block;width:100%;text-align:left;background:var(--panel2);border:1px solid var(--border);color:var(--text);
+  border-radius:10px;padding:11px 16px;margin-bottom:9px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:16px;transition:.15s}
+.q-opt:hover{border-color:var(--blue)}
+.q-opt.correct{border-color:var(--green);background:var(--green-bg);color:var(--green)}
+.q-opt.wrong{border-color:var(--red);background:var(--red-bg);color:var(--red)}
+.q-opt:disabled{cursor:default;opacity:.85}
+.q-expl{display:none;margin-top:12px;padding:14px 16px;background:var(--bg);border-radius:10px;font-size:15.5px;color:var(--muted);border-left:3px solid var(--blue)}
+.q-expl.show{display:block}
+.q-expl .m{font-family:'IBM Plex Mono',monospace;color:#fff;display:block;margin:6px 0}
+#quiz-score{position:sticky;top:0;z-index:50;background:var(--panel2);border:1px solid var(--border);border-radius:0 0 12px 12px;
+  padding:12px 20px;font-family:'IBM Plex Mono',monospace;font-size:15px;color:var(--amber);text-align:center;margin-bottom:24px}
+#quiz-reset{margin:10px auto 0;display:block;background:var(--panel2);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:10px 22px;cursor:pointer;font-size:15px}
+#quiz-reset:hover{border-color:var(--amber);color:var(--amber)}
+
+@media(max-width:640px){
+  header.hero h1{font-size:36px}
+  section>h2,.fhead h2{font-size:26px}
+  .fhead .fnum{font-size:32px}
+  main{padding:76px 18px 90px}
+  #hamburger.open{left:auto;right:18px}
+}
+</style>
+</head>
+<body>
+<button id="hamburger" aria-label="Menu">☰</button>
+<div id="backdrop"></div>
+<aside id="sidebar">
+  <div class="side-title">The Last Mile</div>
+  <nav>
+    <div class="nav-group">Start</div>
+    <a href="#source">The five essentials</a>
+    <div class="nav-group">The Essentials</div>
+    <a href="#read"><span class="num">1</span>Read The Question</a>
+    <a href="#math"><span class="num">2</span>The Math</a>
+    <a href="#cable"><span class="num">3</span>Cable &amp; Connectivity</a>
+    <a href="#process"><span class="num">4</span>Project Order</a>
+    <a href="#enduser"><span class="num">5</span>The End-User Rule</a>
+    <div class="nav-group">Night Before</div>
+    <a href="#drawings">Reading Drawings</a>
+    <a href="#extras">Formulas Beyond The Five</a>
+    <a href="#checklist">Final Checklist</a>
+    <div class="nav-group">Practice</div>
+    <a href="#quiz">Mixed Drill (16 Q)</a>
+  </nav>
+</aside>
+
+<main>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" style="fill:var(--faint)"/></marker>
+<marker id="arrT" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" style="fill:var(--teal)"/></marker>
+<marker id="arrA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" style="fill:var(--amber)"/></marker>
+</defs></svg>
+
+<header class="hero">
+  <div class="eyebrow">CTS Exam Prep · Final Pass</div>
+  <h1>The Last Mile</h1>
+  <p>Everything that isn't the Core Five. Built from a passing candidate's five essentials and checked against AVIXA's exam blueprint — read this the night before, not the month before.</p>
+</header>
+
+<!-- ================= SOURCE ================= -->
+<section id="source">
+<h2>The five essentials</h2>
+<p class="section-sub">One candidate's post-exam debrief, reproduced in full. It is the spine of this page.</p>
+
+<div class="quote">
+"I just passed the basic CTS exam. If I could boil down what you must know to 5 essential topics, it would be:<br><br>
+<strong>1.</strong> Number one, and most importantly, is <strong>reading comprehension of multiple choice questions</strong>. I'll also throw in graphs and reflected ceiling plans, but less so (do the practice exams!!).<br>
+<strong>2.</strong> Know the <strong>basic math and formulas</strong> for calculating volume, ohms law, aspect ratio, throw distance, SPL/light change over distance (inverse sq law).<br>
+<strong>3.</strong> Know all <strong>cable types</strong>, including their wiring, impedance, signal type, and communication protocol.<br>
+<strong>4.</strong> Know the <strong>order and purpose of all events and milestones</strong> that take place on an AV project from conception to termination (emphasis on site visits).<br>
+<strong>5.</strong> If an answer mentions an <strong>'end user'</strong>, that is likely the correct answer.<br><br>
+I know #2 is kind of cheating with multiple topics but seriously, if you have a middle-school level understanding of math, all you need is to memorize a few formulas, and then 10–20% of the questions are freebies."
+<span class="qsrc">— r/CommercialAV, post-exam debrief</span>
+</div>
+
+<div class="callout examtip"><span class="label">How To Use This Page</span>
+Essential #2 has its own dedicated page — it's the only one that needs drilling rather than reading. The other four are <strong>recognition knowledge</strong>: you need to have seen them recently, not to have practised them. That's why this is a last-pass document. Work top to bottom, then take the drill at the bottom.</div>
+
+<div class="callout watchout"><span class="label">Where This Comes From</span>
+The quote above is one person's experience, not an official source. Where it lines up with AVIXA's published <strong>Exam Content Outline and Job Task Analysis</strong>, this page says so. Where it's a heuristic rather than a fact — #5 especially — this page flags it. Treat the blueprint as evidence and the debrief as a study aid.</div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ================= 1 · READING ================= -->
+<section id="read">
+<div class="fhead">
+  <div class="fnum">01</div>
+  <div>
+    <div class="ftag">The #1 Essential · Applies to all 100 items</div>
+    <h2>Read The Question</h2>
+  </div>
+</div>
+<p class="section-sub">The candidate ranked this above the math, and the blueprint quietly agrees — "basic math" appears as a <em>skill</em>, while the knowledge items are about interpreting requirements, drawings and documentation.</p>
+
+<div class="plain"><span class="label">In Plain English</span>
+CTS items are rarely "do you know this fact." They're "given this situation, what's the <em>best</em> action." That means several answers will be true statements, and only one answers the question that was actually asked. Most missed questions are comprehension failures wearing a knowledge-gap costume.</div>
+
+<h3>The qualifier words that change everything</h3>
+<div class="tbl-wrap"><table class="mono-1">
+<tr><th>Word in the stem</th><th>What it does to the answer</th></tr>
+<tr><td>BEST / MOST</td><td>Several options are acceptable. Rank them — you want the optimum, not merely a workable one.</td></tr>
+<tr><td>FIRST / NEXT</td><td>Sequence question. The answer is usually the information-gathering or verification step, not the fix.</td></tr>
+<tr><td>EXCEPT / NOT / LEAST</td><td>You are hunting the <em>odd one out</em>. Three options will be correct. Flip your thinking deliberately.</td></tr>
+<tr><td>PRIMARY / MAIN</td><td>Secondary benefits will be offered as bait. Ask what the thing exists <em>for</em>.</td></tr>
+<tr><td>ALWAYS / NEVER / ALL / ONLY</td><td>In an <em>answer</em>, absolutes are usually wrong — AV has too many exceptions.</td></tr>
+<tr><td>MINIMUM / MAXIMUM</td><td>A spec question. There's a number, and the distractors bracket it.</td></tr>
+</table></div>
+
+<h3>How the wrong answers are built</h3>
+<p>Distractors on a well-written exam aren't random. Recognising the pattern often gets you to the answer without knowing the fact:</p>
+
+<div class="card-grid">
+  <div class="concept-card"><h4>The near-twin</h4><p>The correct term's partner — resistance vs. impedance, margin vs. markup, estimate vs. quote. If two options are a known pair, one of them is the answer.</p></div>
+  <div class="concept-card"><h4>The skipped step</h4><p>In math items, the result you'd get by omitting a conversion — diagonal used instead of width, feet left as inches.</p></div>
+  <div class="concept-card"><h4>The right fact, wrong question</h4><p>A true statement that doesn't answer what was asked. Very common on "BEST" and "PRIMARY" items.</p></div>
+  <div class="concept-card"><h4>The unilateral action</h4><p>Something a technician might actually do, but without consulting, documenting, or verifying first. Almost always wrong on this exam.</p></div>
+</div>
+
+<div class="callout keyterm"><span class="label">The Two-Pass Method</span>
+<strong>Pass 1:</strong> answer everything you're sure of, and flag the rest. Do not burn four minutes on question seven. <strong>Pass 2:</strong> return to flagged items with the clock pressure gone and the rest of the exam's vocabulary now fresh in your head — later questions frequently jog the answer to earlier ones. With 100 items, you have roughly <strong>1.5 minutes each</strong>; the ones you know take 20 seconds, which is what funds the hard ones.</div>
+
+<div class="callout watchout"><span class="label">Your Own Data Says This</span>
+Your logged diagnostics put <strong>44% of misses in "term confusions"</strong> — both things known, pairing wrong — and another <strong>4% in outright reading slips</strong>. Neither is a study gap. Both are fixed at the moment of reading, by slowing down on the stem and naming which pair is being tested before you look at the options.</div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ================= 2 · MATH ================= -->
+<section id="math">
+<div class="fhead">
+  <div class="fnum">02</div>
+  <div>
+    <div class="ftag">Blueprint-confirmed · ~10–20% of items</div>
+    <h2>The Math</h2>
+  </div>
+</div>
+<p class="section-sub">This is the one essential that needs drilling rather than reading — so it lives on its own page.</p>
+
+<a class="xref big" href="cts-core-five-formulas.html"><span class="label">Dedicated Page</span>
+<strong>The Core Five</strong> — volume, Ohm's law, aspect ratio, throw distance, inverse square law. Diagrams, worked examples, live calculators, the traps built into the distractors, and the 60-second brain dump to write on the scratch board. <span class="go">Open it →</span></a>
+
+<div class="dump">
+<div class="dtitle">If you only re-read one thing — the scratch-board dump</div>
+<ul>
+<li><span class="mono">V = I × R</span> · <span class="mono">P = V × I</span></li>
+<li><span class="mono">Z<sub>parallel</sub> = Z ÷ N</span> (series adds)</li>
+<li><span class="mono">Volume = L × W × H</span></li>
+<li><span class="mono">16:9 → W = D × 0.872 · H = D × 0.490</span></li>
+<li><span class="mono">Throw Distance = Throw Ratio × Image WIDTH</span></li>
+<li><span class="mono">Double the distance = −6 dB</span> (light drops to ¼)</li>
+<li><span class="mono">1 m = 3.28 ft</span> · <span class="mono">1 in = 25.4 mm</span></li>
+</ul>
+</div>
+
+<p>The lower-yield formulas that still turn up — heat load, projector lumens, margin vs. markup — are collected further down in <a href="#extras" style="color:var(--teal)">Formulas Beyond The Five</a>.</p>
+</section>
+
+<div class="divider"></div>
+
+<!-- ================= 3 · CABLE ================= -->
+<section id="cable">
+<div class="fhead">
+  <div class="fnum">03</div>
+  <div>
+    <div class="ftag">Highest-volume recall topic on this page</div>
+    <h2>Cable &amp; Connectivity</h2>
+  </div>
+</div>
+<p class="section-sub">Four attributes per cable: <strong>wiring · impedance · signal type · protocol</strong>. That's the framing the debrief used, and it's the right one — exam items almost always test one attribute against another cable's.</p>
+
+<h3>The impedance table — memorise this block</h3>
+<p>If you learn one table tonight, this is it. Impedance is the single most testable cable attribute because every value belongs to exactly one family.</p>
+
+<div class="tbl-wrap"><table class="imp">
+<tr><th>Impedance</th><th>Belongs to</th><th>Typical cable &amp; connector</th></tr>
+<tr><td>50 Ω</td><td>RF — antennas, wireless mic distribution</td><td>RG-58 · BNC / N-type</td></tr>
+<tr><td>75 Ω</td><td>Video coax, SDI, S/PDIF, AES3id</td><td>RG-6 / RG-59 / RG-11 · BNC, F-type, RCA</td></tr>
+<tr><td>100 Ω</td><td>Balanced twisted pair — network &amp; AV-over-IP</td><td>Cat5e / Cat6 / Cat6A · RJ-45</td></tr>
+<tr><td>110 Ω</td><td>AES3 (AES/EBU) professional digital audio</td><td>Shielded twisted pair · XLR-3</td></tr>
+<tr><td>120 Ω</td><td>RS-485 and DMX512 <em>termination resistor</em></td><td>At both ends of the chain</td></tr>
+<tr><td>600 Ω</td><td>Legacy analog audio line matching</td><td>Historical — modern gear is bridging, not matched</td></tr>
+</table></div>
+
+<div class="callout watchout"><span class="label">The 75 / 110 Near-Twin</span>
+Both carry <em>digital audio</em>. <strong>AES3</strong> proper is <strong>110 Ω</strong> on shielded twisted pair with <strong>XLR</strong>. <strong>AES3id</strong> is the <strong>75 Ω</strong> coax-and-BNC variant, which runs much further. If a question pairs an impedance with a connector, the connector is the tell: XLR → 110 Ω, BNC → 75 Ω.</div>
+
+<h3>Balanced vs. unbalanced — the concept behind half the audio questions</h3>
+
+<div class="diagram">
+<svg viewBox="0 0 580 230" role="img" aria-label="Unbalanced two-conductor cable versus balanced three-conductor cable with common mode rejection">
+  <!-- unbalanced -->
+  <text class="dm dred dt" x="20" y="24">UNBALANCED — 2 conductors</text>
+  <line x1="20" y1="52" x2="250" y2="52" class="dg-red"/>
+  <text class="dm dsmall" x="256" y="56">signal</text>
+  <line x1="20" y1="78" x2="250" y2="78" class="dg-line"/>
+  <text class="dm dsmall" x="256" y="82">shield = signal return</text>
+  <path d="M120,34 L120,50" class="dg-amber" marker-end="url(#arrA)"/>
+  <text class="dm damber dsmall" x="100" y="28">noise</text>
+  <text class="dm dred dsmall" x="20" y="104">noise rides along on the signal — no way to remove it</text>
+
+  <!-- balanced -->
+  <text class="dm dgreen dt" x="20" y="146">BALANCED — 3 conductors</text>
+  <line x1="20" y1="172" x2="250" y2="172" class="dg-green"/>
+  <text class="dm dsmall" x="256" y="176">pin 2 — hot (+)</text>
+  <line x1="20" y1="192" x2="250" y2="192" class="dg-green"/>
+  <text class="dm dsmall" x="256" y="196">pin 3 — cold (−)</text>
+  <line x1="20" y1="212" x2="250" y2="212" class="dg-line"/>
+  <text class="dm dsmall" x="256" y="216">pin 1 — shield / ground</text>
+  <path d="M120,152 L120,170" class="dg-amber" marker-end="url(#arrA)"/>
+  <text class="dm damber dsmall" x="100" y="146">noise</text>
+  <text class="dm dgreen dsmall" x="420" y="140">noise hits BOTH</text>
+  <text class="dm dgreen dsmall" x="420" y="158">signal lines equally</text>
+  <text class="dm dgreen dsmall" x="420" y="176">→ receiver subtracts</text>
+  <text class="dm dgreen dsmall" x="420" y="194">→ noise cancels</text>
+</svg>
+<div class="dcap">Balanced means <strong>two signal conductors carrying the same signal in opposite polarity</strong>, plus a shield. Interference hits both equally (common mode); the differential receiver subtracts one from the other, the signal survives and the noise cancels. This is <strong>common-mode rejection</strong>.</div>
+</div>
+
+<div class="callout keyterm"><span class="label">XLR Pinout — Worth Knowing Cold</span>
+<strong>Pin 1 = shield/ground · Pin 2 = hot (+) · Pin 3 = cold (−).</strong> "Pin 2 hot" is the AES standard. A cable wired pin 2 to pin 3 is a <em>polarity-inverting</em> cable, which is a classic troubleshooting-question answer for a system where two sources cancel.</div>
+
+<div class="callout watchout"><span class="label">Your Own Logged Trap</span>
+Your notes already flag this one: <strong>use balanced cable for everything</strong>, not just past some length threshold. "Balanced only over X metres" is a distractor. Also: coax is <strong>unbalanced by construction</strong>; noise rejection comes from twisted pair in a balanced circuit, while a shield provides physical/electrostatic protection rather than common-mode rejection.</div>
+
+<h3>Signal types — what's actually on the wire</h3>
+<div class="tbl-wrap"><table class="compact">
+<tr><th>Signal</th><th>Level / form</th><th>Typical cable &amp; connector</th></tr>
+<tr><td>Mic level</td><td>Very low, ~−60 to −40 dBu</td><td>Shielded twisted pair · XLR (balanced)</td></tr>
+<tr><td>Line level</td><td>Pro +4 dBu · Consumer −10 dBV</td><td>STP · XLR / TRS balanced, RCA unbalanced</td></tr>
+<tr><td>Speaker level</td><td>High current, amplified</td><td>Unshielded 2-conductor, heavy gauge · speakON, Phoenix</td></tr>
+<tr><td>AES3 digital audio</td><td>Digital, 110 Ω</td><td>STP · XLR</td></tr>
+<tr><td>Audio over IP</td><td>Dante, AVB, AES67 — packets</td><td>Cat5e+ · RJ-45</td></tr>
+<tr><td>Composite / S-video / component</td><td>Analog video, 75 Ω</td><td>Coax · RCA / BNC</td></tr>
+<tr><td>VGA / RGBHV</td><td>Analog video + separate sync</td><td>Coax bundle · HD-15 or 5× BNC</td></tr>
+<tr><td>SDI</td><td>Digital video, 75 Ω, long runs</td><td>Coax · BNC</td></tr>
+<tr><td>HDMI</td><td>TMDS digital A/V + HDCP</td><td>19-pin · Type A. Short copper runs</td></tr>
+<tr><td>DisplayPort</td><td>Packetised digital A/V, MST capable</td><td>20-pin</td></tr>
+<tr><td>DVI</td><td>DVI-D digital · DVI-I adds analog</td><td>24+1 / 24+5 pin</td></tr>
+</table></div>
+
+<div class="callout spec"><span class="label">Mic vs. Line vs. Speaker</span>
+Three levels, three orders of magnitude apart. Plugging a mic into a line input gives you a signal too quiet to use; the reverse overloads and distorts. Speaker cable is unshielded because the signal is so hot that induced noise is irrelevant — and heavy-gauge because it carries real current.</div>
+
+<h3>Fibre — when copper runs out</h3>
+<div class="tbl-wrap"><table class="compact">
+<tr><th></th><th>Singlemode</th><th>Multimode</th></tr>
+<tr><td>Core size</td><td>~9 µm</td><td>50 µm or 62.5 µm</td></tr>
+<tr><td>Light source</td><td>Laser, 1310 / 1550 nm</td><td>LED or VCSEL, 850 / 1300 nm</td></tr>
+<tr><td>Distance</td><td>Very long — campus, city</td><td>Shorter — in-building</td></tr>
+<tr><td>Jacket colour</td><td>Yellow</td><td>Orange (OM1/OM2) · Aqua (OM3/OM4) · Lime (OM5)</td></tr>
+<tr><td>Cost</td><td>Cheaper cable, pricier optics</td><td>Pricier cable, cheaper optics</td></tr>
+</table></div>
+<p>Why AV cares: fibre is <strong>immune to EMI/RFI</strong>, carries no current so it breaks <strong>ground loops</strong>, and has enormous bandwidth. The trade is that it can't carry power and termination is a skilled job.</p>
+
+<h3>Control protocols — the ones with numbers attached</h3>
+<div class="tbl-wrap"><table class="compact mono-2">
+<tr><th>Protocol</th><th>Key numbers</th><th>Character</th></tr>
+<tr><td>RS-232</td><td>1 device · ~15 m (50 ft)</td><td>Point-to-point, unbalanced, bidirectional. DB-9. The classic serial control link.</td></tr>
+<tr><td>RS-422</td><td>~1,200 m (4,000 ft)</td><td>Balanced/differential — same idea as balanced audio, so it goes much further.</td></tr>
+<tr><td>RS-485</td><td>32 devices · 120 Ω · ~1,200 m</td><td>Balanced <em>multidrop</em> — many devices on one bus. Terminate both ends.</td></tr>
+<tr><td>DMX512</td><td>512 channels/universe · 120 Ω</td><td>Lighting control riding on the RS-485 electrical layer. 5-pin XLR. Terminator at the end of the chain.</td></tr>
+<tr><td>MIDI</td><td>31.25 kbps</td><td>5-pin DIN, current loop. Musical/show control.</td></tr>
+<tr><td>Infrared</td><td>Carrier ~30–60 kHz (often 38 kHz)</td><td>Line of sight, one-way. Defeated by plasma/sunlight interference.</td></tr>
+<tr><td>Contact closure</td><td>—</td><td>Simplest possible control: a circuit is open or closed. Screens, relays, triggers.</td></tr>
+<tr><td>Ethernet / IP</td><td>100 m channel</td><td>The modern default for control and increasingly for signal transport.</td></tr>
+</table></div>
+
+<div class="callout keyterm"><span class="label">The RS-485 Cluster</span>
+<strong>32 devices, 120 Ω termination at both ends, DMX512 rides on it.</strong> These three facts travel together and your weak-spots log already flags them. If a question mentions any one, the others are likely distractor material.</div>
+
+<h3>Twisted pair specifics</h3>
+<ul>
+<li><strong>The 100 m channel</strong> — 90 m of solid-core horizontal cable + 10 m of stranded patch cords, total 100 m. Exceeding it is a classic "why is this link failing" answer.</li>
+<li><strong>T568A vs. T568B</strong> — the two pinout standards, differing by a swap of the green and orange pairs. Same standard at both ends = straight-through. Different at each end = crossover. Pick one standard per site and stay consistent.</li>
+<li><strong>Category</strong> — Cat5e, Cat6, Cat6A. Higher category = more bandwidth and tighter crosstalk control, not magically more distance.</li>
+<li><strong>Solid vs. stranded</strong> — solid core for permanent in-wall runs, stranded for flexible patch cords. Using stranded for a long horizontal run increases attenuation.</li>
+</ul>
+
+<h3>Fire rating — where the cable is allowed to go</h3>
+<div class="tbl-wrap"><table class="mono-1">
+<tr><th>Rating</th><th>Where it goes</th></tr>
+<tr><td>CMP — Plenum</td><td>Air-handling spaces (a ceiling void used as return air). Low smoke, flame-retardant. The most restrictive space, the most expensive cable.</td></tr>
+<tr><td>CMR — Riser</td><td>Vertical runs between floors. Resists carrying flame floor to floor.</td></tr>
+<tr><td>CM / CMG — General</td><td>General purpose, single floor, non-plenum.</td></tr>
+</table></div>
+<p>The hierarchy runs downward: plenum cable may substitute for riser or general, but never the reverse. Using non-plenum cable in a plenum space is a <strong>code violation</strong>, and it's a favourite exam scenario.</p>
+
+<h3>Installation numbers already in your weak-spots log</h3>
+<div class="tbl-wrap"><table class="mono-2">
+<tr><th>Spec</th><th>Value</th></tr>
+<tr><td>Maximum conduit fill, 3 or more cables</td><td>40%</td></tr>
+<tr><td>Minimum cable bend radius</td><td>4 × cable diameter</td></tr>
+<tr><td>Rigging safety factor, overhead-flown loads</td><td>5:1</td></tr>
+<tr><td>RS-485 / DMX512 device limit and termination</td><td>32 devices · 120 Ω</td></tr>
+</table></div>
+
+<div class="callout watchout"><span class="label">Cable Separation</span>
+Keep AV signal cable away from mains power to avoid induced hum. Where a crossing is unavoidable, <strong>cross at 90°</strong> — perpendicular crossing minimises coupling. Running parallel alongside power for any distance is the wrong answer.</div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ================= 4 · PROCESS ================= -->
+<section id="process">
+<div class="fhead">
+  <div class="fnum">04</div>
+  <div>
+    <div class="ftag">Domain A is 61% of the exam</div>
+    <h2>Project Order &amp; Milestones</h2>
+  </div>
+</div>
+<p class="section-sub">Conception to termination, in order, with the purpose of each step — and the site visits the debrief singled out.</p>
+
+<div class="plain"><span class="label">Why This Is Worth Real Time</span>
+Domain A — Creating AV Solutions — is <strong>61 of the 100 items</strong>. Its nine tasks are literally the project lifecycle in order: site survey, gather customer information, evaluate the environment, develop scope, design, sell, select vendors, provide the solution. Knowing the sequence isn't one question's worth of value; it's the organising structure of the majority of the exam.
+</div>
+
+<div class="phases">
+  <div class="phase">
+    <div class="pname">Phase 1</div>
+    <h4>Program Phase — figure out what's actually needed</h4>
+    <p>Before any equipment is chosen. Conduct the <strong>needs analysis</strong>, run the <strong>site survey</strong>, understand the client's tasks and the room's constraints. Ends when everyone agrees on what the system must <em>do</em>.</p>
+    <div class="pdeliv">Deliverable: Program Report — the agreed statement of need</div>
+  </div>
+  <div class="phase">
+    <div class="pname">Phase 2</div>
+    <h4>Design Phase — decide how to deliver it</h4>
+    <p>Schematic design → design development → construction documents. Signal flow diagrams, equipment selection, drawings, specifications, bill of materials. Coordination with architect, electrical, structural and IT happens here.</p>
+    <div class="pdeliv">Deliverable: drawings, specs, BOM, bid documents</div>
+  </div>
+  <div class="phase">
+    <div class="pname">Phase 3</div>
+    <h4>Build / Construction Phase — make it exist</h4>
+    <p>Procurement, rack fabrication, <strong>rough-in</strong> (conduit, back boxes, cable pulls — before walls close), then <strong>trim-out</strong> (devices, plates, mounts) and termination. Change orders and RFIs live here.</p>
+    <div class="pdeliv">Deliverable: an installed, terminated system</div>
+  </div>
+  <div class="phase">
+    <div class="pname">Phase 4</div>
+    <h4>Verification — prove it does what was promised</h4>
+    <p>System verification and commissioning, tested <strong>against the Program Report</strong> — that's the whole point of writing it down in Phase 1. Punch list of deficiencies gets generated and cleared.</p>
+    <div class="pdeliv">Deliverable: verification checklist, punch list, as-built drawings</div>
+  </div>
+  <div class="phase">
+    <div class="pname">Phase 5</div>
+    <h4>Handover / Closeout — transfer ownership</h4>
+    <p><strong>Training the end users</strong>, delivering documentation and as-builts, final client sign-off and acceptance. The <strong>warranty period starts here</strong>, not at installation.</p>
+    <div class="pdeliv">Deliverable: training, manuals, as-builts, signed acceptance</div>
+  </div>
+  <div class="phase">
+    <div class="pname">Phase 6</div>
+    <h4>Service &amp; Maintenance — the long tail</h4>
+    <p>Preventive maintenance, service contracts, first-line troubleshooting, consumables and lamp life, eventual refresh. Domains B and D live here — 28% of the exam between them.</p>
+    <div class="pdeliv">Deliverable: maintenance logs, service records</div>
+  </div>
+</div>
+
+<div class="callout keyterm"><span class="label">The Loop That Ties It Together</span>
+The <strong>Program Report</strong> is written in Phase 1 and is the document you <strong>verify against</strong> in Phase 4. If an exam question asks what commissioning is tested against, or why the needs analysis matters, that's the loop being tested. Design and build are the middle; the two ends talk to each other.</div>
+
+<h3>Site visits — the emphasis the debrief called out</h3>
+<p>The blueprint devotes <strong>two separate tasks</strong> to this (Task 1: conduct site survey; Task 4: maintain awareness of <em>changes</em> to the site environment). The second one matters — a site isn't surveyed once and forgotten.</p>
+
+<div class="phases">
+  <div class="phase visit">
+    <div class="pname">Visit 1 · Program Phase</div>
+    <h4>The initial site survey</h4>
+    <p>Capture what's actually there: dimensions and ceiling height, existing power and data, HVAC, lighting (ambient and controllable), acoustics and finishes, structure and hanging points, sightlines, access and delivery routes, and any heritage or code constraints.</p>
+    <div class="pdeliv">Skills named in the blueprint: measuring · conversions · calculating areas and volumes · reading blueprints · recording data</div>
+  </div>
+  <div class="phase visit">
+    <div class="pname">Visit 2 · Design Phase</div>
+    <h4>Coordination visits</h4>
+    <p>Verify design assumptions against reality and coordinate with other trades before documents are issued. Catching a conflict here costs a drawing revision; catching it in Phase 3 costs a change order.</p>
+  </div>
+  <div class="phase visit">
+    <div class="pname">Visit 3 · Before mobilising</div>
+    <h4>The site-readiness check</h4>
+    <p>Is rough-in complete? Power and data in place? Room secure, clean, climate-controlled? Sending a crew to a site that isn't ready is the expensive mistake this visit exists to prevent.</p>
+  </div>
+  <div class="phase visit">
+    <div class="pname">Visit 4 · Ongoing</div>
+    <h4>Maintaining awareness of change</h4>
+    <p>Blueprint Task 4, verbatim: furniture layouts move, finishes change, lighting gets redesigned, walls relocate. Any of those invalidates acoustic, sightline or mounting decisions already made.</p>
+  </div>
+</div>
+
+<h3>Contract &amp; documentation vocabulary</h3>
+<div class="tbl-wrap"><table class="mono-1 compact">
+<tr><th>Term</th><th>Meaning</th></tr>
+<tr><td>Design-bid-build</td><td>Design is completed, then put out to bid, then built. The integrator bids someone else's design.</td></tr>
+<tr><td>Design-build</td><td>One entity both designs and builds. Faster, fewer handoffs, less independent oversight.</td></tr>
+<tr><td>RFP / RFQ</td><td>Request for Proposal (solution and approach) / Request for Quotation (price against a defined spec).</td></tr>
+<tr><td>Submittal</td><td>Product data sent for approval before purchase — proving what you'll install meets the spec.</td></tr>
+<tr><td>Shop drawing</td><td>Fabrication-level detail drawings produced by the installer, not the designer.</td></tr>
+<tr><td>RFI</td><td>Request for Information — formal question when documents are unclear or contradictory.</td></tr>
+<tr><td>Change order / variation order</td><td>Formal, documented, priced change to agreed scope. Never a verbal agreement.</td></tr>
+<tr><td>Punch list / snag list</td><td>Deficiencies found at verification that must be cleared before acceptance.</td></tr>
+<tr><td>As-built</td><td>Drawings updated to reflect what was <em>actually</em> installed, not what was designed.</td></tr>
+<tr><td>Substantial completion</td><td>System usable for its intended purpose, though minor items remain.</td></tr>
+</table></div>
+
+<div class="callout spec"><span class="label">Numbers From Your Log</span>
+System warranty on installation materials and workmanship: <strong>6 to 12 months</strong> (not 3 years). GC markup on an AV subcontract: roughly <strong>5–10%</strong>. Contingency of 5–10% suits projects that are <strong>$500k+ and a year or more</strong> long. Cost terminology ladder, in increasing order of firmness: <strong>opinion of probable cost → estimate → quote</strong>.</div>
+
+<a class="xref" href="cts-av-process-timeline.html"><span class="label">Goes Deeper</span>
+The full visual walkthrough of the lifecycle, with the needs analysis pyramid and the site survey checklist — <span class="go">AV Project Lifecycle Timeline →</span></a>
+</section>
+
+<div class="divider"></div>
+
+<!-- ================= 5 · END USER ================= -->
+<section id="enduser">
+<div class="fhead">
+  <div class="fnum">05</div>
+  <div>
+    <div class="ftag">Heuristic — a tiebreaker, not a fact</div>
+    <h2>The End-User Rule</h2>
+  </div>
+</div>
+<p class="section-sub">"If an answer mentions an end user, that is likely the correct answer." It works — and it's worth understanding <em>why</em>, because the underlying logic covers far more questions than the literal phrase does.</p>
+
+<div class="plain"><span class="label">Why It Works</span>
+AVIXA's entire framework is built around solving a <strong>client's</strong> problem, not deploying technology. The needs analysis exists to find out what users must accomplish. Commissioning verifies against agreed needs. Handover includes training the people who'll actually use it. An answer oriented toward the end user is aligned with the philosophy the exam is written from — so it wins by construction, not by coincidence.</div>
+
+<h3>The full heuristic stack, strongest first</h3>
+<div class="rank">
+  <div class="item"><div><h4>Safety beats everything</h4><p>If one option protects people and another protects schedule, budget, or equipment, safety wins. No exceptions, no qualifiers. This outranks even the end-user rule.</p></div></div>
+  <div class="item"><div><h4>Serve the end user / client need</h4><p>Options mentioning the end user, their requirements, or their intended task are usually right. Options that optimise for the integrator's convenience usually aren't.</p></div></div>
+  <div class="item"><div><h4>Communicate, consult, document</h4><p>Answers involving notifying the client, consulting a stakeholder, issuing an RFI, or recording the outcome beat answers where someone acts alone and tells nobody.</p></div></div>
+  <div class="item"><div><h4>Verify before you act</h4><p>On FIRST/NEXT questions, gathering information — measure it, test it, confirm the symptom, check the documentation — almost always precedes the fix.</p></div></div>
+  <div class="item"><div><h4>Follow the standard or the manufacturer</h4><p>Published standards, code, and manufacturer specifications beat field improvisation and rules of thumb.</p></div></div>
+  <div class="item"><div><h4>Distrust absolutes</h4><p>An answer containing always, never, all, only, or every is usually wrong. AV has too many legitimate exceptions for an absolute to survive.</p></div></div>
+  <div class="item"><div><h4>Two answers saying the same thing are both wrong</h4><p>Only one option can be correct, so if two are functionally identical, neither is it. This can eliminate half the list instantly.</p></div></div>
+</div>
+
+<div class="callout watchout"><span class="label">Use This Honestly</span>
+These are <strong>tiebreakers for questions you genuinely can't answer</strong>, not a strategy for the exam as a whole. A well-written item will happily offer an end-user-flavoured distractor to catch people pattern-matching instead of reading. Work the question first; reach for the heuristic only when you're down to two options and out of knowledge. On a 100-item exam, converting even six coin-flips into five correct answers is real — but it won't carry you past a topic you never studied.</div>
+
+<div class="callout examtip"><span class="label">The Sanity Check</span>
+Before locking in a heuristic-driven answer, ask: <em>"does this actually answer the question that was asked?"</em> The most common way the end-user rule fails is a true, client-friendly statement that addresses a different question than the stem.</div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ================= DRAWINGS ================= -->
+<section id="drawings">
+<h2>Reading Drawings</h2>
+<p class="section-sub">The debrief's "graphs and reflected ceiling plans" — the visual literacy half of Essential #1.</p>
+
+<h3>The four views, and which is which</h3>
+<div class="diagram">
+<svg viewBox="0 0 600 250" role="img" aria-label="Four drawing views: plan, elevation, section and reflected ceiling plan">
+  <!-- plan -->
+  <rect x="20" y="40" width="110" height="80" class="dg-fill-blue"/>
+  <circle cx="50" cy="70" r="6" class="dg-line"/><circle cx="100" cy="70" r="6" class="dg-line"/>
+  <circle cx="50" cy="100" r="6" class="dg-line"/><circle cx="100" cy="100" r="6" class="dg-line"/>
+  <text class="dm dblue dt" x="20" y="30">PLAN</text>
+  <text class="dm dsmall" x="20" y="140">looking DOWN</text>
+  <text class="dm dsmall" x="20" y="158">at the floor</text>
+
+  <!-- elevation -->
+  <rect x="165" y="40" width="110" height="80" class="dg-fill-teal"/>
+  <rect x="190" y="55" width="60" height="35" class="dg-border"/>
+  <text class="dm dteal dt" x="165" y="30">ELEVATION</text>
+  <text class="dm dsmall" x="165" y="140">looking straight</text>
+  <text class="dm dsmall" x="165" y="158">AT a wall</text>
+
+  <!-- section -->
+  <path d="M310,40 L420,40 L420,120 L310,120 Z" class="dg-fill-green"/>
+  <line x1="310" y1="40" x2="420" y2="120" class="dg-green dg-dash"/>
+  <text class="dm dgreen dt" x="310" y="30">SECTION</text>
+  <text class="dm dsmall" x="310" y="140">a CUT through</text>
+  <text class="dm dsmall" x="310" y="158">the building</text>
+
+  <!-- RCP -->
+  <rect x="455" y="40" width="110" height="80" class="dg-fill-purple"/>
+  <rect x="470" y="50" width="22" height="22" class="dg-border"/>
+  <rect x="528" y="50" width="22" height="22" class="dg-border"/>
+  <circle cx="481" cy="100" r="8" class="dg-purple"/>
+  <circle cx="539" cy="100" r="8" class="dg-purple"/>
+  <text class="dm dpurple dt" x="455" y="30">RCP</text>
+  <text class="dm dsmall" x="455" y="140">the CEILING,</text>
+  <text class="dm dsmall" x="455" y="158">mirrored onto</text>
+  <text class="dm dsmall" x="455" y="176">the floor plan</text>
+
+  <text class="dm damber dsmall" x="20" y="215">Reflected Ceiling Plan orientation: left is still left. It matches the floor plan below it —</text>
+  <text class="dm damber dsmall" x="20" y="235">that's the whole point, so ceiling devices line up with the room they serve.</text>
+</svg>
+<div class="dcap">The <strong>reflected ceiling plan</strong> is the one that trips people up. You are looking <em>down</em>, as in a floor plan, but seeing the ceiling — as though it were reflected in a mirror on the floor. Orientation therefore matches the floor plan exactly, which is what lets you coordinate a ceiling speaker against the seat below it.</div>
+</div>
+
+<div class="callout keyterm"><span class="label">Why AV Lives On The RCP</span>
+Ceiling loudspeakers, projector mounts, lighting fixtures, HVAC diffusers, sprinkler heads, access panels and ceiling tile grid all appear on the RCP. It's where AV coordination conflicts are found — a ceiling speaker and a sprinkler head wanting the same tile. If a question involves placing anything overhead, the RCP is the drawing.</div>
+
+<h3>Abbreviations that appear on drawings</h3>
+<div class="tbl-wrap"><table class="mono-1 compact">
+<tr><th>Abbr.</th><th>Meaning</th></tr>
+<tr><td>AFF</td><td>Above Finished Floor — a mounting height</td></tr>
+<tr><td>NTS</td><td>Not To Scale — you cannot measure it; ask instead</td></tr>
+<tr><td>NIC</td><td>Not In Contract — shown for context, someone else's scope</td></tr>
+<tr><td>FUT</td><td>Future — planned for a later phase</td></tr>
+<tr><td>OFE / OFCI</td><td>Owner Furnished Equipment / Owner Furnished, Contractor Installed</td></tr>
+<tr><td>TYP</td><td>Typical — this detail repeats wherever the condition occurs</td></tr>
+</table></div>
+
+<div class="callout watchout"><span class="label">Scale — The Direction Matters</span>
+A drawing marked <strong>1:50</strong> means one unit on paper equals 50 in reality, so you <strong>multiply</strong> the measured dimension by 50. Dividing by mistake is a factor-of-2,500 error on an area calculation. And if the drawing says <strong>NTS</strong>, no measurement off it is valid at all — recognising that <em>is</em> the answer to some questions.</div>
+
+<p>Other drawing conventions worth recognising: <strong>solid lines</strong> are visible edges, <strong>dashed lines</strong> are hidden or above the cut plane, the <strong>title block</strong> carries scale/date/revision, a <strong>revision cloud</strong> marks what changed, and the <strong>north arrow</strong> orients the plan.</p>
+</section>
+
+<div class="divider"></div>
+
+<!-- ================= EXTRAS ================= -->
+<section id="extras">
+<h2>Formulas Beyond The Five</h2>
+<p class="section-sub">Lower-yield than the Core Five, but cheap to carry. Each is one line.</p>
+
+<h3>Heat load</h3>
+<div class="tbl-wrap"><table class="mono-2">
+<tr><th>What</th><th>Formula</th></tr>
+<tr><td>Equipment heat output</td><td>BTU/hr = Watts × 3.41</td></tr>
+</table></div>
+<p>Every watt a device consumes ends up as heat in the room. Rack heat load drives HVAC sizing, and "the rack is overheating" troubleshooting questions trace back to it.</p>
+
+<h3>Projector brightness</h3>
+<p>Conceptually: <strong>lumens needed = screen area × the illuminance you need on it</strong>, adjusted for screen gain and projector derating. The full AVIXA version with contrast ratio targets is on the CTS-D formula sheet — for CTS, know the <em>relationship</em>: bigger screen or brighter room means more lumens, and controlling ambient light is cheaper than buying brightness.</p>
+
+<h3>Money math — Domain C is 11% of the exam</h3>
+<div class="tbl-wrap"><table class="mono-2">
+<tr><th>What</th><th>Formula</th></tr>
+<tr><td>Markup %</td><td>(Price − Cost) ÷ <strong>Cost</strong></td></tr>
+<tr><td>Margin %</td><td>(Price − Cost) ÷ <strong>Price</strong></td></tr>
+</table></div>
+
+<div class="callout watchout"><span class="label">Margin ≠ Markup</span>
+The denominator is the entire difference, and it's a guaranteed near-twin distractor. A $100 item sold at $150 carries a <strong>50% markup</strong> but only a <strong>33% margin</strong>. If a question gives you one and asks for the other, that gap is exactly what's being tested.</div>
+
+<h3>Decibel quick numbers</h3>
+<div class="tbl-wrap"><table class="mono-2 compact">
+<tr><th>Change</th><th>Means</th></tr>
+<tr><td>+3 dB</td><td>Double the <strong>power</strong> (watts)</td></tr>
+<tr><td>+6 dB</td><td>Double the <strong>voltage</strong> or sound pressure — or halve the distance</td></tr>
+<tr><td>+10 dB</td><td>10× the power ≈ <strong>twice as loud</strong> to a listener</td></tr>
+<tr><td>−6 dB</td><td>Double the distance from a point source</td></tr>
+</table></div>
+<p>The split that matters: <strong>10 log for power, 20 log for pressure, voltage and distance.</strong></p>
+
+<a class="xref" href="cts-log-equations-crash-course.html"><span class="label">If dB Still Feels Shaky</span>
+What a logarithm actually is, 10-log vs 20-log, every worked example step by step — <span class="go">Log Equations Crash Course →</span></a>
+</section>
+
+<div class="divider"></div>
+
+<!-- ================= CHECKLIST ================= -->
+<section id="checklist">
+<h2>Final Checklist</h2>
+<p class="section-sub">The last hour, and the exam room itself.</p>
+
+<div class="dump">
+<div class="dtitle">The night before — read, don't drill</div>
+<ul>
+<li>The <strong>impedance table</strong> — 50 / 75 / 100 / 110 / 120 Ω and who owns each</li>
+<li>The <strong>five phases</strong> in order, and that verification tests against the Program Report</li>
+<li>The <strong>scratch-board dump</strong> — seven lines, write it out once by hand</li>
+<li>The <strong>qualifier words</strong> — BEST, FIRST, EXCEPT, PRIMARY</li>
+<li>The <strong>heuristic stack</strong> — safety, end user, communicate, verify</li>
+<li>Your <strong>weak-spots log</strong> — the term confusions, since they're 44% of your misses</li>
+<li>Then stop. Sleep is worth more than one more pass.</li>
+</ul>
+</div>
+
+<div class="callout spec"><span class="label">In The Exam Room</span>
+You may not bring anything in — no formula sheet, no calculator. An <strong>on-screen calculator</strong> is provided, and the math never goes beyond add, subtract, multiply, divide, square, square root and log. <strong>100 questions.</strong> Dump your seven lines onto the scratch board before question one. Flag and move on rather than grinding. Answer every item — there's no penalty for a guess, and an unanswered question is a guaranteed zero.</div>
+
+<div class="callout examtip"><span class="label">One Last Thing</span>
+The debrief's first essential was reading comprehension, and your own diagnostic data says the same: nearly half your misses are two things you already know, filed under the wrong label. On exam day the highest-value habit isn't recall — it's reading the stem twice and naming what's being tested before you look at the options.</div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ================= QUIZ ================= -->
+<section id="quiz">
+<h2>Mixed Drill</h2>
+<p class="section-sub">Sixteen questions across cables, process, drawings and answer strategy — the four essentials that live on this page. Math is drilled on the <a href="cts-core-five-formulas.html" style="color:var(--teal)">Core Five</a> page.</p>
+<div id="quiz-score">0 / 0 answered</div>
+<div id="quiz-area"></div>
+<button id="quiz-reset">Reset drill</button>
+</section>
+
+</main>
+
+<script>
+const sb=document.getElementById('sidebar'),bd=document.getElementById('backdrop'),hb=document.getElementById('hamburger');
+function toggleNav(){sb.classList.toggle('open');bd.classList.toggle('show');hb.classList.toggle('open');hb.textContent=sb.classList.contains('open')?'✕':'☰';}
+hb.addEventListener('click',toggleNav);
+bd.addEventListener('click',toggleNav);
+sb.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{if(sb.classList.contains('open'))toggleNav();}));
+
+const $=id=>document.getElementById(id);
+
+const QUIZ=[
+ {tag:'CABLE',q:'A professional digital audio signal is running over shielded twisted pair terminated in XLR connectors. What cable impedance does this require?',
+  o:['110 Ω','75 Ω','100 Ω','50 Ω'],a:0,
+  e:'AES3 (AES/EBU) over XLR is <span class="m">110 Ω</span>. The 75 Ω option is AES3id, the coax-and-BNC variant — the connector is the tell.'},
+ {tag:'PROCESS',q:'System verification during the commissioning phase is conducted against which document?',
+  o:['The Program Report','The as-built drawings','The purchase order','The punch list'],a:0,
+  e:'<span class="m">The Program Report</span> — written in the program phase to record what the system must do. Verification closes that loop. As-builts are an output of verification, not the benchmark for it.'},
+ {tag:'STRATEGY',q:'A question asks what a technician should do FIRST when a display shows no image. The best answer is most likely to involve:',
+  o:['Confirming the symptom and checking the source and connections','Replacing the display','Ordering a spare part','Escalating to the manufacturer'],a:0,
+  e:'FIRST/NEXT questions reward <span class="m">gathering information before acting</span>. Recreating and confirming the symptom is named in the blueprint under troubleshooting. Replacing hardware before diagnosis is the classic unilateral-action distractor.'},
+ {tag:'CABLE',q:'How many devices can be placed on an RS-485 bus, and what termination does it require?',
+  o:['32 devices, 120 Ω at both ends','16 devices, 75 Ω at one end','64 devices, 110 Ω at both ends','32 devices, 100 Ω at one end'],a:0,
+  e:'<span class="m">32 devices, 120 Ω terminating both ends.</span> DMX512 rides on this same electrical layer — the three facts travel together.'},
+ {tag:'DRAWING',q:'Which drawing would you consult to coordinate the position of a ceiling loudspeaker against a sprinkler head?',
+  o:['Reflected ceiling plan','Floor plan','Elevation','Section'],a:0,
+  e:'The <span class="m">reflected ceiling plan (RCP)</span> shows everything in the ceiling — speakers, lighting, diffusers, sprinklers, tile grid. It is drawn in the same orientation as the floor plan, as though the ceiling were mirrored onto the floor.'},
+ {tag:'CABLE',q:'Cable installed in a ceiling void that is used as a return-air plenum must be rated:',
+  o:['CMP (plenum)','CMR (riser)','CM (general purpose)','Any rating, if in conduit'],a:0,
+  e:'<span class="m">CMP — plenum rated</span>, for low smoke and flame spread in air-handling spaces. Plenum cable may substitute downward for riser or general purpose, but never the reverse.'},
+ {tag:'PROCESS',q:'At what point does the system warranty period typically begin?',
+  o:['At handover / final acceptance','When equipment is purchased','When installation starts','At the first service call'],a:0,
+  e:'Warranty starts at <span class="m">handover and client acceptance</span>. Your log also records the duration: 6 to 12 months on installation materials and workmanship — not 3 years.'},
+ {tag:'CABLE',q:'In a standard XLR connector, pin 2 carries:',
+  o:['The hot (+) signal','The shield','The cold (−) signal','DC phantom power only'],a:0,
+  e:'<span class="m">Pin 1 = shield, pin 2 = hot (+), pin 3 = cold (−).</span> "Pin 2 hot" is the AES convention. A cable with 2 and 3 swapped inverts polarity — a standard troubleshooting answer for cancellation between sources.'},
+ {tag:'STRATEGY',q:'Which answer is LEAST likely to be correct on a CTS exam item?',
+  o:['"Always use the longest cable available to allow for changes"','"Consult the end user about their intended workflow"','"Verify the measurement before ordering"','"Follow the manufacturer\'s mounting specification"'],a:0,
+  e:'It contains an absolute (<span class="m">"always"</span>) and describes poor practice. The other three map onto the heuristic stack: serve the end user, verify before acting, follow the manufacturer.'},
+ {tag:'PROCESS',q:'Rough-in work on an AV project takes place:',
+  o:['Before walls are closed, during the build phase','During the program phase','After commissioning','At handover'],a:0,
+  e:'<span class="m">Rough-in</span> — conduit, back boxes, cable pulls — happens while the structure is still open. Trim-out (devices, plates, mounts) follows once finishes are in.'},
+ {tag:'CABLE',q:'What is the maximum channel length for a Category twisted-pair link?',
+  o:['100 m total — 90 m horizontal plus 10 m patch','100 m horizontal plus patch cords','90 m total including patch','305 m'],a:0,
+  e:'<span class="m">100 m channel = 90 m solid-core horizontal + 10 m of stranded patch cords.</span> The patch cords count toward the limit — treating 100 m as horizontal-only is the trap.'},
+ {tag:'DRAWING',q:'A drawing is marked 1:50. A wall measures 60 mm on the drawing. How long is it in reality?',
+  o:['3 m','1.2 m','30 m','0.3 m'],a:0,
+  e:'Multiply by the scale factor: <span class="m">60 mm × 50 = 3,000 mm = 3 m.</span> Dividing instead of multiplying is the error to watch — and on an area calculation it would be off by a factor of 2,500.'},
+ {tag:'PROCESS',q:'A client verbally requests an extra display during installation. The correct response is to:',
+  o:['Process it as a documented change order','Install it and invoice later','Decline — scope is fixed at contract','Add it at no charge for goodwill'],a:0,
+  e:'<span class="m">Change orders are formal, documented and priced.</span> This combines two heuristics: document everything, and serve the client need — through the proper mechanism rather than a handshake.'},
+ {tag:'CABLE',q:'Which cable type is unbalanced by its physical construction?',
+  o:['Coaxial cable','Shielded twisted pair','Cat6','AES3 cable'],a:0,
+  e:'<span class="m">Coax is unbalanced by construction</span> — a centre conductor and a surrounding shield that serves as the return. Noise rejection comes from a twisted pair in a balanced circuit; a shield gives physical and electrostatic protection, not common-mode rejection.'},
+ {tag:'PROCESS',q:'The blueprint devotes a separate task to "maintain awareness of changes to the site environment." The main reason is that:',
+  o:['Changes to furniture, finishes or lighting can invalidate earlier design decisions','Site surveys are often done incorrectly','Clients frequently change contractors','Building codes change during projects'],a:0,
+  e:'A site is not surveyed once and forgotten. <span class="m">Moved furniture, new finishes or redesigned lighting</span> can undo acoustic, sightline and mounting decisions already made — which is why this is its own 6%-weighted task.'},
+ {tag:'EXTRAS',q:'An item costs $200 and sells for $250. What is the gross margin?',
+  o:['20%','25%','50%','125%'],a:0,
+  e:'Margin divides by the <strong>price</strong>: <span class="m">(250 − 200) ÷ 250 = 20%</span>. Markup divides by <strong>cost</strong>: 50 ÷ 200 = 25%. Both numbers are offered — the denominator is the whole question.'}
+];
+let answered=0,correct=0;
+function buildQuiz(){
+  const area=$('quiz-area');area.innerHTML='';answered=0;correct=0;updateScore();
+  QUIZ.forEach((q,qi)=>{
+    const d=document.createElement('div');d.className='q-block';
+    d.innerHTML=`<div class="qnum">Question ${qi+1}<span class="qtag" style="visibility:hidden" id="tag${qi}">${q.tag}</span></div><div class="qtext">${q.q}</div>`;
+    q.o.forEach((opt,oi)=>{
+      const b=document.createElement('button');b.className='q-opt';b.innerHTML=opt;
+      b.addEventListener('click',()=>{
+        if(d.dataset.done)return; d.dataset.done='1';
+        const btns=d.querySelectorAll('.q-opt');
+        btns.forEach((x,xi)=>{x.disabled=true;if(xi===q.a)x.classList.add('correct');});
+        if(oi!==q.a)b.classList.add('wrong'); else correct++;
+        answered++;updateScore();
+        d.querySelector('.q-expl').classList.add('show');
+        $('tag'+qi).style.visibility='visible';
+      });
+      d.appendChild(b);
+    });
+    const ex=document.createElement('div');ex.className='q-expl';ex.innerHTML=q.e;d.appendChild(ex);
+    area.appendChild(d);
+  });
+}
+function updateScore(){
+  const pct=answered?Math.round(correct/answered*100):0;
+  $('quiz-score').textContent=`${correct} / ${answered} correct${answered?`  ·  ${pct}%`:''}  ·  ${QUIZ.length} total`;
+}
+$('quiz-reset').addEventListener('click',buildQuiz);
+buildQuiz();
+</script>
+</body>
+</html>

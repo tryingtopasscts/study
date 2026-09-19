@@ -1,0 +1,1136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Core Five — CTS Exam Formulas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=DM+Sans:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0f1117; --panel:#161a23; --panel2:#1c212e; --border:#2a3040;
+  --text:#e8eaf0; --muted:#9aa3b5; --faint:#6b7386;
+  --teal:#2dd4bf; --amber:#fbbf24; --red:#f87171; --purple:#a78bfa;
+  --blue:#60a5fa; --green:#4ade80;
+  --teal-bg:rgba(45,212,191,.08); --amber-bg:rgba(251,191,36,.08);
+  --red-bg:rgba(248,113,113,.08); --purple-bg:rgba(167,139,250,.08);
+  --blue-bg:rgba(96,165,250,.08); --green-bg:rgba(74,222,128,.08);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:18px;line-height:1.7}
+h1,h2,h3,h4{font-family:'Fraunces',serif;line-height:1.25}
+code,.mono{font-family:'IBM Plex Mono',monospace}
+
+/* ---------- Off-canvas sidebar ---------- */
+#hamburger{position:fixed;top:18px;left:18px;z-index:1001;width:46px;height:46px;border-radius:10px;
+  background:var(--panel2);border:1px solid var(--border);color:var(--text);cursor:pointer;font-size:20px;
+  display:flex;align-items:center;justify-content:center;transition:left .3s ease}
+#hamburger.open{left:308px}
+#sidebar{position:fixed;top:0;left:0;height:100vh;width:290px;background:var(--panel);border-right:1px solid var(--border);
+  transform:translateX(-100%);transition:transform .3s ease;z-index:1000;overflow-y:auto;padding:24px 0 40px;font-size:16px}
+#sidebar.open{transform:translateX(0)}
+#backdrop{position:fixed;inset:0;background:rgba(0,0,0,.55);opacity:0;pointer-events:none;transition:opacity .3s;z-index:999}
+#backdrop.show{opacity:1;pointer-events:auto}
+#sidebar .side-title{font-family:'Fraunces',serif;font-size:19px;padding:8px 22px 14px;border-bottom:1px solid var(--border);color:var(--teal)}
+#sidebar nav{padding:12px 0}
+#sidebar a{display:block;padding:8px 22px;color:var(--muted);text-decoration:none;border-left:3px solid transparent;transition:.15s}
+#sidebar a:hover{color:var(--text);background:var(--panel2);border-left-color:var(--teal)}
+#sidebar .nav-group{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);padding:16px 22px 4px}
+#sidebar .num{font-family:'IBM Plex Mono',monospace;color:var(--faint);font-size:13px;margin-right:8px}
+
+/* ---------- Layout ---------- */
+main{max-width:860px;margin:0 auto;padding:80px 28px 120px}
+header.hero{text-align:center;margin-bottom:56px}
+header.hero .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:13px;letter-spacing:.22em;text-transform:uppercase;color:var(--teal);margin-bottom:14px}
+header.hero h1{font-size:54px;font-weight:700;margin-bottom:16px}
+header.hero p{color:var(--muted);max-width:640px;margin:0 auto;font-size:19px}
+section{margin-bottom:84px}
+section>h2{font-size:34px;margin-bottom:8px;padding-top:16px}
+section>.section-sub{color:var(--muted);margin-bottom:28px;font-size:17px}
+h3{font-size:23px;margin:38px 0 14px;color:var(--text)}
+h4{font-size:19px;margin:26px 0 10px;color:var(--text)}
+p{margin-bottom:14px}
+ul,ol{margin:0 0 16px 26px}
+li{margin-bottom:8px}
+strong{color:#fff}
+.divider{height:1px;background:var(--border);margin:56px 0}
+
+/* ---------- Formula section headers ---------- */
+.fhead{display:flex;align-items:flex-start;gap:18px;padding-top:16px}
+.fhead .fnum{font-family:'IBM Plex Mono',monospace;font-size:44px;font-weight:600;color:var(--teal);line-height:1;opacity:.55;flex-shrink:0}
+.fhead h2{font-size:34px;margin-bottom:4px;padding-top:0}
+.fhead .ftag{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint)}
+
+/* ---------- Callouts ---------- */
+.callout{border-radius:12px;padding:16px 20px;margin:22px 0;border:1px solid;font-size:16.5px}
+.callout .label{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.18em;text-transform:uppercase;display:block;margin-bottom:6px;font-weight:600}
+.callout.keyterm{background:var(--teal-bg);border-color:rgba(45,212,191,.35)}
+.callout.keyterm .label{color:var(--teal)}
+.callout.spec{background:var(--amber-bg);border-color:rgba(251,191,36,.35)}
+.callout.spec .label{color:var(--amber)}
+.callout.watchout{background:var(--red-bg);border-color:rgba(248,113,113,.35)}
+.callout.watchout .label{color:var(--red)}
+.callout.examtip{background:var(--purple-bg);border-color:rgba(167,139,250,.35)}
+.callout.examtip .label{color:var(--purple)}
+
+/* ---------- Formula boxes ---------- */
+.formula-box{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:22px 24px;margin:22px 0}
+.formula-box.hero-formula{border-color:rgba(45,212,191,.4);background:linear-gradient(150deg,rgba(45,212,191,.07),var(--panel) 60%)}
+.formula-box .fname{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--blue);margin-bottom:12px}
+.formula-box.hero-formula .fname{color:var(--teal)}
+.formula{font-family:'IBM Plex Mono',monospace;font-size:24px;text-align:center;padding:14px 8px;color:#fff;overflow-x:auto}
+.formula.sm{font-size:19px}
+.formula sub{font-size:.62em}
+.formula sup{font-size:.62em}
+.frac{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;margin:0 4px}
+.frac .top{border-bottom:2px solid var(--text);padding:0 8px 2px}
+.frac .bot{padding:2px 8px 0}
+.where{font-size:15.5px;color:var(--muted);margin-top:12px}
+.where li{margin-bottom:4px}
+.rearrange{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:8px}
+.rearrange span{font-family:'IBM Plex Mono',monospace;font-size:16px;background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:7px 14px;color:var(--text)}
+
+/* ---------- Plain-English lead ---------- */
+.plain{border-left:3px solid var(--blue);background:var(--blue-bg);border-radius:0 12px 12px 0;padding:14px 18px;margin:18px 0;font-size:16.5px}
+.plain .label{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--blue);display:block;margin-bottom:6px;font-weight:600}
+
+/* ---------- Cross-reference ---------- */
+.xref{display:block;background:var(--panel);border:1px solid var(--border);border-left:4px solid var(--purple);border-radius:0 12px 12px 0;
+  padding:14px 18px;margin:22px 0;text-decoration:none;color:var(--text);font-size:16.5px;transition:.15s}
+.xref:hover{background:var(--panel2);border-left-color:var(--teal)}
+.xref .label{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--purple);display:block;margin-bottom:6px;font-weight:600}
+.xref .go{color:var(--teal);white-space:nowrap}
+
+/* ---------- Diagrams ---------- */
+.diagram{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:20px 16px 16px;margin:24px 0;text-align:center}
+.diagram svg{max-width:100%;height:auto}
+.diagram .dcap{font-size:14.5px;color:var(--muted);margin-top:12px;line-height:1.55;text-align:left;max-width:640px;margin-left:auto;margin-right:auto}
+.diagram text{font-family:'DM Sans',sans-serif;font-size:15px;fill:var(--muted)}
+.diagram text.dt{fill:var(--text)}
+.diagram text.dm{font-family:'IBM Plex Mono',monospace;font-size:14px}
+.diagram text.dteal{fill:var(--teal)}
+.diagram text.damber{fill:var(--amber)}
+.diagram text.dgreen{fill:var(--green)}
+.diagram text.dred{fill:var(--red)}
+.diagram text.dblue{fill:var(--blue)}
+.diagram text.dsmall{font-size:12.5px}
+.diagram text.dbig{font-size:26px}
+.dg-line{stroke:var(--faint);stroke-width:1.5;fill:none}
+.dg-border{stroke:var(--border);stroke-width:1.5;fill:none}
+.dg-teal{stroke:var(--teal);stroke-width:2;fill:none}
+.dg-amber{stroke:var(--amber);stroke-width:2;fill:none}
+.dg-blue{stroke:var(--blue);stroke-width:2;fill:none}
+.dg-green{stroke:var(--green);stroke-width:2;fill:none}
+.dg-red{stroke:var(--red);stroke-width:2;fill:none}
+.dg-dash{stroke-dasharray:5 5}
+.dg-fill-teal{fill:rgba(45,212,191,.14);stroke:var(--teal);stroke-width:1.5}
+.dg-fill-amber{fill:rgba(251,191,36,.14);stroke:var(--amber);stroke-width:1.5}
+.dg-fill-blue{fill:rgba(96,165,250,.14);stroke:var(--blue);stroke-width:1.5}
+.dg-fill-panel{fill:var(--panel2);stroke:var(--border);stroke-width:1.5}
+.dg-dot-teal{fill:var(--teal)}
+.dg-dot-amber{fill:var(--amber)}
+
+/* ---------- Tables ---------- */
+table{width:100%;border-collapse:collapse;margin:22px 0;font-size:16px}
+th{background:var(--panel2);color:var(--text);text-align:left;padding:11px 14px;font-weight:700;border-bottom:2px solid var(--border)}
+td{padding:10px 14px;border-bottom:1px solid var(--border);color:var(--muted)}
+td:first-child{color:var(--text)}
+tr:hover td{background:rgba(255,255,255,.02)}
+.tbl-wrap{overflow-x:auto}
+table.cheat td:nth-child(2){font-family:'IBM Plex Mono',monospace;font-size:14.5px;color:#fff}
+table.triggers td:first-child{font-family:'IBM Plex Mono',monospace;color:var(--amber);font-size:14.5px}
+table.triggers td:nth-child(2){color:var(--teal);font-weight:500}
+table.conv td:nth-child(2){font-family:'IBM Plex Mono',monospace;color:#fff;font-size:15px}
+
+/* ---------- Worked examples ---------- */
+.worked{background:var(--panel);border:1px solid var(--border);border-left:4px solid var(--green);border-radius:12px;padding:20px 24px;margin:24px 0}
+.worked .wtitle{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--green);margin-bottom:10px}
+.worked .wproblem{font-weight:500;color:#fff;margin-bottom:14px}
+.wstep{display:none;padding:10px 14px;margin:8px 0;background:var(--panel2);border-radius:8px;font-size:16px}
+.wstep.shown{display:block;animation:fadein .3s}
+.wstep .snum{font-family:'IBM Plex Mono',monospace;color:var(--green);font-size:13px;display:block;margin-bottom:4px}
+.wstep .m{font-family:'IBM Plex Mono',monospace;color:#fff;display:block;margin-top:4px}
+@keyframes fadein{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.wbtn{background:var(--green-bg);border:1px solid rgba(74,222,128,.4);color:var(--green);border-radius:8px;padding:9px 18px;font-size:15px;font-weight:500;cursor:pointer;margin-top:12px;transition:.15s;font-family:'DM Sans',sans-serif}
+.wbtn:hover{background:rgba(74,222,128,.16)}
+.wbtn:disabled{opacity:.4;cursor:default}
+
+/* ---------- Calculators ---------- */
+.calc{background:linear-gradient(145deg,var(--panel2),var(--panel));border:1px solid var(--border);border-radius:14px;padding:22px 24px;margin:26px 0}
+.calc .ctitle{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--amber);margin-bottom:14px}
+.calc-row{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;margin-bottom:8px}
+.calc-field{display:flex;flex-direction:column;gap:5px}
+.calc-field label{font-size:13px;color:var(--muted)}
+.calc-field input,.calc-field select{background:var(--bg);border:1px solid var(--border);border-radius:8px;color:#fff;padding:9px 12px;font-family:'IBM Plex Mono',monospace;font-size:16px;width:150px}
+.calc-field input:focus,.calc-field select:focus{outline:none;border-color:var(--teal)}
+.calc-result{font-family:'IBM Plex Mono',monospace;font-size:17px;color:var(--teal);margin-top:12px;min-height:26px}
+.calc-note{font-size:13.5px;color:var(--faint);margin-top:8px}
+
+/* ---------- Brain dump card ---------- */
+.dump{background:var(--panel);border:1px dashed var(--amber);border-radius:14px;padding:24px 26px;margin:26px 0}
+.dump .dtitle{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--amber);margin-bottom:14px}
+.dump ol{margin-left:22px;font-family:'IBM Plex Mono',monospace;font-size:16px;color:#fff;line-height:2}
+.dump ol li{margin-bottom:2px}
+.dump ol li span{font-family:'DM Sans',sans-serif;color:var(--muted);font-size:14.5px}
+
+/* ---------- Evidence grid ---------- */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin:24px 0}
+.concept-card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:20px}
+.concept-card h4{font-size:18px;margin:0 0 8px;color:var(--teal)}
+.concept-card p{font-size:15.5px;color:var(--muted);margin:0}
+.quote{background:var(--panel);border:1px solid var(--border);border-left:4px solid var(--teal);border-radius:0 12px 12px 0;padding:18px 22px;margin:24px 0;font-size:16.5px;color:var(--muted)}
+.quote .qsrc{display:block;margin-top:10px;font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--faint)}
+.quote strong{color:var(--text)}
+
+/* ---------- Quiz ---------- */
+#quiz-area{margin-top:26px}
+.q-block{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:22px 24px;margin-bottom:20px}
+.q-block .qnum{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--faint);letter-spacing:.14em;margin-bottom:8px}
+.q-block .qtag{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--teal);letter-spacing:.12em;float:right}
+.q-block .qtext{font-weight:500;color:#fff;margin-bottom:14px}
+.q-opt{display:block;width:100%;text-align:left;background:var(--panel2);border:1px solid var(--border);color:var(--text);
+  border-radius:10px;padding:11px 16px;margin-bottom:9px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:16px;transition:.15s}
+.q-opt:hover{border-color:var(--blue)}
+.q-opt.correct{border-color:var(--green);background:var(--green-bg);color:var(--green)}
+.q-opt.wrong{border-color:var(--red);background:var(--red-bg);color:var(--red)}
+.q-opt:disabled{cursor:default;opacity:.85}
+.q-expl{display:none;margin-top:12px;padding:14px 16px;background:var(--bg);border-radius:10px;font-size:15.5px;color:var(--muted);border-left:3px solid var(--blue)}
+.q-expl.show{display:block}
+.q-expl .m{font-family:'IBM Plex Mono',monospace;color:#fff;display:block;margin:6px 0}
+#quiz-score{position:sticky;top:0;z-index:50;background:var(--panel2);border:1px solid var(--border);border-radius:0 0 12px 12px;
+  padding:12px 20px;font-family:'IBM Plex Mono',monospace;font-size:15px;color:var(--teal);text-align:center;margin-bottom:24px}
+#quiz-reset{margin:10px auto 0;display:block;background:var(--panel2);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:10px 22px;cursor:pointer;font-size:15px}
+#quiz-reset:hover{border-color:var(--teal);color:var(--teal)}
+
+@media(max-width:640px){
+  header.hero h1{font-size:36px}
+  section>h2,.fhead h2{font-size:26px}
+  .fhead .fnum{font-size:32px}
+  .formula{font-size:18px}
+  main{padding:76px 18px 90px}
+  #hamburger.open{left:auto;right:18px}
+}
+</style>
+</head>
+<body>
+<button id="hamburger" aria-label="Menu">☰</button>
+<div id="backdrop"></div>
+<aside id="sidebar">
+  <div class="side-title">The Core Five</div>
+  <nav>
+    <div class="nav-group">Start</div>
+    <a href="#why">Why only five</a>
+    <a href="#dump">The 60-Second Brain Dump</a>
+    <div class="nav-group">The Five</div>
+    <a href="#volume"><span class="num">1</span>Volume &amp; Area</a>
+    <a href="#ohms"><span class="num">2</span>Ohm's Law &amp; Power</a>
+    <a href="#aspect"><span class="num">3</span>Aspect Ratio</a>
+    <a href="#throw"><span class="num">4</span>Throw Distance</a>
+    <a href="#isl"><span class="num">5</span>Inverse Square Law</a>
+    <div class="nav-group">Exam Craft</div>
+    <a href="#decoder">Trigger-Word Decoder</a>
+    <a href="#conversions">Conversions</a>
+    <a href="#cheatsheet">One-Page Cheat Sheet</a>
+    <div class="nav-group">Practice</div>
+    <a href="#quiz">Mixed Drill (15 Q)</a>
+    <div class="nav-group">Beyond</div>
+    <a href="#beyond">What's NOT on this page</a>
+  </nav>
+</aside>
+
+<main>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" style="fill:var(--faint)"/></marker>
+<marker id="arrT" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" style="fill:var(--teal)"/></marker>
+<marker id="arrA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" style="fill:var(--amber)"/></marker>
+<marker id="arrB" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" style="fill:var(--blue)"/></marker>
+</defs></svg>
+
+<header class="hero">
+  <div class="eyebrow">CTS Exam Prep · Priority Module</div>
+  <h1>The Core Five</h1>
+  <p>Five formulas. That's what the math on the CTS exam actually is. Learn these cold and roughly one question in six becomes a freebie — no logs, no PAG/NAG, no design-level algebra.</p>
+</header>
+
+<div class="callout examtip"><span class="label">Read This First</span>
+This page is deliberately <strong>narrow</strong>. It is not a survey of AV math — it is the five calculations that keep showing up, taught to the point of reflex. If you want the full reference (decibels, loudspeaker impedance, bandwidth, PoE, heat load, cost math), that lives in the <a href="cts-av-math-guide.html" style="color:var(--teal)">AV Math Guide</a>. Come here first. Go there second.</div>
+
+<!-- ================= WHY FIVE ================= -->
+<section id="why">
+<h2>Why only five</h2>
+<p class="section-sub">Two independent sources agree, and they agree on almost exactly the same list.</p>
+
+<h3>Source 1 — AVIXA's own exam blueprint</h3>
+<p>The CTS Exam Content Outline and Job Task Analysis describe what the 100 questions are built from. Across every domain and task, the outline names <strong>exactly two formulas by name</strong>:</p>
+
+<div class="tbl-wrap"><table>
+<tr><th>What the blueprint names</th><th>Where it appears</th></tr>
+<tr><td><strong>Ohm's Law</strong></td><td>Domain D, Task 2 — the only formula called by name anywhere in the outline</td></tr>
+<tr><td><strong>Calculating throw distances</strong></td><td>Domain D, Tasks 1 <em>and</em> 2 — named twice</td></tr>
+<tr><td>Calculating areas and volumes</td><td>Domain A, Task 1 (site survey)</td></tr>
+<tr><td>Calculating sound levels</td><td>Domain A, Tasks 6 &amp; 8</td></tr>
+<tr><td>Calculating light levels</td><td>Domain A, Tasks 6 &amp; 8</td></tr>
+<tr><td>Voltage calculations</td><td>Domain D, Task 2</td></tr>
+</table></div>
+
+<p>Notice what is <em>absent</em>: no PAG/NAG, no jam ratio, no loudspeaker spacing geometry, no conduit capacity formula. Those appear on AVIXA's <strong>CTS-D</strong> formula sheet — the Design credential, one tier up. If you have been drilling them, you have been studying the wrong exam.</p>
+
+<h3>Source 2 — a candidate who just passed</h3>
+<div class="quote">
+"If I could boil down what you must know to 5 essential topics… <strong>Know the basic math and formulas for calculating volume, ohms law, aspect ratio, throw distance, SPL/light change over distance (inverse sq law).</strong> … if you have a middle-school level understanding of math, all you need is to memorize a few formulas, and then <strong>10–20% of the questions are freebies.</strong>"
+<span class="qsrc">— r/CommercialAV, post-exam debrief</span>
+</div>
+
+<p>Overlay the two lists and they collapse onto the same five. That's the page you're reading.</p>
+
+<div class="card-grid">
+  <div class="concept-card"><h4>1 · Volume &amp; Area</h4><p>Site survey, acoustics, HVAC, screen area. Pure multiplication — and the most commonly <em>skipped</em> easy point.</p></div>
+  <div class="concept-card"><h4>2 · Ohm's Law &amp; Power</h4><p>The only formula AVIXA names outright. Brings impedance and wattage with it.</p></div>
+  <div class="concept-card"><h4>3 · Aspect Ratio</h4><p>Diagonal ↔ width ↔ height, plus how far the back row can sit.</p></div>
+  <div class="concept-card"><h4>4 · Throw Distance</h4><p>Named twice in the blueprint. One multiplication, three ways to ask it.</p></div>
+  <div class="concept-card"><h4>5 · Inverse Square Law</h4><p>Level change over distance — sound <em>and</em> light. One idea, two units.</p></div>
+</div>
+
+<div class="callout watchout"><span class="label">Honest Caveat</span>
+"Five formulas" is not a promise that every math question maps to one of them. The exam also touches unit conversion, scale drawings, and percentage/markup arithmetic. Those are covered here as <strong>supporting skills</strong> (see Conversions), because they show up <em>inside</em> the five rather than as questions of their own.</div>
+</section>
+
+<!-- ================= BRAIN DUMP ================= -->
+<section id="dump">
+<h2>The 60-Second Brain Dump</h2>
+<p class="section-sub">Pearson VUE gives you a scratch board. The moment the clock starts, write this out — before you read a single question. It costs one minute and removes all recall pressure for the rest of the exam.</p>
+
+<div class="dump">
+<div class="dtitle">Write these eight lines, in this order</div>
+<ol>
+<li>V = I × R <span>— and P = V × I</span></li>
+<li>Z<sub>parallel</sub> = Z ÷ N <span>— identical speakers only</span></li>
+<li>Volume = L × W × H <span>— Area = L × W</span></li>
+<li>16:9 → W = D × 0.872, H = D × 0.490</li>
+<li>Throw Distance = Throw Ratio × Image Width</li>
+<li>dB change = 20 × log(D1 ÷ D2) <span>— sound over distance</span></li>
+<li>Double the distance = −6 dB <span>— light drops to ¼</span></li>
+<li>1 m = 3.28 ft · 1 in = 25.4 mm</li>
+</ol>
+</div>
+
+<div class="callout examtip"><span class="label">Why This Works</span>
+Every one of the five formulas is on that board, plus the two conversions that gate them. From that point the exam is no longer a memory test — it's a matching exercise. Read the question, find the line, plug in.</div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ================= 1 · VOLUME ================= -->
+<section id="volume">
+<div class="fhead">
+  <div class="fnum">01</div>
+  <div>
+    <div class="ftag">Site Survey · Acoustics · HVAC</div>
+    <h2>Volume &amp; Area</h2>
+  </div>
+</div>
+<p class="section-sub">The easiest formula on the exam, and the one people lose points on — because the trap is never the multiplication.</p>
+
+<div class="plain"><span class="label">In Plain English</span>
+Area is how much floor (or wall, or screen) you're covering: two dimensions multiplied. Volume is how much air is in the room: three dimensions multiplied. Room volume drives reverberation, HVAC sizing, and loudspeaker coverage decisions, which is why a site survey always captures ceiling height — not just the floor plan.</div>
+
+<div class="formula-box hero-formula">
+  <div class="fname">The Formula</div>
+  <div class="formula">Volume = L × W × H</div>
+  <div class="formula sm" style="color:var(--muted)">Area = L × W</div>
+  <ul class="where">
+    <li><strong>L</strong> — length of the room</li>
+    <li><strong>W</strong> — width of the room</li>
+    <li><strong>H</strong> — ceiling height (the one people forget to ask for)</li>
+  </ul>
+</div>
+
+<div class="diagram">
+<svg viewBox="0 0 560 250" role="img" aria-label="Isometric room box with length, width and height labelled">
+  <!-- floor -->
+  <path d="M120,175 L330,175 L420,125 L210,125 Z" class="dg-fill-teal"/>
+  <!-- back walls -->
+  <path d="M120,175 L120,80 L210,30 L210,125 Z" class="dg-fill-panel"/>
+  <path d="M210,125 L210,30 L420,30 L420,125 Z" class="dg-fill-panel"/>
+  <!-- edges -->
+  <path d="M120,175 L330,175 L420,125 M120,80 L120,175" class="dg-border"/>
+  <!-- height dim -->
+  <path d="M100,175 L100,80" class="dg-amber" marker-start="url(#arrA)" marker-end="url(#arrA)"/>
+  <text class="dm damber" x="60" y="132">H = 3.2 m</text>
+  <!-- length dim -->
+  <path d="M120,197 L330,197" class="dg-teal" marker-start="url(#arrT)" marker-end="url(#arrT)"/>
+  <text class="dm dteal" x="175" y="218">L = 12 m</text>
+  <!-- width dim -->
+  <path d="M345,182 L433,133" class="dg-blue" marker-start="url(#arrB)" marker-end="url(#arrB)"/>
+  <text class="dm dblue" x="390" y="178">W = 8 m</text>
+  <!-- result -->
+  <text class="dm dt" x="450" y="60">12 × 8 × 3.2</text>
+  <text class="dbig dteal" x="450" y="92">307.2 m³</text>
+</svg>
+<div class="dcap">Volume is three edges multiplied — nothing more. The exam's difficulty lives entirely in the <em>units</em> those edges arrive in.</div>
+</div>
+
+<div class="callout watchout"><span class="label">The Three Traps</span>
+<strong>1. Mixed units.</strong> A question that gives length in metres and ceiling height in centimetres (or feet and inches) is testing conversion, not multiplication. Convert everything to one unit <em>first</em>, before you touch the calculator.<br><br>
+<strong>2. Area when you wanted volume.</strong> If the answer choices are in m² you needed two dimensions; m³ means three. The unit on the answer tells you which formula was wanted — read it before you solve.<br><br>
+<strong>3. Irregular rooms.</strong> An L-shaped room is two rectangles added together, not one average. Split it, solve each, add.</div>
+
+<div class="worked" data-worked>
+  <div class="wtitle">Worked Example</div>
+  <div class="wproblem">A conference room measures 12 m long by 8 m wide, with a finished ceiling height of 320 cm. What is the room volume in cubic metres, and what is it in cubic feet?</div>
+  <div class="wstep"><span class="snum">Step 1 — normalise the units</span>Ceiling height is in centimetres; everything else is in metres. 320 cm ÷ 100 =<span class="m">H = 3.2 m</span></div>
+  <div class="wstep"><span class="snum">Step 2 — multiply the three edges</span><span class="m">V = 12 × 8 × 3.2 = 307.2 m³</span></div>
+  <div class="wstep"><span class="snum">Step 3 — convert to cubic feet</span>1 m³ = 35.315 ft³<span class="m">307.2 × 35.315 ≈ 10,849 ft³</span></div>
+  <div class="wstep"><span class="snum">Sanity check</span>A cubic metre is a big box — about 35 cubic feet — so the ft³ number must be far larger than the m³ number. If your answer got <em>smaller</em>, you divided when you should have multiplied.</div>
+  <button class="wbtn">Show next step</button>
+</div>
+
+<div class="calc">
+  <div class="ctitle">Volume &amp; Area Calculator</div>
+  <div class="calc-row">
+    <div class="calc-field"><label>Length</label><input type="number" id="vL" value="12" step="any"></div>
+    <div class="calc-field"><label>Width</label><input type="number" id="vW" value="8" step="any"></div>
+    <div class="calc-field"><label>Height</label><input type="number" id="vH" value="3.2" step="any"></div>
+    <div class="calc-field"><label>Units in</label><select id="vU"><option value="m">metres</option><option value="ft">feet</option></select></div>
+  </div>
+  <div class="calc-result" id="vOut"></div>
+  <div class="calc-note">Floor area uses length × width only. Volume adds the ceiling height.</div>
+</div>
+
+<div class="callout keyterm"><span class="label">Why The Exam Cares</span>
+Room volume is an input to reverberation time, to HVAC load, and to whether a space needs acoustic treatment at all. A site survey question that hands you three dimensions is usually one step in a longer chain — get the volume right and the rest of the question opens up.</div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ================= 2 · OHM'S LAW ================= -->
+<section id="ohms">
+<div class="fhead">
+  <div class="fnum">02</div>
+  <div>
+    <div class="ftag">Electrical · Troubleshooting · Repair</div>
+    <h2>Ohm's Law &amp; Power</h2>
+  </div>
+</div>
+<p class="section-sub">The only formula AVIXA names outright in the exam blueprint. It arrives with two companions you need in the same breath.</p>
+
+<div class="plain"><span class="label">In Plain English</span>
+Voltage is the push. Current is how much actually flows. Resistance (or impedance, in an AC circuit) is what pushes back. Ohm's Law says those three are locked together — fix any two and the third is decided. Power is what the circuit <em>does</em> with that: volts × amps = watts.</div>
+
+<div class="formula-box hero-formula">
+  <div class="fname">The Formula — and its rearrangements</div>
+  <div class="formula">V = I × R</div>
+  <div class="rearrange">
+    <span>I = V ÷ R</span>
+    <span>R = V ÷ I</span>
+  </div>
+  <div class="formula sm" style="margin-top:20px">P = V × I</div>
+  <div class="rearrange">
+    <span>P = I² × R</span>
+    <span>P = V² ÷ R</span>
+  </div>
+  <ul class="where">
+    <li><strong>V</strong> — voltage, in volts</li>
+    <li><strong>I</strong> — current, in amperes <em>(not watts — watts is power)</em></li>
+    <li><strong>R</strong> — resistance in ohms (Ω). In an <strong>AC</strong> circuit the correct term is <strong>impedance (Z)</strong></li>
+    <li><strong>P</strong> — power, in watts</li>
+  </ul>
+</div>
+
+<div class="diagram">
+<svg viewBox="0 0 560 230" role="img" aria-label="Ohm's law triangle and power triangle">
+  <!-- V I R triangle -->
+  <path d="M140,30 L60,170 L220,170 Z" class="dg-teal"/>
+  <line x1="95" y1="108" x2="185" y2="108" class="dg-teal"/>
+  <line x1="140" y1="108" x2="140" y2="170" class="dg-teal"/>
+  <text class="dbig dt" x="128" y="88">V</text>
+  <text class="dbig dt" x="104" y="153">I</text>
+  <text class="dbig dt" x="160" y="153">R</text>
+  <text class="dm dteal dsmall" x="78" y="200">cover one — read the rest</text>
+  <!-- P V I triangle -->
+  <path d="M400,30 L320,170 L480,170 Z" class="dg-amber"/>
+  <line x1="355" y1="108" x2="445" y2="108" class="dg-amber"/>
+  <line x1="400" y1="108" x2="400" y2="170" class="dg-amber"/>
+  <text class="dbig dt" x="388" y="88">P</text>
+  <text class="dbig dt" x="362" y="153">V</text>
+  <text class="dbig dt" x="418" y="153">I</text>
+  <text class="dm damber dsmall" x="340" y="200">same trick, power side</text>
+</svg>
+<div class="dcap">Cover the quantity you want. If the two remaining letters sit side by side, multiply them. If one sits above the other, divide top by bottom. Cover <strong>I</strong> in the left triangle and you're left with V over R — so I = V ÷ R.</div>
+</div>
+
+<h3>Impedance: the part that shows up in loudspeaker questions</h3>
+<p>Ohm's Law questions on the CTS exam frequently arrive dressed as loudspeaker wiring. Two rules cover almost all of them:</p>
+
+<div class="formula-box">
+  <div class="fname">Series vs. Parallel</div>
+  <div class="formula sm">Series: Z<sub>total</sub> = Z<sub>1</sub> + Z<sub>2</sub> + Z<sub>3</sub> …</div>
+  <div class="formula sm">Parallel (identical speakers): Z<sub>total</sub> = Z ÷ N</div>
+  <ul class="where">
+    <li><strong>Series</strong> adds up — impedance goes <em>up</em>, the amp works less hard</li>
+    <li><strong>Parallel</strong> divides — impedance goes <em>down</em>, the amp works <em>harder</em>. Four 8 Ω speakers in parallel = 2 Ω, which is where amplifiers get destroyed</li>
+    <li><strong>N</strong> — number of identical loudspeakers. If they aren't identical you need the reciprocal formula, which is CTS-D territory</li>
+  </ul>
+</div>
+
+<div class="callout watchout"><span class="label">The Classic Wrong Answer</span>
+<strong>Amperes measure current. Watts measure power.</strong> A question asking for "the unit of current" has <em>amperes</em> as the answer and <em>watts</em> sitting right beside it as bait. Likewise: resistance is the DC term, <strong>impedance</strong> is the AC term — if the question says "alternating current" and one option says resistance and another says impedance, impedance wins.</div>
+
+<div class="worked" data-worked>
+  <div class="wtitle">Worked Example</div>
+  <div class="wproblem">An amplifier channel delivers 24 V across a 4 Ω loudspeaker load. How much current flows, and how much power is being delivered?</div>
+  <div class="wstep"><span class="snum">Step 1 — pick the rearrangement</span>You have V and R, you want I. Cover I on the triangle: V sits over R.<span class="m">I = V ÷ R</span></div>
+  <div class="wstep"><span class="snum">Step 2 — solve for current</span><span class="m">I = 24 ÷ 4 = 6 A</span></div>
+  <div class="wstep"><span class="snum">Step 3 — solve for power</span><span class="m">P = V × I = 24 × 6 = 144 W</span></div>
+  <div class="wstep"><span class="snum">Step 4 — verify a different way</span>P = V² ÷ R = 576 ÷ 4 = 144 W. Two routes, same answer — that's your check.<span class="m">✓ 6 A, 144 W</span></div>
+  <button class="wbtn">Show next step</button>
+</div>
+
+<div class="calc">
+  <div class="ctitle">Ohm's Law Solver — fill any two</div>
+  <div class="calc-row">
+    <div class="calc-field"><label>Voltage (V)</label><input type="number" id="oV" step="any" placeholder="—"></div>
+    <div class="calc-field"><label>Current (A)</label><input type="number" id="oI" step="any" placeholder="—"></div>
+    <div class="calc-field"><label>Resistance (Ω)</label><input type="number" id="oR" step="any" placeholder="4"></div>
+  </div>
+  <div class="calc-result" id="oOut"></div>
+  <div class="calc-note">Enter exactly two values; the third and the power are derived. Clear a field to re-solve for it.</div>
+</div>
+
+<div class="calc">
+  <div class="ctitle">Parallel Impedance — identical loudspeakers</div>
+  <div class="calc-row">
+    <div class="calc-field"><label>Each speaker (Ω)</label><input type="number" id="pZ" value="8" step="any"></div>
+    <div class="calc-field"><label>How many</label><input type="number" id="pN" value="4" step="1" min="1"></div>
+  </div>
+  <div class="calc-result" id="pOut"></div>
+  <div class="calc-note">Series wiring instead? Multiply rather than divide: 4 × 8 Ω in series = 32 Ω.</div>
+</div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ================= 3 · ASPECT RATIO ================= -->
+<section id="aspect">
+<div class="fhead">
+  <div class="fnum">03</div>
+  <div>
+    <div class="ftag">Display · Sightlines · Site Evaluation</div>
+    <h2>Aspect Ratio &amp; Image Size</h2>
+  </div>
+</div>
+<p class="section-sub">Screens are sold by diagonal. Rooms are designed by height and width. This is the formula that converts between them.</p>
+
+<div class="plain"><span class="label">In Plain English</span>
+Aspect ratio is just the shape of the rectangle — width compared to height. 16:9 means 16 units across for every 9 up. The catch is that manufacturers quote the <em>diagonal</em>, which is neither of those numbers, so you need a way to get from a "55-inch display" to the actual width and height that determine whether the back row can read it.</div>
+
+<div class="formula-box hero-formula">
+  <div class="fname">The Formula</div>
+  <div class="formula">Aspect Ratio = W : H</div>
+  <div class="formula sm" style="margin-top:18px">For 16:9 — W = D × 0.872 &nbsp;·&nbsp; H = D × 0.490</div>
+  <ul class="where">
+    <li><strong>D</strong> — the quoted diagonal</li>
+    <li>These factors come from Pythagoras: √(16² + 9²) = 18.358, so W = D × 16⁄18.358</li>
+    <li>You do <em>not</em> need to derive them in the exam — memorise 0.872 and 0.490 and move on</li>
+  </ul>
+</div>
+
+<div class="diagram">
+<svg viewBox="0 0 560 300" role="img" aria-label="16:9 rectangle with diagonal and viewing distance zones">
+  <rect x="40" y="30" width="280" height="157.5" class="dg-fill-blue"/>
+  <line x1="40" y1="187.5" x2="320" y2="30" class="dg-amber dg-dash"/>
+  <text class="dm damber" x="150" y="100">D = 55"</text>
+  <path d="M40,208 L320,208" class="dg-teal" marker-start="url(#arrT)" marker-end="url(#arrT)"/>
+  <text class="dm dteal" x="140" y="229">W = 48"</text>
+  <path d="M20,30 L20,187.5" class="dg-blue" marker-start="url(#arrB)" marker-end="url(#arrB)"/>
+  <text class="dm dblue" x="0" y="112" transform="rotate(-90 14,112)">H = 27"</text>
+  <!-- viewing zones -->
+  <text class="dm dt" x="360" y="48">Farthest viewer</text>
+  <text class="dm dgreen dsmall" x="360" y="78">4 × H = 9 ft — analytical</text>
+  <text class="dm damber dsmall" x="360" y="104">6 × H = 13.5 ft — general</text>
+  <text class="dm dred dsmall" x="360" y="130">8 × H = 18 ft — passive</text>
+  <text class="dm dt" x="360" y="168">Closest viewer</text>
+  <text class="dm dsmall" x="360" y="194">2 × H = 4.5 ft minimum</text>
+  <text class="dm dteal dsmall" x="40" y="268">Everything downstream keys off H — not the diagonal.</text>
+</svg>
+<div class="dcap">A 55" 16:9 display is 48" wide and 27" tall. Multiply that 27" height by 4, 6 or 8 to find how far back the last viewer can sit, depending on what they need to do with the image.</div>
+</div>
+
+<h3>Diagonal factors worth having</h3>
+<div class="tbl-wrap"><table class="conv">
+<tr><th>Aspect ratio</th><th>Width = D ×</th><th>Height = D ×</th><th>Typical use</th></tr>
+<tr><td>4:3</td><td>0.800</td><td>0.600</td><td>Legacy projection, document cameras</td></tr>
+<tr><td><strong>16:9</strong></td><td><strong>0.872</strong></td><td><strong>0.490</strong></td><td>HD/UHD displays — the default assumption</td></tr>
+<tr><td>16:10</td><td>0.848</td><td>0.530</td><td>Laptops, many projectors</td></tr>
+<tr><td>21:9</td><td>0.919</td><td>0.394</td><td>Ultrawide / cinematic</td></tr>
+</table></div>
+
+<div class="callout spec"><span class="label">The 4 / 6 / 8 Rule</span>
+The farthest viewer sits no more than <strong>4 × image height</strong> for analytical viewing (reading fine detail, spreadsheets, medical), <strong>6 × image height</strong> for basic decision-making, and <strong>8 × image height</strong> for passive viewing (video, entertainment). The closest viewer sits no nearer than <strong>2 × image height</strong>. Read the other way round: image height ≈ farthest viewer distance ÷ 6 for a general-purpose room.</div>
+
+<div class="callout examtip"><span class="label">Standards Note</span>
+AVIXA's current display sizing standard (DISCAS, V202.01) replaced the 4/6/8 rule with a calculation based on the height of the smallest <em>element</em> on screen — %EH for analytical viewing, and a farthest-viewer formula for basic decision making. The CTS Exam Guide 3rd Edition still teaches 4/6/8, and that's what exam questions key off. Know 4/6/8 for the test; know DISCAS exists so the terminology doesn't blindside you.</div>
+
+<div class="worked" data-worked>
+  <div class="wtitle">Worked Example</div>
+  <div class="wproblem">A client wants a 55" 16:9 display in a small huddle room for general presentation use. What is the image height, and how far back can the last chair go?</div>
+  <div class="wstep"><span class="snum">Step 1 — diagonal to height</span>16:9 height factor is 0.490<span class="m">H = 55 × 0.490 = 26.95 ≈ 27 in</span></div>
+  <div class="wstep"><span class="snum">Step 2 — apply the right multiple</span>"General presentation" = basic decision making = 6 × image height<span class="m">6 × 27 = 162 in</span></div>
+  <div class="wstep"><span class="snum">Step 3 — convert to something usable</span><span class="m">162 ÷ 12 = 13.5 ft (≈ 4.1 m)</span></div>
+  <div class="wstep"><span class="snum">Watch the trap</span>If the answer choices are in feet and you left the answer in inches, 162 will not appear — but 13.5 will. Always finish in the units the options use.</div>
+  <button class="wbtn">Show next step</button>
+</div>
+
+<div class="calc">
+  <div class="ctitle">Diagonal → Width, Height &amp; Viewing Distance</div>
+  <div class="calc-row">
+    <div class="calc-field"><label>Diagonal</label><input type="number" id="aD" value="55" step="any"></div>
+    <div class="calc-field"><label>Aspect ratio</label><select id="aR">
+      <option value="1.3333">4:3</option>
+      <option value="1.7778" selected>16:9</option>
+      <option value="1.6">16:10</option>
+      <option value="2.3333">21:9</option>
+    </select></div>
+  </div>
+  <div class="calc-result" id="aOut"></div>
+  <div class="calc-note">Units in = units out. Enter 55 for inches and every result is in inches.</div>
+</div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ================= 4 · THROW DISTANCE ================= -->
+<section id="throw">
+<div class="fhead">
+  <div class="fnum">04</div>
+  <div>
+    <div class="ftag">Projection · Troubleshoot · Repair</div>
+    <h2>Throw Distance</h2>
+  </div>
+</div>
+<p class="section-sub">Named twice in AVIXA's blueprint — more than any other calculation. It is one multiplication asked three different ways.</p>
+
+<div class="plain"><span class="label">In Plain English</span>
+Throw ratio is a projector's personality: how far back it has to sit to fill a given width. A 2.0:1 lens needs 2 metres of distance for every 1 metre of image. So if you know the ratio and the width you want, the distance is fixed — and if the room dictates the distance, the ratio you must buy is fixed.</div>
+
+<div class="formula-box hero-formula">
+  <div class="fname">The Formula — and its rearrangements</div>
+  <div class="formula">Throw Distance = Throw Ratio × Image Width</div>
+  <div class="rearrange">
+    <span>Throw Ratio = TD ÷ W</span>
+    <span>Image Width = TD ÷ Throw Ratio</span>
+  </div>
+  <ul class="where">
+    <li><strong>Throw Distance</strong> — lens to screen surface</li>
+    <li><strong>Throw Ratio</strong> — the projector spec, written like 1.8:1 (use the 1.8)</li>
+    <li><strong>Image Width</strong> — <strong style="color:var(--red)">width, never diagonal, never height</strong></li>
+  </ul>
+</div>
+
+<div class="diagram">
+<svg viewBox="0 0 560 220" role="img" aria-label="Projector throwing to a screen with distance and width labelled">
+  <!-- projector -->
+  <rect x="30" y="88" width="56" height="34" rx="5" class="dg-fill-panel"/>
+  <circle cx="86" cy="105" r="8" class="dg-fill-amber"/>
+  <text class="dm dsmall" x="24" y="142">projector</text>
+  <!-- light cone -->
+  <path d="M92,105 L400,44 L400,166 Z" style="fill:rgba(251,191,36,.10);stroke:var(--amber);stroke-width:1.5"/>
+  <!-- screen -->
+  <rect x="400" y="44" width="10" height="122" class="dg-fill-teal"/>
+  <!-- throw distance -->
+  <path d="M92,192 L400,192" class="dg-blue" marker-start="url(#arrB)" marker-end="url(#arrB)"/>
+  <text class="dm dblue" x="180" y="212">Throw Distance = 5.4 m</text>
+  <!-- image width -->
+  <path d="M432,44 L432,166" class="dg-teal" marker-start="url(#arrT)" marker-end="url(#arrT)"/>
+  <text class="dm dteal" x="444" y="100">Image</text>
+  <text class="dm dteal" x="444" y="120">Width</text>
+  <text class="dm dteal" x="444" y="140">3 m</text>
+  <text class="dm damber dsmall" x="150" y="76">ratio 1.8 : 1</text>
+</svg>
+<div class="dcap">1.8 × 3 m = 5.4 m. The diagram is drawn on its side because the exam often draws it in plan view on a reflected ceiling plan — the dimension you measure is still lens-to-screen.</div>
+</div>
+
+<div class="callout watchout"><span class="label">The Trap That Catches Everyone</span>
+The formula uses <strong>image WIDTH</strong>. Questions love to hand you a <strong>diagonal</strong> or a <strong>screen height</strong> instead, because that adds a hidden first step. If the question says "a 100-inch 16:9 screen," you must convert to width (100 × 0.872 = 87.2 in) <em>before</em> you multiply by the throw ratio. The wrong answers are built from people who skipped that step — the distractor list will contain the diagonal-times-ratio result, waiting for you.</div>
+
+<div class="worked" data-worked>
+  <div class="wtitle">Worked Example — the two-step version</div>
+  <div class="wproblem">A projector with a 1.5:1 throw ratio must fill a 120-inch diagonal 16:9 screen. The room allows a maximum lens-to-screen distance of 12 feet. Will it fit?</div>
+  <div class="wstep"><span class="snum">Step 1 — spot the hidden step</span>You were given a <em>diagonal</em>, but the formula needs <em>width</em>. Convert first.<span class="m">W = 120 × 0.872 = 104.6 in</span></div>
+  <div class="wstep"><span class="snum">Step 2 — apply the formula</span><span class="m">TD = 1.5 × 104.6 = 156.9 in</span></div>
+  <div class="wstep"><span class="snum">Step 3 — match the units in the question</span>The room limit is in feet.<span class="m">156.9 ÷ 12 = 13.1 ft</span></div>
+  <div class="wstep"><span class="snum">Step 4 — answer the actual question</span>13.1 ft needed vs. 12 ft available.<span class="m">✗ No — it does not fit. You need a shorter throw ratio (12 ft ÷ 8.72 ft = 1.38:1 or less).</span></div>
+  <div class="wstep"><span class="snum">The trap, for reference</span>Skipping Step 1 gives 1.5 × 120 = 180 in = 15 ft. That number will be sitting in the answer choices.</div>
+  <button class="wbtn">Show next step</button>
+</div>
+
+<div class="calc">
+  <div class="ctitle">Throw Distance Calculator</div>
+  <div class="calc-row">
+    <div class="calc-field"><label>Solve for</label><select id="tMode">
+      <option value="td">Throw distance</option>
+      <option value="tr">Throw ratio</option>
+      <option value="iw">Image width</option>
+    </select></div>
+    <div class="calc-field"><label>Throw ratio</label><input type="number" id="tR" value="1.8" step="any"></div>
+    <div class="calc-field"><label>Image width</label><input type="number" id="tW" value="3" step="any"></div>
+    <div class="calc-field" id="tdField" style="display:none"><label>Throw distance</label><input type="number" id="tD" value="5.4" step="any"></div>
+  </div>
+  <div class="calc-row">
+    <div class="calc-field" style="width:auto"><label>Given a diagonal instead? Convert it (16:9)</label><input type="number" id="tDiag" step="any" placeholder="diagonal"></div>
+  </div>
+  <div class="calc-result" id="tOut"></div>
+  <div class="calc-note">Typical ranges — ultra-short throw &lt; 0.4 · short throw 0.4–1.0 · standard 1.0–2.0 · long throw &gt; 2.0</div>
+</div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ================= 5 · INVERSE SQUARE ================= -->
+<section id="isl">
+<div class="fhead">
+  <div class="fnum">05</div>
+  <div>
+    <div class="ftag">Audio · Lighting · Design</div>
+    <h2>Inverse Square Law</h2>
+  </div>
+</div>
+<p class="section-sub">Level change over distance — sound and light. One physical idea, asked in two different units, and that's the whole difficulty.</p>
+
+<div class="plain"><span class="label">In Plain English</span>
+Energy from a point source spreads out over a sphere as it travels. Double the distance and the same energy covers four times the area, so any given spot receives a quarter as much. That one fact explains both "SPL drops 6 dB every time you double the distance" and "the light on the screen drops to a quarter when you move the projector twice as far away." Same law. Different units on the answer.</div>
+
+<div class="formula-box hero-formula">
+  <div class="fname">Sound — the answer is in dB</div>
+  <div class="formula">ΔdB = 20 × log(D<sub>1</sub> ÷ D<sub>2</sub>)</div>
+  <ul class="where">
+    <li><strong>D<sub>1</sub></strong> — the reference (known) distance</li>
+    <li><strong>D<sub>2</sub></strong> — the new distance you're asked about</li>
+    <li>Result is <strong>negative</strong> when you move away, positive when you move closer</li>
+  </ul>
+</div>
+
+<div class="formula-box hero-formula">
+  <div class="fname">Light — the answer is in lux or footcandles</div>
+  <div class="formula">E<sub>2</sub> = E<sub>1</sub> × (D<sub>1</sub> ÷ D<sub>2</sub>)<sup>2</sup></div>
+  <ul class="where">
+    <li><strong>E<sub>1</sub></strong> — known illuminance at distance D<sub>1</sub></li>
+    <li><strong>E<sub>2</sub></strong> — illuminance at the new distance D<sub>2</sub></li>
+    <li>Same ratio, squared instead of logged — because light questions want a level, not a change</li>
+  </ul>
+</div>
+
+<div class="diagram">
+<svg viewBox="0 0 560 260" role="img" aria-label="Energy from a point source spreading over 1x, 4x and 9x area at 1, 2 and 3 metres">
+  <circle cx="45" cy="130" r="9" class="dg-dot-amber"/>
+  <text class="dm dsmall" x="20" y="162">source</text>
+  <!-- spreading rays -->
+  <path d="M52,130 L500,42 M52,130 L500,218" class="dg-line dg-dash"/>
+  <!-- 1m -->
+  <rect x="140" y="112" width="34" height="36" class="dg-fill-teal"/>
+  <text class="dm dteal" x="136" y="100">1 m</text>
+  <text class="dm dt dsmall" x="140" y="172">1 unit</text>
+  <!-- 2m -->
+  <rect x="270" y="94" width="68" height="72" class="dg-fill-amber"/>
+  <text class="dm damber" x="266" y="82">2 m</text>
+  <text class="dm dt dsmall" x="270" y="190">spread over 4×</text>
+  <text class="dm damber dsmall" x="270" y="210">−6 dB · ¼ the light</text>
+  <!-- 3m -->
+  <rect x="400" y="76" width="102" height="108" class="dg-fill-blue"/>
+  <text class="dm dblue" x="396" y="64">3 m</text>
+  <text class="dm dt dsmall" x="400" y="206">spread over 9×</text>
+  <text class="dm dblue dsmall" x="400" y="226">−9.5 dB · ⅑ the light</text>
+</svg>
+<div class="dcap">The square in "inverse square" is literal — at 3× the distance the patch is 3 times wider <em>and</em> 3 times taller, so 9 times the area receives the same energy.</div>
+</div>
+
+<h3>The shortcut that beats the calculator</h3>
+<p>You rarely need the log button. Count doublings:</p>
+
+<div class="tbl-wrap"><table>
+<tr><th>Distance change</th><th>Sound (SPL)</th><th>Light (illuminance)</th></tr>
+<tr><td>×2 (double)</td><td>−6 dB</td><td>÷ 4</td></tr>
+<tr><td>×4</td><td>−12 dB</td><td>÷ 16</td></tr>
+<tr><td>×8</td><td>−18 dB</td><td>÷ 64</td></tr>
+<tr><td>×10</td><td>−20 dB</td><td>÷ 100</td></tr>
+<tr><td>÷2 (halve)</td><td>+6 dB</td><td>× 4</td></tr>
+</table></div>
+
+<div class="callout keyterm"><span class="label">The −6 dB Rule</span>
+<strong>Every doubling of distance costs 6 dB.</strong> If you remember nothing else from this section, remember that. 1 m → 8 m is three doublings (1→2, 2→4, 4→8), so −18 dB. No logarithm required.</div>
+
+<div class="callout watchout"><span class="label">20 log, Not 10 log</span>
+Distance uses <strong>20 log</strong>. So do voltage and sound pressure. <strong>10 log</strong> is for <em>power</em> — watts, and acoustic power. Mixing them up is the single most common dB error, and it doubles or halves your answer, which is exactly the size of gap the distractors are built around. Memorise the split: <em>if it's something you can measure with a meter at a point — pressure, voltage, distance — it's 20 log. If it's power in watts, it's 10 log.</em></div>
+
+<div class="callout spec"><span class="label">Free Field Only</span>
+The inverse square law describes a <strong>point source in a free field</strong> — no reflections. Inside a real reverberant room it only holds until you reach critical distance, past which the reverberant field dominates and level stops dropping. Exam questions almost always assume free field; if a question mentions a highly reverberant space, that assumption is what's being tested.</div>
+
+<div class="worked" data-worked>
+  <div class="wtitle">Worked Example — Sound</div>
+  <div class="wproblem">A loudspeaker produces 95 dB SPL measured at 1 metre. What is the SPL at the back row, 8 metres away?</div>
+  <div class="wstep"><span class="snum">Step 1 — count the doublings (the fast way)</span>1 → 2 → 4 → 8 is three doublings.<span class="m">3 × −6 dB = −18 dB</span></div>
+  <div class="wstep"><span class="snum">Step 2 — apply the change</span><span class="m">95 − 18 = 77 dB SPL</span></div>
+  <div class="wstep"><span class="snum">Step 3 — confirm with the formula</span>ΔdB = 20 × log(1 ÷ 8) = 20 × log(0.125) = 20 × (−0.903)<span class="m">= −18.06 dB → 95 − 18.06 ≈ 77 dB ✓</span></div>
+  <div class="wstep"><span class="snum">Direction check</span>You moved <em>away</em>, so the level must <em>drop</em>. If your arithmetic produced 113 dB you inverted the ratio — put the reference distance on top.</div>
+  <button class="wbtn">Show next step</button>
+</div>
+
+<div class="worked" data-worked>
+  <div class="wtitle">Worked Example — Light</div>
+  <div class="wproblem">A light meter reads 800 lux at 2 metres from a fixture. What will it read at 6 metres?</div>
+  <div class="wstep"><span class="snum">Step 1 — form the distance ratio</span>Reference over new:<span class="m">2 ÷ 6 = 0.3333</span></div>
+  <div class="wstep"><span class="snum">Step 2 — square it</span><span class="m">0.3333² = 0.1111 (that's ⅑)</span></div>
+  <div class="wstep"><span class="snum">Step 3 — multiply</span><span class="m">800 × 0.1111 ≈ 89 lux</span></div>
+  <div class="wstep"><span class="snum">Sanity check</span>3× the distance means 9× the area, so ⅑ the light. 800 ÷ 9 = 88.9. ✓ Tripling distance is brutal — this is why ambient light control matters more than projector lumens.</div>
+  <button class="wbtn">Show next step</button>
+</div>
+
+<div class="calc">
+  <div class="ctitle">Inverse Square Calculator — sound and light together</div>
+  <div class="calc-row">
+    <div class="calc-field"><label>Known level</label><input type="number" id="iL" value="95" step="any"></div>
+    <div class="calc-field"><label>at distance D₁</label><input type="number" id="iD1" value="1" step="any"></div>
+    <div class="calc-field"><label>new distance D₂</label><input type="number" id="iD2" value="8" step="any"></div>
+    <div class="calc-field"><label>Quantity</label><select id="iT">
+      <option value="spl">SPL (dB)</option>
+      <option value="lux">Illuminance (lux/fc)</option>
+    </select></div>
+  </div>
+  <div class="calc-result" id="iOut"></div>
+  <div class="calc-note">Distances must share a unit. The doubling count is shown so you can check the shortcut against the formula.</div>
+</div>
+
+<a class="xref" href="light-measurement-guide.html"><span class="label">Goes Deeper</span>
+Incident vs. reflected light, lux ↔ footcandle conversion, and how the inverse square law drives screen illuminance — <span class="go">Light Measurement Guide →</span></a>
+</section>
+
+<div class="divider"></div>
+
+<!-- ================= DECODER ================= -->
+<section id="decoder">
+<h2>Trigger-Word Decoder</h2>
+<p class="section-sub">You are not being tested on arithmetic. You are being tested on whether you can tell which formula a sentence is asking for. Learn the tells.</p>
+
+<div class="tbl-wrap"><table class="triggers">
+<tr><th>When the question says…</th><th>It wants…</th><th>Do this</th></tr>
+<tr><td>cubic metres, cubic feet, m³, ft³</td><td>Volume</td><td>L × W × H — check every dimension shares a unit</td></tr>
+<tr><td>square metres, m², "floor area", "screen area"</td><td>Area</td><td>Two dimensions only</td></tr>
+<tr><td>reverberation, HVAC load, "how much air"</td><td>Volume</td><td>Ceiling height is required — find it</td></tr>
+<tr><td>amperes, current draw, "how much current"</td><td>Ohm's Law</td><td>I = V ÷ R</td></tr>
+<tr><td>watts, power dissipated, amplifier output</td><td>Power</td><td>P = V × I (or V² ÷ R)</td></tr>
+<tr><td>"speakers wired in parallel"</td><td>Impedance</td><td>Z ÷ N — impedance goes DOWN</td></tr>
+<tr><td>"speakers wired in series"</td><td>Impedance</td><td>Add them — impedance goes UP</td></tr>
+<tr><td>alternating current, AC circuit</td><td>Impedance, not resistance</td><td>Terminology trap — pick impedance</td></tr>
+<tr><td>"55-inch display", diagonal</td><td>Aspect ratio</td><td>× 0.872 for width, × 0.490 for height</td></tr>
+<tr><td>"farthest viewer", "back row", sightline</td><td>4/6/8 rule</td><td>Get H first, then multiply by 4, 6 or 8</td></tr>
+<tr><td>throw ratio, "how far back", lens selection</td><td>Throw distance</td><td>TR × image WIDTH — convert diagonal first</td></tr>
+<tr><td>"will it fit in the room"</td><td>Throw distance</td><td>Solve, then compare to the room limit</td></tr>
+<tr><td>"at 1 metre… at 10 metres", "twice as far"</td><td>Inverse square</td><td>Count doublings × −6 dB</td></tr>
+<tr><td>lux, footcandles, illuminance at a distance</td><td>Inverse square (light)</td><td>× (D₁ ÷ D₂)² — squared, not logged</td></tr>
+<tr><td>dB SPL at a listener position</td><td>Inverse square (sound)</td><td>20 log(D₁ ÷ D₂)</td></tr>
+</table></div>
+
+<div class="callout examtip"><span class="label">The Meta-Skill</span>
+The Reddit debrief put reading comprehension <em>above</em> the math, and the blueprint agrees — "basic math" appears as a <em>skill</em>, while the knowledge items are all about interpreting drawings and requirements. Before you calculate: underline what you're given, circle what's asked, and check the units on the answer choices. The units alone often reveal which formula was intended.</div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ================= CONVERSIONS ================= -->
+<section id="conversions">
+<h2>The Conversions That Gate The Five</h2>
+<p class="section-sub">These aren't a sixth formula — they're the step hidden inside the other five. Every one of them has cost somebody a question they knew how to solve.</p>
+
+<div class="tbl-wrap"><table class="conv">
+<tr><th>Conversion</th><th>Factor</th><th>Shows up in</th></tr>
+<tr><td>inches → millimetres</td><td>× 25.4</td><td>Screen sizing, rack units</td></tr>
+<tr><td>feet → metres</td><td>× 0.3048</td><td>Throw distance, viewing distance</td></tr>
+<tr><td>metres → feet</td><td>× 3.281</td><td>Throw distance, room dimensions</td></tr>
+<tr><td>m² → ft²</td><td>× 10.764</td><td>Screen area, floor area</td></tr>
+<tr><td>m³ → ft³</td><td>× 35.315</td><td>Room volume</td></tr>
+<tr><td>footcandles → lux</td><td>× 10.764</td><td>Ambient light, screen illuminance</td></tr>
+<tr><td>inches → feet</td><td>÷ 12</td><td>Almost every display question</td></tr>
+</table></div>
+
+<div class="callout keyterm"><span class="label">A Free Mnemonic</span>
+m² → ft² and footcandles → lux use the <strong>same factor, 10.764</strong>. That is not a coincidence — a footcandle is one lumen per square foot and a lux is one lumen per square metre, so converting between them <em>is</em> the area conversion. Remember one number, get two conversions.</div>
+
+<div class="callout watchout"><span class="label">Scale Drawings</span>
+A drawing marked 1:50 means one unit on paper equals 50 in the real room — so you <strong>multiply</strong> the measured dimension by 50. Reading the scale backwards (dividing) produces an answer that is off by a factor of 2,500 on an area calculation, which at least tends to be obviously wrong. Watch for <strong>NTS</strong> (Not To Scale) on a drawing — it means you cannot measure it at all, and the question is testing whether you know that.</div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ================= CHEAT SHEET ================= -->
+<section id="cheatsheet">
+<h2>One-Page Cheat Sheet</h2>
+<p class="section-sub">Print this. Everything above, compressed to what fits on a scratch board.</p>
+
+<div class="tbl-wrap"><table class="cheat">
+<tr><th>#</th><th>Formula</th><th>Solve for the other side</th></tr>
+<tr><td><strong>1</strong> Volume</td><td>V = L × W × H</td><td>Area = L × W</td></tr>
+<tr><td><strong>2</strong> Ohm's Law</td><td>V = I × R</td><td>I = V ÷ R · R = V ÷ I</td></tr>
+<tr><td><strong>2</strong> Power</td><td>P = V × I</td><td>P = I²R · P = V² ÷ R</td></tr>
+<tr><td><strong>2</strong> Impedance</td><td>Z<sub>par</sub> = Z ÷ N</td><td>Z<sub>ser</sub> = Z₁ + Z₂ + …</td></tr>
+<tr><td><strong>3</strong> Aspect (16:9)</td><td>W = D × 0.872</td><td>H = D × 0.490</td></tr>
+<tr><td><strong>3</strong> Sightline</td><td>Far = 4/6/8 × H</td><td>Near = 2 × H</td></tr>
+<tr><td><strong>4</strong> Throw</td><td>TD = TR × W</td><td>TR = TD ÷ W · W = TD ÷ TR</td></tr>
+<tr><td><strong>5</strong> ISL — sound</td><td>ΔdB = 20 log(D₁ ÷ D₂)</td><td>×2 distance = −6 dB</td></tr>
+<tr><td><strong>5</strong> ISL — light</td><td>E₂ = E₁ × (D₁ ÷ D₂)²</td><td>×2 distance = ÷4 light</td></tr>
+</table></div>
+
+<div class="callout spec"><span class="label">The Four Numbers</span>
+<strong>0.872</strong> (16:9 width) · <strong>0.490</strong> (16:9 height) · <strong>−6 dB</strong> (per doubling) · <strong>3.281</strong> (m→ft). If the formulas are the sentences, these are the vocabulary. Nothing else on this page requires rote memory.</div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ================= QUIZ ================= -->
+<section id="quiz">
+<h2>Mixed Drill</h2>
+<p class="section-sub">Fifteen questions, deliberately shuffled across all five formulas — because on the exam nothing tells you which one you're looking at. Each is tagged after you answer.</p>
+<div id="quiz-score">0 / 0 answered</div>
+<div id="quiz-area"></div>
+<button id="quiz-reset">Reset drill</button>
+</section>
+
+<div class="divider"></div>
+
+<!-- ================= BEYOND ================= -->
+<section id="beyond">
+<h2>What's deliberately NOT on this page</h2>
+<p class="section-sub">Scoping discipline only works if you know what you scoped out — and why.</p>
+
+<h3>Still on the CTS exam, just lower-yield</h3>
+<p>These appear, but as single questions rather than recurring calculation types. They live in the <a href="cts-av-math-guide.html" style="color:var(--teal)">AV Math Guide</a>:</p>
+<ul>
+<li><strong>Heat load</strong> — BTU = watts × 3.41. One formula, occasionally asked.</li>
+<li><strong>Projector lumens</strong> — screen area × required illuminance. Named in the blueprint under design tasks.</li>
+<li><strong>Cost math</strong> — margin vs. markup, contingency percentages. Domain C is 11% of the exam, but it's arithmetic, not formulas.</li>
+<li><strong>dB reference levels</strong> — dBu, dBV, dBSPL, and the 10 log / 20 log split beyond distance.</li>
+</ul>
+
+<h3>CTS-D territory — skip it for this exam</h3>
+<p>If you find yourself studying any of the following, stop. They're on AVIXA's <em>Design</em> formula sheet, not the CTS blueprint:</p>
+<ul>
+<li>PAG/NAG and the full audio system stability formula</li>
+<li>Loudspeaker coverage-circle and spacing geometry</li>
+<li>Jam ratio and conduit capacity formulas</li>
+<li>Camera image size from lens angle of view</li>
+<li>Electrical power required (EPR) at the loudspeaker</li>
+</ul>
+
+<div class="callout examtip"><span class="label">The Payoff</span>
+The candidate quote is worth taking literally: master these five and <strong>10–20% of the exam becomes freebies</strong>. On a 100-question test with a scaled pass mark, that is not a marginal gain — it is the difference between hoping and knowing. Then put the recovered study time into cable types, project phase order, and practice questions, which is where the other 80% actually lives.</div>
+
+<a class="xref" href="cts-last-minute-cram.html"><span class="label">The Other Four Essentials</span>
+Math is only essential #2. Cable types, project phase order, drawing literacy and the answer-picking heuristics — <span class="go">The Last Mile →</span></a>
+
+<a class="xref" href="cts-av-math-guide.html"><span class="label">When You're Ready</span>
+Everything else — logs, decibel reference levels, loudspeaker impedance, bandwidth, PoE, heat load, cost math, standards — <span class="go">Full AV Math Guide →</span></a>
+</section>
+
+</main>
+
+<script>
+/* ---------- sidebar ---------- */
+const sb=document.getElementById('sidebar'),bd=document.getElementById('backdrop'),hb=document.getElementById('hamburger');
+function toggleNav(){sb.classList.toggle('open');bd.classList.toggle('show');hb.classList.toggle('open');hb.textContent=sb.classList.contains('open')?'✕':'☰';}
+hb.addEventListener('click',toggleNav);
+bd.addEventListener('click',toggleNav);
+sb.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>{if(sb.classList.contains('open'))toggleNav();}));
+
+/* ---------- worked example step reveal ---------- */
+document.querySelectorAll('[data-worked]').forEach(w=>{
+  const steps=[...w.querySelectorAll('.wstep')],btn=w.querySelector('.wbtn');
+  let i=0;
+  btn.addEventListener('click',()=>{
+    if(i<steps.length){steps[i].classList.add('shown');i++;}
+    if(i===steps.length){btn.disabled=true;btn.textContent='All steps shown';}
+    else{btn.textContent='Show next step ('+i+'/'+steps.length+')';}
+  });
+});
+
+/* ---------- helpers ---------- */
+const $=id=>document.getElementById(id);
+const num=id=>parseFloat($(id).value);
+const r=(n,d=2)=>{const f=Math.pow(10,d);return Math.round(n*f)/f;};
+
+/* ---------- 1. volume ---------- */
+function calcVol(){
+  const L=num('vL'),W=num('vW'),H=num('vH'),u=$('vU').value;
+  if([L,W,H].some(isNaN)){$('vOut').textContent='';return;}
+  const vol=L*W*H, area=L*W;
+  const other = u==='m' ? `${r(vol*35.315,1)} ft³` : `${r(vol/35.315,1)} m³`;
+  const aOther = u==='m' ? `${r(area*10.764,1)} ft²` : `${r(area/10.764,1)} m²`;
+  $('vOut').innerHTML=`Volume = ${r(vol,2)} ${u}³ &nbsp;(${other})<br>Floor area = ${r(area,2)} ${u}² &nbsp;(${aOther})`;
+}
+['vL','vW','vH','vU'].forEach(id=>$(id).addEventListener('input',calcVol));
+calcVol();
+
+/* ---------- 2. ohm's law ---------- */
+function calcOhm(){
+  let V=num('oV'),I=num('oI'),R=num('oR');
+  const have=[!isNaN(V),!isNaN(I),!isNaN(R)].filter(Boolean).length;
+  if(have<2){$('oOut').textContent='Enter any two values.';return;}
+  let solved='';
+  if(isNaN(V)){V=I*R;solved='V = I × R';}
+  else if(isNaN(I)){I=V/R;solved='I = V ÷ R';}
+  else if(isNaN(R)){R=V/I;solved='R = V ÷ I';}
+  else{solved='all three given';}
+  const P=V*I;
+  $('oOut').innerHTML=`${V===0?0:r(V,3)} V · ${r(I,3)} A · ${r(R,3)} Ω &nbsp;→&nbsp; P = ${r(P,2)} W<br><span style="color:var(--faint);font-size:14px">used ${solved}</span>`;
+}
+['oV','oI','oR'].forEach(id=>$(id).addEventListener('input',calcOhm));
+calcOhm();
+
+/* ---------- 2b. parallel impedance ---------- */
+function calcPar(){
+  const Z=num('pZ'),N=num('pN');
+  if(isNaN(Z)||isNaN(N)||N<1){$('pOut').textContent='';return;}
+  const zt=Z/N;
+  let warn='';
+  if(zt<4) warn=' ⚠ below 4 Ω — most amplifiers are not rated for this';
+  $('pOut').innerHTML=`${N} × ${Z} Ω in parallel = <strong>${r(zt,2)} Ω</strong>${warn}<br><span style="color:var(--faint);font-size:14px">in series instead: ${r(Z*N,2)} Ω</span>`;
+}
+['pZ','pN'].forEach(id=>$(id).addEventListener('input',calcPar));
+calcPar();
+
+/* ---------- 3. aspect ratio ---------- */
+function calcAsp(){
+  const D=num('aD'),ratio=parseFloat($('aR').value);
+  if(isNaN(D)){$('aOut').textContent='';return;}
+  const k=Math.sqrt(ratio*ratio+1);
+  const W=D*ratio/k, H=D/k;
+  $('aOut').innerHTML=
+    `Width = <strong>${r(W,2)}</strong> · Height = <strong>${r(H,2)}</strong><br>`+
+    `<span style="color:var(--muted);font-size:15px">Farthest viewer — analytical ${r(H*4,1)} · general ${r(H*6,1)} · passive ${r(H*8,1)} &nbsp;|&nbsp; closest ${r(H*2,1)}</span>`;
+}
+['aD','aR'].forEach(id=>$(id).addEventListener('input',calcAsp));
+calcAsp();
+
+/* ---------- 4. throw distance ---------- */
+function throwUI(){
+  const m=$('tMode').value;
+  $('tdField').style.display = (m==='td') ? 'none':'flex';
+  $('tR').parentElement.style.display = (m==='tr') ? 'none':'flex';
+  $('tW').parentElement.style.display = (m==='iw') ? 'none':'flex';
+  calcThrow();
+}
+function calcThrow(){
+  const m=$('tMode').value,TR=num('tR'),W=num('tW'),TD=num('tD');
+  let out='';
+  if(m==='td'){ if(isNaN(TR)||isNaN(W)){$('tOut').textContent='';return;}
+    out=`Throw distance = <strong>${r(TR*W,2)}</strong> (same units as image width)`; }
+  if(m==='tr'){ if(isNaN(TD)||isNaN(W)||W===0){$('tOut').textContent='';return;}
+    out=`Throw ratio = <strong>${r(TD/W,2)}:1</strong>`; }
+  if(m==='iw'){ if(isNaN(TD)||isNaN(TR)||TR===0){$('tOut').textContent='';return;}
+    out=`Image width = <strong>${r(TD/TR,2)}</strong>`; }
+  const dg=num('tDiag');
+  if(!isNaN(dg)) out+=`<br><span style="color:var(--amber);font-size:15px">A ${dg} diagonal 16:9 screen is ${r(dg*0.872,2)} wide — use that, not the diagonal.</span>`;
+  $('tOut').innerHTML=out;
+}
+['tR','tW','tD','tDiag'].forEach(id=>$(id).addEventListener('input',calcThrow));
+$('tMode').addEventListener('change',throwUI);
+throwUI();
+
+/* ---------- 5. inverse square ---------- */
+function calcISL(){
+  const L=num('iL'),D1=num('iD1'),D2=num('iD2'),t=$('iT').value;
+  if([L,D1,D2].some(isNaN)||D1<=0||D2<=0){$('iOut').textContent='';return;}
+  const doublings=Math.log2(D2/D1);
+  const dcount = Number.isInteger(doublings) ? `${doublings} doubling${Math.abs(doublings)===1?'':'s'} × −6 dB = ${r(doublings*-6,1)} dB` : `${r(doublings,2)} doublings`;
+  if(t==='spl'){
+    const d=20*Math.log10(D1/D2);
+    $('iOut').innerHTML=`ΔdB = 20 log(${D1} ÷ ${D2}) = <strong>${r(d,1)} dB</strong><br>`+
+      `New level = <strong>${r(L+d,1)} dB SPL</strong><br><span style="color:var(--faint);font-size:14px">shortcut: ${dcount}</span>`;
+  }else{
+    const e=L*Math.pow(D1/D2,2);
+    $('iOut').innerHTML=`E₂ = ${L} × (${D1} ÷ ${D2})² = <strong>${r(e,1)}</strong> lux/fc<br>`+
+      `<span style="color:var(--faint);font-size:14px">that's ${r(Math.pow(D1/D2,2)*100,1)}% of the original — shortcut: ${dcount}</span>`;
+  }
+}
+['iL','iD1','iD2','iT'].forEach(id=>$(id).addEventListener('input',calcISL));
+calcISL();
+
+/* ---------- quiz ---------- */
+const QUIZ=[
+ {tag:'THROW',q:'A projector has a throw ratio of 2.0:1. The design calls for a 2.5 m wide image. What throw distance is required?',
+  o:['5.0 m','1.25 m','4.5 m','2.0 m'],a:0,
+  e:'TD = Throw Ratio × Image Width = 2.0 × 2.5 = <span class="m">5.0 m</span> The 1.25 m distractor is what you get by dividing instead of multiplying.'},
+ {tag:'OHM',q:'A device draws 3 A when connected to a 120 V supply. What is its resistance?',
+  o:['40 Ω','360 Ω','0.025 Ω','123 Ω'],a:0,
+  e:'R = V ÷ I = 120 ÷ 3 = <span class="m">40 Ω</span> 360 Ω is V × I, which gives you watts, not ohms.'},
+ {tag:'ISL',q:'A loudspeaker measures 100 dB SPL at 1 m. What is the approximate SPL at 4 m?',
+  o:['88 dB','94 dB','76 dB','92 dB'],a:0,
+  e:'1 → 2 → 4 is two doublings. <span class="m">2 × −6 dB = −12 dB → 100 − 12 = 88 dB</span> 94 dB is the one-doubling answer — a miscount, not a formula error.'},
+ {tag:'VOLUME',q:'A room is 10 m × 6 m with a 2.8 m ceiling. What is its volume?',
+  o:['168 m³','60 m³','16.8 m³','268 m³'],a:0,
+  e:'V = L × W × H = <span class="m">10 × 6 × 2.8 = 168 m³</span> 60 m³ is the floor area (60 m²) with the wrong unit attached — read whether the answer is squared or cubed.'},
+ {tag:'ASPECT',q:'What is the approximate image height of an 86-inch 16:9 display?',
+  o:['42 in','75 in','48 in','65 in'],a:0,
+  e:'H = D × 0.490 = <span class="m">86 × 0.490 = 42.1 in</span> 75 in is the width (86 × 0.872) — the two factors are easy to swap under pressure.'},
+ {tag:'ISL',q:'A light meter reads 400 lux at 3 m from a fixture. What does it read at 6 m?',
+  o:['100 lux','200 lux','133 lux','1,600 lux'],a:0,
+  e:'Doubling the distance quarters the illuminance. <span class="m">400 × (3÷6)² = 400 × 0.25 = 100 lux</span> 200 lux is the answer if you halve instead of square — the most common light-question error.'},
+ {tag:'OHM',q:'Four 8 Ω loudspeakers are wired in parallel. What is the total load presented to the amplifier?',
+  o:['2 Ω','32 Ω','8 Ω','16 Ω'],a:0,
+  e:'Parallel divides: <span class="m">Z = 8 ÷ 4 = 2 Ω</span> 32 Ω is the series answer. Parallel takes impedance DOWN, which is what stresses an amplifier.'},
+ {tag:'THROW',q:'A room permits a maximum throw distance of 6 m and the screen is 3 m wide. What throw ratio is required?',
+  o:['2.0:1','0.5:1','18:1','1.5:1'],a:0,
+  e:'TR = TD ÷ W = <span class="m">6 ÷ 3 = 2.0:1</span> Note this is a "solve for the other side" question — same formula, rearranged.'},
+ {tag:'ASPECT',q:'A 16:9 screen has an image height of 1.5 m. For basic decision-making viewing, how far back can the last row sit?',
+  o:['9 m','6 m','12 m','3 m'],a:0,
+  e:'Basic decision making uses the 6× multiple. <span class="m">6 × 1.5 = 9 m</span> 6 m is the analytical (4×) answer and 12 m is passive (8×) — the multiple depends on the task described in the question.'},
+ {tag:'OHM',q:'In an alternating current circuit, opposition to current flow is correctly called:',
+  o:['Impedance','Resistance','Reactance only','Conductance'],a:0,
+  e:'<span class="m">Impedance (Z)</span> is the AC term; resistance is the DC term. Reactance is only the frequency-dependent <em>component</em> of impedance, not the whole thing — a classic near-miss distractor.'},
+ {tag:'THROW',q:'A 1.2:1 projector must fill a 100-inch diagonal 16:9 screen. What throw distance is needed?',
+  o:['≈105 in','≈120 in','≈49 in','≈83 in'],a:0,
+  e:'Convert the diagonal to width FIRST: 100 × 0.872 = 87.2 in. <span class="m">TD = 1.2 × 87.2 ≈ 105 in</span> The 120 in option is the trap — that is 1.2 × the diagonal, skipping the conversion.'},
+ {tag:'ISL',q:'Moving from 2 m to 8 m from a point source, sound pressure level changes by approximately:',
+  o:['−12 dB','−6 dB','−18 dB','−24 dB'],a:0,
+  e:'2 → 4 → 8 is two doublings. <span class="m">2 × −6 = −12 dB</span> Counting from 1 m instead of the stated 2 m gives the −18 dB trap. Always start from the reference distance the question gives you.'},
+ {tag:'VOLUME',q:'A site survey records a room as 30 ft × 20 ft with a 9 ft ceiling. Approximately what is this in cubic metres?',
+  o:['153 m³','5,400 m³','540 m³','15 m³'],a:0,
+  e:'5,400 ft³ ÷ 35.315 = <span class="m">152.9 m³</span> The 5,400 option is the un-converted ft³ value — check the unit on the answer before you pick.'},
+ {tag:'ISL',q:'A talker produces 70 dB SPL at 1 m. A microphone is placed at 0.5 m. What level reaches the mic?',
+  o:['76 dB','64 dB','70 dB','82 dB'],a:0,
+  e:'Halving the distance ADDS 6 dB. <span class="m">70 + 6 = 76 dB</span> Direction matters: closer is louder. 64 dB is the sign error, and it will always be offered.'},
+ {tag:'ASPECT',q:'A 4:3 projection screen has a 10 ft diagonal. What is its width?',
+  o:['8 ft','6 ft','8.72 ft','7.5 ft'],a:0,
+  e:'4:3 uses different factors from 16:9 — width is D × 0.800. <span class="m">10 × 0.8 = 8 ft</span> The 8.72 ft option applies the 16:9 factor to a 4:3 screen; read the aspect ratio in the question.'}
+];
+let answered=0,correct=0;
+function buildQuiz(){
+  const area=$('quiz-area');area.innerHTML='';answered=0;correct=0;updateScore();
+  QUIZ.forEach((q,qi)=>{
+    const d=document.createElement('div');d.className='q-block';
+    d.innerHTML=`<div class="qnum">Question ${qi+1}<span class="qtag" style="visibility:hidden" id="tag${qi}">${q.tag}</span></div><div class="qtext">${q.q}</div>`;
+    q.o.forEach((opt,oi)=>{
+      const b=document.createElement('button');b.className='q-opt';b.textContent=opt;
+      b.addEventListener('click',()=>{
+        if(d.dataset.done)return; d.dataset.done='1';
+        const btns=d.querySelectorAll('.q-opt');
+        btns.forEach((x,xi)=>{x.disabled=true;if(xi===q.a)x.classList.add('correct');});
+        if(oi!==q.a)b.classList.add('wrong'); else correct++;
+        answered++;updateScore();
+        d.querySelector('.q-expl').classList.add('show');
+        $('tag'+qi).style.visibility='visible';
+      });
+      d.appendChild(b);
+    });
+    const ex=document.createElement('div');ex.className='q-expl';ex.innerHTML=q.e;d.appendChild(ex);
+    area.appendChild(d);
+  });
+}
+function updateScore(){
+  const pct=answered?Math.round(correct/answered*100):0;
+  $('quiz-score').textContent=`${correct} / ${answered} correct${answered?`  ·  ${pct}%`:''}  ·  ${QUIZ.length} total`;
+}
+$('quiz-reset').addEventListener('click',buildQuiz);
+buildQuiz();
+</script>
+</body>
+</html>

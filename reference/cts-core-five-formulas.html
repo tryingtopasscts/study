@@ -325,16 +325,16 @@ This page is deliberately <strong>narrow</strong>. It is not a survey of AV math
   <div class="dnum">1</div>
   <div class="dbody">
     <div class="dlabel">Ohm's Law, and power</div>
-    <div class="dform">V = I × R<br>P = V × I</div>
+    <div class="dform">V = I × R<br>P = I × V</div>
   </div>
   <div class="tri-pair">
     <svg class="tri" viewBox="0 0 96 76" aria-label="Triangle: V over I and R">
       <path class="tl" d="M48,4 L6,70 L90,70 Z"/><line class="tl" x1="20" y1="42" x2="76" y2="42"/><line class="tl" x1="48" y1="42" x2="48" y2="70"/>
       <text x="48" y="34">V</text><text x="31" y="62">I</text><text x="65" y="62">R</text>
     </svg>
-    <svg class="tri" viewBox="0 0 96 76" aria-label="Triangle: P over V and I">
+    <svg class="tri" viewBox="0 0 96 76" aria-label="Triangle: P over I and V">
       <path class="tl" d="M48,4 L6,70 L90,70 Z"/><line class="tl" x1="20" y1="42" x2="76" y2="42"/><line class="tl" x1="48" y1="42" x2="48" y2="70"/>
-      <text x="48" y="34">P</text><text x="31" y="62">V</text><text x="65" y="62">I</text>
+      <text x="48" y="34">P</text><text x="31" y="62">I</text><text x="65" y="62">V</text>
     </svg>
   </div>
 </div>
@@ -514,7 +514,7 @@ Voltage is the push. Current is how much actually flows. Resistance (or impedanc
     <span>I = V ÷ R</span>
     <span>R = V ÷ I</span>
   </div>
-  <div class="formula sm" style="margin-top:20px">P = V × I</div>
+  <div class="formula sm" style="margin-top:20px">P = I × V</div>
   <div class="rearrange">
     <span>P = I² × R</span>
     <span>P = V² ÷ R</span>
@@ -537,13 +537,13 @@ Voltage is the push. Current is how much actually flows. Resistance (or impedanc
   <text class="dbig dt" x="104" y="153">I</text>
   <text class="dbig dt" x="160" y="153">R</text>
   <text class="dm dteal dsmall" x="78" y="200">cover one — read the rest</text>
-  <!-- P V I triangle -->
+  <!-- P I V triangle -->
   <path d="M400,30 L320,170 L480,170 Z" class="dg-amber"/>
   <line x1="355" y1="108" x2="445" y2="108" class="dg-amber"/>
   <line x1="400" y1="108" x2="400" y2="170" class="dg-amber"/>
   <text class="dbig dt" x="388" y="88">P</text>
-  <text class="dbig dt" x="362" y="153">V</text>
-  <text class="dbig dt" x="418" y="153">I</text>
+  <text class="dbig dt" x="362" y="153">I</text>
+  <text class="dbig dt" x="418" y="153">V</text>
   <text class="dm damber dsmall" x="340" y="200">same trick, power side</text>
 </svg>
 <div class="dcap">Cover the quantity you want. If the two remaining letters sit side by side, multiply them. If one sits above the other, divide top by bottom. Cover <strong>I</strong> in the left triangle and you're left with V over R — so I = V ÷ R.</div>
@@ -618,7 +618,7 @@ Because series and parallel produce reciprocal-ish answers from the same numbers
   <div class="wproblem">An amplifier channel delivers 24 V across a 4 Ω loudspeaker load. How much current flows, and how much power is being delivered?</div>
   <div class="wstep"><span class="snum">Step 1 — pick the rearrangement</span>You have V and R, you want I. Cover I on the triangle: V sits over R.<span class="m">I = V ÷ R</span></div>
   <div class="wstep"><span class="snum">Step 2 — solve for current</span><span class="m">I = 24 ÷ 4 = 6 A</span></div>
-  <div class="wstep"><span class="snum">Step 3 — solve for power</span><span class="m">P = V × I = 24 × 6 = 144 W</span></div>
+  <div class="wstep"><span class="snum">Step 3 — solve for power</span><span class="m">P = I × V = 6 × 24 = 144 W</span></div>
   <div class="wstep"><span class="snum">Step 4 — verify a different way</span>P = V² ÷ R = 576 ÷ 4 = 144 W. Two routes, same answer — that's your check.<span class="m">✓ 6 A, 144 W</span></div>
   <button class="wbtn">Show next step</button>
 </div>
@@ -978,7 +978,7 @@ Incident vs. reflected light, lux ↔ footcandle conversion, and how the inverse
 <tr><td>square metres, m², "floor area", "screen area"</td><td>Area</td><td>Two dimensions only</td></tr>
 <tr><td>reverberation, HVAC load, "how much air"</td><td>Volume</td><td>Ceiling height is required — find it</td></tr>
 <tr><td>amperes, current draw, "how much current"</td><td>Ohm's Law</td><td>I = V ÷ R</td></tr>
-<tr><td>watts, power dissipated, amplifier output</td><td>Power</td><td>P = V × I (or V² ÷ R)</td></tr>
+<tr><td>watts, power dissipated, amplifier output</td><td>Power</td><td>P = I × V (or V² ÷ R)</td></tr>
 <tr><td>"speakers wired in parallel"</td><td>Impedance</td><td>Z ÷ N — impedance goes DOWN</td></tr>
 <tr><td>"speakers wired in series"</td><td>Impedance</td><td>Add them — impedance goes UP</td></tr>
 <tr><td>alternating current, AC circuit</td><td>Impedance, not resistance</td><td>Terminology trap — pick impedance</td></tr>
@@ -1031,7 +1031,7 @@ A drawing marked 1:50 means one unit on paper equals 50 in the real room — so 
 <tr><th>#</th><th>Formula</th><th>Solve for the other side</th></tr>
 <tr><td><strong>1</strong> Volume</td><td>V = L × W × H</td><td>Area = L × W</td></tr>
 <tr><td><strong>2</strong> Ohm's Law</td><td>V = I × R</td><td>I = V ÷ R · R = V ÷ I</td></tr>
-<tr><td><strong>2</strong> Power</td><td>P = V × I</td><td>P = I²R · P = V² ÷ R</td></tr>
+<tr><td><strong>2</strong> Power</td><td>P = I × V</td><td>P = I²R · P = V² ÷ R</td></tr>
 <tr><td><strong>2</strong> Impedance — series</td><td>Z<sub>T</sub> = Z₁ + Z₂ + … (or Z₁ × N)</td><td>Always BIGGER than one speaker</td></tr>
 <tr><td><strong>2</strong> Impedance — parallel</td><td>Z<sub>T</sub> = Z₁ ÷ N &nbsp;·&nbsp; mixed: 1 ÷ (1/Z₁ + 1/Z₂ …)</td><td>Always SMALLER than the smallest</td></tr>
 <tr><td><strong>3</strong> Aspect (16:9)</td><td>W = D × 0.872</td><td>H = D × 0.490</td></tr>
@@ -1245,7 +1245,7 @@ const QUIZ=[
   e:'TD = Throw Ratio × Image Width = 2.0 × 2.5 = <span class="m">5.0 m</span> The 1.25 m distractor is what you get by dividing instead of multiplying.'},
  {tag:'OHM',q:'A device draws 3 A when connected to a 120 V supply. What is its resistance?',
   o:['40 Ω','360 Ω','0.025 Ω','123 Ω'],a:0,
-  e:'R = V ÷ I = 120 ÷ 3 = <span class="m">40 Ω</span> 360 Ω is V × I, which gives you watts, not ohms.'},
+  e:'R = V ÷ I = 120 ÷ 3 = <span class="m">40 Ω</span> 360 Ω is I × V, which gives you watts, not ohms.'},
  {tag:'ISL',q:'A loudspeaker measures 100 dB SPL at 1 m. What is the approximate SPL at 4 m?',
   o:['88 dB','94 dB','76 dB','92 dB'],a:0,
   e:'1 → 2 → 4 is two doublings. <span class="m">2 × −6 dB = −12 dB → 100 − 12 = 88 dB</span> 94 dB is the one-doubling answer — a miscount, not a formula error.'},

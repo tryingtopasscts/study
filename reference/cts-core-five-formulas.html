@@ -173,6 +173,23 @@ table.conv td:nth-child(2){font-family:'IBM Plex Mono',monospace;color:#fff;font
 .dump ol{margin-left:22px;font-family:'IBM Plex Mono',monospace;font-size:16px;color:#fff;line-height:2}
 .dump ol li{margin-bottom:2px}
 .dump ol li span{font-family:'DM Sans',sans-serif;color:var(--muted);font-size:14.5px}
+.dumprow{display:flex;align-items:center;gap:18px;padding:13px 0;border-bottom:1px solid var(--border)}
+.dumprow:last-child{border-bottom:none}
+.dumprow .dnum{font-family:'IBM Plex Mono',monospace;font-size:15px;color:var(--amber);opacity:.65;width:18px;flex-shrink:0;align-self:flex-start;padding-top:2px}
+.dumprow .dbody{flex:1;min-width:0}
+.dumprow .dlabel{font-size:13.5px;color:var(--muted);margin-bottom:4px}
+.dumprow .dform{font-family:'IBM Plex Mono',monospace;font-size:17px;color:#fff;line-height:1.75}
+.dumprow .dform .alt{color:var(--muted);font-size:15px}
+.tri-pair{display:flex;gap:8px;flex-shrink:0}
+svg.tri{width:82px;height:64px;flex-shrink:0;overflow:visible}
+svg.tri text{font-family:'IBM Plex Mono',monospace;fill:#fff;font-size:17px;text-anchor:middle}
+svg.tri text.sm{font-size:11.5px}
+svg.tri .tl{stroke:var(--amber);stroke-width:1.5;fill:none}
+@media(max-width:640px){
+  .dumprow{flex-wrap:wrap;gap:10px}
+  .dumprow .dbody{flex-basis:100%;order:2}
+  .tri-pair{order:3}
+}
 
 /* ---------- Evidence grid ---------- */
 .card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin:24px 0}
@@ -303,20 +320,104 @@ This page is deliberately <strong>narrow</strong>. It is not a survey of AV math
 
 <div class="dump">
 <div class="dtitle">Write these eight lines, in this order</div>
-<ol>
-<li>V = I × R <span>— and P = V × I</span></li>
-<li>Z<sub>parallel</sub> = Z ÷ N <span>— identical speakers only</span></li>
-<li>Volume = L × W × H <span>— Area = L × W</span></li>
-<li>16:9 → W = D × 0.872, H = D × 0.490</li>
-<li>Throw Distance = Throw Ratio × Image Width</li>
-<li>dB change = 20 × log(D1 ÷ D2) <span>— sound over distance</span></li>
-<li>Double the distance = −6 dB <span>— light drops to ¼</span></li>
-<li>1 m = 3.28 ft · 1 in = 25.4 mm</li>
-</ol>
+
+<div class="dumprow">
+  <div class="dnum">1</div>
+  <div class="dbody">
+    <div class="dlabel">Ohm's Law, and power</div>
+    <div class="dform">V = I × R<br>P = V × I</div>
+  </div>
+  <div class="tri-pair">
+    <svg class="tri" viewBox="0 0 96 76" aria-label="Triangle: V over I and R">
+      <path class="tl" d="M48,4 L6,70 L90,70 Z"/><line class="tl" x1="20" y1="42" x2="76" y2="42"/><line class="tl" x1="48" y1="42" x2="48" y2="70"/>
+      <text x="48" y="34">V</text><text x="31" y="62">I</text><text x="65" y="62">R</text>
+    </svg>
+    <svg class="tri" viewBox="0 0 96 76" aria-label="Triangle: P over V and I">
+      <path class="tl" d="M48,4 L6,70 L90,70 Z"/><line class="tl" x1="20" y1="42" x2="76" y2="42"/><line class="tl" x1="48" y1="42" x2="48" y2="70"/>
+      <text x="48" y="34">P</text><text x="31" y="62">V</text><text x="65" y="62">I</text>
+    </svg>
+  </div>
 </div>
 
+<div class="dumprow">
+  <div class="dnum">2</div>
+  <div class="dbody">
+    <div class="dlabel">Loudspeaker impedance — both directions</div>
+    <div class="dform">Series: Z<sub>T</sub> = Z<sub>1</sub> + Z<sub>2</sub> + Z<sub>3</sub> …<br>Parallel, identical: Z<sub>T</sub> = Z<sub>1</sub> ÷ N<br><span class="alt">Parallel, mixed: Z<sub>T</sub> = 1 ÷ (1/Z<sub>1</sub> + 1/Z<sub>2</sub> …)</span></div>
+  </div>
+  <svg class="tri" viewBox="0 0 96 76" aria-label="Triangle: Z1 over ZT and N">
+    <path class="tl" d="M48,4 L6,70 L90,70 Z"/><line class="tl" x1="20" y1="42" x2="76" y2="42"/><line class="tl" x1="48" y1="42" x2="48" y2="70"/>
+    <text class="sm" x="48" y="34">Z1</text><text class="sm" x="31" y="61">ZT</text><text class="sm" x="65" y="61">N</text>
+  </svg>
+</div>
+
+<div class="dumprow">
+  <div class="dnum">3</div>
+  <div class="dbody">
+    <div class="dlabel">Area and volume</div>
+    <div class="dform">Area = L × W<br>Volume = L × W × H</div>
+  </div>
+  <svg class="tri" viewBox="0 0 96 76" aria-label="Triangle: A over L and W">
+    <path class="tl" d="M48,4 L6,70 L90,70 Z"/><line class="tl" x1="20" y1="42" x2="76" y2="42"/><line class="tl" x1="48" y1="42" x2="48" y2="70"/>
+    <text x="48" y="34">A</text><text x="31" y="62">L</text><text x="65" y="62">W</text>
+  </svg>
+</div>
+
+<div class="dumprow">
+  <div class="dnum">4</div>
+  <div class="dbody">
+    <div class="dlabel">16:9 screen, from the diagonal</div>
+    <div class="dform">W = D × 0.872<br>H = D × 0.490</div>
+  </div>
+  <svg class="tri" viewBox="0 0 96 76" aria-label="Triangle: W over D and 0.872">
+    <path class="tl" d="M48,4 L6,70 L90,70 Z"/><line class="tl" x1="20" y1="42" x2="76" y2="42"/><line class="tl" x1="48" y1="42" x2="48" y2="70"/>
+    <text x="48" y="34">W</text><text class="sm" x="30" y="61">D</text><text class="sm" x="66" y="61">.872</text>
+  </svg>
+</div>
+
+<div class="dumprow">
+  <div class="dnum">5</div>
+  <div class="dbody">
+    <div class="dlabel">Throw distance — image WIDTH, never diagonal</div>
+    <div class="dform">TD = TR × IW</div>
+  </div>
+  <svg class="tri" viewBox="0 0 96 76" aria-label="Triangle: TD over TR and IW">
+    <path class="tl" d="M48,4 L6,70 L90,70 Z"/><line class="tl" x1="20" y1="42" x2="76" y2="42"/><line class="tl" x1="48" y1="42" x2="48" y2="70"/>
+    <text class="sm" x="48" y="34">TD</text><text class="sm" x="31" y="61">TR</text><text class="sm" x="65" y="61">IW</text>
+  </svg>
+</div>
+
+<div class="dumprow">
+  <div class="dnum">6</div>
+  <div class="dbody">
+    <div class="dlabel">SPL change over distance — answer is in dB</div>
+    <div class="dform">ΔdB = 20 × log(D<sub>1</sub> ÷ D<sub>2</sub>)</div>
+  </div>
+</div>
+
+<div class="dumprow">
+  <div class="dnum">7</div>
+  <div class="dbody">
+    <div class="dlabel">Light level at a new distance — answer is in lux or fc</div>
+    <div class="dform">E<sub>2</sub> = E<sub>1</sub> × (D<sub>1</sub> ÷ D<sub>2</sub>)<sup>2</sup></div>
+  </div>
+</div>
+
+<div class="dumprow">
+  <div class="dnum">8</div>
+  <div class="dbody">
+    <div class="dlabel">Unit conversions — multiply by these</div>
+    <div class="dform">metres → feet: × 3.281<br>feet → metres: × 0.3048<br>inches → mm: × 25.4</div>
+  </div>
+</div>
+
+</div>
+
+<div class="callout keyterm"><span class="label">How To Use A Triangle</span>
+Cover the quantity you want with a finger. If the two left showing sit <strong>side by side</strong>, multiply them. If one sits <strong>above</strong> the other, divide top by bottom. Cover <strong>I</strong> on the first triangle and you're left with V above R — so I = V ÷ R. Cover <strong>Z<sub>T</sub></strong> on the impedance triangle and you get Z<sub>1</sub> above N — so Z<sub>T</sub> = Z<sub>1</sub> ÷ N. It works for every triangle on this page.</div>
+
 <div class="callout examtip"><span class="label">Why This Works</span>
-Every one of the five formulas is on that board, plus the two conversions that gate them. From that point the exam is no longer a memory test — it's a matching exercise. Read the question, find the line, plug in.</div>
+Every one of the five formulas is on that board, plus the conversions that gate them. From that point the exam is no longer a memory test — it's a matching exercise. Read the question, find the line, plug in. Draw the triangles too: they take five seconds each and they do the algebra for you, so you never have to rearrange an equation under time pressure.</div>
 </section>
 
 <div class="divider"></div>
@@ -460,19 +561,66 @@ Voltage is the push. Current is how much actually flows. Resistance (or impedanc
 <div class="dcap">Cover the quantity you want. If the two remaining letters sit side by side, multiply them. If one sits above the other, divide top by bottom. Cover <strong>I</strong> in the left triangle and you're left with V over R — so I = V ÷ R.</div>
 </div>
 
-<h3>Impedance: the part that shows up in loudspeaker questions</h3>
-<p>Ohm's Law questions on the CTS exam frequently arrive dressed as loudspeaker wiring. Two rules cover almost all of them:</p>
+<h3>Impedance: series and parallel</h3>
+<p>Ohm's Law questions on the CTS exam frequently arrive dressed as loudspeaker wiring, and they come <strong>both ways round</strong> — series is asked as often as parallel. Learn them as a matched pair, because the exam's favourite move is to give you one and offer the other's answer as a distractor.</p>
 
-<div class="formula-box">
-  <div class="fname">Series vs. Parallel</div>
-  <div class="formula sm">Series: Z<sub>total</sub> = Z<sub>1</sub> + Z<sub>2</sub> + Z<sub>3</sub> …</div>
-  <div class="formula sm">Parallel (identical speakers): Z<sub>total</sub> = Z ÷ N</div>
+<div class="formula-box hero-formula">
+  <div class="fname">Series — impedance ADDS UP</div>
+  <div class="formula">Z<sub>T</sub> = Z<sub>1</sub> + Z<sub>2</sub> + Z<sub>3</sub> …</div>
+  <div class="rearrange">
+    <span>Identical speakers: Z<sub>T</sub> = Z<sub>1</sub> × N</span>
+  </div>
   <ul class="where">
-    <li><strong>Series</strong> adds up — impedance goes <em>up</em>, the amp works less hard</li>
-    <li><strong>Parallel</strong> divides — impedance goes <em>down</em>, the amp works <em>harder</em>. Four 8 Ω speakers in parallel = 2 Ω, which is where amplifiers get destroyed</li>
-    <li><strong>N</strong> — number of identical loudspeakers. If they aren't identical you need the reciprocal formula, which is CTS-D territory</li>
+    <li><strong>One path</strong> for the current — it flows through every speaker in turn</li>
+    <li>Total is always <strong>bigger than any single speaker</strong>. That's your sanity check</li>
+    <li>Higher impedance means the amplifier works <em>less</em> hard and delivers <em>less</em> power</li>
+    <li>Real-world catch: one speaker failing open breaks the circuit and <strong>silences the whole chain</strong></li>
   </ul>
 </div>
+
+<div class="formula-box hero-formula">
+  <div class="fname">Parallel — impedance DIVIDES DOWN</div>
+  <div class="formula">Identical: Z<sub>T</sub> = Z<sub>1</sub> ÷ N</div>
+  <div class="formula sm" style="color:var(--muted);margin-top:4px">Mixed values: Z<sub>T</sub> = 1 ÷ (1/Z<sub>1</sub> + 1/Z<sub>2</sub> + 1/Z<sub>3</sub> …)</div>
+  <ul class="where">
+    <li><strong>Separate paths</strong> — each speaker gets its own route back to the amplifier</li>
+    <li>Total is always <strong>smaller than the smallest single speaker</strong>. Second sanity check</li>
+    <li>Lower impedance makes the amplifier work <em>harder</em>. Four 8 Ω speakers in parallel is 2 Ω, which is where amplifiers get destroyed</li>
+    <li>One speaker failing open leaves the others still playing</li>
+  </ul>
+</div>
+
+<div class="diagram">
+<svg viewBox="0 0 580 250" role="img" aria-label="Series wiring chain versus parallel wiring branches with resulting impedance">
+  <!-- SERIES -->
+  <text class="dm dteal dt" x="14" y="20">SERIES — one path</text>
+  <rect x="14" y="44" width="42" height="30" rx="4" class="dg-fill-panel"/><text class="dm dsmall" x="35" y="64">AMP</text>
+  <path d="M56,59 L96,59" class="dg-teal"/>
+  <circle cx="112" cy="59" r="16" class="dg-fill-teal"/><text class="dm dsmall dt" x="112" y="64">8Ω</text>
+  <path d="M128,59 L160,59" class="dg-teal"/>
+  <circle cx="176" cy="59" r="16" class="dg-fill-teal"/><text class="dm dsmall dt" x="176" y="64">8Ω</text>
+  <path d="M192,59 L224,59" class="dg-teal"/>
+  <circle cx="240" cy="59" r="16" class="dg-fill-teal"/><text class="dm dsmall dt" x="240" y="64">8Ω</text>
+  <path d="M256,59 L288,59 L288,96 L35,96 L35,74" class="dg-teal"/>
+  <text class="dm dteal" x="320" y="52">8 + 8 + 8</text>
+  <text class="dm dteal" x="320" y="76">= 24 Ω  ↑ goes UP</text>
+
+  <!-- PARALLEL -->
+  <text class="dm damber dt" x="14" y="146">PARALLEL — separate paths</text>
+  <rect x="14" y="170" width="42" height="30" rx="4" class="dg-fill-panel"/><text class="dm dsmall" x="35" y="190">AMP</text>
+  <path d="M56,178 L96,178 L96,148 L288,148 M96,178 L96,185 M96,185 L288,185 M96,185 L96,222 L288,222" class="dg-amber"/>
+  <circle cx="176" cy="148" r="15" class="dg-fill-amber"/><text class="dm dsmall dt" x="176" y="153">8Ω</text>
+  <circle cx="176" cy="185" r="15" class="dg-fill-amber"/><text class="dm dsmall dt" x="176" y="190">8Ω</text>
+  <circle cx="176" cy="222" r="15" class="dg-fill-amber"/><text class="dm dsmall dt" x="176" y="227">8Ω</text>
+  <path d="M288,148 L300,148 L300,222 L288,222 M300,185 L288,185 M300,185 L300,238 L35,238 L35,200" class="dg-amber"/>
+  <text class="dm damber" x="322" y="170">8 ÷ 3</text>
+  <text class="dm damber" x="322" y="194">= 2.67 Ω  ↓ goes DOWN</text>
+</svg>
+<div class="dcap">Same three loudspeakers, same amplifier, two wiring schemes — and a <strong>nine-fold difference</strong> in the load the amplifier sees. Series stacks them end to end so the impedances add; parallel gives each its own path so the total falls below the smallest one.</div>
+</div>
+
+<div class="callout watchout"><span class="label">The Distractor Pattern</span>
+Because series and parallel produce reciprocal-ish answers from the same numbers, <strong>the wrong answer is nearly always the other wiring scheme</strong>. Four 8 Ω speakers: parallel gives 2 Ω, series gives 32 Ω — and both numbers will be sitting in the options. Before you calculate, underline the word <em>series</em> or <em>parallel</em> in the stem. Then check your answer against the direction rule: series must come out <strong>bigger</strong> than one speaker, parallel must come out <strong>smaller</strong> than one speaker. If it didn't, you used the wrong one.</div>
 
 <div class="callout watchout"><span class="label">The Classic Wrong Answer</span>
 <strong>Amperes measure current. Watts measure power.</strong> A question asking for "the unit of current" has <em>amperes</em> as the answer and <em>watts</em> sitting right beside it as bait. Likewise: resistance is the DC term, <strong>impedance</strong> is the AC term — if the question says "alternating current" and one option says resistance and another says impedance, impedance wins.</div>
@@ -498,14 +646,38 @@ Voltage is the push. Current is how much actually flows. Resistance (or impedanc
   <div class="calc-note">Enter exactly two values; the third and the power are derived. Clear a field to re-solve for it.</div>
 </div>
 
+<div class="worked" data-worked>
+  <div class="wtitle">Worked Example — the same speakers, both ways</div>
+  <div class="wproblem">Four 8 Ω loudspeakers are connected to one amplifier channel. What load does the amplifier see if they are wired in series? What if they are wired in parallel?</div>
+  <div class="wstep"><span class="snum">Step 1 — series: add them up</span>Identical speakers, so the shortcut applies.<span class="m">Z<sub>T</sub> = 8 × 4 = 32 Ω</span></div>
+  <div class="wstep"><span class="snum">Step 2 — check the direction</span>32 Ω is bigger than one 8 Ω speaker. Series must go up. ✓</div>
+  <div class="wstep"><span class="snum">Step 3 — parallel: divide</span><span class="m">Z<sub>T</sub> = 8 ÷ 4 = 2 Ω</span></div>
+  <div class="wstep"><span class="snum">Step 4 — check the direction</span>2 Ω is smaller than one 8 Ω speaker. Parallel must go down. ✓</div>
+  <div class="wstep"><span class="snum">What the exam does with this</span>Both 32 and 2 will appear in the answer list. <span class="m">The question is decided by one word in the stem — series or parallel.</span> And note 2 Ω is a genuinely dangerous load: most amplifiers are rated to 4 Ω.</div>
+  <button class="wbtn">Show next step</button>
+</div>
+
+<div class="worked" data-worked>
+  <div class="wtitle">Worked Example — parallel, mixed values</div>
+  <div class="wproblem">An 8 Ω and a 4 Ω loudspeaker are wired in parallel. What is the total impedance?</div>
+  <div class="wstep"><span class="snum">Step 1 — the shortcut does not apply</span>The speakers aren't identical, so Z ÷ N is wrong here. Use the reciprocal formula.<span class="m">Z<sub>T</sub> = 1 ÷ (1/Z<sub>1</sub> + 1/Z<sub>2</sub>)</span></div>
+  <div class="wstep"><span class="snum">Step 2 — invert each one and add</span><span class="m">1/8 + 1/4 = 0.125 + 0.25 = 0.375</span></div>
+  <div class="wstep"><span class="snum">Step 3 — invert the total</span><span class="m">Z<sub>T</sub> = 1 ÷ 0.375 = 2.67 Ω</span></div>
+  <div class="wstep"><span class="snum">Sanity check</span>2.67 Ω is smaller than the smallest speaker (4 Ω). Parallel always lands below the smallest. If your answer came out between 4 and 8, you averaged them — a common and wrong instinct.</div>
+  <button class="wbtn">Show next step</button>
+</div>
+
 <div class="calc">
-  <div class="ctitle">Parallel Impedance — identical loudspeakers</div>
+  <div class="ctitle">Impedance Calculator — series or parallel, any values</div>
   <div class="calc-row">
-    <div class="calc-field"><label>Each speaker (Ω)</label><input type="number" id="pZ" value="8" step="any"></div>
-    <div class="calc-field"><label>How many</label><input type="number" id="pN" value="4" step="1" min="1"></div>
+    <div class="calc-field"><label>Wiring</label><select id="zMode">
+      <option value="series">Series</option>
+      <option value="parallel" selected>Parallel</option>
+    </select></div>
+    <div class="calc-field" style="flex:1"><label>Speaker impedances, separated by commas</label><input type="text" id="zList" value="8, 8, 8, 8" style="width:230px"></div>
   </div>
-  <div class="calc-result" id="pOut"></div>
-  <div class="calc-note">Series wiring instead? Multiply rather than divide: 4 × 8 Ω in series = 32 Ω.</div>
+  <div class="calc-result" id="zOut"></div>
+  <div class="calc-note">Handles identical and mixed values. The other wiring scheme is shown alongside, because that's the number the distractors are built from.</div>
 </div>
 </section>
 
@@ -872,7 +1044,8 @@ A drawing marked 1:50 means one unit on paper equals 50 in the real room — so 
 <tr><td><strong>1</strong> Volume</td><td>V = L × W × H</td><td>Area = L × W</td></tr>
 <tr><td><strong>2</strong> Ohm's Law</td><td>V = I × R</td><td>I = V ÷ R · R = V ÷ I</td></tr>
 <tr><td><strong>2</strong> Power</td><td>P = V × I</td><td>P = I²R · P = V² ÷ R</td></tr>
-<tr><td><strong>2</strong> Impedance</td><td>Z<sub>par</sub> = Z ÷ N</td><td>Z<sub>ser</sub> = Z₁ + Z₂ + …</td></tr>
+<tr><td><strong>2</strong> Impedance — series</td><td>Z<sub>T</sub> = Z₁ + Z₂ + … (or Z₁ × N)</td><td>Always BIGGER than one speaker</td></tr>
+<tr><td><strong>2</strong> Impedance — parallel</td><td>Z<sub>T</sub> = Z₁ ÷ N &nbsp;·&nbsp; mixed: 1 ÷ (1/Z₁ + 1/Z₂ …)</td><td>Always SMALLER than the smallest</td></tr>
 <tr><td><strong>3</strong> Aspect (16:9)</td><td>W = D × 0.872</td><td>H = D × 0.490</td></tr>
 <tr><td><strong>3</strong> Sightline</td><td>Far = 4/6/8 × H</td><td>Near = 2 × H</td></tr>
 <tr><td><strong>4</strong> Throw</td><td>TD = TR × W</td><td>TR = TD ÷ W · W = TD ÷ TR</td></tr>
@@ -985,17 +1158,40 @@ function calcOhm(){
 ['oV','oI','oR'].forEach(id=>$(id).addEventListener('input',calcOhm));
 calcOhm();
 
-/* ---------- 2b. parallel impedance ---------- */
-function calcPar(){
-  const Z=num('pZ'),N=num('pN');
-  if(isNaN(Z)||isNaN(N)||N<1){$('pOut').textContent='';return;}
-  const zt=Z/N;
-  let warn='';
-  if(zt<4) warn=' ⚠ below 4 Ω — most amplifiers are not rated for this';
-  $('pOut').innerHTML=`${N} × ${Z} Ω in parallel = <strong>${r(zt,2)} Ω</strong>${warn}<br><span style="color:var(--faint);font-size:14px">in series instead: ${r(Z*N,2)} Ω</span>`;
+/* ---------- 2b. impedance: series or parallel ---------- */
+function calcZ(){
+  const mode=$('zMode').value;
+  const list=$('zList').value.split(/[^0-9.]+/).map(parseFloat).filter(n=>!isNaN(n)&&n>0);
+  if(!list.length){$('zOut').textContent='Enter one or more impedance values.';return;}
+  const series=list.reduce((a,b)=>a+b,0);
+  const parallel=1/list.reduce((a,b)=>a+1/b,0);
+  const zt = mode==='series' ? series : parallel;
+  const other = mode==='series' ? parallel : series;
+  const allSame=list.every(v=>v===list[0]);
+
+  let work;
+  if(mode==='series'){
+    work = list.join(' + ')+' = '+r(series,2)+' Ω';
+    if(allSame&&list.length>1) work += `  —  shortcut: ${list[0]} × ${list.length}`;
+  }else{
+    work = '1 ÷ ('+list.map(v=>'1/'+v).join(' + ')+') = '+r(parallel,2)+' Ω';
+    if(allSame&&list.length>1) work += `  —  shortcut: ${list[0]} ÷ ${list.length}`;
+  }
+
+  const smallest=Math.min(...list);
+  let check = mode==='series'
+    ? (zt>smallest ? '✓ bigger than any single speaker — correct for series' : '')
+    : (zt<smallest ? '✓ smaller than the smallest speaker — correct for parallel' : '');
+  const warn = (mode==='parallel'&&zt<4) ? '<br><span style="color:var(--red)">⚠ below 4 Ω — most amplifiers are not rated for this load</span>' : '';
+
+  $('zOut').innerHTML=
+    `${list.length} speaker${list.length===1?'':'s'} in <strong>${mode}</strong> = <strong>${r(zt,2)} Ω</strong>${warn}<br>`+
+    `<span style="color:var(--muted);font-size:14.5px">${work}</span><br>`+
+    `<span style="color:var(--faint);font-size:14px">${check}${check?' · ':''}wired the other way it would be ${r(other,2)} Ω</span>`;
 }
-['pZ','pN'].forEach(id=>$(id).addEventListener('input',calcPar));
-calcPar();
+['zMode','zList'].forEach(id=>$(id).addEventListener('input',calcZ));
+$('zMode').addEventListener('change',calcZ);
+calcZ();
 
 /* ---------- 3. aspect ratio ---------- */
 function calcAsp(){
@@ -1077,6 +1273,12 @@ const QUIZ=[
  {tag:'OHM',q:'Four 8 Ω loudspeakers are wired in parallel. What is the total load presented to the amplifier?',
   o:['2 Ω','32 Ω','8 Ω','16 Ω'],a:0,
   e:'Parallel divides: <span class="m">Z = 8 ÷ 4 = 2 Ω</span> 32 Ω is the series answer. Parallel takes impedance DOWN, which is what stresses an amplifier.'},
+ {tag:'OHM',q:'Three 4 Ω loudspeakers are wired in SERIES. What total impedance does the amplifier see?',
+  o:['12 Ω','1.33 Ω','4 Ω','0.75 Ω'],a:0,
+  e:'Series adds: <span class="m">4 + 4 + 4 = 12 Ω</span> (or 4 × 3). The 1.33 Ω option is the parallel answer from the same three speakers — read whether the stem says series or parallel before calculating. Direction check: series must land ABOVE one speaker.'},
+ {tag:'OHM',q:'A 16 Ω and a 16 Ω loudspeaker are wired in parallel, and that pair is then wired in series with another 8 Ω loudspeaker. What is the total impedance?',
+  o:['16 Ω','8 Ω','40 Ω','4 Ω'],a:0,
+  e:'Work inside out. The parallel pair first: <span class="m">16 ÷ 2 = 8 Ω</span> then add the series speaker: <span class="m">8 + 8 = 16 Ω</span> Combination wiring is just the two rules applied in the right order — solve the innermost group first.'},
  {tag:'THROW',q:'A room permits a maximum throw distance of 6 m and the screen is 3 m wide. What throw ratio is required?',
   o:['2.0:1','0.5:1','18:1','1.5:1'],a:0,
   e:'TR = TD ÷ W = <span class="m">6 ÷ 3 = 2.0:1</span> Note this is a "solve for the other side" question — same formula, rearranged.'},

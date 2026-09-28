@@ -302,12 +302,14 @@ Your logged diagnostics put <strong>44% of misses in "term confusions"</strong> 
 <div class="dtitle">If you only re-read one thing — the scratch-board dump</div>
 <ul>
 <li><span class="mono">V = I × R</span> · <span class="mono">P = V × I</span></li>
-<li><span class="mono">Z<sub>parallel</sub> = Z ÷ N</span> (series adds)</li>
-<li><span class="mono">Volume = L × W × H</span></li>
+<li>Series: <span class="mono">Z<sub>T</sub> = Z₁ + Z₂ + …</span> (or Z₁ × N) — goes UP</li>
+<li>Parallel: <span class="mono">Z<sub>T</sub> = Z₁ ÷ N</span> · mixed <span class="mono">1 ÷ (1/Z₁ + 1/Z₂ …)</span> — goes DOWN</li>
+<li><span class="mono">Area = L × W</span> · <span class="mono">Volume = L × W × H</span></li>
 <li><span class="mono">16:9 → W = D × 0.872 · H = D × 0.490</span></li>
 <li><span class="mono">Throw Distance = Throw Ratio × Image WIDTH</span></li>
-<li><span class="mono">Double the distance = −6 dB</span> (light drops to ¼)</li>
-<li><span class="mono">1 m = 3.28 ft</span> · <span class="mono">1 in = 25.4 mm</span></li>
+<li>SPL over distance: <span class="mono">ΔdB = 20 × log(D₁ ÷ D₂)</span></li>
+<li>Light over distance: <span class="mono">E₂ = E₁ × (D₁ ÷ D₂)²</span></li>
+<li><span class="mono">m → ft × 3.281</span> · <span class="mono">ft → m × 0.3048</span> · <span class="mono">in → mm × 25.4</span></li>
 </ul>
 </div>
 
@@ -721,7 +723,7 @@ What a logarithm actually is, 10-log vs 20-log, every worked example step by ste
 <ul>
 <li>The <strong>impedance table</strong> — 50 / 75 / 100 / 110 / 120 Ω and who owns each</li>
 <li>The <strong>five phases</strong> in order, and that verification tests against the Program Report</li>
-<li>The <strong>scratch-board dump</strong> — seven lines, write it out once by hand</li>
+<li>The <strong>scratch-board dump</strong> — write it out once by hand, triangles included</li>
 <li>The <strong>qualifier words</strong> — BEST, FIRST, EXCEPT, PRIMARY</li>
 <li>The <strong>heuristic stack</strong> — safety, end user, communicate, verify</li>
 <li>Your <strong>weak-spots log</strong> — the term confusions, since they're 44% of your misses</li>
@@ -730,7 +732,7 @@ What a logarithm actually is, 10-log vs 20-log, every worked example step by ste
 </div>
 
 <div class="callout spec"><span class="label">In The Exam Room</span>
-You may not bring anything in — no formula sheet, no calculator. An <strong>on-screen calculator</strong> is provided, and the math never goes beyond add, subtract, multiply, divide, square, square root and log. <strong>100 questions.</strong> Dump your seven lines onto the scratch board before question one. Flag and move on rather than grinding. Answer every item — there's no penalty for a guess, and an unanswered question is a guaranteed zero.</div>
+You may not bring anything in — no formula sheet, no calculator. An <strong>on-screen calculator</strong> is provided, and the math never goes beyond add, subtract, multiply, divide, square, square root and log. <strong>100 questions.</strong> Dump the scratch-board lines before question one. Flag and move on rather than grinding. Answer every item — there's no penalty for a guess, and an unanswered question is a guaranteed zero.</div>
 
 <div class="callout examtip"><span class="label">One Last Thing</span>
 The debrief's first essential was reading comprehension, and your own diagnostic data says the same: nearly half your misses are two things you already know, filed under the wrong label. On exam day the highest-value habit isn't recall — it's reading the stem twice and naming what's being tested before you look at the options.</div>

@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Core Five Card</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&family=DM+Sans:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0f1117; --panel:#161a23; --panel2:#1c212e; --border:#2a3040;
+  --text:#e8eaf0; --muted:#9aa3b5; --faint:#6b7386;
+  --teal:#2dd4bf; --amber:#fbbf24; --blue:#60a5fa; --red:#f87171;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;
+  display:flex;flex-direction:column;align-items:center;padding:40px 16px 80px;min-height:100vh}
+h1{font-family:'Fraunces',serif;font-size:26px;margin-bottom:6px}
+.sub{color:var(--muted);font-size:15px;margin-bottom:26px;text-align:center;max-width:520px}
+
+/* ---------- THE CARD ---------- */
+.card{
+  width:560px;height:336px;               /* 5:3, prints at 5in x 3in */
+  background:var(--panel);border:1px solid var(--border);border-radius:12px;
+  padding:12px 14px;display:flex;flex-direction:column;gap:7px;
+  font-family:'IBM Plex Mono',monospace;
+}
+.card .hdr{display:flex;justify-content:space-between;align-items:baseline;
+  font-size:8.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--amber);flex-shrink:0}
+.card .hdr .r{color:var(--faint);letter-spacing:.1em}
+
+.tri-strip{display:flex;justify-content:center;align-items:center;gap:10px;flex-shrink:0}
+.tri-strip svg{height:96px;width:auto}
+.tri-strip .rule{font-family:'DM Sans',sans-serif;font-size:9.5px;color:var(--muted);
+  line-height:1.5;max-width:132px;border-left:2px solid var(--border);padding-left:9px}
+.tri-strip .rule b{color:var(--teal);font-weight:700}
+
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:5px 14px;flex:1;align-content:start}
+.blk{border-top:1px solid var(--border);padding-top:4px}
+.blk .lbl{font-size:8px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);margin-bottom:2px}
+.blk .f{font-size:12.5px;color:#fff;line-height:1.55;white-space:nowrap}
+.blk .f .k{color:var(--teal)}           /* series/parallel key letter */
+.blk .f .d{color:var(--amber)}          /* direction arrow */
+.blk .f .u{color:var(--muted)}          /* unit letters in conversions */
+.blk .f .sm{font-size:11px;color:var(--muted)}
+.conv{grid-column:1 / -1;border-top:1px solid var(--border);padding-top:4px;
+  display:flex;justify-content:space-between;align-items:baseline}
+.conv .lbl{font-size:8px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint)}
+.conv .f{font-size:12.5px;color:#fff;letter-spacing:.02em}
+.conv .f .u{color:var(--muted)}
+.conv .f span.gap{display:inline-block;width:14px}
+
+/* ---------- page furniture (never printed) ---------- */
+.actions{margin-top:24px;display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+button,a.btn{background:var(--panel2);border:1px solid var(--border);color:var(--text);
+  border-radius:9px;padding:9px 18px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:14.5px;
+  text-decoration:none;transition:.15s}
+button:hover,a.btn:hover{border-color:var(--teal);color:var(--teal)}
+.note{margin-top:20px;max-width:560px;font-size:13.5px;color:var(--faint);line-height:1.6;text-align:center}
+
+/* ---------- PRINT: one 5x3in card, black on white ---------- */
+@page{margin:12mm}
+@media print{
+  body{background:#fff;color:#000;padding:0;display:block}
+  h1,.sub,.actions,.note{display:none}
+  .card{width:5in;height:3in;background:#fff;border:1.2pt solid #000;border-radius:6pt;
+    box-shadow:none;page-break-inside:avoid;margin:0}
+  .card .hdr{color:#000}
+  .card .hdr .r{color:#444}
+  .blk,.conv{border-top:.6pt solid #999}
+  .blk .lbl,.conv .lbl{color:#555}
+  .blk .f,.conv .f{color:#000}
+  .blk .f .k,.blk .f .d{color:#000;font-weight:600}
+  .blk .f .u,.conv .f .u,.blk .f .sm{color:#444}
+  .tri-strip .rule{color:#333;border-left-color:#999}
+  .tri-strip .rule b{color:#000}
+  svg .tl{stroke:#000!important}
+  svg text{fill:#000!important}
+  svg .prod{fill:#ddd!important}
+}
+@media(max-width:620px){
+  .card{width:100%;height:auto;min-height:336px}
+  .tri-strip{flex-wrap:wrap}
+}
+</style>
+</head>
+<body>
+
+<h1>Core Five Card</h1>
+<p class="sub">Every formula from the Core Five on one index card. Tessellated triangles, compressed notation — built to be printed at 5&times;3&nbsp;in and carried.</p>
+
+<div class="card" id="card">
+
+  <div class="hdr"><span>CTS · Core Five</span><span class="r">shaded cell = the product</span></div>
+
+  <div class="tri-strip">
+    <svg viewBox="0 0 268 126" role="img" aria-label="Three tessellated formula triangles: V over I and R; P under I and V; TD over TR and IW">
+      <!-- ===== A: UP — V = I x R ===== -->
+      <path class="prod" d="M66,6 L33,63 L99,63 Z" fill="rgba(45,212,191,.18)"/>
+      <path class="tl" d="M66,6 L0,120 L132,120 Z" fill="none" stroke="#2dd4bf" stroke-width="1.6" stroke-linejoin="round"/>
+      <line class="tl" x1="33" y1="63" x2="99" y2="63" stroke="#2dd4bf" stroke-width="1.4"/>
+      <line class="tl" x1="66" y1="63" x2="66" y2="120" stroke="#2dd4bf" stroke-width="1.4"/>
+      <text x="66" y="50" text-anchor="middle" fill="#fff" font-family="IBM Plex Mono, monospace" font-size="21" font-weight="600">V</text>
+      <text x="36" y="108" text-anchor="middle" fill="#fff" font-family="IBM Plex Mono, monospace" font-size="19">I</text>
+      <text x="96" y="108" text-anchor="middle" fill="#fff" font-family="IBM Plex Mono, monospace" font-size="19">R</text>
+
+      <!-- ===== B: DOWN — P = I x V ===== -->
+      <path class="prod" d="M99,63 L165,63 L132,120 Z" fill="rgba(251,191,36,.20)"/>
+      <path class="tl" d="M66,6 L198,6 L132,120 Z" fill="none" stroke="#fbbf24" stroke-width="1.6" stroke-linejoin="round"/>
+      <line class="tl" x1="99" y1="63" x2="165" y2="63" stroke="#fbbf24" stroke-width="1.4"/>
+      <line class="tl" x1="132" y1="6" x2="132" y2="63" stroke="#fbbf24" stroke-width="1.4"/>
+      <text x="113" y="43" text-anchor="middle" fill="#fff" font-family="IBM Plex Mono, monospace" font-size="19">I</text>
+      <text x="152" y="43" text-anchor="middle" fill="#fff" font-family="IBM Plex Mono, monospace" font-size="19">V</text>
+      <text x="132" y="92" text-anchor="middle" fill="#fff" font-family="IBM Plex Mono, monospace" font-size="20" font-weight="600">P</text>
+
+      <!-- ===== C: UP — TD = TR x IW ===== -->
+      <path class="prod" d="M198,6 L165,63 L231,63 Z" fill="rgba(96,165,250,.18)"/>
+      <path class="tl" d="M198,6 L132,120 L264,120 Z" fill="none" stroke="#60a5fa" stroke-width="1.6" stroke-linejoin="round"/>
+      <line class="tl" x1="165" y1="63" x2="231" y2="63" stroke="#60a5fa" stroke-width="1.4"/>
+      <line class="tl" x1="198" y1="63" x2="198" y2="120" stroke="#60a5fa" stroke-width="1.4"/>
+      <text x="198" y="51" text-anchor="middle" fill="#fff" font-family="IBM Plex Mono, monospace" font-size="16" font-weight="600">TD</text>
+      <text x="168" y="108" text-anchor="middle" fill="#fff" font-family="IBM Plex Mono, monospace" font-size="15">TR</text>
+      <text x="228" y="108" text-anchor="middle" fill="#fff" font-family="IBM Plex Mono, monospace" font-size="15">IW</text>
+    </svg>
+    <div class="rule">Cover what you want.<br><b>2 factors side by side</b> &rarr; multiply.<br><b>product + factor</b> &rarr; product &divide; factor.</div>
+  </div>
+
+  <div class="grid">
+
+    <div class="blk">
+      <div class="lbl">Impedance</div>
+      <div class="f"><span class="k">S</span>│Z<sub>T</sub> = Z₁+Z₂+… <span class="d">↑</span></div>
+      <div class="f"><span class="k">P</span>│Z<sub>T</sub> = Z₁ / N <span class="d">↓</span></div>
+      <div class="f sm">mix│1 / (1/Z₁ + 1/Z₂ …)</div>
+    </div>
+
+    <div class="blk">
+      <div class="lbl">16:9 from diagonal</div>
+      <div class="f">W = D × .872</div>
+      <div class="f">H = D × .490</div>
+      <div class="f sm">far viewer = 4 / 6 / 8 × H</div>
+    </div>
+
+    <div class="blk">
+      <div class="lbl">Area &amp; volume</div>
+      <div class="f">A = L × W</div>
+      <div class="f">V = L × W × H</div>
+    </div>
+
+    <div class="blk">
+      <div class="lbl">Over distance</div>
+      <div class="f">ΔdB = 20 log(D₁/D₂)</div>
+      <div class="f">E₂ = E₁ (D₁/D₂)²</div>
+    </div>
+
+    <div class="conv">
+      <div class="lbl">Convert<br>×</div>
+      <div class="f"><span class="u">m</span>3.281<span class="u">f</span><span class="gap"></span><span class="u">f</span>.3048<span class="u">m</span><span class="gap"></span><span class="u">in</span>25.4<span class="u">mm</span><span class="gap"></span><span class="u">m³</span>35.32<span class="u">ft³</span></div>
+    </div>
+
+  </div>
+</div>
+
+<div class="actions">
+  <button onclick="window.print()">Print the card</button>
+  <a class="btn" href="cts-core-five-formulas.html">Full Core Five guide →</a>
+</div>
+
+<p class="note">Prints as a single 5&times;3&nbsp;in card, black on white — check your print preview and set scaling to 100% (not "fit to page"). The shaded cell in each triangle is the product; that's what makes the upside-down middle triangle read correctly.</p>
+
+</body>
+</html>
